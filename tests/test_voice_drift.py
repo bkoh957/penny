@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.voice_drift import load_config
+from scripts.voice_drift import analyze, load_config, segment_sentences
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = REPO / "config/voice-pack/ai-tics-config.yaml"
@@ -22,9 +22,6 @@ def test_default_config_has_required_keys():
 def test_missing_config_hard_fails(tmp_path):
     with pytest.raises(SystemExit):
         load_config(tmp_path / "nope.yaml")
-
-
-from scripts.voice_drift import segment_sentences, analyze
 
 FIX = REPO / "tests/fixtures/prose"
 
