@@ -1,0 +1,43 @@
+# run-config.md — Penny run configuration
+
+The fixed engine reads this file for model routing, run-mode flags, and escalation
+thresholds. All values are MVP 1 defaults; thresholds marked "tunable" are Book-1
+seeds, not load-bearing constants. See design §7 (routing), §12 (flags), §6
+(thresholds), §8 (structure inspector).
+
+## Model-per-role (design §7)
+
+The final-read invariant is **difference, not identity**: `final_read_model` must
+not appear among the chapters' `drafted_by` stamps (enforced by `preflight.py` in
+Phase 3). Substitute any reachable alternate model.
+
+```yaml
+drafting_model:   claude-opus
+inspector_model:  claude-opus
+copyedit_model:   claude-opus
+final_read_model: codex            # MUST differ from drafting_model
+beta_models:      [codex, hermes, openclaw]
+```
+
+## Run-mode flags (design §12)
+
+```yaml
+cadence:          chapter          # chapter | book-milestone
+panel_size:       1                # 1 (fast) | 3 (consensus)
+gate_mode:        strict           # strict | fast
+escalation_scope: minor-auto       # minor-auto | log-all
+ledger_approval:  review           # review (early/tuning) | auto (once clean)
+```
+
+## Escalation thresholds (design §6)
+
+```yaml
+escalate_on_blocking_disagreement: true   # HARD — holds gate, escalates now
+score_spread_log_threshold: 2             # SOFT — logged only; tunable Book 1
+```
+
+## Structure inspector (design §8)
+
+```yaml
+thread_dormant_after_chapters: 3          # flag a thread idle beyond N chapters; tunable
+```
