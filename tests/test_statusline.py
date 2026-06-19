@@ -35,3 +35,12 @@ def test_total_falls_back_to_current_chapter_without_outline(penny_root):
     penny_root.write_stage("book=02 chapter=05 stage=PLAN")
     out = penny_root.run(JSON_41)
     assert "Ch 5/5" in out
+
+
+def test_malformed_marker_missing_chapter_renders_safely(penny_root):
+    # A partially-written marker (no chapter=) must not error or render garbage.
+    penny_root.write_stage("book=01 stage=DRAFT")  # run() uses check=True
+    out = penny_root.run(JSON_41)
+    assert out.startswith("Penny · Book 01")
+    assert "Ch 0/0" in out
+    assert out.endswith("ctx 41%")

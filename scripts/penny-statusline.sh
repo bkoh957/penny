@@ -30,6 +30,13 @@ book="$(printf '%s' "$stage_line" | sed -n 's/.*book=\([^ ]*\).*/\1/p')"
 chapter="$(printf '%s' "$stage_line" | sed -n 's/.*chapter=\([^ ]*\).*/\1/p')"
 stage="$(printf '%s' "$stage_line" | sed -n 's/.*stage=\([^ ]*\).*/\1/p')"
 
+# Guard against a malformed / partially-written marker so the line never errors
+# or renders garbage. Inputs come from Penny's own commands, but the format is
+# still evolving in early phases.
+[ -z "$book" ] && book="??"
+[ -z "$chapter" ] && chapter=0
+[ -z "$stage" ] && stage="?"
+
 # Total chapters from the book outline (## headings); fall back to current chapter.
 outline="$ROOT/output/book-$book/outline.md"
 if [ -f "$outline" ]; then
@@ -39,6 +46,7 @@ else
 fi
 # Strip leading zeros for display (07 -> 7) without arithmetic on bare 0.
 chapter_disp="$((10#$chapter))"
+[ -z "$total" ] && total=0
 total="$((10#$total))"
 
 # Blocking verdicts = lines beginning "BLOCKING:" in the chapter's reviews dir.
