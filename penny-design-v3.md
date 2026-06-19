@@ -130,8 +130,12 @@ from the author.
       <id>.md                     per-location facts
     /threads
       <id>.md                     per-thread (objects, secrets, cross-book links)
-  whodunit-ledger.md            per-book: culprit, per-chapter clue schedule,
-                                red herrings, alibi grid (authored by /plan-mystery)
+  whodunit-ledger.md            [human doc, NEVER parsed] how the schedule works,
+                                narrative notes
+  /whodunit
+    book-NN.yaml                [machine-read, LOCKED] culprit, per-chapter clue
+                                schedule, red herrings, alibi grid (authored by
+                                /plan-mystery; read by fairplay_check.py)
   style-sheet.md                accumulating spelling/punctuation decisions
 
 /output
@@ -292,9 +296,10 @@ principle to the mystery itself by separating three roles:
 3. **Showrunner approves/edits and locks** — the ledger is reviewed, adjusted,
    and frozen.
 
-On approval, `/plan-mystery` writes `/series/whodunit-ledger.md` (the trackable
-clue/red-herring/alibi data, **structured per chapter** so each chapter's
-planting obligations can be handed out without revealing the answer) and
+On approval, `/plan-mystery` writes `/series/whodunit/book-NN.yaml` (the trackable
+clue/red-herring/alibi data, **structured per chapter** so each chapter's planting
+obligations can be handed out without revealing the answer) and updates the prose
+`/series/whodunit-ledger.md` (human notes), and writes
 `/output/book-NN/mystery-solution.md` (the sealed answer key), then sets
 `.penny/locks/book-NN.mystery.lock`.
 

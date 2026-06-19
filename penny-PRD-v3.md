@@ -212,8 +212,9 @@ The whodunit-ledger and sealed solution are authored before drafting, by separat
 roles, and locked.
 - [ ] `/plan-mystery N`: showrunner sets core (culprit, deception, arc
   constraints) → `mystery-planner` proposes clue schedule + red herrings + alibi
-  grid → showrunner approves → writes `whodunit-ledger.md` (per-chapter clue
-  schedule) + sealed `mystery-solution.md` → sets `book-NN.mystery.lock`.
+  grid → showrunner approves → writes `series/whodunit/book-NN.yaml` (per-chapter
+  clue schedule, machine-read; schema frozen in Phase 2a) + sealed
+  `mystery-solution.md` → sets `book-NN.mystery.lock`.
 - [ ] `/draft-chapter` hard-fails (deterministic pre-flight) if the book's
   whodunit-ledger is absent, unpopulated, or unlocked.
 - [ ] Drafter receives only **this chapter's** clue-planting obligations; full
