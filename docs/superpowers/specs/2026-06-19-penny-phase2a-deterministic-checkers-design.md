@@ -63,7 +63,9 @@ evidence:
   (Phase 1 convention, uniform across all producers). The gate counts `BLOCKING:`
   lines regardless of producer.
 - `score: 1-5` is **inspector-only** (2b). Deterministic checkers emit
-  metrics + flags, never a subjective score.
+  metrics + flags, never a subjective score. `penny_verdict.py` **omits the `score`
+  key entirely** for `kind: deterministic-checker` (no empty/null field), and only
+  emits it when a caller supplies one.
 
 **Blocking vs. evidence — the central rule (from `ai-tics-detection.md`):**
 - **`fairplay_check.py` MAY emit `BLOCKING:` lines.** Fair-play is a hard,
@@ -86,10 +88,12 @@ evidence:
 1. **Statistical rhythm** (design §6): sentence-length **variance** (flag if stdev
    below `sentence_variance.min_stdev` → monotone); **lexical repetition** (flag
    over-repeated content words and repeated sentence openers).
-2. **The 7 AI-tic categories** (`ai-tics-detection.md`): bodily reactions, wave /
-   emotional-noun templates, "something" language, filtering verbs, soft qualifiers
-   (+ the ≥2-in-one-sentence cluster rule), cinematic fragments (≥3 consecutive
-   sub-4-word sentences, ≥2 verbless), emotional-metaphor pool.
+2. **The 7 AI-tic categories** (the seven numbered sections of `ai-tics-detection.md`
+   — the count is anchored to that file, which is rewritten to prose-only this phase;
+   keep them 1:1): bodily reactions, wave / emotional-noun templates, "something"
+   language, filtering verbs, soft qualifiers (+ the ≥2-in-one-sentence cluster
+   rule), cinematic fragments (≥3 consecutive sub-4-word sentences, ≥2 verbless),
+   emotional-metaphor pool.
 3. Each detected item yields an **evidence span** (see §3.4).
 
 The metaphor-pool item is **keyword-count only** in 2a (the keyword-vs-LLM
@@ -146,38 +150,58 @@ emit `BLOCKING:` lines). **CLI:**
 Operates on the **ledger, not the prose** (ledger-consistency). Whether the drafter
 actually planted a scheduled clue in the scene is the 2b `inspector-fairplay` job.
 
-### 4.1 Assertions
+### 4.1 Config loading
+
+`fairplay_check.py` reads **two** inputs: the per-book ledger (PyYAML) and the
+scalar `culprit_by_fraction` from `run-config.md` (via `penny_meta.parse_yaml_blocks`
+— flat, the two-reader boundary of §5). Same **fail-loud, no-fallback** rule as
+`voice_drift.py` (§3.3): if `culprit_by_fraction` is absent or non-numeric in
+`run-config.md`, **hard-fail** with a clear message — never assume a default at
+runtime. (The documented default `0.5` lives *in* `run-config.md`, not in the script.)
+
+### 4.2 Assertions
 
 **Blocking (each failure → a `BLOCKING:` line):**
+- **Well-formed first:** required fields present, chapters numeric and in range
+  (`1..total_chapters`, `reveal_chapter ≤ total_chapters`). Malformed → BLOCKING and
+  **stop** (don't pile on derived failures from garbage data).
 - Every `necessary: true` clue has a `clue_schedule` entry **and**
   `plant_chapter < reveal_chapter` (planted-before-reveal). Missing/late → BLOCKING.
 - **Culprit floor (non-negotiable):** `culprit_first_appearance_chapter`
   (on-page) `< reveal_chapter`. Else BLOCKING.
-- **Culprit seed (tunable):** `culprit_first_appearance_chapter ≤
-  round(culprit_by_fraction × total_chapters)` (default `culprit_by_fraction: 0.5`
-  in `run-config.md`). Else BLOCKING.
-- **Well-formed:** required fields present, chapters numeric and in range
-  (`1..total_chapters`, reveal ≤ total); `culprit` id resolves in
-  `series/continuity/characters/`. Else BLOCKING (a malformed locked ledger is
-  itself a fairness failure that must not silently pass).
+- **Culprit seed (tunable):** evaluated **only when the floor passes** (so one late
+  culprit yields one BLOCKING line, not two): `culprit_first_appearance_chapter ≤
+  round(culprit_by_fraction × total_chapters)`. Else BLOCKING.
 - **Auditable culprit gap:** the culprit has at least one `alibi_grid` entry with
   `holds: false` — a gap that makes them catchable. A culprit whose alibi always
-  holds is an unsolvable, unfair mystery → BLOCKING. (This is the minimal,
-  fairness-relevant alibi assertion; fuller alibi/timeline internal-consistency
-  checking is deferred — see §8.)
+  holds is an unsolvable, unfair mystery → BLOCKING. (Minimal, fairness-relevant
+  alibi assertion; fuller alibi/timeline internal-consistency is deferred — see §8.)
 
 **Evidence (non-blocking `-` lines, for showrunner context/override):**
 - `culprit_first_mention_chapter < culprit_first_appearance_chapter` (mentioned
-  before on-page) — context for an override decision.
+  before on-page).
 - A red herring with `must_not_cheat: false`, or any clue/herring scheduled at/after
   the reveal.
+- **Culprit-id resolution:** if `series/continuity/characters/` is populated and the
+  `culprit` id does **not** resolve there, emit an evidence line. In 2a this is
+  **evidence-only** (continuity may be partial while fairplay is tested against
+  fixtures); it is **promoted to BLOCKING in 2b/3** once continuity is reliably
+  populated. The 2a fixtures therefore need **no** continuity stubs.
 
-### 4.2 Filing the verdict
+### 4.3 Filing the verdict
 
 Fairplay is book-level but matters at the gate of the **reveal chapter**, so the
 default `--out` is that chapter's reviews dir
 (`output/book-NN/chapters/ch-<reveal>.reviews/fairplay.md`). Exact wiring is a 2b/3
 concern; 2a writes wherever `--out` points, defaulting as above.
+
+**Status-line/gate caveat (Phase 1 reality):** the Phase 1 status line counts
+`BLOCKING:` lines only in the **current** chapter's `*.reviews/` dir (from
+`.penny/current-stage`), not across all chapters. So a book-level fairplay verdict
+filed in `ch-<reveal>.reviews/` is surfaced/gated **when that chapter is the active
+one** — which is the right moment for a reveal-fairness gate. Whether fairplay also
+runs at book-assembly time (gating the whole book) is a **2b wiring decision**; 2a
+only writes the verdict file.
 
 ---
 
@@ -219,6 +243,19 @@ metaphor_pool: [ wave, storm, weight, knife, thread, shadow, flame, spark, abyss
 appears in the prose, the `.yaml` is authoritative.
 
 ### 5.2 `series/whodunit/book-NN.yaml`
+
+> **This schema is a frozen cross-phase contract, not a 2a fixture.** Phase 2a
+> *defines and freezes* `book-NN.yaml` as the format that three parties must agree
+> on: `/plan-mystery` (Phase 3) **writes** it, `fairplay_check.py` (2a) **reads** it,
+> and the drafter (Phase 3) **consumes a per-chapter slice** of it. This is a
+> deliberate contract change to a Phase 3 deliverable, introduced here because the
+> 2a checker can't exist without a fixed format. It **forks the current single
+> `series/whodunit-ledger.md`** into two artifacts: the machine-read per-book YAML
+> (authoritative, locked) and the prose `whodunit-ledger.md` (human doc, never
+> parsed). The §7 design/PRD edits (§2 layout, §5a, P0.10) are **mandatory**, not
+> optional — Phase 3's `/plan-mystery` must satisfy this schema, or it will orphan
+> this checker. `book-01.yaml` (created in 2a) is one concrete instance of the
+> `book-NN.yaml` pattern, doubling as the test fixture and the first real ledger slot.
 
 ```yaml
 book: 01
@@ -262,10 +299,13 @@ culprit_by_fraction: 0.5    # fairplay seed — culprit on-page by this fraction
   evidence cap (≤5 spans + total), config-missing hard-fail, and **zero `BLOCKING:`
   lines**.
 - **`fairplay_check.py`:** fixture ledgers — fair (clean, no BLOCKING),
-  necessary-clue-after-reveal (BLOCKING), culprit-at-reveal (floor BLOCKING),
-  culprit-past-fraction (seed BLOCKING), malformed/missing-field (BLOCKING),
-  unresolved culprit id (BLOCKING), mention-before-appearance (evidence line). Assert
-  `BLOCKING:` presence/absence and the evidence lines.
+  necessary-clue-after-reveal (BLOCKING), culprit-at-reveal (floor BLOCKING; assert
+  the seed does **not** also fire — single BLOCKING line), culprit-past-fraction with
+  floor-passing (seed BLOCKING), malformed/missing-field (BLOCKING + stop),
+  culprit-with-no-`holds:false`-alibi (BLOCKING), mention-before-appearance (evidence
+  line), unresolved-culprit-id-with-populated-continuity (evidence line, NOT
+  blocking in 2a), and **missing `culprit_by_fraction` in run-config (hard-fail)**.
+  Assert `BLOCKING:` presence/absence/count and the evidence lines.
 
 ---
 
@@ -286,9 +326,12 @@ culprit_by_fraction: 0.5    # fairplay seed — culprit on-page by this fraction
   pointing at the `.yaml`.
 - `run-config.md` — add `culprit_by_fraction`.
 - `README.md` — dev note: PyYAML dependency + `pip install -r requirements.txt`.
-- **Design docs:** `penny-design-v3.md` §2 (repo layout: `series/whodunit/` per-book
-  yaml; `series/whodunit-ledger.md` now human-doc) and §5a (per-book ledger path);
-  `penny-PRD-v3.md` P0.10 (ledger path).
+- **Design docs (mandatory, per §5.2 contract):** `penny-design-v3.md` §2 — add
+  `series/whodunit/` directory holding `book-NN.yaml` (machine-read, locked), and
+  re-label `series/whodunit-ledger.md` as a human doc (never parsed); §5a — change
+  "/plan-mystery writes whodunit-ledger.md" to "writes `series/whodunit/book-NN.yaml`
+  (+ updates the prose `whodunit-ledger.md`)". `penny-PRD-v3.md` P0.10 — update the
+  ledger path to the per-book yaml.
 
 **Out of scope (2b):** inspector agents, rubrics, `review-chapter`, conflict
 resolution.
@@ -297,13 +340,21 @@ resolution.
 
 ## 8. Open Items / Deferred
 
+- **[SIGN-OFF — project-level] PyYAML becomes Penny's first third-party runtime
+  dependency.** This is a project posture change (Phase 1 was deliberately
+  dependency-free), not a detail to settle inside a checker spec. Justification: the
+  whodunit ledger and tic config are nested, human-authored, hand-locked data where
+  JSON is hostile and our flat `penny_meta` parser is insufficient (§5). **Requires
+  explicit showrunner/eng go-ahead before the plan is executed.** If declined, the
+  fallback is JSON-in-its-own-file with a schema doc to mitigate hand-editing pain.
+
 - Metaphor-pool detection: keyword-count in 2a; LLM-classifier graduation remains a
   `[DECISION]` (design §8a).
 - Prose-planting fairplay verification → 2b `inspector-fairplay`.
 - **Fuller alibi/timeline internal-consistency checker** (design §6's separate
   "alibi/timeline checker": cross-validating all suspects' alibis against the
   timeline) → deferred. 2a's fairplay does only the minimal culprit-gap assertion
-  (§4.1).
+  (§4.2).
 - Exact verdict filing/wiring into the gate → 2b `review-chapter`.
 - `voice_drift` runs on draft or final text → decided by 2b orchestration; the script
   itself is text-source-agnostic.
