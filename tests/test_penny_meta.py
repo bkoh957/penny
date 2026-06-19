@@ -41,3 +41,14 @@ def test_parse_yaml_blocks_merges_keys_and_ignores_comments():
     assert cfg["drafting_model"] == "claude-opus"
     assert cfg["beta_models"] == ["codex", "hermes"]
     assert cfg["ledger_approval"] == "review"
+
+
+def test_value_with_hash_not_stripped_when_no_preceding_space():
+    text = "---\nid: page\nsource: https://example.com#anchor\nlinks: []\n---\n"
+    meta = parse_frontmatter(text)
+    assert meta["source"] == "https://example.com#anchor"
+
+
+def test_value_with_colon_is_preserved():
+    text = "---\nid: bk\ntitle: The House: A Novel\nlinks: []\n---\n"
+    assert parse_frontmatter(text)["title"] == "The House: A Novel"

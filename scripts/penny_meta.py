@@ -9,7 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 
 
-def _coerce(value: str):
+def _coerce(value: str) -> "str | list[str]":
     value = value.strip()
     if value.startswith("[") and value.endswith("]"):
         inner = value[1:-1].strip()
@@ -19,17 +19,30 @@ def _coerce(value: str):
     return value
 
 
+def _strip_inline_comment(line: str) -> str:
+    """Strip a trailing ``# comment`` only when the ``#`` is outside any inline
+    list and is preceded by whitespace. This protects values that legitimately
+    contain ``#`` (e.g. ``https://x#anchor``) and ``#`` inside ``[...]`` lists."""
+    in_brackets = False
+    for i, ch in enumerate(line):
+        if ch == "[":
+            in_brackets = True
+        elif ch == "]":
+            in_brackets = False
+        elif ch == "#" and not in_brackets and i > 0 and line[i - 1].isspace():
+            return line[:i]
+    return line
+
+
 def _parse_kv_lines(lines: list[str]) -> dict:
     out: dict = {}
     for raw in lines:
         line = raw.rstrip("\n")
-        # Strip trailing comments that are not inside a value.
-        if "#" in line and not line.strip().startswith("#"):
-            # Only strip a comment that follows whitespace (so "[a, b]  # x" works).
-            hash_idx = line.find("#")
-            line = line[:hash_idx]
-        line = line.strip()
-        if not line or line.startswith("#") or ":" not in line:
+        full = line.strip()
+        if not full or full.startswith("#"):
+            continue
+        line = _strip_inline_comment(line).strip()
+        if not line or ":" not in line:
             continue
         key, _, value = line.partition(":")
         out[key.strip()] = _coerce(value)
