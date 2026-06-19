@@ -145,12 +145,24 @@ holds the gate; disagreements escalate per the two-signal rule.
   escalates (`escalate_on_blocking_disagreement: true`).
 - [ ] **Same-dimension score spread** ≥ `score_spread_log_threshold` (default 2)
   logs to the revision-priority report and does **not** hold the gate.
+- [ ] **Structure inspector** receives a thread roster (outline thread list / arc-ledger
+  slice) and flags any thread dormant beyond `thread_dormant_after_chapters` (single-book
+  liveness; the ledger-updater does not own this).
+- **Two-signal logic is dormant in the MVP 1 default.** At `panel_size: 1` (the
+  recommended early setting) the gate is held almost entirely by single-reviewer
+  blocking issues plus the Tier-3 scripts; the disagreement logic above activates
+  only once panels grow (cross-model panels, P1.2). It is infrastructure built now
+  and plugged in later — not load-bearing on day one.
 - Given a clue revealed without prior planting, when the fair-play script runs,
   then the gate is held and a blocking issue is logged.
 
 **P0.4 — Failure-mode compensation.**
 Each failure mode maps to a named rubric file and a named check.
-- [ ] All ten failure modes mapped to rubric + check.
+- [ ] Every row in the §8 design table mapped to a rubric + check.
+- [ ] Tell-tale AI sentence structures covered by the three-tier AI-prose defense
+  (design §8a): Tier-A `ai-tics-detection.md` → `voice_drift.py`; Tier-B
+  `self-audit-checklist.md` → drafter self-audit (P1.6); Tier-C
+  `ai-prose-taste-flags.md` → blind inspector. Genre-config, Book-1-tunable.
 - Given a chapter with monotone rhythm, when the voice-drift script runs, then low
   variance is flagged.
 
@@ -169,10 +181,12 @@ fresh-context sub-agent with the style sheet only. Finalize runs the dedicated
 The final holistic pre-assembly read runs on a different model than drafted it,
 enforced deterministically.
 - [ ] `run-config.md` declares model-per-role.
-- [ ] Pre-flight assertion in `assemble-book`: `final_read_model != drafting_model`
-  (hard-fail; `!=`, not a specific model identity).
-- [ ] Provenance stamps (`drafted_by`/`reviewed_by`/`read_by`) on artifacts; reality
-  check that chapter `drafted_by` stamps differ from the final-read model.
+- [ ] Config-invariant pre-flight in `assemble-book`: `final_read_model != drafting_model`
+  (hard-fail; difference, not a specific model identity).
+- [ ] **Set-membership reality check**: collect every chapter's `drafted_by` stamp,
+  dedupe, assert `final_read_model ∉ {drafted_by stamps}` — hard-fail otherwise.
+  Closes the mid-book-model-swap case.
+- [ ] Provenance stamps (`drafted_by`/`reviewed_by`/`read_by`) on artifacts.
 
 **P0.7 — Book assembly + standalone-vs-arc check.**
 Chapters assemble into a manuscript; a check confirms the book resolves its
@@ -181,6 +195,8 @@ mystery while leaving the right personal thread open.
 - [ ] Standalone-vs-arc check runs at book level.
 
 **P0.8 — Showrunner approval at book level + revision-priority report.**
+- [ ] Beta readers run at **book level** on the assembled manuscript (not per
+  chapter); their reaction reports feed the book-level revision-priority report.
 - [ ] Consensus put-down points and "wouldn't buy next" escalate to the showrunner.
 
 **P0.9 — TUI status bar.**
@@ -209,7 +225,8 @@ roles, and locked.
 ### Nice-to-Have (P1) — strong fast-follows
 
 **P1.1 — Beta-reader module live** with defined personas and `beta-protocol.md`
-report format. Currently stubbed.
+report format. Runs at **book level** on the assembled manuscript (P0.8, design
+§5c/§10). Currently stubbed.
 
 **P1.2 — Cross-model panels** across Codex/Hermes/OpenClaw for inspection and beta
 reaction; convergence treated as strong signal. Uses the `reviewed_by` provenance
@@ -225,13 +242,18 @@ as `run-config.md` settings.
 widgets to ccstatusline via a wrapper, if the richer display is wanted. (MVP 1
 default: single script.)
 
-**P1.6 — Drafter self-audit (fix-pass, not verdict).**
+**P1.6 — Drafter self-audit (cost optimization, not a quality gate).**
 After Draft, before the developmental gate, the drafter runs a mechanical
-fix-pass against a bounded checklist (repeated openers, named-emotion telling,
-banned-phrase hits, obvious clue-planting gaps).
+detect-and-restructure pass against the Tier-B checklist
+(`/config/self-audit/self-audit-checklist.md`: repeated openers, named-emotion
+telling, banned-phrase hits, obvious clue-planting gaps). **Quality is guaranteed
+by the independent inspectors regardless** — the self-audit's only job is to lower
+the **revision-loop count** (target ≤2) by arriving at the gate cleaner. It is P1
+because MVP 1 reaches the same quality without it, just with more loops; its worth
+is measured by a drop in revision-loop count once enabled (see Success Metrics).
 - [ ] Produces a revised draft only; emits **no** self-assessment.
 - [ ] Inspectors receive no signal that a self-audit occurred (independence preserved).
-- [ ] Framed as "find and fix," never "rate your compliance."
+- [ ] Framed as "detect-and-restructure," never "rate your compliance."
 
 ### Future Considerations (P2) — design for, don't build yet
 
@@ -264,6 +286,9 @@ later spin-off without retrofitting.
 - **Fair-play pass rate** — % of mysteries with all needed clues planted before the
   reveal. Target: 100% (hard requirement).
 - **Revision-loop count per chapter** — average loops to final. Target: ≤2.
+  *This is also the measure of the P1.6 self-audit's worth: enabling it should
+  produce a measurable drop in revision-loop count; if it doesn't, it isn't
+  earning its cost.*
 
 **Lagging indicators (weeks–months)**
 - **Cross-book consistency** — cross-book reviewer flags per new book. Target:
@@ -296,6 +321,9 @@ Measurement: counts logged to `/output/.../reports`; evaluate at end of each boo
 - **[Data] Metric instrumentation** — what writes the gate/defect/loop counts, and
   where? *(Non-blocking; needed before metrics are trustworthy. Note Option-A
   limitation: metrics are command-written, not code-emitted.)*
+- **[Decision] Metaphor-pool detection** (Tier-A AI-tics, design §8a) — keyword/
+  n-gram count vs. LLM-assisted classifier. *(Non-blocking; default keyword-count
+  seed for Book 1, revisit if it under-catches.)*
 
 ---
 
@@ -305,14 +333,18 @@ Follows the design build order; each phase is independently useful. MVP 1 = phas
 1–6.
 
 1. **Skeleton** — repo, `.claude/` scaffold, sectioned continuity ledger +
-   `canon-core`, style sheet, `run-config.md`, one genre/voice/setting pack,
-   status bar. Manual single-chapter runs. *(P0.1, P0.2, P0.9.)*
-2. **Review Bus** — Tier-1 blind sub-agents + Tier-3 `/scripts` checkers; tune
-   rubrics; wire two-signal conflict resolution. *(P0.3, P0.4.)*
+   `canon-core`, style sheet, **`run-config.md` created with the model-per-role
+   block + run-mode flags + thresholds** (so all later references resolve), one
+   genre/voice/setting pack, status bar. Manual single-chapter runs. *(P0.1, P0.2, P0.9.)*
+2. **Review Bus** — Tier-1 blind sub-agents (incl. Tier-C AI-prose taste inspector)
+   + Tier-3 `/scripts` checkers (incl. `voice_drift.py` consuming Tier-A
+   `ai-tics-detection.md`); structure-inspector thread roster; wire two-signal
+   conflict resolution. *(P0.3, P0.4.)*
 3. **Mystery + Cross-model** — `/plan-mystery` + lock pre-flight; `/scripts`
-   adapters; `preflight.py` routing assertions + provenance stamps. *(P0.10, P0.6, P1.2.)*
+   adapters; `preflight.py` set-membership routing assertion + provenance stamps. *(P0.10, P0.6, P1.2.)*
 4. **Prose passes** — line-edit + copy-edit + post-gate ledger-updater; accumulate
-   style sheet. *(P0.5, P1.3; self-audit P1.6 fast-follow.)*
+   style sheet. *(P0.5, P1.3; self-audit P1.6 + Tier-B `self-audit-checklist.md`
+   fast-follow.)*
 5. **Beta layer** — personas + protocol; reaction reports. *(P1.1.)*
 6. **Book loop** — commands run chapter-by-chapter across an outline; book-level
    approval; standalone-vs-arc check. **← MVP 1 endpoint.** *(P0.7, P0.8.)*
@@ -342,3 +374,20 @@ EPUB phase depends on the output-target spec.
 - **P0.5** — added the post-gate `ledger-updater` step + `ledger_approval` flag.
 - **P0.6** — cross-model rule made a deterministic config assertion (`!=`) with
   provenance stamps and a reality check.
+
+### Showrunner feedback round (within v3)
+
+- **Beta at book level** (P0.8, P1.1) — beta readers react to the assembled
+  manuscript, not per chapter.
+- **P0.3** — added the explicit "two-signal logic dormant at `panel_size: 1`" note
+  and the structure-inspector thread-roster check (single-book thread liveness).
+- **P0.4** — "every row in the §8 table" instead of a hardcoded count; wired the
+  three-tier AI-prose defense (Tier-A/B/C config files).
+- **P0.6** — reality check upgraded to **set membership** (`final_read_model ∉
+  {drafted_by stamps}`), closing the mid-book-swap case.
+- **P1.6** — reframed as a cost optimization measured by revision-loop reduction;
+  consumes the Tier-B `self-audit-checklist.md`.
+- **Phase 1** — `run-config.md` named an explicit skeleton deliverable so later
+  references don't dangle.
+- **Success Metrics** — revision-loop count doubles as the self-audit's worth gauge.
+- **Open Questions** — added the metaphor-pool detection decision (keyword vs. LLM).
