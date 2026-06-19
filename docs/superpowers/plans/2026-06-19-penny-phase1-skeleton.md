@@ -1074,6 +1074,15 @@ def test_total_falls_back_to_current_chapter_without_outline(penny_root):
     penny_root.write_stage("book=02 chapter=05 stage=PLAN")
     out = penny_root.run(JSON_41)
     assert "Ch 5/5" in out
+
+
+def test_malformed_marker_missing_chapter_renders_safely(penny_root):
+    # A partially-written marker (no chapter=) must not error or render garbage.
+    penny_root.write_stage("book=01 stage=DRAFT")  # run() uses check=True
+    out = penny_root.run(JSON_41)
+    assert out.startswith("Penny · Book 01")
+    assert "Ch 0/0" in out
+    assert out.endswith("ctx 41%")
 ```
 
 - [ ] **Step 3: Run tests to verify they fail**
@@ -1118,6 +1127,13 @@ book="$(printf '%s' "$stage_line" | sed -n 's/.*book=\([^ ]*\).*/\1/p')"
 chapter="$(printf '%s' "$stage_line" | sed -n 's/.*chapter=\([^ ]*\).*/\1/p')"
 stage="$(printf '%s' "$stage_line" | sed -n 's/.*stage=\([^ ]*\).*/\1/p')"
 
+# Guard against a malformed / partially-written marker so the line never errors
+# or renders garbage. Inputs come from Penny's own commands, but the format is
+# still evolving in early phases.
+[ -z "$book" ] && book="??"
+[ -z "$chapter" ] && chapter=0
+[ -z "$stage" ] && stage="?"
+
 # Total chapters from the book outline (## headings); fall back to current chapter.
 outline="$ROOT/output/book-$book/outline.md"
 if [ -f "$outline" ]; then
@@ -1125,8 +1141,10 @@ if [ -f "$outline" ]; then
 else
   total="$chapter"
 fi
-# Strip a possible leading zero for display (07 -> 7) without arithmetic on bare 0.
+# Strip leading zeros for display (07 -> 7) without arithmetic on bare 0.
 chapter_disp="$((10#$chapter))"
+[ -z "$total" ] && total=0
+total="$((10#$total))"
 
 # Blocking verdicts = lines beginning "BLOCKING:" in the chapter's reviews dir.
 reviews="$ROOT/output/book-$book/chapters/ch-$chapter.reviews"
@@ -1152,10 +1170,11 @@ chmod +x scripts/penny-statusline.sh
 - [ ] **Step 6: Run tests to verify they pass**
 
 Run: `python3 -m pytest tests/test_statusline.py -v`
-Expected: PASS (5 passed).
+Expected: PASS (6 passed).
 
 > If `test_full_render` shows `Ch 07/24` instead of `Ch 7/24`, the `10#$chapter`
-> normalization step was omitted — re-check Step 4.
+> normalization step was omitted — re-check Step 4. The malformed-marker test
+> verifies the empty-field guards render `Ch 0/0` instead of erroring.
 
 - [ ] **Step 7: Create the statusLine settings**
 
@@ -1199,13 +1218,13 @@ Run:
 
 ```bash
 # Idle (no marker):
-echo '{"context_window":{"used_percentage":12.5}}' | PENNY_ROOT=. bash scripts/penny-statusline.sh
-# Expected: Penny · idle · ctx 13%
+echo '{"context_window":{"used_percentage":41.2}}' | PENNY_ROOT=. bash scripts/penny-statusline.sh
+# Expected: Penny · idle · ctx 41%
 
 # Simulate mid-draft:
 mkdir -p .penny && echo "book=01 chapter=01 stage=DRAFT" > .penny/current-stage
-echo '{"context_window":{"used_percentage":12.5}}' | PENNY_ROOT=. bash scripts/penny-statusline.sh
-# Expected: Penny · Book 01 · Ch 1/1 · DRAFT · gate: 0 blocking · ctx 13%
+echo '{"context_window":{"used_percentage":41.2}}' | PENNY_ROOT=. bash scripts/penny-statusline.sh
+# Expected: Penny · Book 01 · Ch 1/1 · DRAFT · gate: 0 blocking · ctx 41%
 rm -rf .penny
 ```
 
