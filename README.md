@@ -22,7 +22,12 @@ Not yet built: review bus (Phase 2), `/plan-mystery` + cross-model routing
 python3 -m pytest          # run the structural + status-line tests
 ```
 
-Requires `python3`, `jq` (status line), and `pytest`. No third-party Python deps.
+Requires `python3`, `jq` (status line), and `pytest`. One third-party dependency
+(PyYAML, for nested human-edited config/ledgers):
+
+```bash
+pip install -r requirements.txt
+```
 
 ## Status line
 
