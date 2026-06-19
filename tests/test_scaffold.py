@@ -35,3 +35,24 @@ def test_config_file_exists_and_nonempty(relpath):
     path = Path(relpath)
     assert path.is_file(), f"missing {relpath}"
     assert path.read_text(encoding="utf-8").strip(), f"{relpath} is empty"
+
+
+REQUIRED_CLAUDE_FILES = [
+    ".claude/agents/_TEMPLATE.md",
+    ".claude/agents/drafter.md",
+    ".claude/commands/draft-chapter.md",
+]
+
+
+@pytest.mark.parametrize("relpath", REQUIRED_CLAUDE_FILES)
+def test_claude_file_exists_and_nonempty(relpath):
+    path = Path(relpath)
+    assert path.is_file(), f"missing {relpath}"
+    assert path.read_text(encoding="utf-8").strip(), f"{relpath} is empty"
+
+
+def test_draft_chapter_writes_current_stage():
+    text = Path(".claude/commands/draft-chapter.md").read_text(encoding="utf-8")
+    assert ".penny/current-stage" in text, (
+        "draft-chapter must document writing the harness state marker (design §11)"
+    )

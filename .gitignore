@@ -1,1 +1,4 @@
 .DS_Store
+.penny/
+__pycache__/
+.pytest_cache/
