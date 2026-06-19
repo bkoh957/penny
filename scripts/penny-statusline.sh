@@ -24,6 +24,13 @@ fi
 # we silently fall back to the Penny segment alone.
 append_ccstatusline() {
   local penny="$1" cc
+  # Non-interactive contexts (tests, CI) can skip the nondeterministic, network
+  # ccstatusline call by setting PENNY_NO_CCSTATUSLINE; the Penny segment alone is
+  # then emitted, keeping output deterministic.
+  if [ -n "${PENNY_NO_CCSTATUSLINE:-}" ]; then
+    printf '%s\n' "$penny"
+    return 0
+  fi
   cc="$(printf '%s' "$session_json" | npx -y ccstatusline@latest 2>/dev/null | head -n1)"
   if [ -n "${cc:-}" ]; then
     printf '%s\n%s\n' "$penny" "$cc"

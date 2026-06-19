@@ -28,7 +28,9 @@ def penny_root(tmp_path):
         (d / "inspector-continuity.md").write_text(body or "ok\n", encoding="utf-8")
 
     def run(session_json: str) -> str:
-        env = dict(os.environ, PENNY_ROOT=str(tmp_path))
+        # Disable the ccstatusline append so output stays deterministic and the
+        # tests don't shell out to `npx ccstatusline` on every run.
+        env = dict(os.environ, PENNY_ROOT=str(tmp_path), PENNY_NO_CCSTATUSLINE="1")
         proc = subprocess.run(
             ["bash", str(SCRIPT)],
             input=session_json, capture_output=True, text=True, env=env, check=True,
