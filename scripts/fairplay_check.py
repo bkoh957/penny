@@ -115,7 +115,7 @@ def check_fairplay(ledger_path, *, culprit_by_fraction: float) -> dict:
         if rh.get("must_not_cheat") is False:
             notes.append(f"red herring {rh.get('id','?')} flagged must_not_cheat: false")
     # culprit-id resolution: evidence-only in 2a (promoted to BLOCKING in 2b/3).
-    chars = Path("series/continuity/characters")
+    chars = Path(__file__).resolve().parents[1] / "series/continuity/characters"
     if chars.is_dir() and any(chars.iterdir()):
         if not (chars / f"{culprit}.md").is_file():
             notes.append(f"culprit id '{culprit}' does not resolve in series/continuity/characters/ (evidence; blocking in 2b/3)")
