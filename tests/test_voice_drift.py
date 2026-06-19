@@ -85,3 +85,33 @@ def test_cli_writes_verdict_with_no_blocking_lines(tmp_path):
     # HARD RULE: voice_drift never emits BLOCKING: lines, even on saturated prose.
     assert not any(ln.startswith("BLOCKING:") for ln in verdict.splitlines())
     assert "producer: voice_drift.py" in verdict
+
+
+def test_soft_qualifiers_two_in_one_sentence_flags():
+    # The cluster rule path: a sentence with >= cluster_in_sentence qualifiers flags.
+    cfg = load_config(DEFAULT_CONFIG)
+    text = "He walked home. She was almost, somehow, certain of nothing in particular today."
+    result = analyze(text, cfg)
+    sq = next(t for t in result["tics"] if t["tic_id"] == "soft_qualifiers")
+    assert sq["flagged"] is True
+
+
+def test_cinematic_fragments_counted():
+    cfg = load_config(DEFAULT_CONFIG)
+    result = analyze((FIX / "fragments.md").read_text(encoding="utf-8"), cfg)
+    cf = next(t for t in result["tics"] if t["tic_id"] == "cinematic_fragments")
+    assert cf["count"] >= 2          # two runs of short verbless fragments
+    assert result["blocking"] == []  # still evidence-only
+
+
+def test_lexical_repetition_flags_repeated_openers():
+    cfg = load_config(DEFAULT_CONFIG)
+    result = analyze((FIX / "monotone.md").read_text(encoding="utf-8"), cfg)
+    lr = next(t for t in result["tics"] if t["tic_id"] == "lexical_repetition")
+    assert lr["flagged"] is True     # "She" opens many sentences
+
+
+def test_clean_prose_still_flags_nothing_after_extra_detectors():
+    cfg = load_config(DEFAULT_CONFIG)
+    result = analyze((FIX / "clean.md").read_text(encoding="utf-8"), cfg)
+    assert [t for t in result["tics"] if t["flagged"]] == []
