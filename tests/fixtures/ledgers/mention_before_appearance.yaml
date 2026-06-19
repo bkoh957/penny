@@ -1,0 +1,18 @@
+book: 01
+locked: true
+total_chapters: 24
+reveal_chapter: 22
+culprit: margaret
+culprit_first_appearance_chapter: 2
+culprit_first_mention_chapter: 1
+victim: edwin-tilley
+central_deception: |
+  Margaret swapped the tide tables.
+clue_schedule:
+  - { id: clue-torn-ticket, plant_chapter: 5, pays_off_chapter: 22, necessary: true }
+  - { id: clue-tide-table, plant_chapter: 9, pays_off_chapter: 22, necessary: true }
+red_herrings:
+  - { id: rh-the-neighbour, plant_chapter: 7, misleads_toward: "the neighbour", must_not_cheat: true }
+alibi_grid:
+  - { suspect: margaret, chapter: 12, alibi: "at the church fete", holds: false }
+  - { suspect: thomas, chapter: 12, alibi: "on the ferry", holds: true }

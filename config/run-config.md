@@ -40,4 +40,5 @@ score_spread_log_threshold: 2             # SOFT — logged only; tunable Book 1
 
 ```yaml
 thread_dormant_after_chapters: 3          # flag a thread idle beyond N chapters; tunable
+culprit_by_fraction: 0.5                  # fairplay: culprit on-page by this fraction of the book; tunable
 ```
