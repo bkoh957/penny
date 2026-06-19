@@ -340,13 +340,13 @@ resolution.
 
 ## 8. Open Items / Deferred
 
-- **[SIGN-OFF — project-level] PyYAML becomes Penny's first third-party runtime
-  dependency.** This is a project posture change (Phase 1 was deliberately
+- **[SIGN-OFF: APPROVED 2026-06-20] PyYAML becomes Penny's first third-party runtime
+  dependency.** This was a project posture change (Phase 1 was deliberately
   dependency-free), not a detail to settle inside a checker spec. Justification: the
   whodunit ledger and tic config are nested, human-authored, hand-locked data where
-  JSON is hostile and our flat `penny_meta` parser is insufficient (§5). **Requires
-  explicit showrunner/eng go-ahead before the plan is executed.** If declined, the
-  fallback is JSON-in-its-own-file with a schema doc to mitigate hand-editing pain.
+  JSON is hostile and our flat `penny_meta` parser is insufficient (§5). **Showrunner
+  approved.** (Rejected fallback, for the record: JSON-in-its-own-file with a schema
+  doc.)
 
 - Metaphor-pool detection: keyword-count in 2a; LLM-classifier graduation remains a
   `[DECISION]` (design §8a).
