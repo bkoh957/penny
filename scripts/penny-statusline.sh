@@ -19,9 +19,22 @@ else
   ctx="$(printf '%.0f' "$ctx" 2>/dev/null || printf '%s' "$ctx")"
 fi
 
+# Append ccstatusline's output (the global status line) on a second line, feeding
+# it the same session JSON on stdin. Best-effort: if ccstatusline isn't available,
+# we silently fall back to the Penny segment alone.
+append_ccstatusline() {
+  local penny="$1" cc
+  cc="$(printf '%s' "$session_json" | npx -y ccstatusline@latest 2>/dev/null | head -n1)"
+  if [ -n "${cc:-}" ]; then
+    printf '%s\n%s\n' "$penny" "$cc"
+  else
+    printf '%s\n' "$penny"
+  fi
+}
+
 # No harness state yet → idle.
 if [ ! -f "$STAGE_FILE" ]; then
-  printf 'Penny · idle · ctx %s%%\n' "$ctx"
+  append_ccstatusline "$(printf 'Penny · idle · ctx %s%%' "$ctx")"
   exit 0
 fi
 
@@ -58,5 +71,5 @@ else
   blocking=0
 fi
 
-printf 'Penny · Book %s · Ch %s/%s · %s · gate: %s blocking · ctx %s%%\n' \
-  "$book" "$chapter_disp" "$total" "$stage" "$blocking" "$ctx"
+append_ccstatusline "$(printf 'Penny · Book %s · Ch %s/%s · %s · gate: %s blocking · ctx %s%%' \
+  "$book" "$chapter_disp" "$total" "$stage" "$blocking" "$ctx")"
