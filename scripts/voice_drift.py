@@ -98,7 +98,7 @@ def segment_sentences(text: str) -> list[str]:
     while i < len(prose):
         ch = prose[i]
         buf += ch
-        if ch in '"""':
+        if ch in '"“”"':
             quote_depth = 0 if quote_depth else 1
         # Ellipsis: consume run of dots, treat as non-terminal.
         if ch == "." and prose[i:i + 3] == "...":
@@ -117,7 +117,7 @@ def segment_sentences(text: str) -> list[str]:
                 continue
             # Terminal only if followed by space + (capital or opening quote) or end.
             rest = prose[i + 1:].lstrip()
-            if rest == "" or rest[0].isupper() or rest[0] in '""':
+            if rest == "" or rest[0].isupper() or rest[0] in '"""':
                 sentences.append(buf.strip())
                 buf = ""
         i += 1

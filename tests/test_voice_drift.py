@@ -40,6 +40,19 @@ def test_segmentation_handles_dialogue_and_abbreviations():
     assert any("just" in s and "a lot" in s for s in sents)
 
 
+def test_segmentation_handles_curly_smart_quotes():
+    # Real prose from Scrivener/Word uses U+201C/U+201D smart quotes, not ASCII ".
+    # The interior period must NOT split the dialogue sentence.
+    text = "“I know who did it. I saw them.” she said. He nodded."
+    sents = segment_sentences(text)
+    # The two interior clauses must stay together in one segment.
+    assert any("I know who did it" in s and "I saw them" in s for s in sents), (
+        "smart-quoted dialogue was split at the interior period (ASCII-only quote bug)"
+    )
+    # The follow-on sentence must be separate.
+    assert any("He nodded" in s for s in sents)
+
+
 def test_clean_prose_flags_nothing(tmp_path):
     cfg = load_config(DEFAULT_CONFIG)
     result = analyze((FIX / "clean.md").read_text(encoding="utf-8"), cfg)
