@@ -1,0 +1,7 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "scripts/penny-statusline.sh",
+    "padding": 0
+  }
+}
