@@ -72,3 +72,42 @@ def segment_sentences(text: str) -> list[str]:
     if buf.strip():
         sentences.append(buf.strip())
     return [s for s in sentences if s]
+
+
+# Double-quote characters that open/close dialogue. Smart quotes are directional
+# (U+201C opens, U+201D closes); straight ASCII " toggles. Single quotes are NEVER
+# treated as dialogue — in cozy prose they are apostrophes (don't, cat's, 'I'm').
+_OPEN_QUOTES = '"“'
+_CLOSE_QUOTES = '"”'
+
+
+def quote_spans(text: str) -> list[tuple[int, int]]:
+    """Return (start, end) char offsets of double-quoted dialogue runs, inclusive of
+    the quote marks. Straight " toggles open/closed; smart quotes use direction.
+    A run left unterminated at end-of-text is closed at end-of-text."""
+    spans: list[tuple[int, int]] = []
+    open_at: int | None = None
+    for i, ch in enumerate(text):
+        if open_at is None:
+            if ch == '"' or ch in _OPEN_QUOTES:
+                open_at = i
+        else:
+            if ch == '"' or ch in _CLOSE_QUOTES:
+                spans.append((open_at, i + 1))
+                open_at = None
+    if open_at is not None:
+        spans.append((open_at, len(text)))
+    return spans
+
+
+def strip_dialogue(text: str) -> str:
+    """Return text with every dialogue span replaced by spaces, preserving overall
+    length and all newlines so a match offset on the result maps to the same line
+    number as the original. This is the narration extractor: it applies the 'remove
+    dialogue' policy on top of `quote_spans`."""
+    chars = list(text)
+    for start, end in quote_spans(text):
+        for i in range(start, end):
+            if chars[i] != "\n":
+                chars[i] = " "
+    return "".join(chars)
