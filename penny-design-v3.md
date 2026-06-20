@@ -86,6 +86,8 @@ from the author.
   voice_drift.py                sentence-variance / repetition / tic stats
   fairplay_check.py             clue-planting cross-reference vs. whodunit-ledger
   preflight.py                  config invariants + lock + provenance checks (§5a, §7)
+  review_gate.py                deterministic gate evaluator (§6)
+  reset_reviews.py              per-chapter reviews cleanup for gate re-runs
   penny-statusline.sh           TUI status bar reader (see §11)
   (epubcheck wrapper)           [POST-MVP1]
 
@@ -442,10 +444,14 @@ convergence analysis (P1.2). Adding a model = one adapter call, not an engine ch
 **Tier 3 — Deterministic specialist checkers (`/scripts`, not vibes):**
 - **Fair-play checker** — every clue needed to solve the murder appeared before
   the reveal; culprit introduced early enough. Cross-refs whodunit-ledger.
-- **Continuity checker** — chapter vs. the continuity ledger; flags contradictions.
 - **Alibi/timeline checker** — validates the alibi grid is internally consistent.
+  *(Deferred to Phase 3 mystery work; not in Phase 2b scope.)*
 - **Voice-drift checker** — sentence-length variance, lexical repetition, tic
   frequency vs. the Voice Pack baseline.
+
+Note: continuity checking is **not** a Tier-3 script. It is handled by
+`inspector-continuity` (Tier-1 blind inspector), which receives a ledger slice
+and evaluates chapter vs. canon at the same LLM level as the other inspectors.
 
 ### Conflict resolution — two signals, two responses
 
@@ -474,8 +480,9 @@ Two definitional guards:
   constant — calibrate once real verdict distributions are visible.
 
 (In Option A these rules live in the `review-chapter` command instructions plus
-the deterministic comparisons in `preflight.py`; see the known-limitation note
-in §12.)
+the deterministic comparisons in `review_gate.py`; see the known-limitation note
+in §12. `preflight.py` retains its §7 jobs — model-routing set-membership and
+lock checks; only the conflict-comparison role lives in `review_gate.py`.)
 
 **Dormant in the MVP 1 default — infrastructure built now, plugged in later.** At
 `panel_size: 1` (the recommended early default), the gate is held almost entirely
@@ -561,7 +568,7 @@ independent review check.
 
 | Failure mode | Authoring mechanism | Independent check |
 |---|---|---|
-| Continuity drift across series | Ledgers read pre-write, updated post-gate | Continuity checker diffs canon |
+| Continuity drift across series | Ledgers read pre-write, updated post-gate | `inspector-continuity` (Tier-1, chapter vs. ledger slice) |
 | Sagging middle | Outline enforces midpoint reversal + escalation beats | Structure reviewer scores tension curve |
 | Repetitive sentence rhythm | Voice Pack mandates length variance, bans opener repetition | Voice-drift checker (statistical) |
 | Telling not showing | Brief specifies dramatized vs. summarized | Reviewer flags emotion-naming / exposition dumps |

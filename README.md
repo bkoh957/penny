@@ -29,6 +29,14 @@ Requires `python3`, `jq` (status line), and `pytest`. One third-party dependency
 pip install -r requirements.txt
 ```
 
+## Reviewing a chapter (Phase 2b)
+
+`/review-chapter <book> <chapter>` runs the developmental gate: it clears the
+chapter's reviews dir, runs the 2a checkers (`voice_drift.py`, and `fairplay_check.py`
+at the reveal chapter), dispatches the five blind inspectors, then runs
+`scripts/review_gate.py` to write `ch-NN.gate.md` and print `GATE: PASS|HOLD`.
+Exit 0 means the gate evaluated (PASS or HOLD); nonzero means an operational error.
+
 ## Status line
 
 `scripts/penny-statusline.sh` is wired in `.claude/settings.json`. It reads harness
