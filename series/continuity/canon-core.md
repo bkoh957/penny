@@ -3,6 +3,7 @@ id: canon-core
 type: thread
 links: []
 ---
+<!-- canon-meta: {id: canon-core, fluency_stage: OUTSIDER} -->
 # Canon Core — always loaded every chapter (design §4.2)
 
 Keep this small: every line is a tax on every chapter. Holds only what is always

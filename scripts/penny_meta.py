@@ -84,3 +84,20 @@ def parse_yaml_blocks(text: str) -> dict:
 
 def load(path: str | Path) -> str:
     return Path(path).read_text(encoding="utf-8")
+
+
+import re as _re
+
+_CANON_META_RE = _re.compile(r"<!--\s*canon-meta:\s*\{(.*?)\}\s*-->", _re.DOTALL)
+
+
+def parse_canon_meta(text: str) -> dict:
+    """Read the first ``<!-- canon-meta: {k: v, ...} -->`` header. Returns {} if
+    absent. Supports flat scalar pairs (sufficient for fluency_stage); nested maps
+    are deferred to the demotion machinery (Phase 8)."""
+    m = _CANON_META_RE.search(text)
+    if not m:
+        return {}
+    inner = m.group(1)
+    # Split top-level commas (no nesting expected at this stage) into k: v lines.
+    return _parse_kv_lines([part for part in inner.split(",")])

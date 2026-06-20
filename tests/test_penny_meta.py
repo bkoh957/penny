@@ -52,3 +52,25 @@ def test_value_with_hash_not_stripped_when_no_preceding_space():
 def test_value_with_colon_is_preserved():
     text = "---\nid: bk\ntitle: The House: A Novel\nlinks: []\n---\n"
     assert parse_frontmatter(text)["title"] == "The House: A Novel"
+
+
+from scripts.penny_meta import parse_canon_meta
+
+
+def test_parse_canon_meta_reads_flat_map():
+    text = "# Canon Core\n<!-- canon-meta: {id: canon-core, fluency_stage: OUTSIDER} -->\nbody"
+    meta = parse_canon_meta(text)
+    assert meta["fluency_stage"] == "OUTSIDER"
+    assert meta["id"] == "canon-core"
+
+
+def test_parse_canon_meta_absent_returns_empty():
+    assert parse_canon_meta("# No header here\njust prose") == {}
+
+
+def test_real_canon_core_declares_a_valid_stage():
+    from pathlib import Path
+    repo = Path(__file__).resolve().parents[1]
+    text = (repo / "series/continuity/canon-core.md").read_text(encoding="utf-8")
+    meta = parse_canon_meta(text)
+    assert meta.get("fluency_stage") in {"OUTSIDER", "SETTLING", "BELONGING"}
