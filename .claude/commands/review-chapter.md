@@ -66,18 +66,23 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    — stop and report it. (This is distinct from `fairplay.md` legitimately being
    absent pre-reveal.)
 
-9. **Compute the gate:**
+9. **Compute the gate and advance the marker:**
 
    ```bash
-   python3 scripts/review_gate.py output/book-$book/chapters/ch-$chapter.reviews
+   gate_out="$(python3 scripts/review_gate.py output/book-$book/chapters/ch-$chapter.reviews)"
+   echo "$gate_out"
+   if printf '%s' "$gate_out" | grep -q '^GATE: HOLD'; then
+     stage=GATE-HELD
+   else
+     stage=REVIEWED
+   fi
+   echo "book=$book chapter=$chapter stage=$stage" > .penny/current-stage
    ```
 
-   It writes `output/book-$book/chapters/ch-$chapter.gate.md` and prints
-   `GATE: PASS` or `GATE: HOLD (n blocking)`.
+   `review_gate.py` writes `output/book-$book/chapters/ch-$chapter.gate.md` and
+   prints `GATE: PASS` or `GATE: HOLD (n blocking)`. The marker is set to
+   `stage=REVIEWED` on a PASS gate and `stage=GATE-HELD` on a HOLD gate.
 
-10. **Advance the marker and surface the result:**
-
-    ```bash
-    # stage=REVIEWED on PASS, stage=GATE-HELD on HOLD
-    echo "book=$book chapter=$chapter stage=REVIEWED" > .penny/current-stage
-    ```
+10. **Surface the result** to the showrunner: report the gate verdict and, on a
+    HOLD, list the blocking items from
+    `output/book-$book/chapters/ch-$chapter.gate.md`.
