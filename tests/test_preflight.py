@@ -62,6 +62,15 @@ def test_lock_mystery_no_lock_when_lexicon_invalid(tmp_path):
     assert not preflight.lock_path("01", tmp_path).is_file()
 
 
+def test_lock_mystery_no_lock_when_canon_core_missing(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    (tmp_path / "series/continuity/canon-core.md").unlink()
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_lock_mystery("01", repo_root=tmp_path)
+    assert "canon-core" in str(e.value)
+    assert not preflight.lock_path("01", tmp_path).is_file()
+
+
 def test_lock_mystery_no_lock_when_culprit_unresolvable(tmp_path):
     led = _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
     # remove margaret's entity so existence resolution blocks.

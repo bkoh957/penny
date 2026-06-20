@@ -103,8 +103,10 @@ def cmd_lock_mystery(book: str, *, repo_root=REPO, run_config=None) -> int:
         _fail("fairplay failed; lock NOT written:\n  - " + "\n  - ".join(fp["blocking"]))
     # 2. lexicon schema validation (+ stage drift).
     errors = validate_lexicon(load_lexicon(repo_root / "config/setting-pack/lexicon.yaml"))
-    drift = stage_drift((repo_root / "series/continuity/canon-core.md")
-                        .read_text(encoding="utf-8"))
+    canon = repo_root / "series/continuity/canon-core.md"
+    if not canon.is_file():
+        _fail(f"no canon-core to validate stage drift ({canon})")
+    drift = stage_drift(canon.read_text(encoding="utf-8"))
     if drift:
         errors.append(drift)
     if errors:
