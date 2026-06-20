@@ -17,6 +17,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml
 
+from scripts.penny_meta import load, parse_frontmatter, parse_yaml_blocks
+
 REPO = Path(__file__).resolve().parents[1]
 
 
@@ -44,15 +46,60 @@ def cmd_draft(book: str, chapter: str, *, repo_root=REPO) -> int:
     return 0
 
 
+def _drafted_by_set(book: str, repo_root) -> set[str]:
+    chapters = Path(repo_root) / "output" / f"book-{book}" / "chapters"
+    stamps: set[str] = set()
+    for ch in sorted(chapters.glob("ch-*.draft.md")):
+        m = parse_frontmatter(ch.read_text(encoding="utf-8")).get("drafted_by")
+        if isinstance(m, str) and m:
+            stamps.add(m)
+    return stamps
+
+
+def _final_read_path(book: str, repo_root) -> Path:
+    return Path(repo_root) / "output" / f"book-{book}" / f"book-{book}.final-read.md"
+
+
+def cmd_assemble(book: str, *, repo_root=REPO, run_config=None) -> int:
+    run_config = run_config or (Path(repo_root) / "config/run-config.md")
+    cfg = parse_yaml_blocks(load(run_config))
+    drafting = cfg.get("drafting_model")
+    final_read = cfg.get("final_read_model")
+    if not drafting or not final_read:
+        _fail("run-config missing drafting_model or final_read_model")
+    # 1. config-invariant — fails before stamps matter.
+    if final_read == drafting:
+        _fail(f"final_read_model equals drafting_model ({final_read})")
+    # 2. reality-check: the configured final reader must not be among drafters.
+    drafted = _drafted_by_set(book, repo_root)
+    if final_read in drafted:
+        _fail(f"configured final_read_model '{final_read}' appears in "
+              f"drafted_by set {sorted(drafted)}")
+    # 3. the actual final-read artifact (if present): read_by must not be a drafter.
+    fr = _final_read_path(book, repo_root)
+    if fr.is_file():
+        read_by = parse_frontmatter(fr.read_text(encoding="utf-8")).get("read_by")
+        if not read_by:
+            _fail(f"final-read artifact has no read_by stamp ({fr})")
+        if read_by in drafted:
+            _fail(f"final-read model '{read_by}' appears in "
+                  f"drafted_by set {sorted(drafted)}")
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Penny deterministic pre-flight gates.")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p_draft = sub.add_parser("draft", help="draft-time gate")
     p_draft.add_argument("book")
     p_draft.add_argument("chapter")
+    p_asm = sub.add_parser("assemble", help="cross-model routing guard")
+    p_asm.add_argument("book")
     args = ap.parse_args(argv)
     if args.cmd == "draft":
         return cmd_draft(args.book, args.chapter)
+    if args.cmd == "assemble":
+        return cmd_assemble(args.book)
     ap.error(f"unknown command {args.cmd!r}")  # pragma: no cover
 
 
