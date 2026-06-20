@@ -22,6 +22,13 @@ import yaml
 
 from scripts.penny_meta import parse_frontmatter
 from scripts.penny_verdict import write_verdict
+from scripts.penny_text import (
+    _ABBREV,
+    _is_prose_line,
+    _words,
+    segment_sentences,
+    strip_frontmatter,
+)
 
 DEFAULT_CONFIG = Path(__file__).resolve().parents[1] / "config/voice-pack/ai-tics-config.yaml"
 
@@ -40,8 +47,6 @@ def load_config(path) -> dict:
         sys.exit(f"voice_drift: config must be a mapping: {path}")
     return data
 
-
-_ABBREV = {"mr", "mrs", "ms", "dr", "st", "mt", "rev", "prof", "sr", "jr"}
 
 # Closed detection sets / patterns (the stable algorithm; values come from config).
 _PATTERNS = {
@@ -63,71 +68,6 @@ _PATTERNS = {
     "soft_qualifiers": re.compile(
         r"\b(almost|somehow|slightly|seemingly|as if|as though|a little|not quite)\b", re.I),
 }
-
-
-def strip_frontmatter(text: str) -> str:
-    """Remove a leading ---...--- block only; keep all prose. No crash if absent."""
-    lines = text.splitlines()
-    if lines and lines[0].strip() == "---":
-        for i in range(1, len(lines)):
-            if lines[i].strip() == "---":
-                return "\n".join(lines[i + 1:])
-    return text
-
-
-def _is_prose_line(line: str) -> bool:
-    s = line.strip()
-    if not s:
-        return False
-    if s.startswith("#"):                       # markdown heading
-        return False
-    if re.fullmatch(r"[-*]{3,}|(\* )+\*?", s):   # rule / scene-break (---, ***, * * *)
-        return False
-    return True
-
-
-def segment_sentences(text: str) -> list[str]:
-    """Heuristic, dependency-free sentence splitter. Known failure modes: it is a
-    heuristic over messy prose; abbreviations outside _ABBREV, nested quotes, and
-    decimal numbers can mis-split. Counts are signal, not gospel (spec §3.4)."""
-    prose = " ".join(l.strip() for l in strip_frontmatter(text).splitlines() if _is_prose_line(l))
-    sentences: list[str] = []
-    buf = ""
-    i = 0
-    quote_depth = 0
-    while i < len(prose):
-        ch = prose[i]
-        buf += ch
-        if ch in '"“”"':
-            quote_depth = 0 if quote_depth else 1
-        # Ellipsis: consume run of dots, treat as non-terminal.
-        if ch == "." and prose[i:i + 3] == "...":
-            buf += ".."
-            i += 3
-            continue
-        if ch in ".!?":
-            # Non-terminal if inside quotes.
-            if quote_depth:
-                i += 1
-                continue
-            # Abbreviation guard: last word before the period.
-            m = re.search(r"(\w+)\.$", buf)
-            if ch == "." and m and m.group(1).lower() in _ABBREV:
-                i += 1
-                continue
-            # Terminal only if followed by space + (capital or opening quote) or end.
-            rest = prose[i + 1:].lstrip()
-            if rest == "" or rest[0].isupper() or rest[0] in '"""':
-                sentences.append(buf.strip())
-                buf = ""
-        i += 1
-    if buf.strip():
-        sentences.append(buf.strip())
-    return [s for s in sentences if s]
-
-
-def _words(text: str) -> list[str]:
-    return re.findall(r"[A-Za-z']+", text)
 
 
 def analyze(text: str, cfg: dict) -> dict:
