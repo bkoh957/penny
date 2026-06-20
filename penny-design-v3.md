@@ -741,10 +741,14 @@ Penny · Book 03 · Ch 7/24 · COPY-EDIT · gate: 2 blocking · ctx 41%
 bit (`chmod +x`); workspace trust must be accepted or the line is skipped; consume
 stdin once (capture to a variable) if also piping to another consumer.
 
-**ccstatusline composition `[DECISION — resolved for MVP 1]`.** The generic half
-(model, git, cost, context bar) *could* be delegated to the `ccstatusline` CLI via
-a wrapper. **MVP 1 default: single bash script, no ccstatusline** — fewer moving
-parts. Revisit only if the richer git/cost widgets are wanted later.
+**ccstatusline composition `[DECISION — updated, ccstatusline enabled]`.** The
+generic half (model, git, cost, context bar) is delegated to the `ccstatusline` CLI:
+`penny-statusline.sh` renders the Penny segment, then appends `ccstatusline`'s
+output on a second line via `append_ccstatusline` (best-effort — silently falls back
+to the Penny segment alone if `ccstatusline` is unavailable). The append is gated by
+the `PENNY_NO_CCSTATUSLINE` env var, which the test harness sets so the statusline
+tests stay deterministic (the live `ccstatusline` line is nondeterministic). This
+supersedes the earlier "MVP 1: single bash script, no ccstatusline" default.
 
 ---
 

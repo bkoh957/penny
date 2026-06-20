@@ -239,9 +239,10 @@ the 13 books (the "Penny" effect).
 **P1.4 — Run-mode flags** (cadence, panel size, gate strictness, escalation scope)
 as `run-config.md` settings.
 
-**P1.5 — ccstatusline composition** — delegate the generic git/cost/context-bar
-widgets to ccstatusline via a wrapper, if the richer display is wanted. (MVP 1
-default: single script.)
+**P1.5 — ccstatusline composition `[DONE]`** — `penny-statusline.sh` delegates the
+generic git/cost/context-bar widgets to ccstatusline, appending its output on a
+second line (gated by `PENNY_NO_CCSTATUSLINE` for deterministic tests). See
+design §status-line.
 
 **P1.6 — Drafter self-audit (cost optimization, not a quality gate).**
 After Draft, before the developmental gate, the drafter runs a mechanical
