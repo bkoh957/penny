@@ -74,6 +74,36 @@ def _load_verdicts(reviews_dir) -> list[dict]:
     return verdicts
 
 
+def _detect_blocking_disagreement(verdicts, cfg) -> list[str]:
+    if not cfg["escalate_on_blocking_disagreement"]:
+        return []
+    by_producer = defaultdict(list)
+    for v in verdicts:
+        by_producer[v["producer"]].append(v)
+    out = []
+    for producer, group in sorted(by_producer.items()):
+        if len(group) < 2:
+            continue  # one verdict per dimension at panel_size:1 -> sleeps
+        if len({bool(v["blocking"]) for v in group}) > 1:
+            out.append(producer)
+    return out
+
+
+def _detect_score_spread(verdicts, cfg) -> list[dict]:
+    by_producer = defaultdict(list)
+    for v in verdicts:
+        if v["kind"] == "inspector" and v["score"] is not None:
+            by_producer[v["producer"]].append(v["score"])
+    out = []
+    for producer, scores in sorted(by_producer.items()):
+        if len(scores) < 2:
+            continue
+        spread = max(scores) - min(scores)
+        if spread >= cfg["score_spread_log_threshold"]:
+            out.append({"producer": producer, "spread": spread})
+    return out
+
+
 def evaluate_gate(reviews_dir, config_path) -> dict:
     cfg = _load_thresholds(config_path)
     verdicts = _load_verdicts(reviews_dir)
@@ -84,8 +114,8 @@ def evaluate_gate(reviews_dir, config_path) -> dict:
         "gate": gate,
         "blocking_count": blocking_count,
         "blocking_issues": blocking_issues,
-        "escalations": [],        # populated in Task 3
-        "score_spread_log": [],   # populated in Task 3
+        "escalations": _detect_blocking_disagreement(verdicts, cfg),
+        "score_spread_log": _detect_score_spread(verdicts, cfg),
     }
 
 

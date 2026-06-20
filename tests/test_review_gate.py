@@ -1,4 +1,3 @@
-import subprocess
 import sys
 from pathlib import Path
 
@@ -109,3 +108,46 @@ def test_main_nonzero_on_operational_error(tmp_path):
     d = _reviews(tmp_path)  # empty -> operational error
     rc = main([str(d), "--config", str(CONFIG)])
     assert rc != 0
+
+
+def test_blocking_disagreement_escalates_within_a_dimension(tmp_path):
+    d = _reviews(tmp_path)
+    # Two verdicts, SAME producer (simulates panel_size>1): one blocks, one doesn't.
+    write_verdict(out_dir=d, producer="inspector-voice", kind="inspector",
+                  target="book-01/ch-07", name="inspector-voice-a",
+                  blocking=["voice broke"], notes=[], metrics={}, evidence=[], score=2)
+    write_verdict(out_dir=d, producer="inspector-voice", kind="inspector",
+                  target="book-01/ch-07", name="inspector-voice-b",
+                  blocking=[], notes=[], metrics={}, evidence=[], score=4)
+    result = evaluate_gate(d, CONFIG)
+    assert "inspector-voice" in result["escalations"]
+
+
+def test_no_escalation_at_panel_one(tmp_path):
+    # Distinct producers (the panel_size:1 default) -> disagreement check sleeps.
+    d = _reviews(tmp_path)
+    _inspector(d, "inspector-voice", blocking=["voice broke"], score=2)
+    _inspector(d, "inspector-structure", blocking=[], score=4)
+    result = evaluate_gate(d, CONFIG)
+    assert result["escalations"] == []
+
+
+def test_score_spread_logs_within_a_dimension(tmp_path):
+    d = _reviews(tmp_path)
+    write_verdict(out_dir=d, producer="inspector-structure", kind="inspector",
+                  target="book-01/ch-07", name="inspector-structure-a",
+                  blocking=[], notes=[], metrics={}, evidence=[], score=2)
+    write_verdict(out_dir=d, producer="inspector-structure", kind="inspector",
+                  target="book-01/ch-07", name="inspector-structure-b",
+                  blocking=[], notes=[], metrics={}, evidence=[], score=5)
+    result = evaluate_gate(d, CONFIG)  # default threshold is 2; spread is 3
+    assert any(e["producer"] == "inspector-structure" and e["spread"] == 3
+               for e in result["score_spread_log"])
+
+
+def test_no_score_spread_at_panel_one(tmp_path):
+    d = _reviews(tmp_path)
+    _inspector(d, "inspector-structure", score=2)
+    _inspector(d, "inspector-voice", score=5)  # different dimensions, not a spread
+    result = evaluate_gate(d, CONFIG)
+    assert result["score_spread_log"] == []
