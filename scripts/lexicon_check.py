@@ -54,6 +54,43 @@ def current_stage(canon_core_path) -> str:
     return stage
 
 
+def validate_lexicon(terms: list[dict]) -> list[str]:
+    """Whole-lexicon required-field check. Returns one error string per offending
+    entry/field — ALL of them, never just the first. Empty list == valid."""
+    errors: list[str] = []
+    for i, entry in enumerate(terms):
+        label = entry.get("term", f"<entry #{i + 1} missing 'term'>")
+        for field in REQUIRED:
+            if field not in entry:
+                errors.append(f"{label}: missing required field '{field}'")
+        if "auto_detectable" in entry and not isinstance(entry["auto_detectable"], bool):
+            errors.append(f"{label}: auto_detectable must be true/false")
+        stage = entry.get("narration_ok_from_stage")
+        if stage is not None and stage not in STAGE_RANK:
+            errors.append(f"{label}: invalid narration_ok_from_stage {stage!r}")
+    return errors
+
+
+_PROSE_STAGE_RE = re.compile(r"\*\*(OUTSIDER|SETTLING|BELONGING)\*\*")
+
+
+def prose_stage(canon_core_text: str) -> "str | None":
+    """The first bolded stage name in the prose body, or None."""
+    m = _PROSE_STAGE_RE.search(canon_core_text)
+    return m.group(1) if m else None
+
+
+def stage_drift(canon_core_text: str) -> "str | None":
+    """A message if the canon-meta stage and the prose stage disagree, else None.
+    A missing prose stage is not drift (the machine value is authoritative)."""
+    meta = parse_canon_meta(canon_core_text).get("fluency_stage")
+    prose = prose_stage(canon_core_text)
+    if prose is not None and meta is not None and prose != meta:
+        return (f"fluency_stage drift: canon-meta says {meta!r} but prose says "
+                f"{prose!r} — reconcile (canon-meta is authoritative)")
+    return None
+
+
 def scan(text: str, terms: list[dict], stage: str) -> dict:
     """Return {'flags': [...], 'inspector_notes': [...]}. A flag fires iff the term
     is auto_detectable, word-boundary-matches in narration, and its stage outranks
@@ -81,12 +118,27 @@ def scan(text: str, terms: list[dict], stage: str) -> dict:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Lexicon fluency check (evidence-only).")
-    ap.add_argument("chapter", help="path to the chapter markdown file")
+    ap.add_argument("chapter", nargs="?", default=None,
+                    help="path to the chapter markdown file")
+    ap.add_argument("--validate", action="store_true",
+                    help="validate the whole lexicon (lock-time gate) and exit")
     ap.add_argument("--out", default=None, help="reviews dir to write lexicon-fluency.md")
     ap.add_argument("--lexicon", default=str(DEFAULT_LEXICON))
     ap.add_argument("--canon-core", default=str(DEFAULT_CANON_CORE))
     ap.add_argument("--target", default="unknown")
     args = ap.parse_args(argv)
+
+    if args.validate:
+        errors = validate_lexicon(load_lexicon(args.lexicon))
+        drift = stage_drift(Path(args.canon_core).read_text(encoding="utf-8"))
+        if drift:
+            errors.append(drift)
+        if errors:
+            sys.exit("lexicon_check --validate FAILED:\n  - " + "\n  - ".join(errors))
+        print("lexicon_check: OK (lexicon valid, no stage drift)")
+        return 0
+    if args.chapter is None:
+        ap.error("chapter is required unless --validate is given")
 
     terms = load_lexicon(args.lexicon)
     stage = current_stage(args.canon_core)
@@ -99,6 +151,9 @@ def main(argv=None) -> int:
     for n in notes:
         summary.append(f"inspector-only term (auto_detectable=false): {n['term']} "
                        f"(ok from {n['term_stage']})")
+    drift = stage_drift(Path(args.canon_core).read_text(encoding="utf-8"))
+    if drift:
+        summary.append(drift)
 
     out_dir = args.out or str(Path(args.chapter).parent)
     write_verdict(

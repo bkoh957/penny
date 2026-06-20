@@ -82,3 +82,40 @@ def test_missing_stage_hard_fails(tmp_path):
     canon.write_text("# no header\n", encoding="utf-8")
     with pytest.raises(SystemExit):
         current_stage(canon)
+
+
+from scripts.lexicon_check import validate_lexicon, prose_stage, stage_drift
+
+
+def test_validate_names_every_offender():
+    terms = [
+        {"term": "ok", "narration_ok_from_stage": "SETTLING", "auto_detectable": True},
+        {"term": "bad1", "auto_detectable": True},                    # missing stage
+        {"narration_ok_from_stage": "SETTLING", "auto_detectable": True},  # missing term
+        {"term": "bad3", "narration_ok_from_stage": "SETTLING"},      # missing auto_detectable
+        {"term": "bad4", "narration_ok_from_stage": "NOPE", "auto_detectable": True},  # bad stage
+    ]
+    errors = validate_lexicon(terms)
+    blob = " | ".join(errors)
+    assert "bad1" in blob and "bad3" in blob and "bad4" in blob
+    assert "term" in blob                       # the missing-term entry is named
+    assert len(errors) >= 4                       # every offender reported, not just first
+
+
+def test_validate_clean_lexicon_is_empty():
+    terms = [{"term": "arvo", "narration_ok_from_stage": "SETTLING", "auto_detectable": True}]
+    assert validate_lexicon(terms) == []
+
+
+def test_prose_stage_reads_bolded_stage():
+    text = "## Fluency stage\n- **OUTSIDER** (Books 1-2): narration is standard English.\n"
+    assert prose_stage(text) == "OUTSIDER"
+
+
+def test_stage_drift_detects_mismatch():
+    text = ("<!-- canon-meta: {fluency_stage: SETTLING} -->\n"
+            "## Fluency stage\n- **OUTSIDER** (Books 1-2): ...\n")
+    assert stage_drift(text) is not None
+    aligned = ("<!-- canon-meta: {fluency_stage: OUTSIDER} -->\n"
+               "## Fluency stage\n- **OUTSIDER** (Books 1-2): ...\n")
+    assert stage_drift(aligned) is None
