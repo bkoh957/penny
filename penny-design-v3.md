@@ -909,3 +909,21 @@ principle plus deterministic `/scripts` enforcement:
   `ai-tics-detection.md` (→ `voice_drift.py`), Tier-B `self-audit-checklist.md`
   (→ drafter self-audit), Tier-C `ai-prose-taste-flags.md` (→ blind inspector);
   genre-config, Book-1-tunable, cross-pointing boundaries.
+
+---
+
+## Phase 3 implementation note (2026-06-20) — cross-model = Codex via plugin
+
+This note **supersedes** the "`/scripts` adapter" cross-model wording in §7 and the
+"`/scripts` adapters" item in §13.3 build order. The cross-model alternate is
+**Codex via the official Codex plugin for Claude Code** (`openai/codex-plugin-cc`),
+invoked from command instructions (plugin/CLI), not a hand-rolled API adapter.
+**Hermes/OpenClaw drop out.** `run-config.md` keeps `final_read_model: codex`; only
+the *mechanism* changes. The `[ENGINEERING]` cross-model open item shrinks to
+"install plugin + Codex credential + Codex CLI present" — self-serve.
+
+No runtime cross-model code ships in Phase 3: the live final-read is a documented
+manual step whose only engine obligation is writing `read_by: codex` provenance;
+its call site is the Phase 6 `assemble-book` command. The deterministic guard that
+consumes that provenance (`preflight.py assemble`) is built and fixture-tested in
+Phase 3. See `docs/superpowers/specs/2026-06-20-penny-phase3-mystery-crossmodel-design.md` §7.
