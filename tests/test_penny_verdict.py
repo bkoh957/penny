@@ -1,7 +1,8 @@
+import re as _re
 from pathlib import Path
 
 from scripts.penny_meta import parse_frontmatter
-from scripts.penny_verdict import write_verdict
+from scripts.penny_verdict import write_verdict, count_blocking
 
 
 def test_writes_frontmatter_and_blocking_lines(tmp_path):
@@ -73,3 +74,31 @@ def test_evidence_rendered_as_json_lines(tmp_path):
     assert "evidence:" in text
     assert "bodily_reaction" in text
     assert "her heart pounded" in text
+
+
+def test_count_blocking_anchored_and_case_sensitive(tmp_path):
+    (tmp_path / "a.md").write_text(
+        "BLOCKING: real one\n"
+        "- not a blocker\n"
+        "blocking: lowercase not counted\n"
+        "see BLOCKING: mid-line not counted\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "b.md").write_text("BLOCKING: another\nBLOCKING: and another\n", encoding="utf-8")
+    assert count_blocking(tmp_path) == 3
+
+
+def test_count_blocking_absent_dir_is_zero(tmp_path):
+    assert count_blocking(tmp_path / "nope") == 0
+
+
+def test_count_blocking_agrees_with_real_status_line(penny_root):
+    # The status line is the OTHER implementation of the ^BLOCKING: convention.
+    # Pin them to agree by running the real script, not a transcribed grep.
+    penny_root.write_stage("book=01 chapter=07 stage=REVIEW")
+    penny_root.write_blocking("01", "07", 2)  # writes 2 BLOCKING: lines into the reviews dir
+    out = penny_root.run('{"context_window": {"used_percentage": 41.2}}')
+    rendered = int(_re.search(r"gate: (\d+) blocking", out).group(1))
+
+    reviews = penny_root.path / "output" / "book-01" / "chapters" / "ch-07.reviews"
+    assert count_blocking(reviews) == rendered == 2

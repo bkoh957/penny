@@ -23,7 +23,13 @@ and gate count). ``penny_meta.parse_frontmatter`` reads the frontmatter.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
+
+# The blocker-line convention lives HERE (the verdict-format module owns what a
+# blocker line looks like). Mirrored verbatim by penny-statusline.sh's
+# `grep '^BLOCKING:'`; agreement is pinned by a cross-consistency test.
+BLOCKING_RE = re.compile(r"^BLOCKING:", re.MULTILINE)
 
 SCHEMA = "penny-verdict/1"
 
@@ -67,3 +73,20 @@ def write_verdict(
 
     path.write_text("\n".join(lines), encoding="utf-8")
     return path
+
+
+def count_blocking(reviews_dir) -> int:
+    """Count ``^BLOCKING:`` lines across every file in ``reviews_dir`` (recursive).
+
+    Mirrors ``grep -rh '^BLOCKING:'``: reads all files, anchored + case-sensitive.
+    Returns 0 if the directory is absent.
+    """
+    root = Path(reviews_dir)
+    if not root.is_dir():
+        return 0
+    total = 0
+    for path in sorted(root.rglob("*")):
+        if path.is_file():
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            total += len(BLOCKING_RE.findall(text))
+    return total
