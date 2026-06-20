@@ -53,7 +53,16 @@ def _is_int_in_range(v, lo, hi) -> bool:
     return isinstance(v, int) and lo <= v <= hi
 
 
-def check_fairplay(ledger_path, *, culprit_by_fraction: float) -> dict:
+def _resolves(entity_id: str, repo_root: Path) -> bool:
+    """True iff the id has a home as a static identity OR a continuity entry.
+    Presence only — never reads the file's contents."""
+    static = Path(repo_root) / "series/characters" / f"{entity_id}.static.md"
+    cont = Path(repo_root) / "series/continuity/characters" / f"{entity_id}.md"
+    return static.is_file() or cont.is_file()
+
+
+def check_fairplay(ledger_path, *, culprit_by_fraction: float, repo_root=None) -> dict:
+    repo_root = Path(repo_root) if repo_root is not None else Path(__file__).resolve().parents[1]
     led = _load_ledger(ledger_path)
     blocking: list[str] = []
     notes: list[str] = []
@@ -114,11 +123,26 @@ def check_fairplay(ledger_path, *, culprit_by_fraction: float) -> dict:
     for rh in led.get("red_herrings", []):
         if rh.get("must_not_cheat") is False:
             notes.append(f"red herring {rh.get('id','?')} flagged must_not_cheat: false")
-    # culprit-id resolution: evidence-only in 2a (promoted to BLOCKING in 2b/3).
-    chars = Path(__file__).resolve().parents[1] / "series/continuity/characters"
-    if chars.is_dir() and any(chars.iterdir()):
-        if not (chars / f"{culprit}.md").is_file():
-            notes.append(f"culprit id '{culprit}' does not resolve in series/continuity/characters/ (evidence; blocking in 2b/3)")
+    # Existence resolution (BLOCKING in Phase 3): culprit, victim, and every
+    # alibi-grid suspect must have a home in series/characters/<id>.static.md or
+    # series/continuity/characters/<id>.md. Presence only — never identity fit.
+    to_resolve: list[tuple[str, str]] = [("culprit", culprit)]
+    victim = led.get("victim")
+    if isinstance(victim, str):
+        to_resolve.append(("victim", victim))
+    for a in led.get("alibi_grid", []):
+        s = a.get("suspect")
+        if isinstance(s, str):
+            to_resolve.append(("suspect", s))
+    seen: set[str] = set()
+    for role, eid in to_resolve:
+        if eid in seen:
+            continue
+        seen.add(eid)
+        if not _resolves(eid, repo_root):
+            blocking.append(
+                f"{role} id '{eid}' has no character entity in "
+                f"series/characters/ or series/continuity/characters/")
 
     metrics = {"reveal_chapter": reveal, "total_chapters": total,
                "culprit_first_appearance_chapter": appearance}
