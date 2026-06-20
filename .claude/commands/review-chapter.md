@@ -36,6 +36,15 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
      --out output/book-$book/chapters/ch-$chapter.reviews
    ```
 
+   ```bash
+   python3 scripts/lexicon_check.py output/book-$book/chapters/ch-$chapter.draft.md \
+     --out output/book-$book/chapters/ch-$chapter.reviews \
+     --target book-$book/ch-$chapter
+   ```
+
+   `lexicon_check.py` is evidence-only: it writes `lexicon-fluency.md` and never
+   blocks. `inspector-voice` weighs the evidence and makes the blocking call.
+
    Run `fairplay_check.py` ONLY when `$chapter` is the `reveal_chapter` of a locked
    `series/whodunit/book-$book.yaml` (its book-level fairness gate belongs to the
    reveal chapter):
