@@ -57,3 +57,16 @@ def test_five_distinct_producers():
             if line.strip().startswith("producer:"):
                 producers.add(line.split("producer:")[1].strip())
     assert len(producers) == 5, f"expected 5 distinct producers, got {producers}"
+
+
+COMMAND = Path(".claude/commands/review-chapter.md")
+
+
+def test_review_chapter_command_wires_the_bus():
+    assert COMMAND.is_file()
+    text = COMMAND.read_text(encoding="utf-8")
+    for inspector in INSPECTORS:
+        assert inspector in text, f"review-chapter does not dispatch {inspector}"
+    for ref in ["voice_drift.py", "fairplay_check.py", "review_gate.py",
+                "reset_reviews.py"]:
+        assert ref in text, f"review-chapter does not reference {ref}"
