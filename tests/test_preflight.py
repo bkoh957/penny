@@ -1,6 +1,75 @@
+import shutil
+
 import pytest
 
 from scripts import preflight
+
+SRC = preflight.REPO
+
+
+def _scaffold_lockable(tmp_path, *, ledger_fixture, valid_lexicon=True):
+    """Build a tmp repo able to run lock-mystery: real run-config, real canon-core,
+    a (valid or malformed) lexicon, a resolvable character corpus, and a ledger."""
+    # run-config + canon-core copied from the real repo (both valid).
+    (tmp_path / "config").mkdir(parents=True, exist_ok=True)
+    shutil.copy(SRC / "config/run-config.md", tmp_path / "config/run-config.md")
+    (tmp_path / "series/continuity").mkdir(parents=True, exist_ok=True)
+    shutil.copy(SRC / "series/continuity/canon-core.md",
+                tmp_path / "series/continuity/canon-core.md")
+    # lexicon: real (valid) or a malformed stub.
+    (tmp_path / "config/setting-pack").mkdir(parents=True, exist_ok=True)
+    if valid_lexicon:
+        shutil.copy(SRC / "config/setting-pack/lexicon.yaml",
+                    tmp_path / "config/setting-pack/lexicon.yaml")
+    else:
+        (tmp_path / "config/setting-pack/lexicon.yaml").write_text(
+            "terms:\n  - {term: jumper}\n", encoding="utf-8")  # missing required fields
+    # resolvable character corpus.
+    cc = tmp_path / "series/continuity/characters"
+    cc.mkdir(parents=True, exist_ok=True)
+    for cid in ("margaret", "thomas", "edwin-tilley"):
+        (cc / f"{cid}.md").write_text("---\nid: x\n---\n", encoding="utf-8")
+    # the proposed (unlocked) ledger.
+    wd = tmp_path / "series/whodunit"
+    wd.mkdir(parents=True, exist_ok=True)
+    shutil.copy(ledger_fixture, wd / "book-01.yaml")
+    return wd / "book-01.yaml"
+
+
+FAIR = SRC / "tests/fixtures/ledgers/fair.yaml"
+UNFAIR = SRC / "tests/fixtures/ledgers/unfair_clue_after_reveal.yaml"
+
+
+def test_lock_mystery_writes_lock_when_valid(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
+    assert preflight.lock_path("01", tmp_path).is_file()
+
+
+def test_lock_mystery_no_lock_when_fairplay_fails(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=UNFAIR, valid_lexicon=True)
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_lock_mystery("01", repo_root=tmp_path)
+    assert "fairplay failed" in str(e.value)
+    assert not preflight.lock_path("01", tmp_path).is_file()
+
+
+def test_lock_mystery_no_lock_when_lexicon_invalid(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=False)
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_lock_mystery("01", repo_root=tmp_path)
+    assert "lexicon" in str(e.value)
+    assert not preflight.lock_path("01", tmp_path).is_file()
+
+
+def test_lock_mystery_no_lock_when_culprit_unresolvable(tmp_path):
+    led = _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    # remove margaret's entity so existence resolution blocks.
+    (tmp_path / "series/continuity/characters/margaret.md").unlink()
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_lock_mystery("01", repo_root=tmp_path)
+    assert "culprit id 'margaret'" in str(e.value)
+    assert not preflight.lock_path("01", tmp_path).is_file()
 
 
 def _make_book(root, book="01", *, populated=True, locked=True):

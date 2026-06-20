@@ -11,12 +11,15 @@ from __future__ import annotations
 
 import argparse
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml
 
+from scripts.fairplay_check import check_fairplay, load_fraction
+from scripts.lexicon_check import load_lexicon, stage_drift, validate_lexicon
 from scripts.penny_meta import load, parse_frontmatter, parse_yaml_blocks
 
 REPO = Path(__file__).resolve().parents[1]
@@ -87,6 +90,36 @@ def cmd_assemble(book: str, *, repo_root=REPO, run_config=None) -> int:
     return 0
 
 
+def cmd_lock_mystery(book: str, *, repo_root=REPO, run_config=None) -> int:
+    repo_root = Path(repo_root)
+    run_config = run_config or (repo_root / "config/run-config.md")
+    led = ledger_path(book, repo_root)
+    if not led.is_file():
+        _fail(f"no ledger to lock for book {book} ({led})")
+    # 1. fairplay: numeric fairness + character-id existence (BLOCKING gate).
+    fraction = load_fraction(run_config)
+    fp = check_fairplay(led, culprit_by_fraction=fraction, repo_root=repo_root)
+    if fp["blocking"]:
+        _fail("fairplay failed; lock NOT written:\n  - " + "\n  - ".join(fp["blocking"]))
+    # 2. lexicon schema validation (+ stage drift).
+    errors = validate_lexicon(load_lexicon(repo_root / "config/setting-pack/lexicon.yaml"))
+    drift = stage_drift((repo_root / "series/continuity/canon-core.md")
+                        .read_text(encoding="utf-8"))
+    if drift:
+        errors.append(drift)
+    if errors:
+        _fail("lexicon --validate failed; lock NOT written:\n  - " + "\n  - ".join(errors))
+    # 3. both passed — mint the certificate (the LAST write).
+    lp = lock_path(book, repo_root)
+    lp.parent.mkdir(parents=True, exist_ok=True)
+    lp.write_text(
+        f"book: {book}\nvalidated: fairplay+lexicon\n"
+        f"locked_at: {datetime.now(timezone.utc).isoformat()}\n",
+        encoding="utf-8",
+    )
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Penny deterministic pre-flight gates.")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -95,11 +128,15 @@ def main(argv=None) -> int:
     p_draft.add_argument("chapter")
     p_asm = sub.add_parser("assemble", help="cross-model routing guard")
     p_asm.add_argument("book")
+    p_lock = sub.add_parser("lock-mystery", help="validate + write the lock (last)")
+    p_lock.add_argument("book")
     args = ap.parse_args(argv)
     if args.cmd == "draft":
         return cmd_draft(args.book, args.chapter)
     if args.cmd == "assemble":
         return cmd_assemble(args.book)
+    if args.cmd == "lock-mystery":
+        return cmd_lock_mystery(args.book)
     ap.error(f"unknown command {args.cmd!r}")  # pragma: no cover
 
 
