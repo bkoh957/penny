@@ -9,6 +9,16 @@ Manual single-chapter draft. Phase 1 path: assemble context → dispatch the dra
 
 ## Steps
 
+0. **Pre-flight gate (Phase 3):** the mystery must be validated and locked before
+   any chapter is drafted. Hard-fail aborts before context assembly:
+
+   ```bash
+   python3 scripts/preflight.py draft $1 $2
+   ```
+
+   A non-zero exit means the book's mystery is absent, unpopulated, or unlocked —
+   run `/plan-mystery $1` first. Do not proceed on failure.
+
 1. **Parse args:** `book=$1` (e.g. `01`), `chapter=$2` (e.g. `01`).
 
 2. **Write the harness state marker** so the status bar reflects position
