@@ -6,6 +6,7 @@ PyYAML dependency in the deterministic ``/scripts`` layer.
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 
@@ -86,9 +87,7 @@ def load(path: str | Path) -> str:
     return Path(path).read_text(encoding="utf-8")
 
 
-import re as _re
-
-_CANON_META_RE = _re.compile(r"<!--\s*canon-meta:\s*\{(.*?)\}\s*-->", _re.DOTALL)
+_CANON_META_RE = re.compile(r"<!--\s*canon-meta:\s*\{(.*?)\}\s*-->", re.DOTALL)
 
 
 def parse_canon_meta(text: str) -> dict:

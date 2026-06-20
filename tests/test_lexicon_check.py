@@ -119,3 +119,22 @@ def test_stage_drift_detects_mismatch():
     aligned = ("<!-- canon-meta: {fluency_stage: OUTSIDER} -->\n"
                "## Fluency stage\n- **OUTSIDER** (Books 1-2): ...\n")
     assert stage_drift(aligned) is None
+
+
+def test_main_fails_loud_on_malformed_lexicon(tmp_path):
+    """Per-chapter path must exit with a clear message when a lexicon entry is missing
+    a required field (belt-and-suspenders, Spec §5.1)."""
+    from scripts.lexicon_check import main
+    lexicon = tmp_path / "lex.yaml"
+    lexicon.write_text(
+        "terms:\n"
+        "  - term: arvo\n    auto_detectable: true\n",  # missing narration_ok_from_stage
+        encoding="utf-8")
+    canon = tmp_path / "canon.md"
+    canon.write_text("<!-- canon-meta: {fluency_stage: OUTSIDER} -->\n", encoding="utf-8")
+    chap = tmp_path / "ch.md"
+    chap.write_text("It was a slow arvo.\n", encoding="utf-8")
+    out = tmp_path / "reviews"
+    with pytest.raises(SystemExit):
+        main([str(chap), "--out", str(out), "--lexicon", str(lexicon),
+              "--canon-core", str(canon), "--target", "book-01/ch-01"])

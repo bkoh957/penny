@@ -141,6 +141,9 @@ def main(argv=None) -> int:
         ap.error("chapter is required unless --validate is given")
 
     terms = load_lexicon(args.lexicon)
+    errors = validate_lexicon(terms)
+    if errors:
+        sys.exit("lexicon_check: invalid lexicon:\n  - " + "\n  - ".join(errors))
     stage = current_stage(args.canon_core)
     text = Path(args.chapter).read_text(encoding="utf-8")
     result = scan(text, terms, stage)
