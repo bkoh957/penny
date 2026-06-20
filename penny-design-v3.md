@@ -821,12 +821,27 @@ transition happening on purpose, not by hope.
    `ledger_approval`; begin accumulating the style sheet. *(Self-audit `[P1]`
    + Tier-B `self-audit-checklist.md` is a fast-follow here, measured by
    revision-loop reduction.)*
+   **↪ Demotion dependency** (spec `2026-06-20-penny-canon-core-demotion-design.md`,
+   §7.1): when designing the ledger-updater, it must also write a `last_referenced`
+   chapter marker per `canon-core` section — same post-gate write point as thread
+   `last_advanced_chapter`. This is the precision signal the Phase-8 demotion detector
+   consumes; cheap to add here, expensive to retrofit later.
 5. **Beta layer** — define personas + protocol; reaction reports.
 6. **Book loop** — commands run chapter-by-chapter across an outline; book-level
    showrunner approval; standalone-vs-arc check. **← MVP 1 endpoint: finished,
    cross-model-reviewed manuscript.**
+   **↪ Demotion dependency** (demotion spec §7.1): the per-book cadence here is the
+   *hook* the Phase-8 demotion review hangs on — a no-op until the manuscript spans
+   enough books for a fact to go cold, but reserve the invocation point.
 7. **`[POST-MVP1]` Format + ship** — EPUB compile + EPUB proof agent.
 8. **Series scale** — arc-ledger across all 13 with cross-book reviewers.
+   **↪ Canon-core demotion lands here** (spec `2026-06-20-penny-canon-core-demotion-design.md`):
+   the detector + executor + reachability assert. Coldness is a cross-book property
+   (cannot fire on Book 1), so the machinery's natural home is series scale, alongside
+   the cross-book reviewers it resembles. The cheap *data seed* (the `canon-meta`
+   section-header contract + hand-authored `active_window`) should already exist by
+   now — adopt it opportunistically the next time `canon-core` structure is touched,
+   since `active_window` is only capturable at promotion time.
 
 ---
 
