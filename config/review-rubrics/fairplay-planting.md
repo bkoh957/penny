@@ -1,0 +1,40 @@
+# Rubric: Fair-Play Prose-Planting — Tier-1 Blind Inspector
+
+**Layer:** `/config/review-rubrics/` · consumed by `inspector-fairplay` (design §6).
+**Posture:** judgment of the PAGE, not the plan. `fairplay_check.py` (Tier-3) already
+verified the schedule is fair; you verify the scheduled clues actually appear in this
+chapter's prose, fairly.
+
+**Inputs (fixed contract, §6):** `{ text, this rubric, ledger_slice }`. The slice
+carries this chapter's clue-planting obligations (the per-chapter ledger slice, §5a) —
+never the sealed solution. No drafting history.
+
+**Output (fixed contract, §6):** `{ score 1-5, violations[], blocking_issues[],
+evidence[], reviewed_by }`, `producer: inspector-fairplay`, `kind: inspector`.
+
+## What you are judging
+
+1. **Presence.** Each clue this chapter is obligated to plant is actually present in
+   the prose. A scheduled-but-absent clue is the core failure. Cite the obligation and
+   quote the planting line (or note its absence).
+2. **Fairness of the planting.** The clue is placed so an attentive reader *could*
+   catch it — not buried in a way that cheats, not flagged so hard it gives the game
+   away. Judge "fairly available," earned vs. cheated.
+3. **No retroactive clue.** The chapter does not smuggle in a "clue" that contradicts
+   or post-dates the schedule.
+
+Score 1-5 on planting fairness. Mark **blocking** when an obligated clue is absent or
+planted in a way that cheats the reader.
+
+## Thresholds (seeds, tunable during Book 1)
+
+- **Score 5:** every obligated clue present and fairly available.
+- **Score 3:** present but clumsily planted (too buried or too loud).
+- **Score 1:** an obligated clue is missing from the page.
+- **Blocking:** any obligated clue absent from the prose, or planted unfairly.
+
+## Boundary with other tiers (do not duplicate)
+
+- The mystery PLAN's internal fairness (schedule, culprit floor, catchable alibi) is
+  `fairplay_check.py` — do not re-derive it; you only check the page.
+- Continuity contradictions are `inspector-continuity`.
