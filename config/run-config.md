@@ -30,6 +30,7 @@ beta_consensus_k: 2                # ≥K-of-M beta models must flag a put-down 
 gate_mode:        strict           # strict | fast
 escalation_scope: minor-auto       # minor-auto | log-all
 ledger_approval:  review           # review (early/tuning) | auto (once clean)
+book_approval:    review           # review (pause for showrunner) | auto
 ```
 
 ## Escalation thresholds (design §6)

@@ -19,6 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml
 
+from scripts import assemble_book, revision_priority
 from scripts.fairplay_check import check_fairplay, load_fraction
 from scripts.lexicon_check import load_lexicon, stage_drift, validate_lexicon
 from scripts.penny_meta import load, parse_frontmatter, parse_yaml_blocks
@@ -36,6 +37,10 @@ def ledger_path(book: str, repo_root) -> Path:
 
 def lock_path(book: str, repo_root) -> Path:
     return Path(repo_root) / ".penny/locks" / f"book-{book}.mystery.lock"
+
+
+def approved_path(book: str, repo_root) -> Path:
+    return Path(repo_root) / ".penny/locks" / f"book-{book}.approved"
 
 
 def gate_path(book: str, chapter: str, repo_root) -> Path:
@@ -107,6 +112,33 @@ def cmd_assemble(book: str, *, repo_root=REPO, run_config=None) -> int:
     return 0
 
 
+def cmd_approve_book(book: str, *, repo_root=REPO) -> int:
+    man = assemble_book.manuscript_path(book, repo_root)
+    if not man.is_file():
+        _fail(f"no manuscript for book {book} ({man}) — run /assemble-book first")
+    # final-read shape (reuses the validator; raises assemble_book: on a bad shape).
+    assemble_book.validate_final_read(book, repo_root=repo_root)
+    read_by = parse_frontmatter(
+        assemble_book.final_read_path(book, repo_root).read_text(encoding="utf-8")
+    ).get("read_by")
+    drafted = parse_frontmatter(man.read_text(encoding="utf-8")).get("drafted_by")
+    drafted = set(drafted) if isinstance(drafted, list) else {drafted} if drafted else set()
+    if read_by in drafted:
+        _fail(f"final-read model '{read_by}' appears in drafted_by set {sorted(drafted)}")
+    report = revision_priority.report_path(book, repo_root)
+    if not report.is_file():
+        _fail(f"no revision-priority report for book {book} ({report})")
+    # all preconditions green — mint the cert (the LAST write).
+    cert = approved_path(book, repo_root)
+    cert.parent.mkdir(parents=True, exist_ok=True)
+    cert.write_text(
+        f"book: {book}\napproved: final-read+revision-priority\n"
+        f"approved_at: {datetime.now(timezone.utc).isoformat()}\n",
+        encoding="utf-8",
+    )
+    return 0
+
+
 def cmd_lock_mystery(book: str, *, repo_root=REPO, run_config=None) -> int:
     repo_root = Path(repo_root)
     run_config = run_config or (repo_root / "config/run-config.md")
@@ -147,6 +179,8 @@ def main(argv=None) -> int:
     p_draft.add_argument("chapter")
     p_asm = sub.add_parser("assemble", help="cross-model routing guard")
     p_asm.add_argument("book")
+    p_app = sub.add_parser("approve-book", help="precondition gate + mint .approved cert")
+    p_app.add_argument("book")
     p_lock = sub.add_parser("lock-mystery", help="validate + write the lock (last)")
     p_lock.add_argument("book")
     p_fin = sub.add_parser("finalize", help="post-gate guard: chapter must have PASSed")
@@ -157,6 +191,8 @@ def main(argv=None) -> int:
         return cmd_draft(args.book, args.chapter)
     if args.cmd == "assemble":
         return cmd_assemble(args.book)
+    if args.cmd == "approve-book":
+        return cmd_approve_book(args.book)
     if args.cmd == "lock-mystery":
         return cmd_lock_mystery(args.book)
     if args.cmd == "finalize":

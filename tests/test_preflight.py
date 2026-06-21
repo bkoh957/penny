@@ -205,3 +205,68 @@ def test_finalize_blocks_when_gate_missing(tmp_path):
     with pytest.raises(SystemExit) as e:
         preflight.cmd_finalize("01", "07", repo_root=tmp_path)
     assert "no gate" in str(e.value)
+
+
+# ---------------------------------------------------------------------------
+# approve-book tests
+# ---------------------------------------------------------------------------
+from scripts import assemble_book, revision_priority
+
+
+def _approvable(tmp_path, *, read_by="codex", standalone="yes",
+                with_report=True, with_manuscript=True):
+    """Build a book-99 tree that approve-book should accept."""
+    book = tmp_path / "output" / "book-99"
+    (book / "chapters").mkdir(parents=True, exist_ok=True)
+    if with_manuscript:
+        assemble_book.manuscript_path("99", tmp_path).write_text(
+            "---\nschema: penny-manuscript/1\nbook: 99\nchapters: 1\n"
+            "drafted_by: [claude-opus]\nassembled_at: 2026-06-21T00:00:00+00:00\n---\n\n"
+            "# Chapter 1\n\nprose\n", encoding="utf-8")
+    assemble_book.final_read_path("99", tmp_path).write_text(
+        f"---\nschema: penny-final-read/1\nread_by: {read_by}\n"
+        f"standalone: {standalone}\nmystery_resolved: yes\nthread_left_open: yes\n---\n"
+        "## Holistic verdict\nGood.\n", encoding="utf-8")
+    if with_report:
+        revision_priority.report_path("99", tmp_path).parent.mkdir(parents=True, exist_ok=True)
+        revision_priority.report_path("99", tmp_path).write_text(
+            "---\nschema: penny-revision-priority/1\nescalations: 0\n---\n", encoding="utf-8")
+
+
+def test_approve_book_mints_cert_when_green(tmp_path):
+    _approvable(tmp_path)
+    assert preflight.cmd_approve_book("99", repo_root=tmp_path) == 0
+    cert = tmp_path / ".penny/locks/book-99.approved"
+    assert cert.is_file()
+
+
+def test_approve_book_fails_without_manuscript(tmp_path):
+    _approvable(tmp_path, with_manuscript=False)
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_approve_book("99", repo_root=tmp_path)
+    assert "no manuscript" in str(e.value)
+    assert not (tmp_path / ".penny/locks/book-99.approved").exists()
+
+
+def test_approve_book_fails_on_hedged_final_read(tmp_path):
+    _approvable(tmp_path, standalone="mostly")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_approve_book("99", repo_root=tmp_path)
+    assert "standalone" in str(e.value)
+    assert not (tmp_path / ".penny/locks/book-99.approved").exists()
+
+
+def test_approve_book_fails_when_read_by_drafted(tmp_path):
+    _approvable(tmp_path, read_by="claude-opus")     # drafted_by is [claude-opus]
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_approve_book("99", repo_root=tmp_path)
+    assert "appears in drafted_by" in str(e.value)
+    assert not (tmp_path / ".penny/locks/book-99.approved").exists()
+
+
+def test_approve_book_fails_without_report(tmp_path):
+    _approvable(tmp_path, with_report=False)
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_approve_book("99", repo_root=tmp_path)
+    assert "revision-priority" in str(e.value)
+    assert not (tmp_path / ".penny/locks/book-99.approved").exists()
