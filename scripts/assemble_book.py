@@ -104,14 +104,37 @@ def cmd_assemble(book: str, *, repo_root=REPO, now=None) -> int:
     return 0
 
 
+def cmd_seal(book: str, *, repo_root=REPO) -> int:
+    man = manuscript_path(book, repo_root)
+    if not man.is_file():
+        _fail(f"no manuscript to seal for book {book} ({man}) — run assemble first")
+    fr = final_read_path(book, repo_root)
+    if not fr.is_file():
+        _fail(f"no final-read artifact for book {book} ({fr}) — run the final read first")
+    read_by = parse_frontmatter(fr.read_text(encoding="utf-8")).get("read_by")
+    if not read_by:
+        _fail(f"final-read artifact has no read_by stamp ({fr})")
+    man_text = man.read_text(encoding="utf-8")
+    drafted = _stamps(parse_frontmatter(man_text).get("drafted_by"))
+    if read_by in drafted:
+        _fail(f"read_by '{read_by}' appears in drafted_by set {sorted(drafted)}")
+    man.write_text(write_frontmatter_field(man_text, "read_by", read_by),
+                   encoding="utf-8")
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Penny per-book manuscript producer.")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p_asm = sub.add_parser("assemble", help="build the manuscript from ch-*.final.md")
     p_asm.add_argument("book")
+    p_seal = sub.add_parser("seal", help="stamp read_by from the final read")
+    p_seal.add_argument("book")
     args = ap.parse_args(argv)
     if args.cmd == "assemble":
         return cmd_assemble(args.book)
+    if args.cmd == "seal":
+        return cmd_seal(args.book)
     ap.error(f"unknown command {args.cmd!r}")  # pragma: no cover
 
 

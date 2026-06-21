@@ -80,3 +80,45 @@ def test_assemble_fails_on_outline_count_mismatch(tmp_path):
     with pytest.raises(SystemExit) as e:
         assemble_book.cmd_assemble("99", repo_root=tmp_path, now=FIXED_NOW)
     assert "outline declares 2" in str(e.value)
+
+
+def _seal_setup(tmp_path, read_by="codex"):
+    chapters = _book_tree(tmp_path)
+    _make_chapter(chapters, 1, "claude-opus", "one")
+    assemble_book.cmd_assemble("99", repo_root=tmp_path, now=FIXED_NOW)
+    assemble_book.final_read_path("99", tmp_path).write_text(
+        f"---\nschema: penny-final-read/1\nread_by: {read_by}\n"
+        f"standalone: yes\nmystery_resolved: yes\nthread_left_open: yes\n---\n"
+        "## Holistic verdict\nGood.\n", encoding="utf-8")
+
+
+def test_seal_stamps_read_by(tmp_path):
+    _seal_setup(tmp_path, read_by="codex")
+    assert assemble_book.cmd_seal("99", repo_root=tmp_path) == 0
+    fm = penny_meta.parse_frontmatter(
+        assemble_book.manuscript_path("99", tmp_path).read_text(encoding="utf-8"))
+    assert fm["read_by"] == "codex"
+
+
+def test_seal_is_idempotent(tmp_path):
+    _seal_setup(tmp_path, read_by="codex")
+    assert assemble_book.cmd_seal("99", repo_root=tmp_path) == 0
+    first = assemble_book.manuscript_path("99", tmp_path).read_text(encoding="utf-8")
+    assert assemble_book.cmd_seal("99", repo_root=tmp_path) == 0     # re-seal = no-op
+    assert assemble_book.manuscript_path("99", tmp_path).read_text(encoding="utf-8") == first
+
+
+def test_seal_rejects_read_by_in_drafted_by(tmp_path):
+    _seal_setup(tmp_path, read_by="claude-opus")     # claude-opus drafted ch-01
+    with pytest.raises(SystemExit) as e:
+        assemble_book.cmd_seal("99", repo_root=tmp_path)
+    assert "appears in drafted_by" in str(e.value)
+
+
+def test_seal_fails_when_final_read_absent(tmp_path):
+    chapters = _book_tree(tmp_path)
+    _make_chapter(chapters, 1, "claude-opus", "one")
+    assemble_book.cmd_assemble("99", repo_root=tmp_path, now=FIXED_NOW)
+    with pytest.raises(SystemExit) as e:
+        assemble_book.cmd_seal("99", repo_root=tmp_path)
+    assert "no final-read artifact" in str(e.value)
