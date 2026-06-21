@@ -12,6 +12,7 @@ report). See docs/superpowers/specs/2026-06-21-penny-phase5-beta-layer-design.md
 from __future__ import annotations
 
 import json
+import statistics
 from pathlib import Path
 
 SCHEMA = "penny-beta/1"
@@ -88,4 +89,71 @@ def write_raw_reading(out_dir, reading) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"{reading['persona']}.{reading['model']}.raw.md"
     path.write_text(serialize_raw_reading(reading), encoding="utf-8")
+    return path
+
+
+def collapse_persona(readings, *, k, panel_size):
+    """Collapse one persona's per-model readings into a converged report.
+
+    The within-persona consensus axis is the MODEL (spec §5.2). No cross-persona
+    aggregation happens here — that is Phase 6.
+    """
+    _require(readings, "no readings to collapse")
+    personas = {r["persona"] for r in readings}
+    _require(len(personas) == 1, f"mixed personas in collapse: {sorted(personas)}")
+    persona = next(iter(personas))
+    m = len(readings)
+
+    by_chapter: dict[int, list] = {}
+    for r in readings:
+        for pt in r["engagement_curve"]:
+            by_chapter.setdefault(pt["chapter"], []).append(pt["score"])
+    curve = []
+    for ch in sorted(by_chapter):
+        scores = by_chapter[ch]
+        curve.append({"chapter": ch,
+                      "central": statistics.median(scores),
+                      "band": [min(scores), max(scores)]})
+
+    counts: dict[int, int] = {}
+    for r in readings:
+        for ch in set(r["put_down_points"]):
+            counts[ch] = counts.get(ch, 0) + 1
+    consensus = sorted(ch for ch, c in counts.items() if c >= k)
+    logged = sorted(ch for ch, c in counts.items() if c < k)
+
+    tally = {"yes": 0, "no": 0, "n/a": 0}
+    for r in readings:
+        tally[r["would_buy_next"]["verdict"]] += 1
+    denominator = m - tally["n/a"]
+
+    distinct_models = sorted({r["model"] for r in readings})
+    return {
+        "schema": SCHEMA,
+        "persona": persona,
+        "driver": DRIVER_BY_PERSONA[persona],
+        "panel": {"m": m, "k": k, "panel_size": panel_size,
+                  "distinct_models": distinct_models,
+                  "degraded": len(distinct_models) < panel_size},
+        "engagement_curve": curve,
+        "put_down_points": {"consensus": consensus, "logged": logged},
+        "would_buy_next": {"tally": tally, "denominator": denominator},
+    }
+
+
+def serialize_converged(report) -> str:
+    return ("---\n"
+            f"schema: {report['schema']}\n"
+            f"persona: {report['persona']}\n"
+            f"driver: {report['driver']}\n"
+            "kind: beta-converged\n"
+            "---\n"
+            + json.dumps(report, sort_keys=True, indent=2) + "\n")
+
+
+def write_converged(out_dir, report) -> Path:
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"{report['persona']}.converged.md"
+    path.write_text(serialize_converged(report), encoding="utf-8")
     return path

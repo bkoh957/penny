@@ -82,3 +82,63 @@ def test_serialize_round_trips_payload(tmp_path):
     assert "schema: penny-beta/1" in text
     payload = json.loads(text.split("---\n", 2)[2])
     assert payload["put_down_points"] == [2]
+
+
+def _reading(persona, model, curve, put_downs, verdict):
+    return br.build_raw_reading(
+        persona=persona, model=model, engagement_curve=_curve(*curve),
+        put_down_points=put_downs, whodunit_guess={"name": None, "chapter": None},
+        confusion_points=[], emotional_beats=[], would_buy_verdict=verdict)
+
+
+def test_engagement_curve_central_and_band():
+    readings = [
+        _reading("impatient-skimmer", "codex", [(1, 5), (2, 2)], [], "no"),
+        _reading("impatient-skimmer", "hermes", [(1, 3), (2, 2)], [], "no"),
+        _reading("impatient-skimmer", "openclaw", [(1, 4), (2, 1)], [], "no"),
+    ]
+    rep = br.collapse_persona(readings, k=2, panel_size=3)
+    ch1 = next(c for c in rep["engagement_curve"] if c["chapter"] == 1)
+    assert ch1["central"] == 4          # median(5,3,4)
+    assert ch1["band"] == [3, 5]
+
+
+def test_put_down_consensus_k_of_m_drops_singletons():
+    readings = [
+        _reading("impatient-skimmer", "codex", [(1, 2)], [9], "no"),
+        _reading("impatient-skimmer", "hermes", [(1, 2)], [9], "no"),
+        _reading("impatient-skimmer", "openclaw", [(1, 2)], [4], "no"),
+    ]
+    rep = br.collapse_persona(readings, k=2, panel_size=3)
+    assert rep["put_down_points"]["consensus"] == [9]   # 2 of 3
+    assert rep["put_down_points"]["logged"] == [4]      # 1 of 3
+
+
+def test_na_excluded_from_denominator():
+    readings = [
+        _reading("romance-reader", "codex", [(1, 3)], [], "n/a"),
+        _reading("romance-reader", "hermes", [(1, 3)], [], "n/a"),
+        _reading("romance-reader", "openclaw", [(1, 3)], [], "no"),
+    ]
+    rep = br.collapse_persona(readings, k=2, panel_size=3)
+    assert rep["would_buy_next"]["tally"]["n/a"] == 2
+    assert rep["would_buy_next"]["denominator"] == 1    # 3 - 2 n/a
+
+
+def test_degraded_panel_flagged():
+    readings = [
+        _reading("puzzle-hawk", "codex", [(1, 3)], [], "yes"),
+        _reading("puzzle-hawk", "codex", [(1, 4)], [], "yes"),  # repeat-sampled
+    ]
+    rep = br.collapse_persona(readings, k=2, panel_size=3)
+    assert rep["panel"]["degraded"] is True
+    assert rep["panel"]["distinct_models"] == ["codex"]
+
+
+def test_mixed_personas_rejected():
+    readings = [
+        _reading("puzzle-hawk", "codex", [(1, 3)], [], "yes"),
+        _reading("cozy-loyalist", "hermes", [(1, 3)], [], "yes"),
+    ]
+    with pytest.raises(ValueError):
+        br.collapse_persona(readings, k=2, panel_size=3)
