@@ -39,3 +39,20 @@ def test_newcomer_states_frozen_lexicon_cold_invariant():
 def test_romance_authorizes_na_verdict():
     text = (PERSONA_DIR / "romance-reader.md").read_text(encoding="utf-8").lower()
     assert "n/a" in text and "romantic thread" in text
+
+
+def test_beta_protocol_documents_contract_and_phase6_seam():
+    text = (ROOT / "config/beta-readers/beta-protocol.md").read_text(encoding="utf-8").lower()
+    # all §10 contract fields named
+    for field in ["engagement_curve", "put_down_points", "whodunit_guess",
+                  "confusion_points", "emotional_beats", "would_buy_next"]:
+        assert field in text, field
+    # the three serialization rules
+    assert "n/a" in text and "first-class" in text          # rule 2
+    assert "stamp" in text                                   # rule 3 (stamped driver)
+    assert "{value, lens}" in text or "value, lens" in text  # rule 1
+    # the seam
+    assert "phase 6" in text
+    assert "cross-persona" in text
+    # non-blocking
+    assert "non-blocking" in text or "never block" in text
