@@ -37,6 +37,8 @@ ledger_approval:  review           # review (early/tuning) | auto (once clean)
 ```yaml
 escalate_on_blocking_disagreement: true   # HARD — holds gate, escalates now
 score_spread_log_threshold: 2             # SOFT — logged only; tunable Book 1
+revision_escalate_personas: 2             # >=N distinct personas flag a put-down at a chapter -> escalate; tunable
+would_buy_escalate_count:   3             # >=N personas say "would not buy next" -> escalate; tunable
 ```
 
 ## Structure inspector (design §8)
