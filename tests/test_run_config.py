@@ -6,6 +6,7 @@ REQUIRED_KEYS = {
     "final_read_model", "beta_models",
     # run-mode flags (design §12)
     "cadence", "panel_size", "gate_mode", "escalation_scope", "ledger_approval",
+    "beta_consensus_k",
     # escalation thresholds (design §6)
     "escalate_on_blocking_disagreement", "score_spread_log_threshold",
     # structure inspector (design §8)

@@ -72,3 +72,16 @@ def test_beta_reader_agent_is_blind_and_well_formed():
     assert "react" in text
     assert "yes" in text and "no" in text and "n/a" in text
     assert "beta_report.py" in text
+
+
+def test_beta_read_command_fans_out_and_is_non_blocking():
+    text = (ROOT / ".claude/commands/beta-read.md").read_text(encoding="utf-8").lower()
+    assert "beta_models" in text and "panel_size" in text and "beta_consensus_k" in text
+    assert "beta-reader" in text                 # dispatches the agent
+    assert "collapse_persona" in text            # per-persona collapse step
+    assert "reachable" in text                   # reachability degradation handling
+    # non-blocking guarantees (global constraint)
+    assert "current-stage" in text and "not" in text
+    assert "blocking" in text
+    # input-agnostic: takes a path, not a book number
+    assert "<path>" in text or "$1" in text

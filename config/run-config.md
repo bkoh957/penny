@@ -24,6 +24,9 @@ beta_models:      [codex, hermes, openclaw]
 ```yaml
 cadence:          chapter          # chapter | book-milestone
 panel_size:       1                # 1 (fast) | 3 (consensus)
+beta_consensus_k: 2                # ≥K-of-M beta models must flag a put-down for
+                                   # per-persona consensus; default = majority of
+                                   # panel_size (book-level panel_size: 3 → 2); tunable
 gate_mode:        strict           # strict | fast
 escalation_scope: minor-auto       # minor-auto | log-all
 ledger_approval:  review           # review (early/tuning) | auto (once clean)
