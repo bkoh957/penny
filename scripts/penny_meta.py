@@ -203,3 +203,15 @@ def write_frontmatter_field(text: str, field: str, value) -> str:
             return "".join(lines)
     lines.insert(close, f"{field}: {val}\n")
     return "".join(lines)
+
+
+def strip_frontmatter(text: str) -> str:
+    """Return the body after a leading ``---`` frontmatter block, with leading
+    blank lines removed. If there is no frontmatter block, return ``text`` as-is."""
+    lines = text.splitlines(keepends=True)
+    if not lines or lines[0].strip() != "---":
+        return text
+    for i in range(1, len(lines)):
+        if lines[i].strip() == "---":
+            return "".join(lines[i + 1:]).lstrip("\n")
+    return text
