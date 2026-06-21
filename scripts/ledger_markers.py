@@ -14,7 +14,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.penny_meta import parse_canon_sections, write_canon_section_field
+from scripts.penny_meta import (
+    parse_canon_sections,
+    write_canon_section_field,
+    write_frontmatter_field,
+)
 
 
 def referenced_section_ids(canon_text: str, brief_text: str, chapter_text: str) -> list[str]:
@@ -37,3 +41,43 @@ def stamp_last_referenced(canon_text: str, chapter: int, brief_text: str,
     for sec_id in referenced_section_ids(canon_text, brief_text, chapter_text):
         text = write_canon_section_field(text, sec_id, "last_referenced", int(chapter))
     return text
+
+
+def stamp_thread_advanced(thread_text: str, chapter: int) -> str:
+    """Return thread_text with ``last_advanced_chapter=chapter`` in its frontmatter."""
+    return write_frontmatter_field(thread_text, "last_advanced_chapter", int(chapter))
+
+
+def main(argv=None) -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description="Penny post-gate recency markers.")
+    ap.add_argument("book")
+    ap.add_argument("chapter")
+    ap.add_argument("--canon", required=True)
+    ap.add_argument("--brief", required=True)
+    ap.add_argument("--text", required=True)
+    ap.add_argument("--thread-advanced", action="append", default=[],
+                    help="thread file path the updater flagged advanced (repeatable)")
+    args = ap.parse_args(argv)
+    ch = int(args.chapter)
+
+    canon_p = Path(args.canon)
+    canon_p.write_text(
+        stamp_last_referenced(
+            canon_p.read_text(encoding="utf-8"), ch,
+            Path(args.brief).read_text(encoding="utf-8"),
+            Path(args.text).read_text(encoding="utf-8"),
+        ),
+        encoding="utf-8",
+    )
+    for tp in args.thread_advanced:
+        p = Path(tp)
+        p.write_text(stamp_thread_advanced(p.read_text(encoding="utf-8"), ch),
+                     encoding="utf-8")
+    print(f"markers: canon last_referenced<-{ch}; "
+          f"{len(args.thread_advanced)} thread(s) advanced<-{ch}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

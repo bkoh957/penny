@@ -42,3 +42,37 @@ def test_stamp_is_idempotent():
 def test_stamp_leaves_body_bytes_intact():
     out = lm.stamp_last_referenced(CANON, 7, BRIEF_REFS, "prose")
     assert "- Cora." in out and "- Book 01." in out
+
+
+THREAD = "---\nid: the-inheritance\ntype: thread\nlinks: [the-bluff]\n---\n# Thread\n- Status: OPEN.\n"
+
+
+def test_stamp_thread_advanced_sets_frontmatter():
+    out = lm.stamp_thread_advanced(THREAD, 4)
+    assert "last_advanced_chapter: 4" in out
+    assert "- Status: OPEN." in out                 # body intact
+
+
+def test_stamp_thread_advanced_idempotent():
+    once = lm.stamp_thread_advanced(THREAD, 4)
+    assert lm.stamp_thread_advanced(once, 4) == once
+
+
+def test_cli_stamps_canon_and_thread_in_place(tmp_path):
+    canon = tmp_path / "canon-core.md"
+    canon.write_text(CANON, encoding="utf-8")
+    brief = tmp_path / "brief.md"
+    brief.write_text(BRIEF_REFS, encoding="utf-8")
+    text = tmp_path / "ch.md"
+    text.write_text("prose", encoding="utf-8")
+    thread = tmp_path / "the-inheritance.md"
+    thread.write_text(THREAD, encoding="utf-8")
+
+    rc = lm.main([
+        "01", "07",
+        "--canon", str(canon), "--brief", str(brief), "--text", str(text),
+        "--thread-advanced", str(thread),
+    ])
+    assert rc == 0
+    assert "last_referenced: 7" in canon.read_text(encoding="utf-8")
+    assert "last_advanced_chapter: 7" in thread.read_text(encoding="utf-8")
