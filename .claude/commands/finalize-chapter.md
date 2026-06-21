@@ -14,7 +14,8 @@ ledger diff then resume with `/finalize-chapter $1 $2 --commit`.
 
 ### Step 0 — Gate guard
 
-Hard-fail if the chapter is not gate-REVIEWED (or if the mystery is not locked):
+Hard-fail unless the chapter passed the developmental gate (`ch-NN.gate.md` shows
+`gate: PASS`) — a HOLD or a missing gate file aborts finalize:
 
 ```bash
 python3 scripts/preflight.py finalize $1 $2
