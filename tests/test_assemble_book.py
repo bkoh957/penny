@@ -139,3 +139,53 @@ def test_seal_fails_when_read_by_absent(tmp_path):
     with pytest.raises(SystemExit) as e:
         assemble_book.cmd_seal("99", repo_root=tmp_path)
     assert "no read_by stamp" in str(e.value)
+
+
+def _write_final_read(tmp_path, *, schema="penny-final-read/1", read_by="codex",
+                      standalone="yes", mystery_resolved="yes", thread_left_open="yes"):
+    book_dir = tmp_path / "output" / "book-99"
+    book_dir.mkdir(parents=True, exist_ok=True)
+    lines = ["---", f"schema: {schema}"]
+    if read_by is not None:
+        lines.append(f"read_by: {read_by}")
+    if standalone is not None:
+        lines.append(f"standalone: {standalone}")
+    if mystery_resolved is not None:
+        lines.append(f"mystery_resolved: {mystery_resolved}")
+    if thread_left_open is not None:
+        lines.append(f"thread_left_open: {thread_left_open}")
+    lines += ["---", "", "## Holistic verdict", "Reads well.", ""]
+    (book_dir / "book-99.final-read.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def test_validate_read_accepts_enum(tmp_path):
+    _write_final_read(tmp_path)
+    assert assemble_book.validate_final_read("99", repo_root=tmp_path) == 0
+
+
+def test_validate_read_rejects_hedge(tmp_path):
+    _write_final_read(tmp_path, standalone="mostly")     # the hedge
+    with pytest.raises(SystemExit) as e:
+        assemble_book.validate_final_read("99", repo_root=tmp_path)
+    assert "standalone" in str(e.value) and "mostly" in str(e.value)
+
+
+def test_validate_read_rejects_missing_boolean(tmp_path):
+    _write_final_read(tmp_path, thread_left_open=None)
+    with pytest.raises(SystemExit) as e:
+        assemble_book.validate_final_read("99", repo_root=tmp_path)
+    assert "thread_left_open" in str(e.value)
+
+
+def test_validate_read_rejects_missing_read_by(tmp_path):
+    _write_final_read(tmp_path, read_by=None)
+    with pytest.raises(SystemExit) as e:
+        assemble_book.validate_final_read("99", repo_root=tmp_path)
+    assert "read_by" in str(e.value)
+
+
+def test_validate_read_rejects_bad_schema(tmp_path):
+    _write_final_read(tmp_path, schema="penny-beta/1")
+    with pytest.raises(SystemExit) as e:
+        assemble_book.validate_final_read("99", repo_root=tmp_path)
+    assert "schema" in str(e.value)

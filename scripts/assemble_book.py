@@ -123,6 +123,23 @@ def cmd_seal(book: str, *, repo_root=REPO) -> int:
     return 0
 
 
+def validate_final_read(book: str, *, repo_root=REPO) -> int:
+    fr = final_read_path(book, repo_root)
+    if not fr.is_file():
+        _fail(f"no final-read artifact for book {book} ({fr})")
+    fm = parse_frontmatter(fr.read_text(encoding="utf-8"))
+    if fm.get("schema") != FINAL_READ_SCHEMA:
+        _fail(f"final-read schema is {fm.get('schema')!r}, expected {FINAL_READ_SCHEMA!r}")
+    if not fm.get("read_by"):
+        _fail(f"final-read missing read_by stamp ({fr})")
+    for field in FINAL_READ_BOOLEANS:
+        val = fm.get(field)
+        if val not in ENUM:
+            _fail(f"final-read field {field!r} is {val!r}, must be one of {sorted(ENUM)} "
+                  f"(no hedging)")
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Penny per-book manuscript producer.")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -130,11 +147,15 @@ def main(argv=None) -> int:
     p_asm.add_argument("book")
     p_seal = sub.add_parser("seal", help="stamp read_by from the final read")
     p_seal.add_argument("book")
+    p_val = sub.add_parser("validate-read", help="hard-fail a malformed final read")
+    p_val.add_argument("book")
     args = ap.parse_args(argv)
     if args.cmd == "assemble":
         return cmd_assemble(args.book)
     if args.cmd == "seal":
         return cmd_seal(args.book)
+    if args.cmd == "validate-read":
+        return validate_final_read(args.book)
     ap.error(f"unknown command {args.cmd!r}")  # pragma: no cover
 
 
