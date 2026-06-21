@@ -19,8 +19,9 @@ serialized by `scripts/beta_report.py`:
 ### Three serialization rules
 
 1. **Shared-field rule.** Any field with more than one primary owner serializes as
-   `{value, lens}`, where `lens` = the emitting persona's stamped lens. Applies to
-   `emotional_beats` (`[{beat, lens}]`) and `would_buy_next` (`{verdict, driver}`).
+   `{value, lens}`, where `lens` = the emitting persona's stamped DRIVER value
+   (e.g. `comfort-tone`, `fairness` — same six-value space as `would_buy_next.driver`).
+   Applies to `emotional_beats` (`[{beat, lens}]`) and `would_buy_next` (`{verdict, driver}`).
    This keeps cross-persona convergence computable, not coincidental.
 2. **`n/a` is a first-class verdict, distinct from `no`.** A persona that cannot
    read an axis in a given book (e.g. the Romance Reader on a romance-less book)
@@ -35,10 +36,10 @@ serialized by `scripts/beta_report.py`:
 `scripts/beta_report.py` collapses a persona's `M` model-readings (the within-
 persona consensus axis is the **model**):
 
-- `engagement_curve` — per chapter `{central, band:[min,max]}`.
+- `engagement_curve` — per chapter `{chapter, central, band:[min,max]}`.
 - `put_down_points` — `{consensus, logged}`; a chapter is consensus iff flagged by
   `>= beta_consensus_k` of the `M` readings, else logged.
-- `would_buy_next` — `{tally, denominator}` (`n/a` excluded from the denominator).
+- `would_buy_next` — `{tally, denominator}`, where `tally` is `{yes, no, "n/a"}` (per-verdict counts) and `denominator` excludes the `n/a` count.
 - `panel` — `{m, k, panel_size, distinct_models, degraded}`.
 
 ## Cross-persona rollup — [Phase 6]
