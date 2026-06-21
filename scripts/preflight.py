@@ -1,8 +1,9 @@
-"""Deterministic pre-flight gates (Tier-3, structural). One tool, three subcommands:
+"""Deterministic pre-flight gates (Tier-3, structural). One tool, four subcommands:
 
     lock-mystery N   heavy: fairplay + lexicon --validate; sole writer of the lock.
     draft N CH       light: lock present + ledger populated; pure file check.
     assemble N       routing: final_read_model != drafting_model + set membership.
+    finalize N CH    post-gate guard: chapter must have gate == PASS.
 
 Gates never make an LLM judgment, so they survive Option-A's soft-gate weakness.
 Every miss exits non-zero via `preflight: <named predicate>`.
@@ -35,6 +36,22 @@ def ledger_path(book: str, repo_root) -> Path:
 
 def lock_path(book: str, repo_root) -> Path:
     return Path(repo_root) / ".penny/locks" / f"book-{book}.mystery.lock"
+
+
+def gate_path(book: str, chapter: str, repo_root) -> Path:
+    return (Path(repo_root) / "output" / f"book-{book}" / "chapters"
+            / f"ch-{chapter}.gate.md")
+
+
+def cmd_finalize(book: str, chapter: str, *, repo_root=REPO) -> int:
+    gp = gate_path(book, chapter, repo_root)
+    if not gp.is_file():
+        _fail(f"no gate for book {book} ch {chapter} ({gp}) — run /review-chapter first")
+    gate = parse_frontmatter(gp.read_text(encoding="utf-8")).get("gate")
+    if gate != "PASS":
+        _fail(f"chapter {book}/{chapter} did not pass the gate (gate: {gate}); "
+              f"resolve the HOLD before finalizing")
+    return 0
 
 
 def cmd_draft(book: str, chapter: str, *, repo_root=REPO) -> int:
@@ -132,6 +149,9 @@ def main(argv=None) -> int:
     p_asm.add_argument("book")
     p_lock = sub.add_parser("lock-mystery", help="validate + write the lock (last)")
     p_lock.add_argument("book")
+    p_fin = sub.add_parser("finalize", help="post-gate guard: chapter must have PASSed")
+    p_fin.add_argument("book")
+    p_fin.add_argument("chapter")
     args = ap.parse_args(argv)
     if args.cmd == "draft":
         return cmd_draft(args.book, args.chapter)
@@ -139,6 +159,8 @@ def main(argv=None) -> int:
         return cmd_assemble(args.book)
     if args.cmd == "lock-mystery":
         return cmd_lock_mystery(args.book)
+    if args.cmd == "finalize":
+        return cmd_finalize(args.book, args.chapter)
     ap.error(f"unknown command {args.cmd!r}")  # pragma: no cover
 
 

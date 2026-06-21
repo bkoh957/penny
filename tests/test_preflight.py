@@ -176,3 +176,32 @@ def test_assemble_read_by_collides_with_drafter(tmp_path):
     with pytest.raises(SystemExit) as e:
         preflight.cmd_assemble("01", repo_root=tmp_path)
     assert "final-read model 'claude-opus'" in str(e.value)
+
+
+def _make_gate(root, book, ch, verdict):
+    d = root / "output" / f"book-{book}" / "chapters"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / f"ch-{ch}.gate.md").write_text(
+        f"---\nproducer: review_gate.py\nkind: gate-summary\n"
+        f"target: book-{book}/ch-{ch}\ngate: {verdict}\nblocking_count: 0\n"
+        f"schema: penny-verdict/1\n---\n\n- {verdict}: 0 blocking issue(s)\n",
+        encoding="utf-8",
+    )
+
+
+def test_finalize_passes_on_passing_gate(tmp_path):
+    _make_gate(tmp_path, "01", "07", "PASS")
+    assert preflight.cmd_finalize("01", "07", repo_root=tmp_path) == 0
+
+
+def test_finalize_blocks_on_held_gate(tmp_path):
+    _make_gate(tmp_path, "01", "07", "HOLD")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_finalize("01", "07", repo_root=tmp_path)
+    assert "did not pass" in str(e.value)
+
+
+def test_finalize_blocks_when_gate_missing(tmp_path):
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_finalize("01", "07", repo_root=tmp_path)
+    assert "no gate" in str(e.value)
