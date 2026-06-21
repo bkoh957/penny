@@ -26,7 +26,7 @@ def _write_gate(chapters_dir, chapter, score_spread_log):
         f"target: book-99/ch-{chapter:02d}\ngate: PASS\nblocking_count: 0\n"
         "schema: penny-verdict/1\n---\n\n- PASS: 0 blocking issue(s)\n"
         "- escalations: []\n"
-        f"- score_spread_log: {score_spread_log!r}\n", encoding="utf-8")
+        f"- score_spread_log: {score_spread_log}\n", encoding="utf-8")
 
 
 def _book99(tmp_path):
@@ -108,3 +108,12 @@ def test_cross_consistency_with_beta_report(tmp_path):
                                       config_path=_config(tmp_path, personas=1, would_buy=2))
     assert any("ch.4" in ln for ln in res["escalate"])          # 1 persona, threshold 1
     assert any("would-buy" in ln for ln in res["escalate"])     # tally.no=2, threshold 2
+
+
+def test_zero_would_buy_no_emits_no_line(tmp_path):
+    """When total_no == 0, no would-buy line should be emitted anywhere."""
+    reports, chapters = _book99(tmp_path)
+    _write_converged(reports, "cozy-loyalist", no=0)
+    res = revision_priority.aggregate("99", repo_root=tmp_path, config_path=_config(tmp_path))
+    assert not any("would-buy" in ln for ln in res["escalate"])
+    assert not any("would-buy" in ln for ln in res["log"])
