@@ -100,3 +100,106 @@ def parse_canon_meta(text: str) -> dict:
     inner = m.group(1)
     # Split top-level commas (no nesting expected at this stage) into k: v lines.
     return _parse_kv_lines([part for part in inner.split(",")])
+
+
+_SECTION_RE = re.compile(r"^##\s+(.*?)\s*$", re.MULTILINE)
+
+
+def _split_top_level(inner: str) -> list[str]:
+    """Split on commas that are not inside an inline ``[...]`` list."""
+    parts, depth, buf = [], 0, []
+    for ch in inner:
+        if ch == "[":
+            depth += 1
+        elif ch == "]":
+            depth = max(0, depth - 1)
+        if ch == "," and depth == 0:
+            parts.append("".join(buf))
+            buf = []
+        else:
+            buf.append(ch)
+    if buf:
+        parts.append("".join(buf))
+    return parts
+
+
+def parse_canon_sections(text: str) -> list[dict]:
+    """Return one dict per ``##`` section that carries a ``canon-meta`` header.
+
+    Each dict has ``heading`` (the ## title) plus the header's parsed fields
+    (``id``, ``refs`` as a list, etc.). The file-level header that precedes the
+    first ``##`` is excluded; sections without a canon-meta header are skipped.
+    """
+    out: list[dict] = []
+    headings = list(_SECTION_RE.finditer(text))
+    for i, h in enumerate(headings):
+        start = h.end()
+        end = headings[i + 1].start() if i + 1 < len(headings) else len(text)
+        m = _CANON_META_RE.search(text[start:end])
+        if not m:
+            continue
+        meta = _parse_kv_lines(_split_top_level(m.group(1)))
+        meta.setdefault("refs", [])
+        meta["heading"] = h.group(1)
+        out.append(meta)
+    return out
+
+
+def _fmt_meta_value(value) -> str:
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return str(value)
+
+
+def _set_inline_field(inner: str, field: str, value: str) -> str:
+    """Update or insert ``field: value`` inside a canon-meta inner string,
+    normalizing to a single space. Other fields are preserved byte-for-byte."""
+    pat = re.compile(rf"\b{re.escape(field)}\s*:\s*[^,}}]*")
+    if pat.search(inner):
+        return pat.sub(f"{field}: {value}", inner, count=1)
+    sep = ", " if inner.strip() else ""
+    return inner.rstrip() + f"{sep}{field}: {value}"
+
+
+def write_canon_section_field(text: str, section_id: str, field: str, value) -> str:
+    """Set the canon-meta ``field`` of the ``##`` section whose id is
+    ``section_id``. Preserves body bytes. Idempotent on repeated same-value
+    stamps. Raises KeyError if no section has that id."""
+    val = _fmt_meta_value(value)
+    headings = list(_SECTION_RE.finditer(text))
+    for i, h in enumerate(headings):
+        start = h.end()
+        end = headings[i + 1].start() if i + 1 < len(headings) else len(text)
+        m = _CANON_META_RE.search(text[start:end])
+        if not m:
+            continue
+        inner = m.group(1)
+        if _parse_kv_lines(_split_top_level(inner)).get("id") != section_id:
+            continue
+        new_inner = _set_inline_field(inner, field, val)
+        abs_start, abs_end = start + m.start(1), start + m.end(1)
+        return text[:abs_start] + new_inner + text[abs_end:]
+    raise KeyError(f"no canon-core section with id {section_id!r}")
+
+
+def write_frontmatter_field(text: str, field: str, value) -> str:
+    """Set ``field: value`` in the leading ``---`` frontmatter block, preserving
+    the body. Inserts the field at the block end if absent. Raises ValueError if
+    there is no frontmatter block."""
+    val = _fmt_meta_value(value)
+    lines = text.splitlines(keepends=True)
+    if not lines or lines[0].strip() != "---":
+        raise ValueError("no frontmatter block")
+    close = next((i for i in range(1, len(lines)) if lines[i].strip() == "---"), None)
+    if close is None:
+        raise ValueError("unterminated frontmatter block")
+    pat = re.compile(rf"^\s*{re.escape(field)}\s*:.*$")
+    for i in range(1, close):
+        if pat.match(lines[i].rstrip("\n")):
+            nl = "\n" if lines[i].endswith("\n") else ""
+            lines[i] = f"{field}: {val}{nl}"
+            return "".join(lines)
+    lines.insert(close, f"{field}: {val}\n")
+    return "".join(lines)
