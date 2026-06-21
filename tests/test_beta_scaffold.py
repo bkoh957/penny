@@ -56,3 +56,19 @@ def test_beta_protocol_documents_contract_and_phase6_seam():
     assert "cross-persona" in text
     # non-blocking
     assert "non-blocking" in text or "never block" in text
+
+
+def test_beta_reader_agent_is_blind_and_well_formed():
+    path = ROOT / ".claude/agents/beta-reader.md"
+    fm = parse_frontmatter(path.read_text(encoding="utf-8"))
+    assert fm["name"] == "beta-reader"
+    assert "description" in fm
+    text = path.read_text(encoding="utf-8").lower()
+    # blind contract: only text + persona file
+    assert "persona" in text and "text" in text
+    assert "no ledger" in text or "no ledgers" in text
+    assert "no solution" in text
+    # reacts, does not rule-reason; driver stamped not picked
+    assert "react" in text
+    assert "yes" in text and "no" in text and "n/a" in text
+    assert "beta_report.py" in text
