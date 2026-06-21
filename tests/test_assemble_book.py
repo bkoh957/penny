@@ -122,3 +122,20 @@ def test_seal_fails_when_final_read_absent(tmp_path):
     with pytest.raises(SystemExit) as e:
         assemble_book.cmd_seal("99", repo_root=tmp_path)
     assert "no final-read artifact" in str(e.value)
+
+
+def test_seal_fails_when_manuscript_absent(tmp_path):
+    with pytest.raises(SystemExit) as e:
+        assemble_book.cmd_seal("99", repo_root=tmp_path)
+    assert "no manuscript to seal" in str(e.value)
+
+
+def test_seal_fails_when_read_by_absent(tmp_path):
+    chapters = _book_tree(tmp_path)
+    _make_chapter(chapters, 1, "claude-opus", "one")
+    assemble_book.cmd_assemble("99", repo_root=tmp_path, now=FIXED_NOW)
+    assemble_book.final_read_path("99", tmp_path).write_text(
+        "---\nschema: penny-final-read/1\nstandalone: yes\n---\n", encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        assemble_book.cmd_seal("99", repo_root=tmp_path)
+    assert "no read_by stamp" in str(e.value)
