@@ -172,8 +172,12 @@ Owns **all structured-field edits** (header/frontmatter), because such edits are
 error-prone for an LLM and the markers are the Phase-8 demotion precision seed.
 
 - **`last_referenced: CH`** into each canon-core **section header** the script computes
-  as referenced — a **mechanical id-scan**: a section is "referenced" iff any of its
-  ids appears in the finalized brief or chapter text (substring/token match, no LLM).
+  as referenced — a **mechanical id-scan**: a section is "referenced" iff any id in its
+  `refs` list (§4.7) appears in the finalized brief or chapter text (substring/token
+  match, no LLM). A section with no/empty `refs` (the always-rewritten meta sections) is
+  **not stamped** — its `active_window` governs coldness instead. The brief is the
+  reliable source (briefs name entities canonically by ledger id, design §4.2); the
+  text is scanned too but rarely carries kebab ids.
 - **`last_advanced_chapter: CH`** into **thread frontmatter** for threads the
   ledger-updater flagged `advanced: yes`.
 - Drives the per-section `canon-meta` edits via the shared parser/writer in
@@ -197,8 +201,12 @@ read — immune to soft-gate weakness.
 ### §4.7 Data-contract changes
 
 - **`canon-core.md`:** each `##` section gains
-  `<!-- canon-meta: {id, active_window, last_referenced, reconfirmed_at, keep_reason} -->`
-  (demotion spec §2). The **file-level** header (`{id: canon-core, fluency_stage: OUTSIDER}`)
+  `<!-- canon-meta: {id, refs, active_window, last_referenced, reconfirmed_at, keep_reason} -->`
+  (demotion spec §2, plus `refs`). **`refs`** is the inline list of entity ledger-ids
+  whose appearance marks the section referenced (the "section's ids" of §4.5); it is the
+  Phase-4 naming of that scan target. Meta sections that are rewritten every book
+  (current-timeline, whodunit-constraints) carry empty `refs` and rely on `active_window`.
+  The **file-level** header (`{id: canon-core, fluency_stage: OUTSIDER}`)
   is retained — `fluency_stage` is a real always-loaded value. The showrunner authors
   `active_window` for the 4 existing sections during this phase (`last_referenced`,
   `reconfirmed_at`, `keep_reason` start unset/`null`).
