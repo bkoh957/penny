@@ -1,11 +1,12 @@
 ---
-description: Manually draft one chapter (Phase 1: no review bus yet).
+description: Draft one chapter — first step of the full pipeline (review via /review-chapter, finalize via /finalize-chapter).
 argument-hint: <book-number> <chapter-number>
 ---
 # /draft-chapter
 
-Manual single-chapter draft. Phase 1 path: assemble context → dispatch the drafter
-→ write the draft. (Review/edit/finalize arrive in later phases.)
+Drafts one chapter: assemble context → dispatch the drafter → write the draft. The
+chapter then moves through the full pipeline: gate it with `/review-chapter`, then
+edit and commit with `/finalize-chapter`.
 
 ## Steps
 

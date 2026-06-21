@@ -2,6 +2,7 @@
 id: the-inheritance
 type: thread
 links: [the-bluff, cora-mistate]
+last_advanced_chapter:
 ---
 # Thread: the inheritance
 

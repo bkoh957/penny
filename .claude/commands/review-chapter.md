@@ -56,9 +56,11 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
 
 6. **Build the thread roster** for `inspector-structure`: from
    `series/continuity/threads/*.md` + `series/arc-ledger.md`, as
-   `[{ thread_id, last_advanced_chapter }]`. Until Phase 4 maintains
-   `last_advanced_chapter`, set it to `unknown` (the inspector then emits no liveness
-   flag).
+   `[{ thread_id, last_advanced_chapter }]`. Read each thread file's real frontmatter
+   `last_advanced_chapter` value. A missing or empty value maps to `null`, which
+   `inspector-structure` treats as "no advancement recorded yet" — no dormancy flag is
+   emitted (identical behaviour to the old `unknown` placeholder, but now reading real
+   data written by `/finalize-chapter`).
 
 7. **Dispatch the 5 blind inspector sub-agents**, each with the chapter text, its one
    rubric, and the ledger slice (structure also gets the roster). Each writes its
