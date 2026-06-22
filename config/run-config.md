@@ -31,7 +31,14 @@ gate_mode:        strict           # strict | fast
 escalation_scope: minor-auto       # minor-auto | log-all
 ledger_approval:  review           # review (early/tuning) | auto (once clean)
 book_approval:    review           # review (pause for showrunner) | auto
+scaffold_approval:  review         # review (pause for the writer) | auto
 ```
+
+> **Cross-model topology (no API):** the drafting LLM is Claude Code + sub-agents;
+> independent review is Codex via a Claude Code plugin. The §7 "difference, not
+> identity" invariant is realised as TOOL difference (Claude-drafted vs
+> Codex-reviewed), not API-model-id difference. The front door is drafting-side, so
+> this is a recorded note only — no behavioural change.
 
 ## Escalation thresholds (design §6)
 
