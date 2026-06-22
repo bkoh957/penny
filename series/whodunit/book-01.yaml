@@ -1,0 +1,29 @@
+book: 01
+total_chapters: 28
+reveal_chapter: 24
+culprit: mary-burrell
+culprit_first_appearance_chapter: 5
+victim: neil-hartigan
+central_deception: |
+  Mary Burrell has believed for a decade that her father was murdered. A discovery
+  finally named Dr Neil Hartigan as the hand behind his death. She killed him
+  believing she was avenging a crime — but Neil eased her father's passing at the
+  old man's own repeated, desperate plea. She is right that his death was no
+  accident, and catastrophically wrong about what it meant. Neil's compassion is
+  the thing that kills him.
+clue_schedule:
+  - { id: clue-erasure, plant_chapter: 7, pays_off_chapter: 19, necessary: true }
+  - { id: clue-car-on-street, plant_chapter: 11, pays_off_chapter: 22, necessary: true }
+  - { id: clue-old-records, plant_chapter: 15, pays_off_chapter: 21, necessary: true }
+  - { id: clue-cobber-dawn-witness, plant_chapter: 2, pays_off_chapter: 20, necessary: false }
+red_herrings:
+  - { id: rh-saffron, plant_chapter: 9, misleads_toward: "saffron", must_not_cheat: true }
+  - { id: rh-beryl, plant_chapter: 10, misleads_toward: "beryl-foss", must_not_cheat: true }
+  - { id: rh-faye, plant_chapter: 13, misleads_toward: "faye", must_not_cheat: true }
+alibi_grid:
+  - { suspect: mary-burrell, chapter: 7, alibi: "dismissed as harmless grieving relative; cleared on wrong grounds — real motive untested", holds: false }
+  - { suspect: saffron, chapter: 18, alibi: "meeting with debt recovery agent in Colac at time of death", holds: true }
+  - { suspect: beryl-foss, chapter: 14, alibi: "running CWA community event in front of fifty witnesses", holds: true }
+  - { suspect: faye, chapter: 13, alibi: "her secret (old wound with jam-feud judge) is unconnected to the murder", holds: true }
+  - { suspect: vincent-calloway, chapter: 14, alibi: "no credible connection to Neil's death; buried secret is separate", holds: true }
+  - { suspect: cobber, chapter: 11, alibi: "accidental witness, not a suspect; corroborates timeline", holds: true }

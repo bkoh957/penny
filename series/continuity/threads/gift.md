@@ -1,0 +1,18 @@
+---
+id: gift
+type: thread
+links: [meg-quill, neil-hartigan, artie-selwood, the-lighthouse]
+---
+# Thread: Gift (The Migraine Sight)
+
+The Migraine Sight arc. Book 01 moves the gift from binge-and-hangover party trick (Meg uses it to belong, pays the price), through recording-without-understanding (she sees the erasure at Neil's cottage but cannot interpret it), to the click that solves the case (ch 19, the cup moment). The origin mystery is teased but not resolved: Neil was the first professional to take her episodes seriously; Artie Selwood (ch 16) tells her he once knew a woman who saw the way Meg sees. Neither thread is closed in Book 01.
+
+Rules (load-bearing, hold across all books):
+- She cannot summon it at will — it rides in on the migraines.
+- It records; it does not explain. No instant deductions, ever.
+- Interpretation needs a second trigger: a later, ordinary detail that connects.
+- It always costs her (pain, lost days).
+- Mastery is a series-long arc, not a Book 01 switch.
+
+- Status: OPEN (Book 01, ch 01 — series-long arc).
+- Key beats: binge ch 5; hangover ch 6; keystone flood ch 7; Artie's hint ch 16; the click ch 19; Artie circling again ch 28.

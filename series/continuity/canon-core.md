@@ -6,25 +6,21 @@ links: []
 <!-- canon-meta: {id: canon-core, fluency_stage: OUTSIDER} -->
 # Canon Core — always loaded every chapter (design §4.2)
 
-Keep this small: every line is a tax on every chapter. Holds only what is always
-relevant. Fill the placeholders below before drafting Book 1.
+Keep this small: every line is a tax on every chapter.
 
 ## Protagonist fixed facts
-<!-- canon-meta: {id: protagonist-fixed, refs: [], active_window: "1-2", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
-- **<Protagonist name>**, <age>, <one-line situation>. <Insider/Outsider>. Fluency
-  stage tracked below.
+<!-- canon-meta: {id: protagonist-fixed, refs: [meg-quill], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
+- **Meg Quill**, 43, divorced former HR director turned potter. Runs The Wheelhouse studio on Pelican's Crook main street. OUTSIDER; arrived in autumn, Book 01. Suffers migraines that bring hyper-detailed, unranked perception (the Migraine Sight) — she records everything and understands later.
 
 ## Current timeline position
 <!-- canon-meta: {id: current-timeline, refs: [], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
-- Book 01, pre-draft. Season: <season>. No deaths yet recorded.
+- Book 01, Chapter 01. Season: Autumn. Dr Neil Hartigan alive; no deaths yet recorded.
 
 ## Active-book whodunit constraints
-<!-- canon-meta: {id: whodunit-constraints, refs: [], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
-- None locked yet (authored per book by `/plan-mystery`).
+<!-- canon-meta: {id: whodunit-constraints, refs: [], active_window: "1-1", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
+- Book 01 mystery: victim is Dr Neil Hartigan (town GP). Culprit identity SEALED — do not write it into any drafter-visible artifact; see `output/book-01/mystery-solution.md`. Reveal chapter: 24 of 28. Keystone clue: the erasure (wrong cup, refolded tea towel, damp dishcloth — planted ch 7, clicks ch 19).
 
 ## Fluency stage (design §9 newcomer dial)
 <!-- canon-meta: {id: fluency-stage, refs: [], active_window: "1-2", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
 - **OUTSIDER** (Books 1–2): narration is standard English; local idiom lives in
-  other characters' mouths, never the protagonist's narration. (Stages: OUTSIDER →
-  SETTLING → BELONGING; must stay consistent with `config/setting-pack/lexicon.yaml`
-  `narration_ok_from_stage`.)
+  other characters' mouths, never Meg's narration. (Stages: OUTSIDER → SETTLING → BELONGING; must stay consistent with `config/setting-pack/lexicon.yaml` `narration_ok_from_stage`.)
