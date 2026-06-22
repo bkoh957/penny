@@ -9,6 +9,8 @@ Dependency-free apart from scripts.penny_meta (frontmatter) — no PyYAML.
 
   python3 scripts/outline_check.py output/book-01/outline.md
 """
+# Note: `metrics` is only meaningful when `blocking` is empty — callers must check
+# `blocking` first; metrics carry raw/None values on a malformed outline.
 from __future__ import annotations
 
 import argparse
@@ -65,8 +67,21 @@ def check_outline(outline_path, *, repo_root=None) -> dict:
             f"outline-frontmatter: 'total_chapters' missing or not an integer: {total_raw!r}")
 
     headings = _HEADING_RE.findall(text)
-    if not any(_SOLUTION_RE.match(h) for h in headings):
+    # Spec §4: at least one ## Solution block; label optional but, if present, non-empty.
+    solution_matches = [_SOLUTION_RE.match(h) for h in headings]
+    solution_matches = [m for m in solution_matches if m is not None]
+    if not solution_matches:
         blocking.append("outline-solution: no '## Solution' block found")
+    else:
+        for m in solution_matches:
+            label = m.group("label")
+            # label is None when no colon present (valid); non-None means colon was
+            # present — the label must then be non-empty.
+            if label is not None and not label.strip():
+                raw_heading = "## " + m.group(0)
+                blocking.append(
+                    f"outline-solution: {raw_heading!r} block has an empty label"
+                )
 
     nums = _chapter_numbers(text)
     if total is not None:

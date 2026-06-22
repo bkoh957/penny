@@ -45,3 +45,13 @@ def test_main_exits_nonzero_on_broken():
 def test_shipped_template_is_well_formed():
     result = check_outline(Path("config/outline-template.md"))
     assert result["blocking"] == []
+
+
+def test_empty_solution_label_fails_outline_solution():
+    result = check_outline(FIX / "empty-solution-label.md")
+    assert "outline-solution" in _predicates(result)
+
+
+def test_unlabeled_solution_is_valid():
+    result = check_outline(FIX / "unlabeled-solution.md")
+    assert result["blocking"] == []
