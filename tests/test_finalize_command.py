@@ -25,11 +25,6 @@ def test_review_chapter_roster_uses_real_marker_and_treats_null_silent():
     assert "null" in text                           # null = no liveness flag
 
 
-def test_thread_seed_has_marker_field():
-    text = (ROOT / "series/continuity/threads/the-inheritance.md").read_text(encoding="utf-8")
-    assert "last_advanced_chapter" in text
-
-
 def test_draft_preamble_refreshed():
     text = (ROOT / ".claude/commands/draft-chapter.md").read_text(encoding="utf-8").lower()
     assert "no review bus yet" not in text

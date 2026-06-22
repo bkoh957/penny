@@ -12,10 +12,12 @@ def test_canon_core_exists():
 
 
 def test_every_continuity_entry_has_valid_frontmatter():
+    # Validate-if-present: project continuity content is swappable and may be
+    # cleared to a blank slate, so we do not require example entries to exist —
+    # only that any entry that DOES exist is well-formed.
     entries = []
     for subdir in TYPE_DIRS:
         entries.extend((CONTINUITY / subdir).glob("*.md"))
-    assert entries, "expected at least one example continuity entry per type"
     for path in entries:
         meta = parse_frontmatter(load(path))
         assert meta.get("id"), f"{path} missing id"

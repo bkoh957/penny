@@ -20,7 +20,10 @@ def test_file_level_fluency_stage_preserved():
     assert meta.get("fluency_stage") == "OUTSIDER"
 
 
-def test_protagonist_section_refs_the_protagonist():
+def test_protagonist_section_has_refs_list():
+    # The protagonist-fixed section must exist with a refs list. On a cleared
+    # slate refs is empty; the authored protagonist id(s) get added to it. We do
+    # not assert a specific id — that is swappable project content.
     secs = parse_canon_sections(CANON.read_text(encoding="utf-8"))
     prot = next(s for s in secs if s["id"] == "protagonist-fixed")
-    assert "cora-mistate" in prot["refs"]
+    assert isinstance(prot["refs"], list)
