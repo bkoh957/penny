@@ -1,54 +1,47 @@
 # Handoff — Penny / main
 Saved: 2026-06-22 | Type: build
 
-## What we built this session
-Populated all the book-01 series scaffolding by hand (bypassing `/scaffold-book` — the
-user asked Claude to do the extraction directly). The series bible and 28-chapter outline
-were authored by the user; we derived and wrote every mechanical artifact from them.
+## What we did this session
+UAT run: settled name gaps, minted the mystery lock, drafted Chapters 01 and 02 via the
+blind drafter agent. Also installed the `codex@openai-codex` Claude Code plugin (user-scope).
+Everything worked end-to-end; the pipeline is proven.
 
 ## Git state
-- Branch: `main`. HEAD `b972aeb`. **origin/main == b972aeb — nothing pushed this session.**
-- Uncommitted: a significant working tree — all the story content files below. None committed yet.
-- Tests: **249 passing**, nothing broken.
-
-## Files created / modified this session (all uncommitted)
-
-**Modified:**
-- `series/continuity/canon-core.md` — filled with real protagonist facts (Meg Quill, 43, OUTSIDER, autumn Book 01, sealed whodunit constraint)
-- `series/arc-ledger.md` — 7-thread roster with opens/advances/resolves columns
-- `series/series-bible.md` — (user-authored; we didn't touch it this session)
-
-**Created (untracked):**
-- `output/book-01/outline.md` — 28-chapter prose outline (user-authored + our stub); ## Solution block updated with Mary Burrell
-- `output/book-01/mystery-solution.md` — **SEALED.** Full culprit/motive/clue/revelation details for Mary Burrell
-- `series/whodunit/book-01.yaml` — whodunit yaml: culprit `mary-burrell`, victim `neil-hartigan`, 4 clues, 3 red herrings, 6-entry alibi grid; fairplay check exits 0
-- `series/continuity/threads/` × 7 — a-murder, b-romance, c-internal, gift, victim-reveal, comedy, series-seeds
-- `series/continuity/characters/` × 14 — meg-quill, neil-hartigan, tom, mary-burrell, faye, beryl-foss, dot, glad, cobber, saffron, vincent-calloway, artie-selwood, glaze, dave-pruitt
-- `series/continuity/locations/` × 11 — pelicans-crook, the-wheelhouse, the-bakery, the-op-shop, the-pub, the-lighthouse, the-old-cemetery, the-wellness-retreat, neils-cottage, the-community-hall, the-beach
-
-## Decisions made this session
-- **Tom Burrell** — family surname chosen by user ("Burrell"). Tom's aunt is **Mary Burrell**.
-- **Culprit ID: `mary-burrell`** — entity ID in whodunit yaml, alibi grid, and character file. The outline prose still says "Tom's aunt" in the chapter beats (correct narrative voice); only the `## Solution` block and sealed file use her name.
-- **Bypassed `/scaffold-book`** — user asked Claude to do the extraction directly rather than dispatch the scaffolder agent. The artifacts are all written; the lock has NOT been earned yet. That still requires running `/scaffold-book 01 output/book-01/outline.md --approve` (which shells to `preflight.py lock-mystery 01`).
-- **Blind-drafter seam preserved** — Mary Burrell's role as culprit appears ONLY in `mary-burrell.md` (with a SEALED warning), `mystery-solution.md`, `whodunit/book-01.yaml`, and the `## Solution` block in the outline. No other drafter-visible file names her as the killer.
+- Branch: `main`. HEAD `816c693`.
+- **Uncommitted changes:**
+  - `series/continuity/characters/faye.md` — surname added (Denton)
+  - `series/continuity/characters/cobber.md` — real name added (Dennis)
+  - `HANDOFF.md` — this file
+- **Untracked:** `output/book-01/chapters/` (ch-01.draft.md, ch-02.draft.md)
+- Tests: 249 passing (nothing in scripts/ changed).
 
 ## Next actions
-1. **Commit the story content.** The working tree has a large set of new/modified story files. Commit them as story content (suggest one commit for outline+solution, one for the continuity scaffolding). Or the user may want to review first.
-2. **Earn the lock.** Run `/scaffold-book 01 output/book-01/outline.md --approve` — this shells out to `python3 scripts/preflight.py lock-mystery 01`, which validates the yaml and mints `.penny/locks/book-01.mystery.lock`. The fairplay check already passes; the lock should be mintable.
-3. **Name the remaining unnamed characters** (optional before drafting):
-   - Faye's surname (Prior / Denton / Laing were suggested)
-   - Cobber's real name (Ray / Dennis / Gary were suggested)
-4. **Start drafting** — once the lock is earned, the pipeline is: `/plan-mystery 01` (already have the yaml, so this may be a thin step) → `/draft-chapter 01 01`.
+1. **Commit the name fixes + chapter drafts.** Stage and commit:
+   - `series/continuity/characters/faye.md`
+   - `series/continuity/characters/cobber.md`
+   - `output/book-01/chapters/ch-01.draft.md`
+   - `output/book-01/chapters/ch-02.draft.md`
+2. **Gate the chapters.** Run `/review-chapter 01 01` then `/review-chapter 01 02` — dispatches the 5 blind inspectors and emits `ch-NN.gate.md`. Both should PASS before finalizing.
+3. **Finalize.** `/finalize-chapter 01 01` → `/finalize-chapter 01 02` — line-edit → copy-edit → ledger update → promote to `.final.md`.
+4. **Continue drafting.** After ch-02 is finalized, the next chapter is Ch-03 (Meg's first migraine; Neil's introduction).
+
+## Decisions made this session
+- **Faye's surname: Denton** — warm, Australian-sounding; chosen from (Prior / Denton / Laing).
+- **Cobber's real name: Dennis** — nobody uses it; fits the demographic. Added as a note at the bottom of `cobber.md`.
+- **Lock earned via shell, not `/scaffold-book`** — `python3 scripts/preflight.py lock-mystery 01` run directly; `.penny/locks/book-01.mystery.lock` now exists. The `--approve` flag approach was skipped; the lock is valid.
+- **UAT confirmed the naming convention is `01` (zero-padded)** — preflight with raw `1` fails; always use `01`.
 
 ## Key files right now
-- `series/whodunit/book-01.yaml` — the mechanical mystery core; fairplay check passes
-- `output/book-01/mystery-solution.md` — SEALED; full culprit+motive+clue details
-- `series/continuity/canon-core.md` — always loaded; protagonist facts + whodunit constraint
-- `output/book-01/outline.md` — 28-chapter prose outline; the author document
+- `output/book-01/chapters/ch-01.draft.md` — 2,318 words; arrival chapter; no clues scheduled; hook is Glaze settling on the apron
+- `output/book-01/chapters/ch-02.draft.md` — 2,596 words; Faye/Cobber/Dot+Glad/Beryl; Cobber's dawn-sighting clue planted (non-necessary; pays off ch 20)
+- `series/continuity/characters/faye.md` — surname Denton added; uncommitted
+- `series/continuity/characters/cobber.md` — real name Dennis added; uncommitted
+
+## Plugins installed this session
+- `codex@openai-codex` v1.0.4 — user scope. Adds `/codex:review`, `/codex:adversarial-review`, `/codex:rescue`, `/codex:status`, `/codex:result`, `/codex:cancel`, `/codex:setup`. Codex binary already present at `/Users/beeko/.local/bin/codex`. **Requires reload + `/codex:setup` to confirm auth** before first use.
 
 ## Watch out for
-- **The lock is not yet earned.** The yaml exists and passes fairplay, but `.penny/locks/book-01.mystery.lock` does not exist. Do not draft without the lock.
-- **`mary-burrell` is the entity ID** throughout — if her name is ever changed, update: `whodunit/book-01.yaml` (culprit + suspect + central_deception), `characters/mary-burrell.md` (rename file + frontmatter), `mystery-solution.md`, and the outline `## Solution` block.
-- **The outline prose beats still say "Tom's aunt"** — this is intentional (narrative voice). Don't replace those with Mary Burrell; she is introduced to the reader by her relationship to Tom, not by name, for most of the book.
-- **Cobber's role in the alibi grid** — marked `holds: true` (he's a witness, not a suspect). His dawn sighting is a non-necessary clue (`clue-cobber-dawn-witness`, planted ch 2, pays off ch 20).
-- **Calloway's bench skeleton** — series seed, explicitly NOT resolved in Book 01. Do not let a drafter close this thread.
+- **`.penny/` is gitignored** — the lock lives there; it is NOT committed. It persists on disk and will survive normal session changes, but would be lost on a clean checkout. Don't `git clean -fdx`.
+- **Cobber's clue seam** — planted in ch-02 as pure atmosphere ("Sometimes I see things. Cars moving around at odd hours."). Do NOT make it more prominent during review/edit; it must remain dismissible until ch 20.
+- **Culprit name (Mary Burrell)** — the OUTSIDER constraint is working; neither draft names the culprit. Keep it that way through all finalize passes.
+- **Calloway's bench skeleton** — series seed, unresolved in Book 01. Do not let any editor or finalize pass close this thread.

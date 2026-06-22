@@ -14,4 +14,4 @@ Warm, gossipy, lovable. Knows everyone's business going back three generations. 
 
 **Red herring role.** Ch 13: Meg follows the thread because she cannot help herself; the twenty minutes in the bakery are uncomfortable. They drink tea in silence afterward and neither mentions it again. The friendship survives.
 
-**Surname:** Not yet assigned.
+**Surname:** Denton. Known to the whole town as Faye; "Mrs Denton" is what Beryl calls her when she wants to be pointed about something.
