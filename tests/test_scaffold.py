@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-REQUIRED_SERIES_FILES = [
+REQUIRED_INPUT_FILES = [
     "input/series/series-bible.md",
     "series/arc-ledger.md",
     "input/series/style-sheet.md",
@@ -10,8 +10,8 @@ REQUIRED_SERIES_FILES = [
 ]
 
 
-@pytest.mark.parametrize("relpath", REQUIRED_SERIES_FILES)
-def test_series_memory_file_exists_and_nonempty(relpath):
+@pytest.mark.parametrize("relpath", REQUIRED_INPUT_FILES)
+def test_input_file_exists_and_nonempty(relpath):
     path = Path(relpath)
     assert path.is_file(), f"missing {relpath}"
     assert path.read_text(encoding="utf-8").strip(), f"{relpath} is empty"

@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Penny** is a Claude-Code-native harness for producing a 13-book commercial fiction
 series (cozy mystery, Book 1) with independent quality review. The non-negotiable
 architectural rule: **the engine is genre/location-agnostic — everything
-project-specific lives in swappable `config/` and `series/`, never in `scripts/` or
-the command/agent logic.** When adding behavior, ask whether it belongs to the fixed
+project-specific lives in swappable `config/`, `series/`, and `input/`, never in
+`scripts/` or the command/agent logic.** When adding behavior, ask whether it belongs to the fixed
 engine or to a swappable pack, and keep them separate.
 
 Source of truth for design intent is `penny-design-v3.md` (+ `penny-PRD-v3.md`); the
@@ -38,8 +38,9 @@ pure stdlib — see the dependency split below.
    are step-by-step runbooks that shell out to `scripts/` and dispatch sub-agents.
    Agents are role-scoped (drafter, the 5 blind inspectors, line/copy editors,
    beta-reader, etc.).
-3. **Swappable data — `config/` (packs, rubrics, run-config) and `series/`
-   (continuity ledger, bibles, whodunit data).** The engine reads these; it never
+3. **Swappable data — `config/` (packs, rubrics, run-config), `series/`
+   (continuity ledger, bibles, whodunit data), and `input/` (writer-authored
+   outlines and series reference files).** The engine reads these; it never
    hardcodes their content.
 
 ### Dependency-split rule (load-bearing)

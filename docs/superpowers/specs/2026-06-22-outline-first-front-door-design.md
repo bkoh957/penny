@@ -86,7 +86,7 @@ swappable data. The front door honours all of it.
 
 | Piece | Layer | Artifact |
 |---|---|---|
-| The outline | **swappable data** (writer-authored) | `output/book-NN/outline.md` |
+| The outline | **swappable data** (writer-authored) | `input/book-NN/outline.md` |
 | Outline structural check | deterministic — `scripts/outline_check.py` | exit code + named predicates |
 | Structure extraction | **agent** — `.claude/agents/book-scaffolder.md` | the derived artifacts (below) |
 | Orchestration + approval | command — `.claude/commands/scaffold-book.md` | `scaffold-review.md`, then the lock |
@@ -117,7 +117,7 @@ loud with what to fix. The human taste gate sits exactly where it always has.
 
 ## 3. The outline (Piece 1 — swappable data)
 
-One markdown file per book: `output/book-NN/outline.md` (or any path passed to the
+One markdown file per book: `input/book-NN/outline.md` (or any path passed to the
 command). Authored by the writer in prose. Shape:
 
 ```markdown
