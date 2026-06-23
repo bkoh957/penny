@@ -71,13 +71,20 @@ gate — see **[TESTING.md](TESTING.md)**.
 ## The workflow
 
 ```
-/plan-mystery NN            once per book — design the whodunit and LOCK it
-  └─ for each chapter MM:
-       /draft-chapter   NN MM
-       /review-chapter  NN MM        ← the developmental GATE (PASS / HOLD)
-       /finalize-chapter NN MM [--commit]
-/beta-read <manuscript-path>          book-level reader reactions (NON-blocking)
-/assemble-book NN [--approve]         assemble → cross-model final read → report → APPROVE
+# 1. Lock the mystery (once per book)
+/plan-mystery NN
+
+# 2. Per chapter — repeat for MM = 01, 02, 03 … N
+/draft-chapter NN MM
+/review-chapter NN MM        # PASS → continue; HOLD → fix draft, re-run /review-chapter
+/finalize-chapter NN MM      # add --commit to auto-commit, or approve the ledger diff manually
+
+# 3. Beta read (non-blocking — can run any time after assembly)
+/beta-read output/book-NN/book-NN.manuscript.md
+
+# 4. Assemble + final read + approve
+/assemble-book NN            # assembles, cross-model final read, revision-priority report
+/assemble-book NN --approve  # seals manuscript, mints the approval certificate
 ```
 
 **1. Plan and lock the mystery.** `/plan-mystery NN` separates three roles: the showrunner
