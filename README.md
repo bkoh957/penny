@@ -6,10 +6,11 @@ design into finished, cross-model-reviewed manuscript prose, one chapter at a ti
 behind a wall of deterministic gates.
 
 **The one architectural rule:** the engine is genre- and location-agnostic. Everything
-project-specific lives in swappable `config/` (packs, rubrics, run-config) and `series/`
-(continuity, bibles, whodunit data) — **never** in `scripts/` or the command/agent logic.
-When you add behaviour, decide whether it belongs to the fixed engine or to a swappable
-pack, and keep them apart.
+project-specific lives in swappable `config/` (packs, rubrics, run-config), `input/`
+(showrunner-authored files: series bible, style sheet, whodunit ledger, per-book outlines),
+and `series/` (derived continuity data) — **never** in `scripts/` or the command/agent
+logic. When you add behaviour, decide whether it belongs to the fixed engine or to a
+swappable pack, and keep them apart.
 
 Design intent: `penny-design-v3.md` (+ `penny-PRD-v3.md`); the `-v3` files supersede the
 un-suffixed originals. Sections are cited in code as `design §N`.
@@ -58,9 +59,12 @@ gate — see **[TESTING.md](TESTING.md)**.
    step-by-step runbooks that shell out to `scripts/` and dispatch sub-agents. Agents are
    role-scoped: the drafter, the five blind inspectors, line/copy editors, beta readers,
    the cross-model final reader.
-3. **Swappable data — `config/` and `series/`.** The engine reads these; it never
-   hardcodes their content. Swap the packs and you change genre or location without
-   touching the engine.
+3. **Swappable data — `config/`, `input/`, and `series/`.** The engine reads these; it
+   never hardcodes their content. `input/series/` holds showrunner-authored reference
+   files (series bible, style sheet, whodunit ledger); `input/book-NN/` holds the
+   per-book outline. `series/` holds derived continuity data (canon-core, character/
+   location/thread ledger entries). Swap the packs and you change genre or location
+   without touching the engine.
 
 ---
 
