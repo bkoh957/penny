@@ -12,7 +12,7 @@ earned by the shipped checker; this command never writes a certificate.
 ## Steps
 
 1. **Parse args:** `book=$1` (e.g. `01`), `outline=$2` (e.g.
-   `output/book-$book/outline.md`), optional `--approve`.
+   `input/book-$book/outline.md`), optional `--approve`.
 
 2. **Structural gate (deterministic):**
 

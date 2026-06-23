@@ -54,7 +54,7 @@ If `$flag` equals `--commit`, enter the resume path:
      output/book-$book/chapters/ch-$chapter.ledger-diff.md \
      series/continuity/canon-core.md \
      series/continuity/threads/ \
-     series/style-sheet.md
+     input/series/style-sheet.md
 
    git commit -m "finalize: book $book chapter $chapter"
    ```
@@ -114,11 +114,11 @@ echo "book=$book chapter=$chapter stage=COPY-EDIT" > .penny/current-stage
 Dispatch the **`copy-editor`** sub-agent with a **fresh context** (no drafting history,
 no inspector verdicts):
 - `output/book-$book/chapters/ch-$chapter.lineedit.md` — the line-edited text only.
-- `series/style-sheet.md` — the house style sheet.
+- `input/series/style-sheet.md` — the house style sheet.
 - `config/copy-edit/copy-edit.md` — copy-edit rubric.
 
 The agent writes `output/book-$book/chapters/ch-$chapter.copyedit.md` and appends any
-new decisions to `series/style-sheet.md`.
+new decisions to `input/series/style-sheet.md`.
 
 ### Step 3 — FINALIZE (ledger update + markers)
 
@@ -173,7 +173,7 @@ git add \
   output/book-$book/chapters/ch-$chapter.ledger-diff.md \
   series/continuity/canon-core.md \
   series/continuity/threads/ \
-  series/style-sheet.md
+  input/series/style-sheet.md
 
 git commit -m "finalize: book $book chapter $chapter"
 echo "book=$book chapter=$chapter stage=FINALIZED" > .penny/current-stage
