@@ -6,7 +6,7 @@
 
 ## Governing document
 
-`series/style-sheet.md` is the single source of truth for every spelling, hyphenation, and punctuation decision across the 13-book series. Read it in full before touching the text. When the style sheet has no ruling, make a judgement call and **append** it.
+`input/series/style-sheet.md` is the single source of truth for every spelling, hyphenation, and punctuation decision across the 13-book series. Read it in full before touching the text. When the style sheet has no ruling, make a judgement call and **append** it.
 
 ## Spelling
 
@@ -30,7 +30,7 @@
 
 ## Style-sheet append rule
 
-For each new decision not already in `series/style-sheet.md`, append a single bullet under `## Decisions` using this form:
+For each new decision not already in `input/series/style-sheet.md`, append a single bullet under `## Decisions` using this form:
 
 ```
 - <Category>: <ruling>. (e.g., Hyphenation: "post-mortem" hyphenated as noun and adjective.)
@@ -47,7 +47,7 @@ For each new decision not already in `series/style-sheet.md`, append a single bu
 
 ## Checklist (pass in order)
 
-1. [ ] Read `series/style-sheet.md` fully.
+1. [ ] Read `input/series/style-sheet.md` fully.
 2. [ ] Read `config/copy-edit/copy-edit.md` (this file).
 3. [ ] Correct spelling (Australian English + proper nouns).
 4. [ ] Correct grammar and punctuation against the rules above.

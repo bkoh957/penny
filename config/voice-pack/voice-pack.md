@@ -1,6 +1,6 @@
 # Voice Pack — POV / tense / register / rhythm
 
-> Says *how to write*. (What was *decided* lives in `series/style-sheet.md`.)
+> Says *how to write*. (What was *decided* lives in `input/series/style-sheet.md`.)
 > Frequency tics and the banned-phrase/metaphor list live in the sibling
 > `ai-tics-detection.md` (Tier A, design §8a).
 
