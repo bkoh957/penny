@@ -115,8 +115,16 @@ from the author.
     /output-targets             [POST-MVP1] KDP/Kindle specifics
   length-profile                [STABLE] word-count targets per chapter/book
 
+/input                        showrunner-authored source files
+  /series
+    series-bible.md             overarching 13-book arc, themes, the long game
+    style-sheet.md              accumulating spelling/punctuation decisions
+    whodunit-ledger.md          [human doc, NEVER parsed] how the schedule works,
+                                narrative notes
+  /book-NN
+    outline.md                  per-book chapter beats + sealed Solutions
+
 /series                       this project's data + living memory
-  series-bible.md               overarching 13-book arc, themes, the long game
   arc-ledger.md                 which threads open/resolve in which book
   /characters                   STATIC character design: voice fingerprint, arc,
                                 secrets (authored by showrunner; rarely changes)
@@ -132,17 +140,13 @@ from the author.
       <id>.md                     per-location facts
     /threads
       <id>.md                     per-thread (objects, secrets, cross-book links)
-  whodunit-ledger.md            [human doc, NEVER parsed] how the schedule works,
-                                narrative notes
   /whodunit
     book-NN.yaml                [machine-read, LOCKED] culprit, per-chapter clue
                                 schedule, red herrings, alibi grid (authored by
                                 /plan-mystery; read by fairplay_check.py)
-  style-sheet.md                accumulating spelling/punctuation decisions
 
 /output
   /book-NN
-    outline.md
     /chapters
       ch-NN.draft.md              frontmatter carries drafted_by: <model> (§7)
       ch-NN.reviews/              verdicts from inspectors (carry reviewed_by)
@@ -301,7 +305,7 @@ principle to the mystery itself by separating three roles:
 On approval, `/plan-mystery` writes `/series/whodunit/book-NN.yaml` (the trackable
 clue/red-herring/alibi data, **structured per chapter** so each chapter's planting
 obligations can be handed out without revealing the answer) and updates the prose
-`/series/whodunit-ledger.md` (human notes), and writes
+`/input/series/whodunit-ledger.md` (human notes), and writes
 `/output/book-NN/mystery-solution.md` (the sealed answer key), then sets
 `.penny/locks/book-NN.mystery.lock`.
 
