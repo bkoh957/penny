@@ -16,7 +16,7 @@ def penny_root(tmp_path):
         (tmp_path / ".penny" / "current-stage").write_text(line + "\n", encoding="utf-8")
 
     def write_outline(book: str, chapter_count: int):
-        d = tmp_path / "output" / f"book-{book}"
+        d = tmp_path / "input" / f"book-{book}"
         d.mkdir(parents=True, exist_ok=True)
         body = "# Outline\n\n" + "".join(f"## Chapter {i}\n\n" for i in range(1, chapter_count + 1))
         (d / "outline.md").write_text(body, encoding="utf-8")

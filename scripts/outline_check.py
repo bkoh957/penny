@@ -1,13 +1,13 @@
 """Outline structural checker (deterministic, Tier-3, shape-only).
 
-Validates that an author outline (output/book-NN/outline.md) is SHAPED like an
+Validates that an author outline (input/book-NN/outline.md) is SHAPED like an
 outline — nothing more. Four named predicates; zero genre/LLM judgment. Fairness,
 suspect-existence and prose quality are judged elsewhere (the lock, the scaffolder,
 the human review). Mirrors fairplay_check.py: named predicate + nonzero exit.
 
 Dependency-free apart from scripts.penny_meta (frontmatter) — no PyYAML.
 
-  python3 scripts/outline_check.py output/book-01/outline.md
+  python3 scripts/outline_check.py input/book-01/outline.md
 """
 # Note: `metrics` is only meaningful when `blocking` is empty — callers must check
 # `blocking` first; metrics carry raw/None values on a malformed outline.
@@ -103,7 +103,7 @@ def check_outline(outline_path, *, repo_root=None) -> dict:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Penny outline structural checker.")
-    ap.add_argument("outline", help="path to output/book-NN/outline.md")
+    ap.add_argument("outline", help="path to input/book-NN/outline.md")
     args = ap.parse_args(argv)
     result = check_outline(args.outline)
     for line in result["blocking"]:
