@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.penny_meta import parse_frontmatter
 
 _HEADING_RE = re.compile(r"^##\s+(.*?)\s*$", re.MULTILINE)
-_CHAPTER_RE = re.compile(r"^Chapter\s+(\d+)$")
+_CHAPTER_RE = re.compile(r"^Chapter\s+(\d+)(?:\s.*)?$")
 _SOLUTION_RE = re.compile(r"^Solution\b(?::\s*(?P<label>.*?))?$")
 
 

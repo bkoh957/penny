@@ -30,10 +30,14 @@ edit and commit with `/finalize-chapter`.
    echo "book=$book chapter=$chapter stage=DRAFT" > .penny/current-stage
    ```
 
-3. **Assemble the ledger slice** (design §4.2): always load
-   `series/continuity/canon-core.md`; then load the continuity entries named in the
-   chapter brief and their one-hop `links`. (Phase 1: if no brief exists yet, load
-   canon-core only.)
+3. **Assemble the chapter brief and ledger slice** (design §4.2):
+   - **Chapter brief:** Read `input/book-$book/outline.md`. Extract the full
+     section for chapter $chapter: the `## Chapter $chapter — *` heading, its
+     **Chapter Summary**, **Chapter Structure** (Start/Desire, Pressure/Obstacle,
+     Turn/Change, Texture/Pleasure Layer, Hook), and **Track Movement** (M/P/R/B).
+     This is the brief passed to the drafter.
+   - **Ledger slice:** Always load `series/continuity/canon-core.md`; then load the
+     continuity entries named in the brief and their one-hop `links`.
 
 4. **Ensure output paths exist:**
 

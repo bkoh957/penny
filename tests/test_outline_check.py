@@ -55,3 +55,8 @@ def test_empty_solution_label_fails_outline_solution():
 def test_unlabeled_solution_is_valid():
     result = check_outline(FIX / "unlabeled-solution.md")
     assert result["blocking"] == []
+
+
+def test_chapter_headings_with_titles_are_valid():
+    result = check_outline(FIX / "well-formed-titled.md")
+    assert result["blocking"] == []

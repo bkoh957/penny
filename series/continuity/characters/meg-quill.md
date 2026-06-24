@@ -8,7 +8,7 @@ links: [the-wheelhouse, b-romance, c-internal, gift, a-murder]
 
 **Age:** 43. **Role:** Protagonist / amateur sleuth.
 
-Former HR director (twenty years; professional keeper of other people's secrets). Divorced; fled the city. Opened The Wheelhouse pottery studio on Pelican's Crook main street — a return to the passion she shelved, not a whim. She is warm, observant, dry-humoured, and quietly raw from the divorce. Competent with her hands and uncertain about her new life.
+Twenty years in HR, the last decade as Director — professional keeper of other people's secrets. Divorced; fled the city. Opened The Wheelhouse pottery studio on Pelican's Crook main street — a return to the passion she shelved, not a whim. She is warm, observant, dry-humoured, and quietly raw from the divorce. Competent with her hands and uncertain about her new life.
 
 **The Migraine Sight.** She has suffered migraines since she was nineteen. During an episode the world becomes overwhelmingly detailed: she perceives everything in punishing clarity — textures, asymmetries, a wrong shadow — but records without understanding. Meaning arrives later, usually when she is pain-free and doing something mundane. She cannot summon the gift; the pain brings it. Every use costs her.
 

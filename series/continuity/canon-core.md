@@ -10,7 +10,7 @@ Keep this small: every line is a tax on every chapter.
 
 ## Protagonist fixed facts
 <!-- canon-meta: {id: protagonist-fixed, refs: [meg-quill], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
-- **Meg Quill**, 43, divorced former HR director turned potter. Runs The Wheelhouse studio on Pelican's Crook main street. OUTSIDER; arrived in autumn, Book 01. Suffers migraines that bring hyper-detailed, unranked perception (the Migraine Sight) — she records everything and understands later.
+- **Meg Quill**, 43, divorced former HR professional (twenty years in HR, latterly Director) turned potter. Runs The Wheelhouse studio on Pelican's Crook main street. OUTSIDER; arrived in autumn, Book 01. Suffers migraines that bring hyper-detailed, unranked perception (the Migraine Sight) — she records everything and understands later.
 
 ## Current timeline position
 <!-- canon-meta: {id: current-timeline, refs: [], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
