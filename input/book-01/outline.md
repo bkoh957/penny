@@ -16,10 +16,11 @@ total_chapters: 28
 - A-murder — a beloved GP is killed for a mercy mistaken as murder; the truth surfaces through Meg's gift and detonates the family she is falling for
 - B-romance — a slow-burn between Meg and Tom, carpenter, complicated when the killer is revealed to be his aunt; wounded but bonded by the end
 - C-internal — a woman who stopped seeing her own life honestly learns to see again; recovering from a stale marriage, reclaiming her art, finding a place
-- gift — the Migraine Sight moves from binge-and-hangover party trick, through recording-without-understanding, to the click that solves the case; the origin mystery is teased but not resolved
-- victim-reveal — Neil is mourned as a saint, exposed as a sinner when his old mercy surfaces, then understood as a person; the arc completes in Act III
+- pottery-business — Meg moves from hiding behind seconds and underpricing her work, through the surf-club commission and repaired-glaze breakthrough, to claiming The Wheelhouse as a viable studio, shop and teaching space.
+- gift — the Migraine Sight moves from painful, unfiltered sensory recording, through dangerous overconfidence and social-validation misuse, to disciplined observation that can guide but not replace proof; the origin mystery is teased through Artie and Elspeth Vale but not resolved.
+- victim-reveal — Neil is mourned as a saint, exposed as a sinner when his old mercy surfaces, then understood as a difficult, secretive person: capable of compassion, capable of harm, and human enough to have underestimated what truth would do to the people left behind.
 - comedy — the op-shop sisters' contradictory testimony, Faye's jam feud, Glaze the studio cat, and Meg's mortifying faux-pas blurts keep the tone warm throughout
-- series-seeds — Artie Selwood hints he has seen Meg's kind of sight before; Calloway's buried bench skeleton is raised but left unresolved; Saffron's humiliation opens a possible future friendship
+- series-seeds — Artie Selwood hints he has seen Meg's kind of sight before; Calloway's buried bench skeleton is raised but left unresolved; Mara's headland/developer conflict remains community texture unless promoted in a later book; Saffron's humiliation opens a possible future friendship and the Elspeth Vale hook.
 
 ---
 
@@ -109,7 +110,7 @@ A severe migraine overwhelms Meg in the studio: light becomes metallic, Glaze's 
 ## Chapter 04 — Everybody Hates the Doctor for a Reason
 
 ### Chapter Summary
-Meg works on preliminary designs for the surf-club centenary bowls when Tom returns to correct a shelving issue and quietly fixes another studio problem she has not noticed. At Faye's bakery, Neil's enemies surface one by one: he humiliated a fisherman, threatened to report prescription misuse, undermined Saffron's retreat, held private knowledge as leverage and was cruel to Beryl about her health. Mary goes still when someone says Neil would do anything for a patient, then remarks that Neil always believed he knew what was best. Later, the surf-club committee offers Meg a commission. She quotes too low, and Tom—annoyingly correct—shows her why underpricing is another way of admitting she does not believe her work matters.
+Meg works on preliminary designs for the surf-club centenary bowls when Tom returns to correct a shelving issue and quietly fixes another studio problem she has not noticed. The chapter spine is Meg learning professional self-respect: every mystery beat should orbit the commission, pricing and whether she believes her work deserves to be paid for. At Faye's bakery, Neil's enemies surface one by one: he humiliated a fisherman with public bluntness, threatened to report prescription misuse, undermined Saffron's retreat, enforced private medical boundaries without warmth, and frightened Beryl by telling a truth about her health too plainly. Mary goes still when someone says Neil would do anything for a patient, then remarks that Neil always believed he knew what was best. Later, the surf-club committee offers Meg a commission. She quotes too low, and Tom—annoyingly correct—shows her why underpricing is another way of admitting she does not believe her work matters.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants the surf-club commission because it could make The Wheelhouse legitimate.
@@ -169,7 +170,7 @@ Meg crashes under a disabling migraine and spends the night in darkness, ashamed
 ## Chapter 07 — The Fall That Was Too Tidy
 
 ### Chapter Summary
-The town gathers outside Neil's cottage while Sergeant Pruitt assesses what first appears to be an accidental fall: Neil lies at the foot of the stairs with a broken neck after a quiet evening at home. Meg remains outside the official scene, but a migraine rises and gives her a violent impression of domestic wrongness: a chair squared too carefully, the faint ring of a second cup, a damp folded tea towel, the wrong biscuit tin, and a tidiness that does not belong in a house no one had dusted for weeks. Then she sees her own failed vase on the hall table. Neil had displayed it prominently—not as kindness, but as a private joke about her work. It is wiped clean and sitting slightly out of place. Hurt turns to certainty, and Meg blurts that someone cleaned up.
+The town gathers outside Neil's cottage while Sergeant Pruitt assesses what first appears to be an accidental fall but is treated, carefully, as an unexplained death: Neil lies at the foot of the stairs with a broken neck after a quiet evening at home. Meg remains outside the official scene, but a migraine rises and gives her a violent impression of domestic wrongness: a chair squared too carefully, the faint ring of a second cup, a damp folded tea towel, the wrong biscuit tin, and a tidiness that does not belong in a house no one had dusted for weeks. Then she sees her own failed vase on the hall table. Neil had displayed it prominently, and she cannot tell whether it was kindness, dry humour, clinical curiosity, or a private joke about her work. It is wiped clean and sitting slightly out of place. Hurt turns into premature certainty, and Meg blurts that someone cleaned up.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants to understand whether Neil's death has anything to do with his voicemail or with her.
@@ -191,7 +192,7 @@ The town gathers outside Neil's cottage while Sergeant Pruitt assesses what firs
 ## Chapter 08 — The Studio Becomes an Incident Room
 
 ### Chapter Summary
-The Wheelhouse fills with townspeople buying unnecessary mugs and sharing stories about Neil that are half grief, half relief and half performance. Meg begins mapping reactions with the HR instincts she thought she had left behind: who is afraid, who is angry, who is relieved, who wants an audience. Tom arrives to repair a loose studio door and finds the place functioning as an unofficial incident room. He helps usher the last visitors out, then tells Meg she cannot let the town consume the business she has barely opened. Meg hears concern as an order and tells him someone has to listen. Tom replies that listening is not the same as collecting people.
+The Wheelhouse fills with townspeople buying unnecessary mugs and sharing stories about Neil that are half grief, half relief and half performance. Meg begins mapping reactions with the HR instincts she thought she had left behind: who is afraid, who is angry, who is relieved, who wants an audience. Mary quietly helps Meg manage the rush after the Beryl awkwardness begins to spread, wrapping purchases, making tea and seeming, for one whole afternoon, genuinely protective rather than controlling. Tom arrives to repair a loose studio door and finds the place functioning as an unofficial incident room. He helps usher the last visitors out, then tells Meg she cannot let the town consume the business she has barely opened. Meg hears concern as an order and tells him someone has to listen. Tom replies that listening is not the same as collecting people.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants to understand the people who hated Neil and find a pattern that explains his death.
@@ -251,7 +252,7 @@ Beryl becomes a plausible suspect after Meg learns she had a loud public argumen
 ## Chapter 11 — The Workshop and the Headland
 
 ### Chapter Summary
-Tom returns to The Wheelhouse for a genuine job and stays longer than necessary. He asks Meg to see the family workshop before deciding whether to sell it; in return, he agrees to build a display plinth for the surf-club bowls. Among old tools and incomplete repairs, Meg sees how much of Tom's life has been inherited rather than chosen. They argue over whether handmade work should reveal its flaws, then accidentally reveal what each has sacrificed to keep a life that no longer fits. At the boat ramp, Mara is working on dune restoration near a parcel of land a developer wants to acquire—land that would include both the workshop and part of the restoration ground. Meg reflexively treats it as a puzzle, and Mara reminds her it is Country and community, not a clever outsider's problem to solve.
+Tom returns to The Wheelhouse for a genuine job and stays longer than necessary. He asks Meg to see the family workshop before deciding whether to sell it; in return, he agrees to build a display plinth for the surf-club bowls. Among old tools and incomplete repairs, Meg sees how much of Tom's life has been inherited rather than chosen. They argue over whether handmade work should reveal its flaws, then accidentally reveal what each has sacrificed to keep a life that no longer fits. At the boat ramp, Mara is working on dune restoration near a parcel of land a developer wants to acquire—land that would include both the workshop and part of the restoration ground. This is community texture and a boundary lesson, not a second Book 1 mystery. Meg reflexively treats it as a puzzle, and Mara reminds her it is Country and community, not a clever outsider's problem to solve.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants Tom's help with the commission and a reprieve from the case's social damage.
@@ -311,7 +312,7 @@ A migraine hits near the foreshore, and in its disorienting flood Meg becomes ce
 ## Chapter 14 — The Old Papers
 
 ### Chapter Summary
-Pruitt learns that Neil had been sorting personal papers before his death. While Meg fixates on the documents, Pruitt mentions that Calloway's movements are accounted for; he is no longer a likely murderer, but something about the old magistrate's secret remains unsettling. Mary is seen leaving the cemetery with a box from family storage, and Tom says she has been sorting through his grandfather's belongings. Meg learns that Neil had intended to contact someone about an old matter and that the town's memory of him changing dates to roughly the time Mary's father died. The past begins to look less like background and more like the centre of the case.
+Pruitt learns that Neil had been sorting personal papers before his death. While Meg fixates on the documents, Pruitt mentions that the death is still officially suspicious rather than confirmed murder, and that Calloway's movements are accounted for; he is no longer a likely killer, but his buried bench secret and an old informal favour remain unsettling enough to keep him alive as a future-series thread. Mary is seen leaving the cemetery with a box from family storage, and Tom says she has been sorting through his grandfather's belongings. Meg learns that Neil had intended to contact someone about an old matter and that the town's memory of him changing dates to roughly the time Mary's father died. The past begins to look less like background and more like the centre of the case.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants evidence that can restore her credibility after the false dawn.
