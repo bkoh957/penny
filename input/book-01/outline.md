@@ -70,17 +70,17 @@ Meg Quill arrives in Pelican's Crook on an overcast autumn afternoon with clay t
 ## Chapter 02 — The Town's Version of Welcome
 
 ### Chapter Summary
-Faye arrives with sourdough, practical warmth and Pelican's Crook's unofficial rulebook. She introduces Meg to the people whose opinions matter: Dot and Glad, Cobber, Beryl, Saffron, Mara and Mary Burrell. Mara is briefly seen at the foreshore with restoration gear, arguing calmly but firmly with someone who mentions a developer's interest in the headland; Meg registers it as local noise rather than a living dispute. Mary gives Meg a lemon-tree cutting from her late father's garden and seems sincerely kind, but studies her too carefully when Tom's name comes up. By the end of the day, Meg feels welcomed and watched in equal measure.
+Faye arrives with sourdough, practical warmth and Pelican's Crook's unofficial rulebook. She introduces Meg to the people whose opinions matter: Dot and Glad, Cobber, Beryl, Saffron, Mara and Mary Burrell. Among the names is Iris Poole, who sells jam and preserves at the markets; Faye's manner around her goes briefly, precisely closed — warm enough on the surface, not warm underneath. Meg notices and does not ask. Mara is briefly seen at the foreshore with restoration gear, arguing calmly but firmly with someone who mentions a developer's interest in the headland; Meg registers it as local noise rather than a living dispute. Mary gives Meg a lemon-tree cutting from her late father's garden and seems sincerely kind, but studies her too carefully when Tom's name comes up. By the end of the day, Meg feels welcomed and watched in equal measure.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants to make a good first impression without appearing needy.
 - **Pressure / Obstacle:** The town offers warmth, but each welcome carries a test: listen, do not presume, and do not rush intimacy.
 - **Turn / Change:** Meg has a foothold in the community, a potential friend in Faye, and a subtle warning that Mary has opinions about Tom's future.
-- **Texture / Pleasure Layer:** Bakery gossip, sourdough, lemons in a chipped blue bowl, foreshore wind, and competing versions of local history.
+- **Texture / Pleasure Layer:** Bakery gossip, sourdough, lemons in a chipped blue bowl, foreshore wind, competing versions of local history, and Faye's impeccable composure when Iris Poole's name comes up.
 - **Hook:** Mary casually asks how long Meg expects to stay.
 
 ### Track Movement
-- **M:** Introduces the future suspect pool without signalling suspects too loudly.
+- **M:** Introduces the future suspect pool without signalling suspects too loudly. Plants Iris Poole as the other party in the jam feud — no explanation given.
 - **P:** Meg's hunger for belonging makes her prone to accepting warmth at face value.
 - **R:** Faye becomes Meg's first friend; Mary is established as generous, observant and quietly protective of Tom.
 - **B:** Faye offers to recommend The Wheelhouse to local customers—but only if Meg learns the town before trying to sell it a story.
@@ -130,19 +130,19 @@ Meg works on preliminary designs for the surf-club centenary bowls when Tom retu
 ## Chapter 05 — The Autumn Market
 
 ### Chapter Summary
-Beryl's autumn market fills the hall and foreshore with baked goods, handmade work, dog leads and the kind of gossip that travels faster than weather. Every major suspect passes through Meg's orbit. Lonely and eager to be included, she skips lunch, drinks too much coffee, ignores her migraine warnings and keeps offering sharp observations because people respond to them. She enjoys the attention more than she wants to admit. Mary folds a tea towel with crisp, habitual precision and returns cups to their places without looking. Tom notices Meg pushing herself and tells her to eat something; she hears it as criticism. Mary later tells Tom that Meg seems to like being watched too much.
+Beryl's autumn market fills the hall and foreshore with baked goods, handmade work, dog leads and the kind of gossip that travels faster than weather. Every major suspect passes through Meg's orbit. Iris Poole's jam and preserve stall occupies the far end of the hall from Faye's display — a spatial fact every regular knows not to comment on. Lonely and eager to be included, Meg skips lunch, drinks too much coffee, and begins reading the market as a social text: stall positions as a map of allegiances, foot traffic as a mood indicator, the distance between Faye and Iris as a wound given physical form. People respond when she narrates her observations aloud. She is briefly dazzling. Then she reads the feud too precisely and too publicly — an accurate remark about Iris Poole's private motivation for the dispute, delivered in front of the wrong people — and the crowd that was enjoying her goes quiet. Faye's expression changes. Mary folds a tea towel with crisp, habitual precision and returns cups to their places without looking. Tom notices Meg pushing herself and tells her to eat something; she hears it as criticism. Mary later tells Tom that Meg seems to like being watched too much.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants a successful market day and proof that locals might actually buy her work.
-- **Pressure / Obstacle:** Hunger, stimulation and the temptation to perform cleverness make her less careful and more exposed.
-- **Turn / Change:** Meg earns attention but leaves the market overextended, embarrassed and vulnerable to the migraine that follows.
-- **Texture / Pleasure Layer:** Market stalls, a pelican stealing a sausage roll, Dot and Glad competing over raffle strategy, and Glaze escaping into a basket of tea towels.
-- **Hook:** Meg ignores a final warning sign from her body just as her phone begins to ring.
+- **Pressure / Obstacle:** The Sight makes her briefly impressive, then makes her the wrong kind of interesting: she reads Iris Poole's private wound accurately and publicly, and the crowd changes around her.
+- **Turn / Change:** Meg earns attention then loses goodwill; she leaves the market overextended, embarrassed and vulnerable to the migraine that follows.
+- **Texture / Pleasure Layer:** Iris Poole's stall at its deliberate distance from Faye's, a pelican stealing a sausage roll, Dot and Glad competing over raffle strategy, and Glaze escaping into a basket of tea towels.
+- **Hook:** Faye is looking at Meg with something more complicated than warmth just as her phone begins to ring.
 
 ### Track Movement
-- **M:** Plants Mary's cup-and-tea-towel resetting habit.
-- **P:** Establishes Meg's approval trap and her tendency to equate being interesting with being safe.
-- **R:** Tom's care is misread as judgement; Mary begins quietly framing Meg as unsuitable for him.
+- **M:** Plants Mary's cup-and-tea-towel resetting habit. Seeds the jam feud with Iris Poole present and named in the hall.
+- **P:** First concrete instance of the approval trap: the Sight used as performance overreaches into someone's private wound; the same pattern Meg will repeat with Beryl (ch 10) and Calloway (ch 13).
+- **R:** Tom's care is misread as judgement; Mary begins quietly framing Meg as unsuitable for him; Faye's complicated expression plants the first hairline crack in the friendship.
 - **B:** Meg gets some sales, but mostly of safe work, reinforcing her reluctance to show ambition.
 
 ---
@@ -170,19 +170,19 @@ Meg crashes under a disabling migraine and spends the night in darkness, ashamed
 ## Chapter 07 — The Fall That Was Too Tidy
 
 ### Chapter Summary
-The town gathers outside Neil's cottage while Sergeant Pruitt assesses what first appears to be an accidental fall but is treated, carefully, as an unexplained death: Neil lies at the foot of the stairs with a broken neck after a quiet evening at home. Meg remains outside the official scene, but a migraine rises and gives her a violent impression of domestic wrongness: a chair squared too carefully, the faint ring of a second cup, a damp folded tea towel, the wrong biscuit tin, and a tidiness that does not belong in a house no one had dusted for weeks. Then she sees her own failed vase on the hall table. Neil had displayed it prominently, and she cannot tell whether it was kindness, dry humour, clinical curiosity, or a private joke about her work. It is wiped clean and sitting slightly out of place. Hurt turns into premature certainty, and Meg blurts that someone cleaned up.
+The town gathers outside Neil's cottage while Sergeant Pruitt assesses what first appears to be an accidental fall but is treated, carefully, as an unexplained death: Neil lies at the foot of the stairs with a broken neck after a quiet evening at home. Meg remains outside the official scene, but a migraine rises and gives her a violent impression of domestic wrongness: a chair squared too carefully, the faint ring of a second cup, a damp folded tea towel, the wrong biscuit tin, and a tidiness that does not belong in a house no one had dusted for weeks. Then she sees her own failed vase on the hall table. Neil had displayed it prominently — the heavy, clumsy piece from ch 3, the one she had nearly thrown out. It is wiped to a careful dry and set slightly off its mark, as though returned by someone who knew where it belonged but could not remember exactly. Meg feels hurt and cannot say why: she cannot tell whether he kept it from kindness, dry humour or a private joke about her work, and the cleanness of it bothers her without resolving. Hurt turns into premature certainty, and Meg blurts that someone cleaned up.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants to understand whether Neil's death has anything to do with his voicemail or with her.
 - **Pressure / Obstacle:** She is outside the police process, physically unwell and emotionally destabilised by discovering Neil's cruelty.
 - **Turn / Change:** The death becomes suspicious; Meg records the staged scene, but she damages her credibility by blurting before she understands what she has seen.
 - **Texture / Pleasure Layer:** A crowd in unsuitable shoes on wet grass, thermoses appearing from nowhere, and Beryl trying to organise the police as though they are late volunteers.
-- **Hook:** Pruitt notices the wiped vase and tells Meg, quietly, that observation is not the same as proof.
+- **Hook:** Pruitt picks up the vase and holds it longer than strictly necessary — not just as evidence, as an object — before telling Meg, quietly, that observation is not the same as proof. He mentions he has been posted here two years; he is still learning what belongs where.
 
 ### Track Movement
-- **M:** Plants the erased second cup, reset room and wiped vase; establishes staged death rather than simple accident.
+- **M:** Plants the erased second cup, reset room and wiped vase; establishes staged death. The vase is the murder weapon — used to strike Neil before he fell — though neither Meg nor the reader yet knows it; its careful replacement by the killer is precisely what registers as wrong.
 - **P:** Meg's Sight records accurate details, but her hurt makes interpretation dangerous.
-- **R:** Mary is visibly distressed; the town begins to see Meg as the strange newcomer who says too much.
+- **R:** Mary is visibly distressed; the town begins to see Meg as the strange newcomer who says too much. Pruitt is established as a fellow newcomer — a parallel, not a contrast.
 - **B:** The vase ties Meg's professional insecurity directly to the crime scene.
 
 ---
@@ -192,7 +192,7 @@ The town gathers outside Neil's cottage while Sergeant Pruitt assesses what firs
 ## Chapter 08 — The Studio Becomes an Incident Room
 
 ### Chapter Summary
-The Wheelhouse fills with townspeople buying unnecessary mugs and sharing stories about Neil that are half grief, half relief and half performance. Meg begins mapping reactions with the HR instincts she thought she had left behind: who is afraid, who is angry, who is relieved, who wants an audience. Mary quietly helps Meg manage the rush after the Beryl awkwardness begins to spread, wrapping purchases, making tea and seeming, for one whole afternoon, genuinely protective rather than controlling. Tom arrives to repair a loose studio door and finds the place functioning as an unofficial incident room. He helps usher the last visitors out, then tells Meg she cannot let the town consume the business she has barely opened. Meg hears concern as an order and tells him someone has to listen. Tom replies that listening is not the same as collecting people.
+The Wheelhouse fills with townspeople buying unnecessary mugs and sharing stories about Neil that are half grief, half relief and half performance. Meg begins mapping reactions with the HR instincts she thought she had left behind: who is afraid, who is angry, who is relieved, who wants an audience. In the accumulation of cruel-Neil stories, Faye mentions without particular emphasis that Neil had described his pottery purchase to someone as the ugliest thing he had ever paid money for. Meg is already listening to three other conversations and does not come back to it. Mary quietly helps Meg manage the rush after the Beryl awkwardness begins to spread, wrapping purchases, making tea and seeming, for one whole afternoon, genuinely protective rather than controlling. Tom arrives to repair a loose studio door and finds the place functioning as an unofficial incident room. He helps usher the last visitors out, then tells Meg she cannot let the town consume the business she has barely opened. Meg hears concern as an order and tells him someone has to listen. Tom replies that listening is not the same as collecting people.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants to understand the people who hated Neil and find a pattern that explains his death.
@@ -202,7 +202,7 @@ The Wheelhouse fills with townspeople buying unnecessary mugs and sharing storie
 - **Hook:** Saffron refuses to answer a simple question about where she was on the night Neil died.
 
 ### Track Movement
-- **M:** Broadens suspect field and positions Saffron as a plausible first target.
+- **M:** Broadens suspect field and positions Saffron as a plausible first target. Plants Faye's offhand remark about Neil's contempt for the vase — a beat that resurfaces with new weight when the vase is confirmed as the murder weapon in ch 15.
 - **P:** Meg falls back into her old professional habit of reading rooms rather than participating in them.
 - **R:** Tom and Meg argue over privacy, responsibility and boundaries.
 - **B:** The Wheelhouse gains foot traffic but risks becoming known for gossip rather than craft.
@@ -232,7 +232,7 @@ Saffron Vale becomes the town's preferred suspect. Neil had undermined her welln
 ## Chapter 10 — Beryl's Changed Clothes
 
 ### Chapter Summary
-Beryl becomes a plausible suspect after Meg learns she had a loud public argument with Neil shortly before his death. At the bakery, Meg blurts that Beryl changed clothes on the night of the murder. The room freezes. The truth is private and devastating rather than criminal: Beryl changed after a frightening medical appointment and did not want the town's pity. Pruitt warns Meg that she cannot turn a fragment of observation into an accusation because it makes a room easier to read. Beryl tells her that seeing a great deal is not the same as understanding any of it. Tom witnesses the exchange and is appalled.
+Beryl becomes a plausible suspect after Meg learns she had a loud public argument with Neil shortly before his death. At the bakery, Meg blurts that Beryl changed clothes on the night of the murder. The room freezes. The truth is private and devastating rather than criminal: Beryl changed after a frightening medical appointment and did not want the town's pity. Pruitt warns Meg that she cannot turn a fragment of observation into an accusation because it makes a room easier to read. After the warning he adds, quietly, that the town would rather have a convenient answer than a true one — and that being new makes her the most convenient answer available. Beryl tells her that seeing a great deal is not the same as understanding any of it. Tom witnesses the exchange and is appalled.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants to test whether Beryl's argument with Neil gives her a real lead.
@@ -252,7 +252,7 @@ Beryl becomes a plausible suspect after Meg learns she had a loud public argumen
 ## Chapter 11 — The Workshop and the Headland
 
 ### Chapter Summary
-Tom returns to The Wheelhouse for a genuine job and stays longer than necessary. He asks Meg to see the family workshop before deciding whether to sell it; in return, he agrees to build a display plinth for the surf-club bowls. Among old tools and incomplete repairs, Meg sees how much of Tom's life has been inherited rather than chosen. They argue over whether handmade work should reveal its flaws, then accidentally reveal what each has sacrificed to keep a life that no longer fits. At the boat ramp, Mara is working on dune restoration near a parcel of land a developer wants to acquire—land that would include both the workshop and part of the restoration ground. This is community texture and a boundary lesson, not a second Book 1 mystery. Meg reflexively treats it as a puzzle, and Mara reminds her it is Country and community, not a clever outsider's problem to solve.
+Tom returns to The Wheelhouse for a genuine job and stays longer than necessary. He asks Meg to see the family workshop before deciding whether to sell it; in return, he agrees to build a display plinth for the surf-club bowls. Among old tools and incomplete repairs, Meg sees how much of Tom's life has been inherited rather than chosen. Tom says little about his parents beyond that they left early; Mary stepped in and brought him up; the workshop is the last thing his father left him and Mary has never let it be sold. The comment lands as backstory. They argue over whether handmade work should reveal its flaws, then accidentally reveal what each has sacrificed to keep a life that no longer fits. At the boat ramp, Mara is working on dune restoration near a parcel of land a developer wants to acquire—land that would include both the workshop and part of the restoration ground. This is community texture and a boundary lesson, not a second Book 1 mystery. Meg reflexively treats it as a puzzle, and Mara reminds her it is Country and community, not a clever outsider's problem to solve.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants Tom's help with the commission and a reprieve from the case's social damage.
@@ -264,7 +264,7 @@ Tom returns to The Wheelhouse for a genuine job and stays longer than necessary.
 ### Track Movement
 - **M:** A deliberate breath; establishes spaces and family stakes that will later shape Mary's behaviour.
 - **P:** Meg learns that not every problem is hers to interrogate or fix.
-- **R:** Attraction appears in practical partnership; Mara establishes a boundary with Meg.
+- **R:** Attraction appears in practical partnership; Mara establishes a boundary with Meg. Tom's upbringing — raised by Mary after his parents left — is planted as backstory; its significance to the revelation in ch 19 is withheld.
 - **B:** Tom begins the plinth, and Meg sees the commission as a professional undertaking rather than an audition for belonging.
 
 ---
@@ -272,39 +272,39 @@ Tom returns to The Wheelhouse for a genuine job and stays longer than necessary.
 ## Chapter 12 — Faye's Old Wound
 
 ### Chapter Summary
-Faye becomes a suspect Meg hates considering when she learns Neil knew the buried origin of a long-running jam feud that had once broken an important friendship. Meg follows the thread, treating it like a knot that can be untangled if she asks enough clever questions. The truth is sad rather than murderous: Neil handled a family crisis badly, then used the resulting private knowledge as leverage. Faye did not kill him, but Meg's pursuit of certainty hurts her anyway. Faye reminds Meg that asking the right question can still be an intrusion. Later, Faye insists Meg put several non-second pieces in the bakery window. Meg reluctantly agrees.
+Faye becomes a suspect Meg hates considering when she learns Neil knew the buried origin of the long-running jam feud with Iris Poole — a family crisis he handled badly and then used as private leverage. Meg follows the thread, treating it like a knot that can be untangled if she asks enough clever questions. The truth is sad rather than murderous: Faye did not kill Neil, but Meg's pursuit of certainty hurts her anyway. Faye tells her that asking the right question can still be an intrusion, and returns to work. The conversation ends there. Meg walks home past the bakery window; her pieces are not in it.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants to clear Faye without losing the chance of a meaningful clue.
 - **Pressure / Obstacle:** Faye's pain is real, but it is not Meg's to excavate for the satisfaction of solving something.
-- **Turn / Change:** Faye is emotionally cleared, Meg's friendship is bruised but not broken, and Meg takes a small risk with her real work.
-- **Texture / Pleasure Layer:** Jam jars as social evidence, Faye's carefully labelled pantry, and an argument over whether apricot preserves count as jam.
-- **Hook:** A customer stops at the bakery window and asks the price of one of Meg's best bowls.
+- **Turn / Change:** Faye is not mollified; the chapter ends on genuine damage. Meg's friendship with Faye sustains its first real wound.
+- **Texture / Pleasure Layer:** Jam jars as social evidence, Faye's carefully labelled pantry, an argument over whether apricot preserves count as jam, and the bakery window empty of Meg's pieces on the way home.
+- **Hook:** Faye does not answer Meg's next message.
 
 ### Track Movement
-- **M:** Clears Faye while revealing Neil's pattern of holding private pain over people.
-- **P:** Meg learns that listening is different from extracting.
-- **R:** Faye's friendship deepens through a hard boundary rather than easy forgiveness.
-- **B:** Meg publicly displays non-second work for the first time.
+- **M:** Clears Faye while revealing Neil's pattern of holding private pain over people. The feud origin (seeded in ch 2 and ch 5) is now explained.
+- **P:** Meg makes the mistake that costs her — pushes past the boundary the right question would have respected.
+- **R:** Faye's friendship takes its first real damage; Meg is not forgiven in this chapter. The repair comes later, enacted rather than declared.
+- **B:** Nothing. The bakery window is empty.
 
 ---
 
 ## Chapter 13 — The False Dawn
 
 ### Chapter Summary
-A migraine hits near the foreshore, and in its disorienting flood Meg becomes certain she has connected a detail from one location to a specific suspect at Neil's cottage. The observation itself is accurate; the context is not. Convinced she has finally found the answer, Meg presses the theory and takes it to Pruitt. The explanation collapses publicly when the detail proves innocent, and Meg loses more of the town's patience. The failure is especially painful because she was not imagining what she saw—she was simply too eager to make it mean what she needed it to mean.
+A migraine hits near the foreshore. In its distorted pattern-recognition, Meg connects a physical detail to a specific suspect: she has noticed a length of dark-stained rope by the boat ramp, with a taught knot she half-registered at Neil's cottage in ch 7 — a coil of dinghy gear near his shed door. The suspect is Vincent Calloway, who has unresolved history with Neil, has maintained the foreshore better than anyone for thirty years, and has never explained the informal favour between them. Meg asks Cobber whether he saw Calloway at the ramp recently. Cobber says that Vincent moves with the tide, always has. She hears it as confirmation. The theory collapses when she takes it to Pruitt: Calloway has maintained the boat ramp for three decades, the taught knot is standard small-craft issue used by every boat-keeper in the district including Neil for his own dinghy, and the rope proves nothing beyond two men who kept boats using the same knot. Surf-club members overhear the exchange at the station. By evening it is around town. Pruitt tells her — quietly enough that only she hears it — that the fact was real. She saw rope with a knot. Her conclusion was not.
 
 ### Chapter Structure
-- **Start / Desire:** Meg wants redemption after hurting Beryl and wants to prove her Sight can help rather than harm.
-- **Pressure / Obstacle:** The migraine supplies fragments, not conclusions; Meg wants certainty more than restraint.
-- **Turn / Change:** Her most confident theory fails, humbling her before the true delayed click later in the book.
-- **Texture / Pleasure Layer:** Wind-blown foreshore chaos, Cobber giving an answer that is both useless and accidentally poetic, and Glaze appearing in a fish-and-chip queue.
-- **Hook:** Pruitt tells Meg the fact was real—her conclusion was not.
+- **Start / Desire:** Meg wants redemption after hurting Beryl and Faye and wants to prove her Sight can help rather than harm.
+- **Pressure / Obstacle:** The migraine supplies fragments, not conclusions; the rope feels like evidence because the migraine makes it feel like evidence.
+- **Turn / Change:** The theory collapses publicly at the station; surf-club witnesses carry it through the town. Meg has now embarrassed herself in front of every social constituency that matters.
+- **Texture / Pleasure Layer:** Foreshore wind, the dark-stained rope at the boat ramp, Cobber's lyrical non-answer about tides, and Glaze appearing in a fish-and-chip queue.
+- **Hook:** Pruitt's correction — the fact was real, her conclusion was not — is delivered below the volume of the surf-club witnesses. He is protecting her reputation while correcting her.
 
 ### Track Movement
-- **M:** Demonstrates the fair-play rule: accurate observation can still produce a wrong answer.
+- **M:** Named clue (rope, taught knot), named suspect (Calloway), named innocent explanation (thirty years of boat ramp maintenance; standard knot). Cobber's lyrical uselessness here seeds his eventual specific role in ch 19, when Meg finally asks the right question. Calloway is partially cleared; ch 14 need only confirm his alibi in a line.
 - **P:** Meg confronts the difference between not looking away and assuming she knows the truth.
-- **R:** Tom sees how much the failure costs her but does not yet know how to comfort her without becoming angry first.
+- **R:** Tom sees how much the failure costs her but does not yet know how to help without becoming angry first. Pruitt's quiet delivery of the correction is a small act of protection — the first warmth in their professional dynamic.
 - **B:** Meg misses a commission deadline milestone, forcing her to work late and face the cost of distraction.
 
 ---
@@ -332,20 +332,20 @@ Pruitt learns that Neil had been sorting personal papers before his death. While
 ## Chapter 15 — Artie's Warning
 
 ### Chapter Summary
-Near the lighthouse, another migraine begins. Artie notices with unsettling competence and gets Meg out of the glare before she loses control of the sensory flood. He mentions that he once knew a woman who "saw rooms before they happened," then retreats into shipwreck history as though he has said nothing strange. Meg loses a day to the migraine. When she returns, Pruitt confirms the post-mortem: the broken neck fits a fall, but the blunt impact, bruising and wiped vase do not. Neil's death was not an accident.
+Near the lighthouse, another migraine begins. Artie notices with unsettling competence and gets Meg out of the glare before she loses control of the sensory flood. He mentions that he once knew a woman who "saw rooms before they happened," then retreats into shipwreck history as though he has said nothing strange. Meg loses a day to the migraine. When she returns, Pruitt comes to the studio — not summoning her to the station. He has bad coffee from the station machine; she offers better and he drinks it without comment. He confirms the post-mortem: the broken neck fits a fall, but the blunt impact and bruising do not — the instrument was the vase, her vase, the heavy clumsy piece from ch 3. Someone used it, wiped it and put it back. The Faye remark from ch 8 surfaces: Neil had called that purchase the ugliest thing he ever paid money for. The information rearranges itself. Passing the bakery on her way home, Meg sees one of her non-second bowls in the window. Faye has placed it without announcement. No conversation follows.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants a quiet errand and a return to normal competence after the old-papers discovery.
 - **Pressure / Obstacle:** The migraine interrupts her control; Artie's knowledge makes the gift feel older and more dangerous than she understood.
 - **Turn / Change:** The crime becomes formally suspicious, and Meg learns her perception may have a history beyond her own body.
-- **Texture / Pleasure Layer:** Lighthouse wind, Artie's eccentric archive habits, Tom darkening the studio and feeding Glaze without making a fuss.
-- **Hook:** Pruitt confirms that the vase was wiped in a house no one had cleaned in weeks.
+- **Texture / Pleasure Layer:** Lighthouse wind, Artie's eccentric archive habits, Tom darkening the studio and feeding Glaze without making a fuss, and Pruitt's station coffee accepted without complaint.
+- **Hook:** Pruitt confirms the vase — Meg's vase — was the blunt instrument. It was wiped in a house no one had cleaned in weeks.
 
 ### Track Movement
-- **M:** Confirms murder through ordinary forensic evidence, not Meg's intuition.
+- **M:** Confirms murder through ordinary forensic evidence; names the vase as the instrument; the ch 8 remark (Neil's contempt for the purchase) lands with new weight.
 - **P:** Expands the Migraine Sight into a possible series mystery.
-- **R:** Tom's practical care creates intimacy neither of them names.
-- **B:** Tom postpones an installation to help, showing that The Wheelhouse is becoming shared ground.
+- **R:** Tom's practical care creates intimacy neither of them names. Pruitt comes to the studio rather than summoning Meg — small gesture, second instance of warmth in their dynamic.
+- **B:** Faye's repair: Meg sees her own non-second bowl in the bakery window; Faye enacted it without comment. Tom postpones an installation to help, showing that The Wheelhouse is becoming shared ground.
 
 ---
 
@@ -394,7 +394,7 @@ At the surf club, the case against Saffron collapses publicly. Her hidden alibi 
 ## Chapter 18 — The Cup Returns Home
 
 ### Chapter Summary
-At a CWA hall clean-up, Beryl conscripts Meg, Mary and half the town into resetting a room after a fundraiser. Meg watches Mary reach for a shelf without looking, return a cup to a precise place, fold a tea towel in the exact crisp square she saw at the autumn market, and restore the room through muscle memory. The migraine-recorded domestic details at Neil's cottage suddenly align: the erased second cup, the damp folded towel, the wrong biscuit tin, the overly tidy room and the vase placed just slightly wrong. Mary had known Neil's house well enough to remove herself from it. The delayed click identifies Mary as the likely killer, but Meg does not act immediately.
+At a CWA hall clean-up, Beryl conscripts Meg, Mary and half the town into resetting a room after a fundraiser. Meg is watching someone restore order at the far end of the hall — the precision, the efficiency, the instinct to square things — and her mind goes to Tom before she looks up and sees it is Mary. She does not immediately understand the confusion. She watches Mary reach for a shelf without looking, return a cup to a precise place, fold a tea towel in the exact crisp square she saw at the autumn market, and restore the room through muscle memory. The question sits unresolved: why does Mary move like Tom, or is it the other way around? The migraine-recorded domestic details at Neil's cottage suddenly align: the erased second cup, the damp folded towel, the wrong biscuit tin, the overly tidy room and the vase placed just slightly wrong. Mary had known Neil's house well enough to remove herself from it. The delayed click identifies Mary as the likely killer, but Meg does not act immediately.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants to help with a normal community task and prove she can be useful without interrogating anyone.
@@ -404,89 +404,113 @@ At a CWA hall clean-up, Beryl conscripts Meg, Mary and half the town into resett
 - **Hook:** Meg sees Mary reset a cup in exactly the place where the erased second cup should have been.
 
 ### Track Movement
-- **M:** Delayed click connects Mary to the staged-scene evidence.
+- **M:** Delayed click connects Mary to the staged-scene evidence. The click initially registers as Tom-like — his precision, his habits — before Meg sees it is Mary; the confusion sits unresolved and will lock into meaning in ch 19.
 - **P:** Meg applies the Sight with patience rather than performance.
 - **R:** Mary's control around Tom becomes more visible; Meg understands that affection and danger can coexist.
 - **B:** Meg arrives carrying repaired sample bowls, and Beryl's approval gives her a quiet professional win.
 
 ---
 
-## Chapter 19 — A Name After Ten Years
+## Chapter 19 — The Evening Accounted For
 
 ### Chapter Summary
-Meg resists acting on the cup insight alone. She reviews Mary's distress, the old papers, the blue-green car sightings, Cobber's vague dawn memory, Mary's family access to Neil's cottage, and Mary's repeated resistance to Meg and Tom becoming close. She learns Mary once said she would wait "as long as it took" for the truth about her father and had always vowed to make whoever was responsible answer for it. Meg realises Mary did not merely grieve. She had been waiting for years for a name. Meg almost asks Tom for help interpreting Mary's behaviour, but decides she cannot ask him to choose between family loyalty and her suspicion before she has proof.
+Meg works backwards through who had unresolved business with Neil and reconstructs the timeline of his last evening. She places Beryl (the confrontation about the health truth Neil held over her), Faye (the private family wound Neil used as leverage), and Calloway (an informal favour the old papers suggest he was closing out) — each corroborated by fragments already in the record. The picture builds: a man who had several visitors on his last evening, each of whom came, argued or pleaded, and left. A gap remains. A window no confirmed visitor fills.
+
+The physical residue of the staged crime scene comes back to Meg: the squared chair, the folded tea towel, the cup returned to its exact place, the vase set slightly wrong. Whoever reset that room had habits of precision. Her mind goes to Tom — he had reason to be at the cottage; Neil had been planting doubt about the workshop sale. Tom is the most organised person Meg knows. The habits at the cottage fit him. She carries this without saying it, investigating the man she is falling in love with using the only discipline she has: the restraint she could not manage with Beryl or Saffron, which she manages now because the cost is higher.
+
+She goes back to Cobber with a specific question: that road, that evening, late. His answer is what it always is — lyrical, chaotic, half-useful — but inside it is the detail. A car he knew. Blue-green. Late, after the others. Not Tom's. Mary's.
+
+Meg tries to understand why relief at Tom's clearing feels like falling. She asks the question she should have asked weeks earlier: Tom's parents, how he ended up here. Cobber tells her without realising he has told her anything: Mary took him on after his parents were gone. She brought him up. "She made him who he is." The ch 18 confusion locks into meaning: the staged room was reset by the woman who taught Tom every organisational habit he has. The click is now positional, hard, and fully legible.
+
+Meg's phone rings on the walk home. Mary. Could Meg come for tea?
 
 ### Chapter Structure
-- **Start / Desire:** Meg wants to test the Mary theory without repeating the harm she caused Beryl and Saffron.
-- **Pressure / Obstacle:** Every piece of evidence is circumstantial, and pursuing Mary risks destroying the fragile trust growing between Meg and Tom.
-- **Turn / Change:** Mary becomes Meg's private primary suspect; Meg chooses proof over emotional reassurance.
-- **Texture / Pleasure Layer:** Cobber's unhelpfully lyrical recollection, Tom repairing a storm-damaged window, and Meg baking something terrible because she needs her hands occupied.
-- **Hook:** Meg finds a record of Mary's old vow to make the person responsible answer for her father's death.
+- **Start / Desire:** Meg wants to build a case that cannot repeat the pattern of Beryl and Saffron — accusation before proof.
+- **Pressure / Obstacle:** The physical evidence points to habits of precision that she initially reads as Tom's; she must carry the horror of suspecting him while she works toward proof.
+- **Turn / Change:** Cobber places Mary's car in the gap. The Tom confusion resolves: the habits belong to Mary, who raised him. The click from ch 18 locks.
+- **Texture / Pleasure Layer:** Cobber's lyrical non-answer about tides delivering the one thing that matters, the foreshore boat ramp, and Glaze waiting at the studio door when Meg returns.
+- **Hook:** Mary's phone call on the walk home: she would like Meg to come for tea.
 
 ### Track Movement
-- **M:** Builds Mary's motive and opportunity through fair-play evidence.
-- **P:** Meg practices restraint, separating suspicion from accusation.
-- **R:** Meg protects Tom from premature knowledge, which is both considerate and isolating.
+- **M:** Reconstructed night places Beryl, Faye and Calloway at the cottage; gap reveals Mary's car via Cobber; Tom's upbringing (raised by Mary) is the pivot that closes the ch 18 click.
+- **P:** Meg holds the horror of suspecting Tom and waits for proof — the restraint she could not manage with Beryl or Saffron, managed here because the cost is higher.
+- **R:** Tom briefly occupies the suspect position; the relief of clearing him changes what Meg understands about her own feelings.
 - **B:** Meg sends the surf-club committee a confident progress update rather than apologising for existing.
 
 ---
 
-## Chapter 20 — The Sinner
+## Chapter 20 — The Story She Chose to Tell
 
 ### Chapter Summary
-Pruitt obtains Neil's incomplete confession letter. It confirms that Neil hastened Mary's father's death years earlier. The town fractures: some call Neil a murderer, while others cannot reconcile the act with the warm doctor they dimly remember. The date explains Neil's transformation. He was beloved, then abruptly became cold, controlling and cruel after the death. Mary's motive becomes fully legible because she received the same half-truth: Neil did it, but the letter omits that her father had repeatedly begged for relief. Meg also learns that Neil's missed call was not about her Sight. He had found a useful lead for her migraine history and intended to refer her onward. The case was never secretly about Meg, though his attention mattered.
+Meg goes to Mary's house. Mary is warm, immaculate, precise — good cups, something brought from the kitchen, the manner of a woman who has been waiting to unburden herself. She tells Meg she has been meaning to be honest: she was at Neil's house that evening. She should have gone to the police straightaway. She was frightened. They argued — about Tom, the workshop sale, Neil's habit of planting doubt in Tom's mind about his future. She left. He was alive.
+
+The story is detailed. It sounds spontaneous. It has been rehearsed until it does. Mary is deploying Tom's name because she raised him, and she knows exactly what that name costs Meg. Her controlled story is not only self-protection — it is the performance of a woman who understands Meg's weak point and is pressing it.
+
+Meg says the right things. Accepts tea. Does not mention Cobber, the gap in the timeline, the cup habit, or the fact that she spent the morning placing Mary at the cottage. She leaves knowing Mary is one move ahead: if this version reaches Pruitt, the circumstantial case is blunted. She now needs the motive — what the argument was actually about — before Mary finishes setting her version in place.
+
+She goes to the library archive: old local papers, the year Neil visibly changed. She finds the death of Mary's father. She finds a GP's name in the account. An inquest note that trails off — incomplete, referencing Neil's presence, cause of death recorded as natural, something missing. Tom confirms the shape without meaning to: Mary never really recovered from her father's death; the year after he died was when her relationship with Neil went permanently cold.
+
+Meg now has the outline — the death, Neil's presence, a decade of waiting — but not what Neil actually did there.
 
 ### Chapter Structure
-- **Start / Desire:** Meg wants documentary proof that can explain Mary's grief without making assumptions about it.
-- **Pressure / Obstacle:** The confession is true but incomplete, and its partial truth is more dangerous than an outright lie.
-- **Turn / Change:** Neil's past becomes morally darker; Mary's likely motive becomes comprehensible; Meg lets go of the belief that the murder was centred on her.
-- **Texture / Pleasure Layer:** Town debate at the pub, badly made casseroles arriving at the station, and Faye correcting everyone who claims they always knew Neil was capable of it.
-- **Hook:** The confession ends before it explains why Neil acted.
+- **Start / Desire:** Meg needs the motive before Mary finishes controlling the story.
+- **Pressure / Obstacle:** Mary's version is detailed, warm and designed to be innocent; Meg must disprove it without revealing how much she knows.
+- **Turn / Change:** The motive's shape is found — the death, the GP, the transformation — but the act itself remains unknown. Meg is one step behind and knows it.
+- **Texture / Pleasure Layer:** Mary's immaculate house, good cups, the studied warmth of someone who has rehearsed, and the library's local papers in their dust-heavy folders.
+- **Hook:** The inquest note trails off before it explains Neil's role. The cause of death is recorded as natural. But Neil was present, he changed overnight, and Mary has been waiting ever since.
 
 ### Track Movement
-- **M:** Supplies the apparent motive and the victim's darkest reveal.
-- **P:** Resolves Meg's missed-call guilt while preserving the emotional importance of Neil's care.
-- **R:** The town fractures over Neil; Tom is forced to see Mary's grief in a new light.
+- **M:** Mary's controlled admission is itself evidence of consciousness of guilt — she is getting ahead of the witnesses who placed her car there. Motive shape found through active search, not delivered document.
+- **P:** Meg holds herself together in Mary's presence — warmth and known danger coexisting. She does not reveal what she knows.
+- **R:** Mary deploys Tom as a shield deliberately; Meg cannot counter without proof; the warmth between them now carries the weight of what Meg knows about it.
 - **B:** Meg must decide whether to use the commission's public display to re-enter town life or retreat again.
 
 ---
 
-## Chapter 21 — The Mercy
+## Chapter 21 — What the Box Holds
 
 ### Chapter Summary
-A second document surfaces from Mary's father: a letter, recording or journal entry proving that he repeatedly begged Neil for help because he could no longer bear the pain. The full truth lands. Neil did hasten the death, but he did so in response to a dying man's repeated plea. The warm doctor people remembered did one terrible, compassionate thing; carrying it alone helped turn him into the hard and punitive man the town later knew. Mary received only the act, never the begging. She killed the one person who had listened to her father—and Neil spent ten years punishing himself for having done it. Meg understands that the truth has been held in omissions all along: the erased cup, the wiped vase, and the missing half of a confession.
+The cemetery box. Mary was seen carrying it out of family storage in ch 14. It is almost certainly in her house. Meg cannot get it from Mary.
+
+She goes to Tom. She does not tell him why. She asks whether there are any of his grandfather's old papers she could look at — she has a question about Neil's connection to the family in those years. A half-truth. Not a lie. Tom finds what he has and leaves her to it.
+
+The father's words are there: a letter or journal entry — the kind of thing a man in serious pain writes in the dark, addressed to no one. He was not getting better. He was asking Neil. More than once. He wanted it to end and had asked directly.
+
+Meg reads it and understands the full picture. Neil did what the father asked for. Mary killed the one person who listened when her father said he could not bear it any longer. The final layer: Mary's controlled story — *we argued about Tom, I left, he was alive* — was designed to conceal the act. She had no idea the act was an answer to her father's prayer. She killed him to avenge a murder. She has been waiting a decade to avenge an act of mercy.
+
+Meg closes the box and replaces it on Tom's shelf. She asks one careful question: did Mary ever know what his grandfather's last weeks were really like? Tom goes still. He says nobody talked about it. That Mary always said her father died too soon. Meg walks home carrying more truth than Mary has ever had.
 
 ### Chapter Structure
-- **Start / Desire:** Meg wants the missing context that can distinguish revenge from justice and proof from story.
-- **Pressure / Obstacle:** The truth complicates everyone's moral certainty; no version allows easy mourning.
-- **Turn / Change:** Neil becomes fully human—neither saint nor simple villain—and Mary's tragedy becomes unbearable rather than merely criminal.
-- **Texture / Pleasure Layer:** An old recording played on an unreliable machine, rain over the cottage roofs, and Glaze sitting on the document as though he has a legal opinion.
-- **Hook:** Meg realises the only way Mary could have learned the confession's half-truth was if she had confronted Neil after receiving it.
+- **Start / Desire:** Meg needs the act — what Neil actually did — not just the shape of the motive.
+- **Pressure / Obstacle:** The evidence is in Mary's possession or was; Meg has to find a route to it that does not reveal her hand.
+- **Turn / Change:** The mercy is found through Tom — who, without knowing it, hands Meg the evidence against the woman who raised him. Meg now holds more truth than Mary does.
+- **Texture / Pleasure Layer:** Tom's shed and its careful disorder, old paper in a cardboard box, rain on the workshop roof, and Glaze settling on Meg's coat as though he has read the room.
+- **Hook:** Tom goes still at Meg's question. He says Mary always said her father died too soon.
 
 ### Track Movement
-- **M:** Completes the old-death evidence chain and corrects the false moral reading of Neil.
-- **P:** Meg consolidates the book's core lesson: truth requires context, patience and what people have left out.
-- **R:** The discovery makes Meg's coming conversation with Tom unavoidable.
-- **B:** Meg uses the repaired bowls as a visual metaphor for irreparable history that still has to be faced honestly.
+- **M:** The mercy is earned through active search, not delivered; the evidence chain is complete; Meg now holds the full picture.
+- **P:** Meg carries the father's words without acting on them; the discipline of not speaking before the right moment is demonstrated in full.
+- **R:** Tom hands Meg the evidence against the woman who raised him, unknowingly; the ch 23 conversation will be heavier for this.
+- **B:** Meg uses the repaired bowls as a visual metaphor — irreparable history that still has to be faced honestly.
 
 ---
 
 ## Chapter 22 — Proof, Not a Hunch
 
 ### Chapter Summary
-Meg goes to Pruitt with what she has learned. He makes her separate every observation from every piece of admissible evidence. Together, the case coheres: the post-mortem's blunt impact, the wiped vase in an undusted house, the staged tidiness, the blue-green car sightings, Cobber's partial corroboration, Mary's family access, the incomplete confession, the father's statement and the erased visit. Pruitt does not treat Meg's understanding of Mary's cup habit as proof. He treats it as the reason to ask the right questions and obtain the proof that will matter. For the first time, Meg feels useful without needing to be believed on faith.
+Meg goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, Calloway, and the gap); Cobber's account of the blue-green car late in the gap; Mary's controlled story (which is itself evidence of consciousness of guilt — she got ahead of the witnesses before Meg could speak); the motive shaped through the library archive; and the father's own words from Tom's papers. Pruitt makes her separate every observation from every piece of admissible evidence. He tells her something else: that he had briefly considered Tom too, independently, on the same physical evidence, before clearing him on proof rather than feeling. Meg hears this and understands: she and Pruitt had the same thought and followed the same discipline. Together the case coheres. Pruitt does not treat the cup habit as proof. He treats it as the reason to ask the right questions and obtain the proof that will matter. Before Meg leaves, he tells her — as a technical assessment, not a compliment — that she is the best witness he has worked with, and then catches himself having said it. She laughs. It is the first genuine laugh between them.
 
 ### Chapter Structure
 - **Start / Desire:** Meg wants Pruitt to act on Mary before Mary can destroy evidence or harm anyone else.
 - **Pressure / Obstacle:** Pruitt will not accept intuition, emotional certainty or narrative neatness in place of proof.
 - **Turn / Change:** Meg's observation becomes a properly bounded investigative lead, and Pruitt has enough to move carefully.
-- **Texture / Pleasure Layer:** Police-station coffee, Pruitt's labelled folders, Meg's horror at his taste in biscuits, and a moment of dry mutual respect.
+- **Texture / Pleasure Layer:** Pruitt's labelled folders, Meg's horror at his taste in biscuits, the case laid out on a station table, and the first genuine laugh between them.
 - **Hook:** Pruitt asks Meg whether Tom knows what she suspects.
 
 ### Track Movement
-- **M:** Locks the evidence chain into a fair-play police case.
-- **P:** Meg demonstrates the growth from blurted certainty to disciplined observation.
-- **R:** The question of telling Tom becomes the next emotional crisis.
+- **M:** Locks the full evidence chain into a fair-play police case: reconstruction + Cobber + Mary's controlled admission + motive + the father's words.
+- **P:** Meg demonstrates the full arc from blurted certainty to disciplined observation; the parallel with Pruitt's independent Tom consideration confirms the discipline is real.
+- **R:** Pruitt's parallel Tom consideration and the laugh: the professional relationship has become something neither names. The question of telling Tom is the next emotional crisis.
 - **B:** Meg chooses to deliver the commission on time before the arrest, refusing to abandon the life she is building.
 
 ---
@@ -617,33 +641,33 @@ Late November brings returning tourists, longer light and a studio that finally 
 
 ## Mystery Track
 
-- **Ch. 3–7:** Neil's connection to Meg, broad suspect field, staged fall, wiped vase.
-- **Ch. 8–13:** Suspect interviews and the cost of Meg's premature conclusions.
+- **Ch. 3–7:** Neil's connection to Meg, broad suspect field, staged fall, vase as murder weapon (withheld).
+- **Ch. 8–13:** Suspect interviews and the cost of Meg's premature conclusions; Calloway false dawn (rope/knot); vase mockery planted in ch 8; vase as instrument confirmed in ch 15.
 - **Ch. 14–17:** Old death, post-mortem confirmation, false Saffron solution collapses.
-- **Ch. 18–22:** Mary click, old confession, consent revelation, proof chain.
+- **Ch. 18–22:** Cup click (Tom-first ambiguity); reconstructed night + Tom false lead + Cobber places Mary (ch 19); Mary's controlled deception + active motive hunt (ch 20); mercy earned through Tom's papers (ch 21); full evidence chain to Pruitt (ch 22).
 - **Ch. 23–26:** Police action, confession, arrest, moral aftermath.
 - **Ch. 28:** Elspeth Vale series hook.
 
 ## Personal Track
 
 - **Ch. 1–6:** Meg hides behind seconds and craves approval; migraines isolate her.
-- **Ch. 7–13:** She mistakes observation for authority and hurts people.
+- **Ch. 7–13:** She mistakes observation for authority and hurts people (Beryl, Calloway; ch 5 market overreach is the first instance).
 - **Ch. 14–18:** She learns to wait, listen and tolerate uncertainty.
-- **Ch. 19–22:** She separates insight from proof and guilt from responsibility.
+- **Ch. 19–22:** She holds the horror of suspecting Tom and waits for proof; separates insight from proof; the discipline is demonstrated.
 - **Ch. 23–28:** She accepts that right action can cost her love, then claims her work and belonging anyway.
 
 ## Romance / Community Track
 
-- **Ch. 1–5:** Tom and Meg irritate each other; Mary begins to intervene.
-- **Ch. 6–12:** Practical care, arguments about privacy, attraction through shared work.
-- **Ch. 13–17:** Tom's concerns are vindicated; Saffron is unfairly scapegoated.
-- **Ch. 18–24:** Mary becomes suspect, then culprit; Tom and Meg rupture.
-- **Ch. 25–28:** Saffron becomes an ally; the town accepts Meg; Tom and Meg choose unresolved connection.
+- **Ch. 1–5:** Tom and Meg irritate each other; Mary begins to intervene; Pruitt established as newcomer parallel (ch 7).
+- **Ch. 6–12:** Practical care, arguments about privacy, attraction through shared work; Faye friendship damaged (ch 12).
+- **Ch. 13–17:** Tom's concerns are vindicated; Saffron is unfairly scapegoated; Pruitt warmth builds in adversarial corrections (ch 13, 15).
+- **Ch. 18–24:** Tom false lead (ch 19); Mary's deception (ch 20); Tom unknowingly hands Meg the evidence (ch 21); Pruitt parallel + laugh (ch 22); Tom and Meg rupture (ch 23); arrest (ch 24).
+- **Ch. 25–28:** Saffron becomes an ally; the town accepts Meg; Tom and Meg choose unresolved connection. Both Tom and Pruitt tracks remain open.
 
 ## Business Track
 
 - **Ch. 1–4:** The Wheelhouse opens; Meg displays seconds; surf-club commission begins.
-- **Ch. 5–12:** She risks showing real work and begins learning pricing and professional standards.
+- **Ch. 5–12:** First Sight-as-performance failure at market (ch 5); Faye repair enacted without comment (ch 15); commission focus damaged by case.
 - **Ch. 13–17:** The case damages her focus; the repaired bowls reveal her signature artistic voice.
 - **Ch. 18–23:** She delivers, invoices and refuses to abandon her business during crisis.
 - **Ch. 25–28:** She establishes boundaries, joins the art trail and begins teaching.
