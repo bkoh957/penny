@@ -241,8 +241,11 @@ The workshop chapter already establishes Tom's inherited life and Mary's stake i
 | Chapter | Type | Change |
 |---------|------|--------|
 | Ch 2 | Seed | Jam feud texture: name, absence, no explanation |
-| Ch 5 | Seed | Feud other party at market; worn joke; Meg files it |
+| Ch 5 | Revision | Feud other party at market; Sight use lands and overreaches; hook amended |
+| Ch 7 | Revision | Vase is the murder weapon (wiped, replaced wrong); mockery withheld |
 | Ch 7 | Touch | Pruitt holds vase longer; newcomer detail |
+| Ch 8 | Addition | Faye's offhand remark: Neil called the vase the ugliest thing he'd paid for |
+| Ch 15 | Amendment | Post-mortem names the vase as instrument; ch 8 remark returns with weight |
 | Ch 10 | Touch | Pruitt honest beat after correction |
 | Ch 11 | Seed | Tom's parents gone; Mary raised him; workshop context |
 | Ch 12 | Revision | Ends on rupture; bakery window beat removed |
@@ -254,6 +257,48 @@ The workshop chapter already establishes Tom's inherited life and Mary's stake i
 | Ch 20 | Full revision | Mary's controlled story; active motive hunt under time pressure |
 | Ch 21 | Full revision | Tom's papers; father's words earned; mercy understood |
 | Ch 22 | Touch | Pruitt's parallel Tom consideration; the laugh |
+
+---
+
+### 9. Chapter 5 — The Sight at the Market (addition)
+
+The existing ch 5 outline establishes Meg's approval trap but has no specific Sight use. Add the following beat:
+
+Over-caffeinated and skipping lunch, Meg begins reading the market as a spatial text — stall positions as a social map, foot-traffic patterns as a mood indicator, who avoids which aisle. She narrates observations to Faye or a bystander and people respond warmly. The Sight makes her briefly dazzling. Then she overreaches: she reads the other party in the jam feud (their careful avoidance of Faye's end of the hall, a defensive precision in how they arrange their produce) and makes a remark that is accurate about their private motivation for the dispute — not cruel, but too penetrating and too public. The crowd that was enjoying her goes quiet. Faye's expression changes. What felt like wit is now exposure.
+
+This is the first instance of the pattern Meg will repeat with Beryl (ch 10) and Calloway (ch 13): the Sight gives her accurate information that she uses as performance before she understands that accuracy and entitlement are different things.
+
+The beat simultaneously plants the jam feud seed (the other party is present and named; the dispute's shape is visible) as required by the ch 2/ch 5 seed plan above.
+
+**Hook revision:** The existing hook (Meg ignores a final warning sign as her phone rings) can remain. Add: before the phone rings, she catches Faye looking at her with something more complicated than warmth.
+
+---
+
+### 10. Chapter 7 — The Vase as Weapon; Mockery as Delayed Arc (amendment)
+
+#### Ch 7 — what Meg sees
+
+The vase detail in ch 7 remains as drafted: wiped clean, sitting slightly out of place, Meg can't read it. The Sight records wrongness without understanding.
+
+The revision beneath this: Mary struck Neil with the vase before he fell. She wiped it and replaced it almost correctly — almost. The "slightly out of place" is where she put it back wrong. Meg registers the wrongness; the Sight is accurate; she doesn't yet know why the wrongness matters.
+
+The vase's full significance is withheld from ch 7. Meg leaves the scene carrying a wound about the purchase (kindness? mockery? clinical curiosity?) without resolving it.
+
+#### Ch 8 — the mockery planted
+
+In the stream of cruel-Neil testimony that fills the studio in ch 8, Faye mentions — in the casual accumulation of "Neil could be unkind" stories — that Neil described the vase purchase to someone as the ugliest thing he'd ever paid money for. Said as an example of his dry cruelty. Not aimed at Meg. Lands in the noise of many stories. Meg half-hears it and does not return to it.
+
+#### Ch 15 — the weapon confirmed
+
+The post-mortem (as drafted) confirms blunt force trauma inconsistent with a simple fall. Pruitt confirms the instrument was the vase — her work. Meg now knows: her pot was used to kill a man. The ch 8 remark surfaces immediately with new weight. He bought it to mock it. He kept it on the hall table where visitors couldn't miss it. He died by it.
+
+The B track consequence: Meg's worst fear about her own work — that she displays seconds because she knows the real pieces aren't safe either — is confirmed by a dead man who bought her failure as a joke. This is the darkest turn of the professional insecurity that opens ch 1, and it arrives exactly as she is beginning to believe her work has value (the repaired bowls, ch 17).
+
+#### Irony available in ch 21 or later
+
+When the full picture of Mary's act is understood, a quiet grim layer is available to the reader: Mary killed Neil with the piece he bought to sneer at and had placed prominently for private amusement. Neil's cruelty became the literal instrument of his death. This does not need to be stated; it can sit in the reader's mind.
+
+---
 
 ## What Does Not Change
 
