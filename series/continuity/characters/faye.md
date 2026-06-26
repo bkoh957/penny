@@ -1,7 +1,7 @@
 ---
 id: faye
 type: character
-links: [the-bakery, comedy, a-murder]
+links: [the-bakery, comedy, a-murder, iris-poole]
 ---
 <!-- canon-meta: {id: faye, refs: [], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: "series regular; best friend"} -->
 # Faye
