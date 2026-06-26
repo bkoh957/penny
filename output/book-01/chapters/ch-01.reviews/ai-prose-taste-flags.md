@@ -6,18 +6,17 @@ schema: penny-verdict/1
 score: 4
 ---
 
-- reviewed_by: claude-sonnet-4-6
-- Flag 1 (polished contrasts): one mild rote instance — the HR backstory sentence 'the rest of her had gone somewhere else, and she hadn't noticed until it had been gone quite a long time'. The dissociation insight is earned by context but 'somewhere else' is never located; the prose gestures at depth without grounding it.
-- Flag 2 (interpretive endings): no unearned instances. 'The eucalypts had not offered any insight. She had started the car again.' earns its deadpan by refusing the revelation. 'In the way of things, come undone' functions as wit integrated into sentence rhythm, not an explanatory tail.
-- Flag 3 (generic lyricism): none. Lyrical sentences are anchored to physical specifics of this place and character throughout. The prose actively avoids the interchangeable type.
-- Flag 4 (airless passages): no full-scene violation. HR backstory paragraph is densest but reads as compressed summary rather than scenic airlessness. Cal's scene actively inverts the tendency: sparse dialogue, unmarked silences, sentences that arrive after their required gaps.
-- Flag 5 (predictable closing cadence): one recognizable-type instance — 'Not happiness, not yet. Just the possibility of it.' The structure matches the stock uplift-resolution beat. Partially earned by: (a) sustained withholding of interpretation throughout the chapter makes this landing feel arrived-at; (b) the actual final sentence ('She did not close the door.') performs rather than states and is the real landing; (c) the cat on the apron gives the feeling a concrete vehicle.
-- Overall: prose consistently refuses the expected AI moves. No weather symbolism, no interiority as stage direction, no generic lyricism. Two rote-adjacent touches (flag 1, flag 5) read as moments of tiredness rather than systemic AI default. Not blocking.
-metrics: {"rote_flag1": 1, "rote_flag2": 0, "rote_flag3": 0, "rote_flag4": 0, "rote_flag5": 1, "total_rote": 2}
+- No blocking-density figuration. Voice is dry, specific, and largely earns its texture; only one genuinely rote tell, below the 3-instance threshold.
+- Flag 5 (closing cadence) ROTE but isolated: "Maggie Quill allowed herself something she hadn't felt in a long time. / Not happiness, not yet. Just the possibility of it." (L97-99) is near-identical in shape to the rubric example ("for the first time in years, she allowed herself to hope"). The specific final line "She did not close the door." (L101) partially redeems it, but the summation beat is stock uplift-resolution.
+- Flag 1/cadence (EARNED, noted): the "not X, (not Y,) just Z" construction recurs 3x (L17 'not dramatic, just very large'; L67 'not threatening, not especially beautiful, just present'; L99 'Not happiness, not yet. Just the possibility'). Each instance does concrete work individually; the repetition is a frequency-tic concern (Tier A), not a per-instance taste fault.
+- Flags 1-3 otherwise EARNED: 'travelling light was a virtue and not a diagnosis' (L9), 'emptiness that a room has when it's waiting rather than abandoned' (L19), 'the way the sea is when it decides to be the main fact of a place' (L17), 'the colour of the sea doing its own business' (L67) are specific to this place/character and not liftable into another book.
+- Flag 2 interpretive endings are controlled and witty rather than instructive: 'The eucalypts had not offered any insight.' (L11), 'The kiln remembered all of it and said nothing.' (L43) — earned voice, not hand-holding.
+- Flag 4 (airless): does NOT fire. Rhythm varies; many sentences are allowed to do one thing ('She left those in the boot.' L41; 'She did not move him.' L93). Prose breathes.
+metrics: {"airless_passage": false, "blocking_threshold": "3+ across flags 1-3/5 or any full-scene airless", "rote_instances_flags_1_3_5": 1}
 evidence:
-  - {"flag": 1, "line": "the rest of her had gone somewhere else, and she hadn't noticed until it had been gone quite a long time", "reason": "dissociation gesture ungrounded \u2014 'somewhere else' unnamed; prose gestures at depth without locating it", "verdict": "rote-adjacent"}
-  - {"flag": 5, "line": "Not happiness, not yet. Just the possibility of it.", "reason": "stock uplift-resolution structure; partially redeemed by 'She did not close the door.' as performing rather than stating the final beat", "verdict": "rote-adjacent"}
-  - {"flag": 1, "line": "travelling light was a virtue and not a diagnosis", "reason": "contrast is the chapter's premise; 'diagnosis' specified concretely in the next sentence", "verdict": "earned"}
-  - {"flag": 2, "line": "The eucalypts had not offered any insight. She had started the car again.", "reason": "deadpan refusal of the revelatory beat is itself the beat; withholds rather than over-explains", "verdict": "earned"}
-  - {"flag": 3, "line": "the sea was doing what the sea does, which is to say it was going on without her", "reason": "generic frame subverted by 'going on without her' \u2014 specific emotional register for this character at this moment", "verdict": "earned"}
-  - {"flag": 4, "line": "Here at 3. T.", "reason": "Cal's scene is the strongest counter-evidence to airlessness; two words, no interpretation, no atmosphere layered on", "verdict": "counter-evidence"}
+  - {"call": "rote", "flag": 5, "line": "97-99", "quote": "allowed herself something she hadn't felt in a long time. Not happiness, not yet. Just the possibility of it."}
+  - {"call": "earned-but-repeated", "flag": "1/cadence", "lines": "17,67,99", "note": "not X, (not Y,) just Z recurs 3x"}
+  - {"call": "earned", "flag": 3, "line": 17, "quote": "the way the sea is when it decides to be the main fact of a place"}
+  - {"call": "earned", "flag": 2, "line": 43, "quote": "The kiln remembered all of it and said nothing."}
+  - {"call": "not-present", "flag": 4, "note": "rhythm varies; single-purpose sentences present"}
+  - {"reviewed_by": "claude-opus-4-8"}

@@ -11,10 +11,10 @@ schema: penny-verdict/1
 - filtering_verbs: 1 (density 0.43/1k, threshold 4) ok
 - soft_qualifiers: 3 (density 1.3/1k, threshold 5) ok
 - metaphor_pool: 0 (density 0.0/1k, threshold 5) ok
-- sentence_variance: 118 (density 17.06/1k, threshold 4.0) ok
+- sentence_variance: 118 (density 17.04/1k, threshold 4.0) ok
 - cinematic_fragments: 0 (density 0.0/1k, threshold 1) ok
-- lexical_repetition: 31 (density 13.45/1k, threshold 3) FLAGGED
-metrics: {"n_sentences": 118, "n_words": 2304, "sentence_stdev": 17.06}
+- lexical_repetition: 31 (density 13.41/1k, threshold 3) FLAGGED
+metrics: {"n_sentences": 118, "n_words": 2311, "sentence_stdev": 17.04}
 evidence:
   - {"line": 18, "span_text": "noticed", "tic_id": "filtering_verbs"}
   - {"line": 26, "span_text": "almost", "tic_id": "soft_qualifiers"}

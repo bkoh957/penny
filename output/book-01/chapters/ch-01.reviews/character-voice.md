@@ -6,16 +6,13 @@ schema: penny-verdict/1
 score: 5
 ---
 
-- Blind test PASS: Cal and Maggie dialogue is immediately distinguishable without tags. Cal's speech is functional trade shorthand (contracted, measurement-driven, subjectless fragments). Maggie's two spoken lines are bare and held-back — a different register entirely.
-- Lexical repetition 31 (flagged by voice_drift.py): NOT harmful. Repetitions are spatial anchors (kiln, shelves, apron, sea, clay, door) appropriate to a chapter in which the protagonist is inventorying a new space. Anaphoric construction in the HR-face passage ('she had been... she had sat... she had kept it on') is deliberate stylistic accumulation, not monotony. Repetition earns its keep.
-- Fluency-stage (OUTSIDER): CLEAN. Maggie's narration is standard English throughout. 'Grog-proof' (l.1) is colloquial Australian English a Melbourne HR director would use, not a Pelican's Crook local idiom — no insider-belonging signal. Local idiom ('she'll hold fine', 'd'you want them') is correctly confined to Cal's mouth.
-- Voice-drift checkers all clean (0 flags) except lexical_repetition; lexical_repetition judged benign (see above).
-- Principal voices: Maggie (warm, observant, dry, accumulating grief-by-HR-face), Cal (laconic, measurement-centric, practically expressive), Glaze the cat (behaviour only — property-inspection framing is nicely rendered). Three principals, three legible registers.
-- Rhythm: Maggie's narration alternates long wound-up sentences with short declarative cutoffs ('The eucalypts had not offered any insight. She had started the car again.'). Cal's speech arrives in the gaps it needs. Variance is structural, not accidental.
-- reviewed_by: claude-sonnet-4-6
-metrics: {"filtering_verbs": 1, "fluency_stage": "OUTSIDER", "lexical_repetition": 31, "premature_terms": 0, "sentence_stdev": 17.06, "soft_qualifiers": 3}
+- Blind test PASSED. Cal Burrell is unmistakable on diction alone: clipped tradesman vernacular and Australian register ("Where dyou want them?", "saw something in the grain, shell hold fine", "whenever youre ready", "he was right, thanks"). Maggie speaks almost no dialogue but her close-third interior voice is distinct and consistent: dry, self-auditing, elaborate ("travelling light was a virtue and not a diagnosis"). The two are in no way interchangeable.
+- voice_drift evidence used as-is, not re-counted. Only lexical_repetition FLAGGED (31, density 13.41 vs threshold 3); all other tics under threshold and sentence_stdev 17.04 is healthy. Inspector call: the repetition is benign — function words plus DELIBERATE parallelism in a single-POV chapter ("She looked at him. He looked at her."; the recurring "looked at... then looked at" patterning of Cal measuring). It reads as controlled rhythm, not off-voice drift. Not a violation; not blocking.
+- Fluency stage OUTSIDER respected. lexicon-fluency reports 0 premature-term flags. Eyeball confirms: boot/petrol/kerb/ute/grog-proof are standard Australian English and ceramics vocabulary in Maggies register, not Pelicans Crook local idiom; no BELONGING-tagged term leaks into her narration. Local colour stays out of her mouth, as the stage requires.
+- Score 5: distinct principal voices, varied rhythm, fluency stage held.
+metrics: {"blind_test": "pass", "drift_flag_call": "lexical_repetition benign", "fluency_stage": "OUTSIDER", "principals_tested": ["maggie", "cal"], "stage_break": false}
 evidence:
-  - {"check": "blind_test", "note": "Cal trade-shorthand vs Maggie held-back register; no interchangeability", "principals": ["Maggie", "Cal"], "result": "PASS"}
-  - {"check": "lexical_repetition", "count": 31, "judgment": "benign \u2014 spatial anchoring and anaphoric accumulation; not monotony"}
-  - {"check": "fluency_stage", "note": "grog-proof ruled non-local; all local idiom in Cal dialogue only", "stage": "OUTSIDER", "violations": 0}
-  - {"check": "voice_drift", "other_flags": 0, "verdict": "no drift concern"}
+  - {"line": 53, "note": "Cal idiom distinct", "span_text": "Where d'you want them?"}
+  - {"line": 57, "note": "Cal tradesman register", "span_text": "saw something in the grain, she'll hold fine"}
+  - {"line": 9, "note": "Maggie interior voice distinct", "span_text": "travelling light was a virtue and not a diagnosis"}
+  - {"line": 85, "note": "intentional parallelism, not drift", "span_text": "She looked at him. He looked at her."}
