@@ -16,7 +16,7 @@ The engine is genre- and location-agnostic.
 - Swappable project data: `config/`, `input/`, `series/`
 - Output/runtime artifacts: `output/`, `.penny/`
 
-Do not hardcode Book 01, Pelican's Crook, Meg, cozy mystery details, clues, or voice-pack details into `scripts/` or command/agent logic. Put project-specific material in `config/`, `input/`, or `series/`.
+Do not hardcode Book 01, Pelican's Crook, Maggie, cozy mystery details, clues, or voice-pack details into `scripts/` or command/agent logic. Put project-specific material in `config/`, `input/`, or `series/`.
 
 Use "the protagonist" in engine-layer files; do not hardcode the current protagonist name there.
 

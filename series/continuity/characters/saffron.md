@@ -12,6 +12,6 @@ Glamorous tree-changer running a wellness and yoga retreat the locals resent —
 
 **Red herring role (chs 9–18).** She had loud motive (Neil was steering patients away from her retreat), no alibi she will share, and a history of small deceptions. Pruitt builds a case against her. The case collapses publicly ch 18: her alibi is humiliating but real — a meeting with a debt recovery agent in Colac at the time in question. She was not in Pelican's Crook. She was broke and ashamed of it. That is all.
 
-**Post-vindication.** Ch 25: She accepts a cup of tea from Meg in the studio without either of them making it significant. The beginning of something. A mirror for Meg: another woman who came here to reinvent herself.
+**Post-vindication.** Ch 25: She accepts a cup of tea from Maggie in the studio without either of them making it significant. The beginning of something. A mirror for Maggie: another woman who came here to reinvent herself.
 
 **Series seed.** A possible reluctant ally from Book 02 onward.

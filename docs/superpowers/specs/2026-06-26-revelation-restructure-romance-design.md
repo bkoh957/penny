@@ -17,7 +17,7 @@ Four structural problems identified in review:
 
 3. **Ch 19–21** — Passive revelation. After the ch 18 click, evidence arrives through delivered documents rather than active search. Mary does nothing. There are no false leads. Rising action is absent.
 
-4. **Romance architecture** — Tom and Pruitt are both present across the book but neither is deliberately constructed as a love interest track. Pruitt in particular reads as purely functional.
+4. **Romance architecture** — Cal and Pruitt are both present across the book but neither is deliberately constructed as a love interest track. Pruitt in particular reads as purely functional.
 
 ---
 
@@ -29,19 +29,19 @@ Four structural problems identified in review:
 
 **Ch 2 addition:** One line establishing the jam feud as a community fixture — a name, a pointed absence of warmth at Faye's counter, Faye's expression going briefly closed. No explanation. Town texture.
 
-**Ch 5 addition:** At the autumn market, the other party in the feud has a stall; their produce positioned conspicuously apart from Faye's table; a bystander makes a worn joke about it, the kind of joke that has been made many times. Meg notes it as something she hasn't earned the full story of yet.
+**Ch 5 addition:** At the autumn market, the other party in the feud has a stall; their produce positioned conspicuously apart from Faye's table; a bystander makes a worn joke about it, the kind of joke that has been made many times. Maggie notes it as something she hasn't earned the full story of yet.
 
 When ch 12 reveals the origin, the reader is paying off something they've been carrying — not meeting it for the first time.
 
 #### Ch 12 revision — ends on rupture
 
-The chapter proceeds as drafted: Meg learns the feud's origin, presses too hard, Faye tells her that asking the right question can still be an intrusion. Change: **the chapter does not heal**. Faye goes quiet and efficient rather than hurt-but-deepened. The conversation ends with Faye returning to work. Meg walks home past the bakery window. Her pieces are not there.
+The chapter proceeds as drafted: Maggie learns the feud's origin, presses too hard, Faye tells her that asking the right question can still be an intrusion. Change: **the chapter does not heal**. Faye goes quiet and efficient rather than hurt-but-deepened. The conversation ends with Faye returning to work. Maggie walks home past the bakery window. Her pieces are not there.
 
-Hook revised: Faye doesn't answer Meg's next message. Or someone mentions that Faye has been a bit off lately and Meg knows why.
+Hook revised: Faye doesn't answer Maggie's next message. Or someone mentions that Faye has been a bit off lately and Maggie knows why.
 
 #### Bakery window beat — moves to ch 14 or 15
 
-Faye's decision to put Meg's real work in the window arrives without announcement, on Faye's own schedule. In ch 15 (Artie's Warning), Meg passes the bakery and sees a bowl she recognises in the window. No conversation. Faye doesn't mention it when Meg comes in. The repair is enacted, not declared. That is how real friendship works — and it means Meg doesn't get to watch it happen.
+Faye's decision to put Maggie's real work in the window arrives without announcement, on Faye's own schedule. In ch 15 (Artie's Warning), Maggie passes the bakery and sees a bowl she recognises in the window. No conversation. Faye doesn't mention it when Maggie comes in. The repair is enacted, not declared. That is how real friendship works — and it means Maggie doesn't get to watch it happen.
 
 ---
 
@@ -49,25 +49,25 @@ Faye's decision to put Meg's real work in the window arrives without announcemen
 
 #### The clue
 
-During the migraine at the foreshore, Meg notices a length of rope by the boat ramp: dark-stained, heavy, with a distinctive taught knot. In the migraine's distorted pattern-recognition, the knot connects to something she half-registered at Neil's cottage in ch 7 — the same knot in a coil of dinghy gear near his shed door.
+During the migraine at the foreshore, Maggie notices a length of rope by the boat ramp: dark-stained, heavy, with a distinctive taught knot. In the migraine's distorted pattern-recognition, the knot connects to something she half-registered at Neil's cottage in ch 7 — the same knot in a coil of dinghy gear near his shed door.
 
 #### The suspect
 
 Vincent Calloway. He has unresolved presence from earlier chapters (the bench skeleton, the informal favour with Neil), knows the foreshore better than anyone, and had quiet ongoing contact with Neil.
 
-Meg's theory: Calloway used rope to stage something at Neil's cottage and discarded it at the ramp he maintains.
+Maggie's theory: Calloway used rope to stage something at Neil's cottage and discarded it at the ramp he maintains.
 
 #### Cobber
 
-Meg asks whether he saw Calloway at the ramp recently. Cobber says "Vincent moves with the tide, always has." Unhelpful, poetic. Meg hears it as confirmation.
+Maggie asks whether he saw Calloway at the ramp recently. Cobber says "Vincent moves with the tide, always has." Unhelpful, poetic. Maggie hears it as confirmation.
 
-This is the first instance of Cobber's established pattern: lyrical, chaotic, half-useful. Seeds his eventual crucial role in ch 19 — when Meg finally knows how to ask him the right question.
+This is the first instance of Cobber's established pattern: lyrical, chaotic, half-useful. Seeds his eventual crucial role in ch 19 — when Maggie finally knows how to ask him the right question.
 
 #### The collapse
 
-Pruitt finds the innocent explanation in under an hour. Calloway has maintained that boat ramp for thirty years. The taught knot is standard small-craft issue used by everyone in the district, including Neil for his own dinghy. Surf-club members overhear the earlier exchange at the station; by evening the town knows Meg tried to pin the murder on Calloway over a piece of rope.
+Pruitt finds the innocent explanation in under an hour. Calloway has maintained that boat ramp for thirty years. The taught knot is standard small-craft issue used by everyone in the district, including Neil for his own dinghy. Surf-club members overhear the earlier exchange at the station; by evening the town knows Maggie tried to pin the murder on Calloway over a piece of rope.
 
-Pruitt's line, quietly enough that only Meg hears it: *The fact was real. You saw rope with a knot. Your conclusion was not.*
+Pruitt's line, quietly enough that only Maggie hears it: *The fact was real. You saw rope with a knot. Your conclusion was not.*
 
 #### Effect on ch 14
 
@@ -77,9 +77,9 @@ Calloway is already partially cleared going into ch 14. The old papers chapter c
 
 ### 3. Chapter 18 — The Cup Returns Home (one revision)
 
-The cup-reset moment initially registers to Meg as Tom-like. She is watching someone restore order to the CWA hall before she sees who it is — the precision, the efficiency, the instinct to square things. Her mind goes to Tom. Then she looks up and it is Mary.
+The cup-reset moment initially registers to Maggie as Cal-like. She is watching someone restore order to the CWA hall before she sees who it is — the precision, the efficiency, the instinct to square things. Her mind goes to Cal. Then she looks up and it is Mary.
 
-She does not immediately understand the confusion. The delayed click still lands on Mary, as drafted. But the question it leaves behind — why does Mary move like Tom, or is it the other way around — sits in her without an answer. She does not follow it in ch 18.
+She does not immediately understand the confusion. The delayed click still lands on Mary, as drafted. But the question it leaves behind — why does Mary move like Cal, or is it the other way around — sits in her without an answer. She does not follow it in ch 18.
 
 The reader who rereads will see she almost had it.
 
@@ -91,42 +91,42 @@ The reader who rereads will see she almost had it.
 
 #### The reconstructed night
 
-Meg works backwards through who had unresolved business with Neil and traces a timeline of his last evening. She places Beryl (the confrontation about the health truth), Faye (the private family wound Neil had used as leverage), and Calloway (an informal favour between them, present in the old papers from ch 14, that Neil was closing out before he died — Calloway left before the gap, which is why he is cleared in ch 14). She builds the picture of a man who had several visitors on his last evening: each came, most argued or pleaded, none stayed.
+Maggie works backwards through who had unresolved business with Neil and traces a timeline of his last evening. She places Beryl (the confrontation about the health truth), Faye (the private family wound Neil had used as leverage), and Calloway (an informal favour between them, present in the old papers from ch 14, that Neil was closing out before he died — Calloway left before the gap, which is why he is cleared in ch 14). She builds the picture of a man who had several visitors on his last evening: each came, most argued or pleaded, none stayed.
 
 A gap remains. A window in the timeline that no confirmed visitor fills.
 
-#### The false lead — Tom
+#### The false lead — Cal
 
 The physical residue of the staged scene comes back to her: the squared chair, the folded tea towel, the cup returned to its exact place, the vase set slightly wrong. Whoever reset that room had habits of precision.
 
-Her mind goes to Tom. He had reason to be at the cottage: Neil had been planting doubt about the workshop sale, Tom's future, the life Mary had built for him. Tom is the most organised person Meg knows. The habits at Neil's cottage fit him.
+Her mind goes to Cal. He had reason to be at the cottage: Neil had been planting doubt about the workshop sale, Cal's future, the life Mary had built for him. Cal is the most organised person Maggie knows. The habits at Neil's cottage fit him.
 
 She does not say this to anyone. She carries it. She is investigating the man she is falling in love with, and the only version of herself that can do this without breaking is the one who waited for proof before speaking about Beryl, before going to Saffron.
 
 #### Cobber places Mary
 
-Meg returns to Cobber with a specific question: that evening, that road, late. His answer is what it always is — lyrical, chaotic, half-useful. But inside it is the detail. A car he knew. Blue-green. Late, after the others. Mary's.
+Maggie returns to Cobber with a specific question: that evening, that road, late. His answer is what it always is — lyrical, chaotic, half-useful. But inside it is the detail. A car he knew. Blue-green. Late, after the others. Mary's.
 
-Tom's vehicle is not the one Cobber saw. The car at the cottage, after the gap in the timeline, was Mary's.
+Cal's vehicle is not the one Cobber saw. The car at the cottage, after the gap in the timeline, was Mary's.
 
-#### The pivot — Tom was raised by Mary
+#### The pivot — Cal was raised by Mary
 
-Meg is trying to understand why relief at Tom's clearing feels like falling. She asks the question she should have asked weeks ago — Tom's parents, how he ended up here.
+Maggie is trying to understand why relief at Cal's clearing feels like falling. She asks the question she should have asked weeks ago — Cal's parents, how he ended up here.
 
 Cobber tells her, in the same conversation, without realising he's told her anything: Mary took him on after his parents were gone. She brought him up. "She made him who he is." Cobber is already talking; the information costs him nothing to add.
 
-The precision is not Tom's. He learned it in Mary's house. The ch 18 confusion locks into meaning: the staged room was reset by the woman who taught Tom every organisational habit he has. The click is positional, hard, and now fully legible.
+The precision is not Cal's. He learned it in Mary's house. The ch 18 confusion locks into meaning: the staged room was reset by the woman who taught Cal every organisational habit he has. The click is positional, hard, and now fully legible.
 
 #### Hook
 
-Meg's phone rings on the walk home. Mary. Could Meg come for tea?
+Maggie's phone rings on the walk home. Mary. Could Maggie come for tea?
 
 #### Track movement
 
-- **M:** Reconstructed night places multiple suspects at the cottage; gap reveals Mary; false lead runs through Tom; Tom's upbringing is the pivot that closes the click
-- **P:** Meg holds the horror of suspecting Tom and waits for proof — the restraint she could not manage with Beryl or Saffron, she manages here, because the cost is higher
-- **R:** Tom briefly occupies the suspect position; the relief of clearing him changes what Meg understands about her own feelings
-- **B:** Meg sends the surf-club committee a confident progress update rather than apologising for existing
+- **M:** Reconstructed night places multiple suspects at the cottage; gap reveals Mary; false lead runs through Cal; Cal's upbringing is the pivot that closes the click
+- **P:** Maggie holds the horror of suspecting Cal and waits for proof — the restraint she could not manage with Beryl or Saffron, she manages here, because the cost is higher
+- **R:** Cal briefly occupies the suspect position; the relief of clearing him changes what Maggie understands about her own feelings
+- **B:** Maggie sends the surf-club committee a confident progress update rather than apologising for existing
 
 ---
 
@@ -136,23 +136,23 @@ Meg's phone rings on the walk home. Mary. Could Meg come for tea?
 
 #### Mary's controlled confession
 
-Meg goes to Mary's house. Mary is warm, immaculate, precise. Good cups. She brings something from the kitchen and then, as if she has been working up to it, tells Meg she has been meaning to be honest with her: yes, she was at Neil's house that evening. She should have gone to the police straightaway. She was frightened. They argued — about Tom, the workshop sale, Neil's habit of planting doubt in Tom's mind about his future. She left. He was alive.
+Maggie goes to Mary's house. Mary is warm, immaculate, precise. Good cups. She brings something from the kitchen and then, as if she has been working up to it, tells Maggie she has been meaning to be honest with her: yes, she was at Neil's house that evening. She should have gone to the police straightaway. She was frightened. They argued — about Cal, the workshop sale, Neil's habit of planting doubt in Cal's mind about his future. She left. He was alive.
 
 The story is detailed. It sounds spontaneous. It has been rehearsed until it does.
 
-Meg says the right things. Accepts tea. Does not mention Cobber, the gap in the timeline, the cup habit, or the fact that she spent the morning placing Mary at the cottage. She leaves knowing Mary is one move ahead: if Mary takes this version to Pruitt, Meg's circumstantial case is blunted.
+Maggie says the right things. Accepts tea. Does not mention Cobber, the gap in the timeline, the cup habit, or the fact that she spent the morning placing Mary at the cottage. She leaves knowing Mary is one move ahead: if Mary takes this version to Pruitt, Maggie's circumstantial case is blunted.
 
-Mary's deception carries particular weight here: she raised Tom, and she knows exactly what deploying his name against Meg will cost. Her controlled story is not just self-protection — it is the performance of a woman who understands Meg's weak point and is pressing it.
+Mary's deception carries particular weight here: she raised Cal, and she knows exactly what deploying his name against Maggie will cost. Her controlled story is not just self-protection — it is the performance of a woman who understands Maggie's weak point and is pressing it.
 
 #### The active motive hunt
 
-Meg needs to know what the argument was actually about before Mary finishes setting her version of it in place. Time pressure.
+Maggie needs to know what the argument was actually about before Mary finishes setting her version of it in place. Time pressure.
 
 She goes to the library archive: old local papers, the year Neil visibly changed. She finds the death of Mary's father. She finds a GP's name in the account. An inquest note that trails off — incomplete, referencing Neil's presence, cause of death recorded as natural, something missing.
 
-Tom confirms the shape without meaning to: Mary never really got over her father's death. The year after he died was when her relationship with Neil went permanently cold.
+Cal confirms the shape without meaning to: Mary never really got over her father's death. The year after he died was when her relationship with Neil went permanently cold.
 
-Meg now has the outline — the death, Neil's presence, a decade of waiting — but not what Neil actually did there.
+Maggie now has the outline — the death, Neil's presence, a decade of waiting — but not what Neil actually did there.
 
 #### Hook
 
@@ -161,9 +161,9 @@ The inquest note trails off before it explains Neil's role. The cause of death i
 #### Track movement
 
 - **M:** Mary's controlled story blunts the circumstantial case; motive hunt is active under time pressure; shape of the motive found but not the act itself
-- **P:** Meg holds herself together in Mary's presence — warmth and known danger coexisting; she does not yet know how well she manages it
-- **R:** Mary deploys Tom as a shield and knows exactly what she is doing; Meg cannot counter without proof
-- **B:** Meg must decide whether to use the commission's public display to re-enter town life or retreat again
+- **P:** Maggie holds herself together in Mary's presence — warmth and known danger coexisting; she does not yet know how well she manages it
+- **R:** Mary deploys Cal as a shield and knows exactly what she is doing; Maggie cannot counter without proof
+- **B:** Maggie must decide whether to use the commission's public display to re-enter town life or retreat again
 
 ---
 
@@ -173,52 +173,52 @@ The inquest note trails off before it explains Neil's role. The cause of death i
 
 #### Getting to the papers
 
-The cemetery box. Mary was seen carrying it out of family storage in ch 14. It is almost certainly in her house. Meg cannot get it from Mary.
+The cemetery box. Mary was seen carrying it out of family storage in ch 14. It is almost certainly in her house. Maggie cannot get it from Mary.
 
-She goes to Tom. She does not tell him why. She asks whether there are any of his grandfather's old papers she could look at — she has a question about Neil's connection to the family in those years. A half-truth. Not a lie.
+She goes to Cal. She does not tell him why. She asks whether there are any of his grandfather's old papers she could look at — she has a question about Neil's connection to the family in those years. A half-truth. Not a lie.
 
-Tom finds what he has and leaves her to it.
+Cal finds what he has and leaves her to it.
 
 #### The discovery
 
 The father's words are there: a letter, or a journal entry — the kind of thing a man in serious pain writes in the dark, addressed to no one. He was not getting better. He was asking Neil. More than once. He wanted it to end and had asked directly.
 
-Meg reads it and understands the full picture: Neil did what the father asked for. Mary killed the one person who listened when her father said he could not bear it any longer.
+Maggie reads it and understands the full picture: Neil did what the father asked for. Mary killed the one person who listened when her father said he could not bear it any longer.
 
-The final layer: Mary's controlled story — *we argued about Tom, I left, he was alive* — was designed to conceal the act. She had no idea the act was an answer to her father's prayer. She killed him to avenge a murder. She has been waiting a decade to avenge an act of mercy.
+The final layer: Mary's controlled story — *we argued about Cal, I left, he was alive* — was designed to conceal the act. She had no idea the act was an answer to her father's prayer. She killed him to avenge a murder. She has been waiting a decade to avenge an act of mercy.
 
 #### Hook
 
-Meg closes the box and replaces it on Tom's shelf. She asks one careful question: "Did Mary ever know what your grandfather's last weeks were really like?"
+Maggie closes the box and replaces it on Cal's shelf. She asks one careful question: "Did Mary ever know what your grandfather's last weeks were really like?"
 
-Tom goes still. He says nobody talked about it. That Mary always said her father died too soon.
+Cal goes still. He says nobody talked about it. That Mary always said her father died too soon.
 
-Meg walks home carrying more truth than Mary has ever had.
+Maggie walks home carrying more truth than Mary has ever had.
 
 #### Track movement
 
-- **M:** The mercy is found through active search — Meg earns it; not delivered; the evidence chain is now complete
-- **P:** Meg carries the father's words without acting on them; the full discipline of not speaking before the right moment is now demonstrated
-- **R:** Tom hands Meg the evidence against the woman who raised him, unknowingly; the ch 23 conversation will be heavier for this
+- **M:** The mercy is found through active search — Maggie earns it; not delivered; the evidence chain is now complete
+- **P:** Maggie carries the father's words without acting on them; the full discipline of not speaking before the right moment is now demonstrated
+- **R:** Cal hands Maggie the evidence against the woman who raised him, unknowingly; the ch 23 conversation will be heavier for this
 - **B:** The repaired bowls as visual metaphor — irreparable history that still has to be faced honestly
 
 ---
 
 ### 7. Pruitt Seeding — Specific Chapter Touches
 
-Pruitt is a series-level second love interest, seeded but not developed in Book 1. He arrived in Pelican's Crook approximately two years before Meg — a relative newcomer, not a local, but no longer a stranger. His arc across Book 1 runs opposite to Tom's: Tom starts warm and ends fractured; Pruitt starts adversarial and ends warm. Both tracks are open at the book's close.
+Pruitt is a series-level second love interest, seeded but not developed in Book 1. He arrived in Pelican's Crook approximately two years before Maggie — a relative newcomer, not a local, but no longer a stranger. His arc across Book 1 runs opposite to Cal's: Cal starts warm and ends fractured; Pruitt starts adversarial and ends warm. Both tracks are open at the book's close.
 
-**Ch 7:** Pruitt picks up the wiped vase and holds it longer than strictly necessary. One detail placing him as a newcomer — two years, not a local, still learning the town. He is someone who looks carefully at things. A parallel to Meg, not a contrast.
+**Ch 7:** Pruitt picks up the wiped vase and holds it longer than strictly necessary. One detail placing him as a newcomer — two years, not a local, still learning the town. He is someone who looks carefully at things. A parallel to Maggie, not a contrast.
 
-**Ch 10:** After the professional correction, a beat. He says something honest about how the town works — its appetite for a convenient culprit, the social machinery that Meg is too new to navigate. Not comfort; a truth about what he navigates too. She hears it as professional. The reader hears something warmer.
+**Ch 10:** After the professional correction, a beat. He says something honest about how the town works — its appetite for a convenient culprit, the social machinery that Maggie is too new to navigate. Not comfort; a truth about what he navigates too. She hears it as professional. The reader hears something warmer.
 
 **Ch 13:** After the public exchange, Pruitt delivers his correction quietly — *the fact was real, your conclusion was not* — just below the volume the surf-club members can hear. He is protecting her reputation even while correcting her. Small distinction; not nothing.
 
 **Ch 15:** Pruitt comes to the studio to confirm the post-mortem rather than summoning her to the station. He has bad coffee from the station machine; she offers better and he drinks it without comment. The murder confirmation is clinical. The fact that he came to her is not.
 
-**Ch 19:** When Meg brings her reconstruction to Pruitt, he tells her — after the case coheres — that he had briefly considered Tom too. Independently. On the same physical evidence. He dismissed it on proof, not on feeling. Meg hears this and understands: Pruitt follows the same discipline she has been trying to learn. They had the same thought and handled it the same way.
+**Ch 19:** When Maggie brings her reconstruction to Pruitt, he tells her — after the case coheres — that he had briefly considered Cal too. Independently. On the same physical evidence. He dismissed it on proof, not on feeling. Maggie hears this and understands: Pruitt follows the same discipline she has been trying to learn. They had the same thought and handled it the same way.
 
-**Ch 22:** After the full case coheres and Meg is about to leave, he tells her she is the best witness he has worked with — technical assessment, not a compliment — and then catches himself having said it. She laughs. First genuine laugh between them. That is all. It is enough.
+**Ch 22:** After the full case coheres and Maggie is about to leave, he tells her she is the best witness he has worked with — technical assessment, not a compliment — and then catches himself having said it. She laughs. First genuine laugh between them. That is all. It is enough.
 
 ---
 
@@ -226,13 +226,13 @@ Pruitt is a series-level second love interest, seeded but not developed in Book 
 
 #### The two tracks
 
-**Tom — primary, Book 1.** Every scene with Tom has friction at its centre. Their connection is built in shared physical space — shelves, the plinth, the workshop, the studio table. The false lead in ch 19 (Meg briefly suspects Tom) is the worst version of what the romance has always threatened. When Tom learns in ch 23 that she suspected him and waited for proof anyway, it is both a wound and the closest thing to a declaration she makes in the book. The rupture in ch 23 is earned. Ch 27 is survival, not resolution. Tom ends Book 1 as an open wound that hasn't closed.
+**Cal — primary, Book 1.** Every scene with Cal has friction at its centre. Their connection is built in shared physical space — shelves, the plinth, the workshop, the studio table. The false lead in ch 19 (Maggie briefly suspects Cal) is the worst version of what the romance has always threatened. When Cal learns in ch 23 that she suspected him and waited for proof anyway, it is both a wound and the closest thing to a declaration she makes in the book. The rupture in ch 23 is earned. Ch 27 is survival, not resolution. Cal ends Book 1 as an open wound that hasn't closed.
 
-**Pruitt — seeded, series-level.** The professional relationship builds across the book into something neither names. By ch 22 it is warm without being declared. Not competing with Tom in Book 1; the possibility is present but undeveloped. Future books have somewhere to go with him.
+**Pruitt — seeded, series-level.** The professional relationship builds across the book into something neither names. By ch 22 it is warm without being declared. Not competing with Cal in Book 1; the possibility is present but undeveloped. Future books have somewhere to go with him.
 
 #### Foundation seed — ch 11
 
-The workshop chapter already establishes Tom's inherited life and Mary's stake in the sale. Add one line: Tom's parents were gone early; Mary brought him up; the workshop is the last thing his father left him and Mary has been the reason it was never sold. This lands as backstory in ch 11. On reread, it is the origin of everything — the habits, the loyalty, and the thing Mary built that she is about to destroy.
+The workshop chapter already establishes Cal's inherited life and Mary's stake in the sale. Add one line: Cal's parents were gone early; Mary brought him up; the workshop is the last thing his father left him and Mary has been the reason it was never sold. This lands as backstory in ch 11. On reread, it is the origin of everything — the habits, the loyalty, and the thing Mary built that she is about to destroy.
 
 ---
 
@@ -247,52 +247,52 @@ The workshop chapter already establishes Tom's inherited life and Mary's stake i
 | Ch 8 | Addition | Faye's offhand remark: Neil called the vase the ugliest thing he'd paid for |
 | Ch 15 | Amendment | Post-mortem names the vase as instrument; ch 8 remark returns with weight |
 | Ch 10 | Touch | Pruitt honest beat after correction |
-| Ch 11 | Seed | Tom's parents gone; Mary raised him; workshop context |
+| Ch 11 | Seed | Cal's parents gone; Mary raised him; workshop context |
 | Ch 12 | Revision | Ends on rupture; bakery window beat removed |
 | Ch 13 | Full revision | Rope/knot/Calloway/Cobber/collapse — full specificity |
 | Ch 15 | Addition | Bakery window: Faye's repair enacted without comment |
 | Ch 15 | Touch | Pruitt comes to studio; station coffee |
-| Ch 18 | Revision | Cup-click registers as Tom first, then Mary |
-| Ch 19 | Full revision | Reconstructed night; Tom false lead; Cobber/gap/Mary; pivot |
+| Ch 18 | Revision | Cup-click registers as Cal first, then Mary |
+| Ch 19 | Full revision | Reconstructed night; Cal false lead; Cobber/gap/Mary; pivot |
 | Ch 20 | Full revision | Mary's controlled story; active motive hunt under time pressure |
-| Ch 21 | Full revision | Tom's papers; father's words earned; mercy understood |
-| Ch 22 | Touch | Pruitt's parallel Tom consideration; the laugh |
+| Ch 21 | Full revision | Cal's papers; father's words earned; mercy understood |
+| Ch 22 | Touch | Pruitt's parallel Cal consideration; the laugh |
 
 ---
 
 ### 9. Chapter 5 — The Sight at the Market (addition)
 
-The existing ch 5 outline establishes Meg's approval trap but has no specific Sight use. Add the following beat:
+The existing ch 5 outline establishes Maggie's approval trap but has no specific Sight use. Add the following beat:
 
-Over-caffeinated and skipping lunch, Meg begins reading the market as a spatial text — stall positions as a social map, foot-traffic patterns as a mood indicator, who avoids which aisle. She narrates observations to Faye or a bystander and people respond warmly. The Sight makes her briefly dazzling. Then she overreaches: she reads the other party in the jam feud (their careful avoidance of Faye's end of the hall, a defensive precision in how they arrange their produce) and makes a remark that is accurate about their private motivation for the dispute — not cruel, but too penetrating and too public. The crowd that was enjoying her goes quiet. Faye's expression changes. What felt like wit is now exposure.
+Over-caffeinated and skipping lunch, Maggie begins reading the market as a spatial text — stall positions as a social map, foot-traffic patterns as a mood indicator, who avoids which aisle. She narrates observations to Faye or a bystander and people respond warmly. The Sight makes her briefly dazzling. Then she overreaches: she reads the other party in the jam feud (their careful avoidance of Faye's end of the hall, a defensive precision in how they arrange their produce) and makes a remark that is accurate about their private motivation for the dispute — not cruel, but too penetrating and too public. The crowd that was enjoying her goes quiet. Faye's expression changes. What felt like wit is now exposure.
 
-This is the first instance of the pattern Meg will repeat with Beryl (ch 10) and Calloway (ch 13): the Sight gives her accurate information that she uses as performance before she understands that accuracy and entitlement are different things.
+This is the first instance of the pattern Maggie will repeat with Beryl (ch 10) and Calloway (ch 13): the Sight gives her accurate information that she uses as performance before she understands that accuracy and entitlement are different things.
 
 The beat simultaneously plants the jam feud seed (the other party is present and named; the dispute's shape is visible) as required by the ch 2/ch 5 seed plan above.
 
-**Hook revision:** The existing hook (Meg ignores a final warning sign as her phone rings) can remain. Add: before the phone rings, she catches Faye looking at her with something more complicated than warmth.
+**Hook revision:** The existing hook (Maggie ignores a final warning sign as her phone rings) can remain. Add: before the phone rings, she catches Faye looking at her with something more complicated than warmth.
 
 ---
 
 ### 10. Chapter 7 — The Vase as Weapon; Mockery as Delayed Arc (amendment)
 
-#### Ch 7 — what Meg sees
+#### Ch 7 — what Maggie sees
 
-The vase detail in ch 7 remains as drafted: wiped clean, sitting slightly out of place, Meg can't read it. The Sight records wrongness without understanding.
+The vase detail in ch 7 remains as drafted: wiped clean, sitting slightly out of place, Maggie can't read it. The Sight records wrongness without understanding.
 
-The revision beneath this: Mary struck Neil with the vase before he fell. She wiped it and replaced it almost correctly — almost. The "slightly out of place" is where she put it back wrong. Meg registers the wrongness; the Sight is accurate; she doesn't yet know why the wrongness matters.
+The revision beneath this: Mary struck Neil with the vase before he fell. She wiped it and replaced it almost correctly — almost. The "slightly out of place" is where she put it back wrong. Maggie registers the wrongness; the Sight is accurate; she doesn't yet know why the wrongness matters.
 
-The vase's full significance is withheld from ch 7. Meg leaves the scene carrying a wound about the purchase (kindness? mockery? clinical curiosity?) without resolving it.
+The vase's full significance is withheld from ch 7. Maggie leaves the scene carrying a wound about the purchase (kindness? mockery? clinical curiosity?) without resolving it.
 
 #### Ch 8 — the mockery planted
 
-In the stream of cruel-Neil testimony that fills the studio in ch 8, Faye mentions — in the casual accumulation of "Neil could be unkind" stories — that Neil described the vase purchase to someone as the ugliest thing he'd ever paid money for. Said as an example of his dry cruelty. Not aimed at Meg. Lands in the noise of many stories. Meg half-hears it and does not return to it.
+In the stream of cruel-Neil testimony that fills the studio in ch 8, Faye mentions — in the casual accumulation of "Neil could be unkind" stories — that Neil described the vase purchase to someone as the ugliest thing he'd ever paid money for. Said as an example of his dry cruelty. Not aimed at Maggie. Lands in the noise of many stories. Maggie half-hears it and does not return to it.
 
 #### Ch 15 — the weapon confirmed
 
-The post-mortem (as drafted) confirms blunt force trauma inconsistent with a simple fall. Pruitt confirms the instrument was the vase — her work. Meg now knows: her pot was used to kill a man. The ch 8 remark surfaces immediately with new weight. He bought it to mock it. He kept it on the hall table where visitors couldn't miss it. He died by it.
+The post-mortem (as drafted) confirms blunt force trauma inconsistent with a simple fall. Pruitt confirms the instrument was the vase — her work. Maggie now knows: her pot was used to kill a man. The ch 8 remark surfaces immediately with new weight. He bought it to mock it. He kept it on the hall table where visitors couldn't miss it. He died by it.
 
-The B track consequence: Meg's worst fear about her own work — that she displays seconds because she knows the real pieces aren't safe either — is confirmed by a dead man who bought her failure as a joke. This is the darkest turn of the professional insecurity that opens ch 1, and it arrives exactly as she is beginning to believe her work has value (the repaired bowls, ch 17).
+The B track consequence: Maggie's worst fear about her own work — that she displays seconds because she knows the real pieces aren't safe either — is confirmed by a dead man who bought her failure as a joke. This is the darkest turn of the professional insecurity that opens ch 1, and it arrives exactly as she is beginning to believe her work has value (the repaired bowls, ch 17).
 
 #### Irony available in ch 21 or later
 
@@ -303,6 +303,6 @@ When the full picture of Mary's act is understood, a quiet grim layer is availab
 ## What Does Not Change
 
 - Saffron's alibi (Colac, debt agent) — intact; she is not among the suspects placed at the cottage that evening; the irony of her false-lead collapse in ch 17 is preserved
-- Ch 24 — Mary confessing, Pruitt giving her the father's letter; Mary receives the mercy as new information even though Meg has been carrying it since ch 21; this is still the book's most devastating single beat
-- Ch 22 structure — Meg goes to Pruitt with the full case; now she brings reconstruction + Cobber + Mary's own controlled admission (consciousness of guilt) + the motive + the mercy
-- Ch 23 — the worst conversation; now heavier because Tom will realise he handed Meg the evidence himself
+- Ch 24 — Mary confessing, Pruitt giving her the father's letter; Mary receives the mercy as new information even though Maggie has been carrying it since ch 21; this is still the book's most devastating single beat
+- Ch 22 structure — Maggie goes to Pruitt with the full case; now she brings reconstruction + Cobber + Mary's own controlled admission (consciousness of guilt) + the motive + the mercy
+- Ch 23 — the worst conversation; now heavier because Cal will realise he handed Maggie the evidence himself

@@ -1,11 +1,11 @@
 ---
 id: gift
 type: thread
-links: [meg-quill, neil-hartigan, artie-selwood, the-lighthouse]
+links: [maggie-quill, neil-hartigan, artie-selwood, the-lighthouse]
 ---
 # Thread: Gift (The Migraine Sight)
 
-The Migraine Sight arc. Book 01 moves the gift from binge-and-hangover party trick (Meg uses it to belong, pays the price), through recording-without-understanding (she sees the erasure at Neil's cottage but cannot interpret it), to the click that solves the case (ch 19, the cup moment). The origin mystery is teased but not resolved: Neil was the first professional to take her episodes seriously; Artie Selwood (ch 16) tells her he once knew a woman who saw the way Meg sees. Neither thread is closed in Book 01.
+The Migraine Sight arc. Book 01 moves the gift from binge-and-hangover party trick (Maggie uses it to belong, pays the price), through recording-without-understanding (she sees the erasure at Neil's cottage but cannot interpret it), to the click that solves the case (ch 19, the cup moment). The origin mystery is teased but not resolved: Neil was the first professional to take her episodes seriously; Artie Selwood (ch 16) tells her he once knew a woman who saw the way Maggie sees. Neither thread is closed in Book 01.
 
 Rules (load-bearing, hold across all books):
 - She cannot summon it at will — it rides in on the migraines.

@@ -14,4 +14,4 @@ Runs the town's social calendar with an iron fist and a clipboard. Every fundrai
 
 **Arc.** Thaws from obstacle to fierce, prickly ally across the series. Her illness humanises her without diminishing her authority.
 
-**Note.** Her events (markets, fundraisers, hall clean-ups) provide the warm community set-pieces every book needs — and a stage for Meg's gift to misfire publicly.
+**Note.** Her events (markets, fundraisers, hall clean-ups) provide the warm community set-pieces every book needs — and a stage for Maggie's gift to misfire publicly.

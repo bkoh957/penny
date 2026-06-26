@@ -1,12 +1,12 @@
 ---
-id: meg-quill
+id: maggie-quill
 type: character
 links: [the-wheelhouse, b-romance, c-internal, gift, a-murder]
 ---
-<!-- canon-meta: {id: meg-quill, refs: [protagonist-fixed], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: "series protagonist"} -->
-# Meg Quill
+<!-- canon-meta: {id: maggie-quill, refs: [protagonist-fixed], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: "series protagonist"} -->
+# Margaret "Maggie" Quill
 
-**Age:** 43. **Role:** Protagonist / amateur sleuth.
+**Full name:** Margaret Quill. **Known as:** Maggie. **Age:** 43. **Role:** Protagonist / amateur sleuth.
 
 Twenty years in HR, the last decade as Director — professional keeper of other people's secrets. Divorced; fled the city. Opened The Wheelhouse pottery studio on Pelican's Crook main street — a return to the passion she shelved, not a whim. She is warm, observant, dry-humoured, and quietly raw from the divorce. Competent with her hands and uncertain about her new life.
 

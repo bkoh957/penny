@@ -1,61 +1,65 @@
 # Handoff — Penny / main
-Saved: 2026-06-24 | Type: build
+Saved: 2026-06-26 | Type: build
 
 ## What we're building
-Running the per-chapter pipeline for Book 01 — finalize Ch-01 (gate HOLD, fix applied) and Ch-02 (gate PASS), then draft Ch-03. This session also added chapter-type word-count targets to the length profile and sharpened the drafter to enforce a minimum word count.
+Running the per-chapter pipeline for Book 01. **This session was a tree-wide character rename** (euphony review → three renames applied across all swappable data + drafts). The pipeline work from the previous handoff (re-gate ch-01, finalize ch-01/02, review ch-03–05, check stale ch-05 draft) is **still outstanding** — it was deferred again to do the rename first.
+
+## The renames (applied this session, NOT yet committed)
+| Old | New | Called | Slug/file |
+|---|---|---|---|
+| Meg Quill | **Margaret Quill** | **Maggie** | `meg-quill` → `maggie-quill` |
+| Tom Burrell | **Callum Burrell** | **Cal** | `tom` → `cal-burrell` |
+| Sergeant Dave Pruitt | **Sergeant Rick Pruitt** | — | `dave-pruitt` → `rick-pruitt` |
+
+- Display names replaced whole-word, case-sensitive (`Meg→Maggie`, `Tom→Cal`, `Dave→Rick`) across `series/ input/ output/ docs/ HERMES.md HANDOFF.md`. Repo-wide stray count is **0/0/0**; no word-collisions (e.g. `tomorrow`, `custom` untouched).
+- Formal-name lines added: canon-core = `Margaret "Maggie" Quill`; each of the 3 character files now carries a `**Full name:** … **Known as:** …` line.
+- Continuity ids/filenames `git mv`'d (history preserved); all cross-links/`refs`/`canon-meta` updated (`b-romance` link, canon-core `refs`, thread/location `links`).
+- **Locked surnames left intact:** Burrell (Cal keeps Burrell — shared w/ Mary), Vale (Saffron/Elspeth — series payload).
 
 ## Git state
-- Branch: `main`. HEAD `294fb4d`.
-- **Uncommitted changes:**
-  - `.claude/agents/drafter.md` — instruction #3 updated to classify chapter type + enforce min word count
-  - `config/length-profile.md` — replaced flat 2500-word target with five-row chapter-type table
-  - `output/book-01/chapters/ch-01.draft.md` — HR career fix applied (line 23)
-  - `series/continuity/canon-core.md` — updated: "twenty years in HR, latterly Director"
-  - `series/continuity/characters/meg-quill.md` — updated: "Twenty years in HR, the last decade as Director"
-- **Untracked:**
-  - `output/book-01/chapters/ch-01.gate.md` — says HOLD (pre-fix)
-  - `output/book-01/chapters/ch-01.reviews/` — all 5 inspector verdicts present
-  - `output/book-01/chapters/ch-02.gate.md` — says PASS
-  - `output/book-01/chapters/ch-02.reviews/` — all 5 inspector verdicts present
-- Tests: 250 passing.
+- Branch: `main`. HEAD `b29527a` (unchanged this session).
+- **Uncommitted (the rename):** ~35 tracked files modified, 3 renamed (`tom.md`→`cal-burrell.md`, `meg-quill.md`→`maggie-quill.md`, `dave-pruitt.md`→`rick-pruitt.md`). Plus pre-existing `HANDOFF.md` / `HERMES.md` edits.
+- **Untracked (from prior session, also got renamed in-place this session):**
+  - `output/book-01/chapters/ch-01.gate.md` — still says HOLD
+  - `output/book-01/chapters/ch-01.reviews/` — continuity-drift.md still has old BLOCKING flag
+  - `output/book-01/chapters/ch-02.gate.md` — PASS
+  - `output/book-01/chapters/ch-02.reviews/` — all 5 verdicts present
+  - `output/book-01/chapters/ch-03.draft.md`, `ch-04.draft.md` — drafted pre-outline-revision; ch 3/4 outline unchanged so valid
+  - `output/book-01/chapters/ch-05.draft.md` — **stale: drafted before outline revision (Iris Poole / Sight-overreach beats); needs redraft**
+- Tests: **251 passing** (re-run this session, post-rename).
 
 ## Next actions
-1. **Re-gate Ch-01.** The blocker (HR tenure mismatch) was fixed in the draft but the continuity-drift.md verdict still has the old BLOCKING flag. Re-run inspector-continuity for ch-01, then: `python3 -m scripts.review_gate output/book-01/chapters/ch-01.reviews` — confirm gate flips to PASS before finalizing.
-2. **Finalize Ch-01.** Run `/finalize-chapter 01 01` — requires `gate: PASS`.
-3. **Finalize Ch-02.** Run `/finalize-chapter 01 02` — already PASS, no issues.
-4. **Commit.** After both finalized: ledger fixes (canon-core, meg-quill), both drafts + gate + review dirs, both `.final.md` files, plus the drafter + length-profile changes from this session.
-5. **Draft Ch-03.** Brief is in `input/book-01/outline.md` under `## Chapter 03`. Meg's first migraine; Dr Neil Hartigan introduced. Opening type → 1,800–2,400 words (standard investigation range applies).
+1. **Decide: commit the rename first.** Recommend committing the rename as its own atomic change before resuming pipeline work (clean diff, easy to revert). User was asked and hadn't answered when handoff was saved. Suggested message: `refactor: rename Meg→Margaret "Maggie" Quill, Tom→Callum "Cal" Burrell, Dave→Rick Pruitt`. Note this would also add the untracked ch-01/02 review dirs + gate files unless staged selectively.
+2. **Re-gate Ch-01.** Re-run inspector-continuity (ch-01 `continuity-drift.md` still has the stale BLOCKING line from the old HR claim), then `python3 -m scripts.review_gate output/book-01/chapters/ch-01.reviews` — confirm gate flips to PASS.
+3. **Finalize Ch-01 and Ch-02.** `/finalize-chapter 01 01` then `/finalize-chapter 01 02` (02 already PASS). Both require `gate: PASS`.
+4. **Check/redraft ch-05.** Stale vs new outline (Iris Poole stall, Maggie's Sight dazzle-then-overreach on Iris's private wound, revised hook). Likely needs `/draft-chapter 01 05` again.
+5. **Review/gate ch-03 and ch-04.** `/review-chapter 01 03`, `/review-chapter 01 04` (outlines unchanged, drafts valid).
 
 ## Decisions made this session
-- **Voice pack rewritten (294fb4d):** 70% Clive James (travel-writer mode) / 30% Peter Temple. James supplies warmth, observational wit, and sentence architecture; Temple supplies economy, Australian register, and a pressure-modulated cadence for the climax. Temple's darkness/menace excluded entirely.
-- **Protagonist not named in voice pack:** User confirmed character name has changed and may change again — voice pack uses "the protagonist" throughout. Never hardcode a character name in engine-layer files.
-- **Climax modulation rule:** As tension rises, prose shifts progressively toward Temple (shorter sentences, less ruminative, no wit at peak). Returns to James after revelation. Encoded in `config/voice-pack/voice-pack.md`.
-- **Ch-01 gate: fix-then-re-gate approach:** Re-run inspector-continuity so the verdict reflects the corrected draft — don't just patch the existing verdict file.
-- **inspector-voice filename mismatch (ch-02):** Voice inspector wrote to `inspector-voice.md` instead of `character-voice.md`. Fixed by copying before gating. Watch for this on future chapters.
-- **Chapter length targets added this session:** Flat 2500-word target replaced with a five-row chapter-type table in `config/length-profile.md`. Drafter now classifies type from the brief and enforces the range minimum before stopping. The "check and continue" instruction in drafter.md is the load-bearing part — without it the model stops when the story feels complete rather than when the count is met.
+- **Renamed the continuity ids/filenames too, not just display text.** Rationale: leaving `id: meg-quill` while the character is Maggie is confusing; the whodunit yaml and engine (`scripts/`, `.claude/`) reference none of these three (protagonist & sergeant aren't suspects), so the blast radius was contained to `series/`. Verified 0 stray slugs.
+- **Case-sensitive whole-word replacement, not naive.** `Tom`/`Dave`/`Meg` as bare substrings would have mangled `tomorrow`/`custom`/etc. Used `perl -i -pe 's/\bTom\b/Cal/g'` (capitalized, word-boundaried); slugs are lowercase-hyphenated so the display pass couldn't touch them.
+- **Applied via `find -exec`, not a shell `for` loop.** First attempt with a `$(find…)` capture into a `for` loop silently failed (replacements didn't persist); `find … -exec perl -i {} +` worked.
+- **Renames also rewrote ch-01/02 drafts + review sidecars.** Accepted — keeps prose consistent; those reviews are slated for re-gate anyway so the rewritten quotes don't matter.
 
 ## User preferences expressed this session
-- Do not use the protagonist's name in engine-layer files (voice pack, agent definitions, scripts). Name changes are expected; use "the protagonist" instead.
-- Chapters must hit their type-appropriate word-count minimum — extend scenes rather than padding with recap.
+- **Euphony rules for character names** (the user's stated criteria, worth keeping for future books): stress alternation; trochaic first names; syllable-count interplay (short+long balances better than two punchy or two long); avoid repeated sounds at name boundaries; vowel/consonant variety.
+- User picks names decisively after a shortlist — give a few good alternatives, don't over-explain.
 
 ## Key files right now
-- `config/length-profile.md` — just updated with chapter-type table; now the authoritative word-count reference for the drafter
-- `.claude/agents/drafter.md` — instruction #3 updated; drafter now classifies chapter type and enforces minimum
-- `config/voice-pack/voice-pack.md` — authoritative voice brief for drafter + inspector-voice
-- `output/book-01/chapters/ch-01.draft.md` — HR fix on line 23; ready for re-gate
-- `output/book-01/chapters/ch-02.draft.md` — PASS gate; ready for finalize
-- `output/book-01/chapters/ch-01.reviews/` — verdicts present; continuity-drift.md still has old BLOCKING flag
-
-## AI-prose rubric calibration (Book 1 baseline)
-- Ch-01 ai-prose score: 4 (two rote-adjacent touches — Flag 1 HR dissociation "somewhere else", Flag 5 "Not happiness, not yet. Just the possibility of it." — neither blocking; final sentence rescues the ending)
-- Ch-02 ai-prose score: 3 (4 rote touches — 2×Flag 2 over-explains beats, 2×Flag 3 abstract where specific would serve)
+- `series/continuity/characters/maggie-quill.md`, `cal-burrell.md`, `rick-pruitt.md` — renamed character files (formal-name lines added)
+- `series/continuity/canon-core.md` — protagonist line now `Margaret "Maggie" Quill`; `refs: [maggie-quill]`
+- `input/book-01/outline.md` — display names updated; still authoritative for the pipeline
+- `output/book-01/chapters/ch-05.draft.md` — stale draft; check/redraft before review
+- `output/book-01/chapters/ch-01.reviews/continuity-drift.md` — old BLOCKING flag; must re-run inspector-continuity
 
 ## Watch out for
-- **Ch-01 gate.md still says HOLD.** Must re-run inspector-continuity (not just review_gate) — the existing continuity-drift.md verdict still contains the BLOCKING line for the old HR claim.
-- **Do not name the protagonist in engine files.** Use "the protagonist" — the character's name has changed once already and may change again.
-- **`input/` is the new home for authored files.** Commands/agents now read from `input/series/` and `input/book-01/`.
-- **Cobber's dawn-sighting clue** — planted in ch-02: "Sometimes I see things. Cars moving around at odd hours." Do NOT make it more prominent during line-edit or copy-edit. Must remain dismissible as local colour until ch-20.
-- **Culprit name (Mary Burrell)** — neither draft names or implicates the culprit. Keep it that way through all finalize passes.
-- **Calloway's bench skeleton** — series seed, unresolved in Book 01. Do not let any finalize pass close this thread.
-- **`.penny/` is gitignored** — the mystery lock lives there; do not `git clean -fdx`.
-- **inspector-voice filename:** watch for `inspector-voice.md` vs `character-voice.md` mismatch on future chapters — copy/rename before running review_gate.
+- **The rename is uncommitted.** A `git checkout`/`clean` would lose it. Commit before risky git ops.
+- **Other characters lacking surnames were reviewed but NOT changed** (user only acted on Meg/Tom/Dave): Cobber (real name Dennis, no surname), Dot & Glad (sisters, need one shared surname), Mara (foreshore character — culturally framed, pick deliberately). Suggestions are in the conversation if the user wants them later. Saffron already has a surname (Vale).
+- **Ch-01 gate.md still says HOLD** — must re-run inspector-continuity (not just review_gate); the existing continuity-drift.md verdict still carries the old BLOCKING line.
+- **Ch-05 draft predates the outline revision** — needs the Iris Poole / Sight-overreach beats; likely a full redraft.
+- **Do not name the protagonist in engine files** (`scripts/`, `.claude/`) — they were verified clean of character names; keep them name-agnostic. Use "the protagonist".
+- **Cobber's dawn-sighting clue** (ch-02) — keep dismissible until ch-20; don't amplify in edits.
+- **Culprit (Mary Burrell)** — neither draft names/implicates her; keep it so through finalize.
+- **Mary raised Cal** (was "Tom") — load-bearing backstory planted ch 11; don't soften.
+- **Calloway's bench skeleton** + **Elspeth/Saffron Vale** — series seeds, leave unresolved in Book 01.
+- **`.penny/` is gitignored** (mystery lock lives there) — do not `git clean -fdx`.

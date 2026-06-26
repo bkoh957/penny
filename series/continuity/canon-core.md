@@ -9,8 +9,8 @@ links: []
 Keep this small: every line is a tax on every chapter.
 
 ## Protagonist fixed facts
-<!-- canon-meta: {id: protagonist-fixed, refs: [meg-quill], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
-- **Meg Quill**, 43, divorced former HR professional (twenty years in HR, latterly Director) turned potter. Runs The Wheelhouse studio on Pelican's Crook main street. OUTSIDER; arrived in autumn, Book 01. Suffers migraines that bring hyper-detailed, unranked perception (the Migraine Sight) — she records everything and understands later.
+<!-- canon-meta: {id: protagonist-fixed, refs: [maggie-quill], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
+- **Margaret "Maggie" Quill**, 43, divorced former HR professional (twenty years in HR, latterly Director) turned potter. Runs The Wheelhouse studio on Pelican's Crook main street. OUTSIDER; arrived in autumn, Book 01. Suffers migraines that bring hyper-detailed, unranked perception (the Migraine Sight) — she records everything and understands later.
 
 ## Current timeline position
 <!-- canon-meta: {id: current-timeline, refs: [], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
@@ -23,4 +23,4 @@ Keep this small: every line is a tax on every chapter.
 ## Fluency stage (design §9 newcomer dial)
 <!-- canon-meta: {id: fluency-stage, refs: [], active_window: "1-2", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
 - **OUTSIDER** (Books 1–2): narration is standard English; local idiom lives in
-  other characters' mouths, never Meg's narration. (Stages: OUTSIDER → SETTLING → BELONGING; must stay consistent with `config/setting-pack/lexicon.yaml` `narration_ok_from_stage`.)
+  other characters' mouths, never Maggie's narration. (Stages: OUTSIDER → SETTLING → BELONGING; must stay consistent with `config/setting-pack/lexicon.yaml` `narration_ok_from_stage`.)

@@ -13,4 +13,4 @@ A small fictional town on the Great Ocean Road, between Lorne and Apollo Bay. Na
 
 **Demographics.** A few hundred permanent residents, swelling to several thousand in summer. Permanent population skews older; thin working-family middle; restless cohort of young people who mostly leave. Fault lines: locals vs blow-ins; old timber-and-salvage families vs moneyed tree-changers; year-round workers vs absentee weekenders.
 
-**Seasonal rhythm.** Meg arrives in autumn, as the town empties and the real community closes ranks — the pressure-cooker for a murder, because the suspect pool is small, local, and tangled.
+**Seasonal rhythm.** Maggie arrives in autumn, as the town empties and the real community closes ranks — the pressure-cooker for a murder, because the suspect pool is small, local, and tangled.
