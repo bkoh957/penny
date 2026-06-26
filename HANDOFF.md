@@ -1,65 +1,96 @@
 # Handoff — Penny / main
-Saved: 2026-06-26 | Type: build
+Saved: 2026-06-27 | Type: build
 
 ## What we're building
-Running the per-chapter pipeline for Book 01. **This session was a tree-wide character rename** (euphony review → three renames applied across all swappable data + drafts). The pipeline work from the previous handoff (re-gate ch-01, finalize ch-01/02, review ch-03–05, check stale ch-05 draft) is **still outstanding** — it was deferred again to do the rename first.
-
-## The renames (applied this session, NOT yet committed)
-| Old | New | Called | Slug/file |
-|---|---|---|---|
-| Meg Quill | **Margaret Quill** | **Maggie** | `meg-quill` → `maggie-quill` |
-| Tom Burrell | **Callum Burrell** | **Cal** | `tom` → `cal-burrell` |
-| Sergeant Dave Pruitt | **Sergeant Rick Pruitt** | — | `dave-pruitt` → `rick-pruitt` |
-
-- Display names replaced whole-word, case-sensitive (`Meg→Maggie`, `Tom→Cal`, `Dave→Rick`) across `series/ input/ output/ docs/ HERMES.md HANDOFF.md`. Repo-wide stray count is **0/0/0**; no word-collisions (e.g. `tomorrow`, `custom` untouched).
-- Formal-name lines added: canon-core = `Margaret "Maggie" Quill`; each of the 3 character files now carries a `**Full name:** … **Known as:** …` line.
-- Continuity ids/filenames `git mv`'d (history preserved); all cross-links/`refs`/`canon-meta` updated (`b-romance` link, canon-core `refs`, thread/location `links`).
-- **Locked surnames left intact:** Burrell (Cal keeps Burrell — shared w/ Mary), Vale (Saffron/Elspeth — series payload).
+Running the per-chapter pipeline for Book 01. This session: re-gated ch-01 to PASS,
+discovered ch-02..05 drafts were ALL stale against the revised outline (not just ch-05
+as the prior handoff thought), redrafted all four against the current outline, added
+the missing Iris Poole continuity entry, and gated ch-02..05 to PASS. Inspectors were
+switched to Sonnet. Also fixed an unrelated status-bar bug.
 
 ## Git state
-- Branch: `main`. HEAD `b29527a` (unchanged this session).
-- **Uncommitted (the rename):** ~35 tracked files modified, 3 renamed (`tom.md`→`cal-burrell.md`, `meg-quill.md`→`maggie-quill.md`, `dave-pruitt.md`→`rick-pruitt.md`). Plus pre-existing `HANDOFF.md` / `HERMES.md` edits.
-- **Untracked (from prior session, also got renamed in-place this session):**
-  - `output/book-01/chapters/ch-01.gate.md` — still says HOLD
-  - `output/book-01/chapters/ch-01.reviews/` — continuity-drift.md still has old BLOCKING flag
-  - `output/book-01/chapters/ch-02.gate.md` — PASS
-  - `output/book-01/chapters/ch-02.reviews/` — all 5 verdicts present
-  - `output/book-01/chapters/ch-03.draft.md`, `ch-04.draft.md` — drafted pre-outline-revision; ch 3/4 outline unchanged so valid
-  - `output/book-01/chapters/ch-05.draft.md` — **stale: drafted before outline revision (Iris Poole / Sight-overreach beats); needs redraft**
-- Tests: **251 passing** (re-run this session, post-rename).
+- Branch: `main`. All work committed AND pushed. HEAD `6beb89e`.
+- Uncommitted changes: **none** (clean tree).
+- Tests: **all passing** (~180; full `python3 -m pytest` green this session).
+- This session's commits (oldest→newest):
+  - `299f5ae` fix(book-01): resolve ch-01 continuity HOLD; re-gate PASS
+  - `b16fd84` feat(book-01): redraft ch-02..05 against revised outline; add Iris Poole
+  - `44b64a5` feat(book-01): gate ch-02..05 to PASS (sonnet inspectors)
+  - `6beb89e` fix(statusline): count only numbered chapters in the total
+
+## Current pipeline state
+- **ch-01..05 all `gate: PASS`** (`.penny/current-stage` = `book=01 chapter=05 stage=REVIEWED`).
+- **None are finalized.** No chapter has been through `/finalize-chapter` (line-edit →
+  copy-edit → ledger update → promote → commit). No `.final.md` exists yet.
+- ch-06..28 not drafted. Reveal chapter is **24** (book-level `fairplay_check.py` only
+  fires there).
 
 ## Next actions
-1. **Decide: commit the rename first.** Recommend committing the rename as its own atomic change before resuming pipeline work (clean diff, easy to revert). User was asked and hadn't answered when handoff was saved. Suggested message: `refactor: rename Meg→Margaret "Maggie" Quill, Tom→Callum "Cal" Burrell, Dave→Rick Pruitt`. Note this would also add the untracked ch-01/02 review dirs + gate files unless staged selectively.
-2. **Re-gate Ch-01.** Re-run inspector-continuity (ch-01 `continuity-drift.md` still has the stale BLOCKING line from the old HR claim), then `python3 -m scripts.review_gate output/book-01/chapters/ch-01.reviews` — confirm gate flips to PASS.
-3. **Finalize Ch-01 and Ch-02.** `/finalize-chapter 01 01` then `/finalize-chapter 01 02` (02 already PASS). Both require `gate: PASS`.
-4. **Check/redraft ch-05.** Stale vs new outline (Iris Poole stall, Maggie's Sight dazzle-then-overreach on Iris's private wound, revised hook). Likely needs `/draft-chapter 01 05` again.
-5. **Review/gate ch-03 and ch-04.** `/review-chapter 01 03`, `/review-chapter 01 04` (outlines unchanged, drafts valid).
+1. **Finalize the gated chapters.** `/finalize-chapter 01 01`, then `02`, `03`, `04`,
+   `05`. Each requires `gate: PASS` (all satisfied). Note `config/run-config.md`
+   `ledger_approval` controls whether finalize pauses for a diff review or commits
+   end-to-end — check it before running. `copyedit_model: claude-opus`.
+2. **(Recommended) Fix the verdict-filename contract bug** — see Watch out for. Low
+   effort, prevents silent false HOLDs on future re-gates.
+3. Then continue drafting ch-06 onward (`/draft-chapter 01 06` → review → finalize).
 
 ## Decisions made this session
-- **Renamed the continuity ids/filenames too, not just display text.** Rationale: leaving `id: meg-quill` while the character is Maggie is confusing; the whodunit yaml and engine (`scripts/`, `.claude/`) reference none of these three (protagonist & sergeant aren't suspects), so the blast radius was contained to `series/`. Verified 0 stray slugs.
-- **Case-sensitive whole-word replacement, not naive.** `Tom`/`Dave`/`Meg` as bare substrings would have mangled `tomorrow`/`custom`/etc. Used `perl -i -pe 's/\bTom\b/Cal/g'` (capitalized, word-boundaried); slugs are lowercase-hyphenated so the display pass couldn't touch them.
-- **Applied via `find -exec`, not a shell `for` loop.** First attempt with a `$(find…)` capture into a `for` loop silently failed (replacements didn't persist); `find … -exec perl -i {} +` worked.
-- **Renames also rewrote ch-01/02 drafts + review sidecars.** Accepted — keeps prose consistent; those reviews are slated for re-gate anyway so the rewritten quotes don't matter.
+- **Drafters on Opus, inspectors on Sonnet.** User's explicit choice. Set
+  `inspector_model: claude-sonnet` in `config/run-config.md`. Pass `model: "opus"` /
+  `model: "sonnet"` on Agent dispatches (the agent defs have no `model` frontmatter, so
+  without an override they inherit the parent = Opus). Sonnet-inspecting-Opus is genuine
+  cross-model independence; also dodges the Opus session cap (which DID hit mid-session).
+- **Resolved every ledger-vs-draft conflict by treating the outline as source of truth.**
+  When a blind inspector flagged a contradiction, the fix went to whichever side
+  disagreed with the *outline*: ch-01 HR tenure → "decade" (matched ledger); ch-02 Mary
+  "first appears ch 5" → **ch 2** (outline gives her the lemon-cutting scene, so the
+  ledger was stale); ch-03 Neil "edge of the bed" → **"sat close"** (outline sets the
+  migraine in the studio, "bed" was incidental staging); ch-04 Mary-as-stranger → Maggie
+  recognises her (ripple from the ch-02 fix). ch-04 also: `footy`/`tinnie` → neutral
+  (OUTSIDER fluency).
+- **Iris Poole minimal continuity entry**, drafted from the outline + Faye's file (she's
+  the jam-feud counterpart / show judge; NOT a murder suspect; feud's buried origin is a
+  ch-13 clue, kept off-page pre-reveal). Added reciprocal `iris-poole` link in faye.md.
+- **Atomic commits**, separating the ch-01 fix, the redraft batch, the gating pass, and
+  the unrelated statusline fix.
 
 ## User preferences expressed this session
-- **Euphony rules for character names** (the user's stated criteria, worth keeping for future books): stress alternation; trochaic first names; syllable-count interplay (short+long balances better than two punchy or two long); avoid repeated sounds at name boundaries; vowel/consonant variety.
-- User picks names decisively after a shortlist — give a few good alternatives, don't over-explain.
+- **Draft with Opus, inspect with Sonnet** (now in run-config; persist for future books).
+- Lead with a recommendation; decisive after a shortlist (consistent with prior memory).
+- Commit, then push to GitHub. Atomic, logically-separated commits.
 
 ## Key files right now
-- `series/continuity/characters/maggie-quill.md`, `cal-burrell.md`, `rick-pruitt.md` — renamed character files (formal-name lines added)
-- `series/continuity/canon-core.md` — protagonist line now `Margaret "Maggie" Quill`; `refs: [maggie-quill]`
-- `input/book-01/outline.md` — display names updated; still authoritative for the pipeline
-- `output/book-01/chapters/ch-05.draft.md` — stale draft; check/redraft before review
-- `output/book-01/chapters/ch-01.reviews/continuity-drift.md` — old BLOCKING flag; must re-run inspector-continuity
+- `output/book-01/chapters/ch-0{1..5}.draft.md` — all PASS, awaiting finalize.
+- `series/continuity/characters/iris-poole.md` — NEW this session; eyeball her framing
+  before she recurs (ch-13 pays off the feud).
+- `series/continuity/characters/mary-burrell.md`, `neil-hartigan.md` — ledger lines
+  corrected this session (Mary first-appears ch 2; Neil "sat close").
+- `config/run-config.md` — `inspector_model: claude-sonnet` (changed this session).
+- `scripts/penny-statusline.sh:63` + `tests/test_statusline.py` — statusline fix + new
+  regression test.
 
 ## Watch out for
-- **The rename is uncommitted.** A `git checkout`/`clean` would lose it. Commit before risky git ops.
-- **Other characters lacking surnames were reviewed but NOT changed** (user only acted on Meg/Tom/Dave): Cobber (real name Dennis, no surname), Dot & Glad (sisters, need one shared surname), Mara (foreshore character — culturally framed, pick deliberately). Suggestions are in the conversation if the user wants them later. Saffron already has a surname (Vale).
-- **Ch-01 gate.md still says HOLD** — must re-run inspector-continuity (not just review_gate); the existing continuity-drift.md verdict still carries the old BLOCKING line.
-- **Ch-05 draft predates the outline revision** — needs the Iris Poole / Sight-overreach beats; likely a full redraft.
-- **Do not name the protagonist in engine files** (`scripts/`, `.claude/`) — they were verified clean of character names; keep them name-agnostic. Use "the protagonist".
-- **Cobber's dawn-sighting clue** (ch-02) — keep dismissible until ch-20; don't amplify in edits.
-- **Culprit (Mary Burrell)** — neither draft names/implicates her; keep it so through finalize.
-- **Mary raised Cal** (was "Tom") — load-bearing backstory planted ch 11; don't soften.
-- **Calloway's bench skeleton** + **Elspeth/Saffron Vale** — series seeds, leave unresolved in Book 01.
-- **`.penny/` is gitignored** (mystery lock lives there) — do not `git clean -fdx`.
+- **Verdict-filename inconsistency (latent engine bug).** Several inspector subagents
+  wrote `inspector-<role>.md` (derived from the verdict `producer` field) instead of the
+  canonical `<rubric>.md` that `/review-chapter` expects (`continuity-drift.md`,
+  `fairplay-planting.md`, `structure-tension.md`, `character-voice.md`,
+  `ai-prose-taste-flags.md`). Because `review_gate.py` greps `^BLOCKING:` across **all**
+  `.md` files in the reviews dir, a stale duplicate (e.g. a pre-fix `inspector-voice.md`)
+  silently caused a false HOLD on ch-04 this session. I normalised names by hand and the
+  committed dirs are now clean (each has exactly the canonical 5 + `voice-drift.md` +
+  `lexicon-fluency.md`). Fix options: pin `penny_verdict.write_verdict` to the canonical
+  filename, or have the gate/`reset_reviews` reject non-canonical names. Check
+  `scripts/penny_verdict.py`'s filename logic.
+- **`reset_reviews.py` runs at the start of `/review-chapter`** and clears the dir — so a
+  re-gate reflects only that run. Good, but it means committed review dirs get rewritten
+  on every re-gate.
+- **28 chapters is correct** (matches `total_chapters: 28`); the old "29 vs 28" scare was
+  just `## Chapter Engine Used Throughout` matching a loose grep — resolved by the
+  statusline fix (`^## Chapter [0-9]`).
+- **Mary Burrell is the sealed culprit** — neither her file's drafter-visible section nor
+  any draft names/implicates her; keep it so through finalize. **Mary raised Cal** (planted
+  ch 11). **Iris is NOT the murderer** — feud is sad, not murderous (cleared ch 13).
+- **OUTSIDER fluency (Book 1):** no local idiom in Maggie's narration — only in dialogue.
+- **`.penny/` is gitignored** (holds the mystery lock + current-stage). Do not `git clean -fdx`.
+- **Cross-model invariant:** `final_read_model: codex` must differ from all `drafted_by`
+  stamps. Drafts are `claude-opus`; fine. Don't draft/finalize-read with the same model.
