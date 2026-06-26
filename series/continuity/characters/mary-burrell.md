@@ -18,4 +18,4 @@ links: [a-murder, the-community-hall, neils-cottage]
 - Cal worries about her quietly — she has been strange lately, stranger than her usual grief.
 - She is raised as a possible person of interest early (ch 7, Pruitt glances at her) and dismissed as harmless. She hides behind this early exoneration.
 
-**First on-page appearance:** ch 5 (community market — refolds a tea towel at the kitchen servery).
+**First on-page appearance:** ch 2 (brings Maggie a lemon-tree cutting from her late father's garden; sincerely kind, but studies her too carefully when Cal's name comes up). Returns ch 5 (community market — refolds a tea towel at the kitchen servery).

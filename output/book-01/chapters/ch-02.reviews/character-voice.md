@@ -6,22 +6,14 @@ schema: penny-verdict/1
 score: 5
 ---
 
-- Blind test PASS — Faye (cascade/parenthetical corrections), Cobber (laconic fragments/surf-philosophy), Beryl (administrative/clipped), Dot+Glad (unit-voice contradictions) all distinct without tags
-- soft_qualifiers: 8 instances (density 3.09/1k, threshold 5/1k) — within threshold; hedges serve Maggie observational register, not drift
-- lexical_repetition: 27 flagged (density 17.01/1k) — organic; repeated words are structural anchors (she/the/Maggie/Faye/street/town) and deliberate rhythmic control; no vocabulary poverty
-- filtering_verbs: 2 (realized l56, seemed to l84) — well under threshold; both serve Maggie inference mode
-- something_language: 1 (something in her voice l48) — isolated; not a tic pattern
-- fluency-stage OUTSIDER: PASS — no local idiom in Maggie narration; standard English throughout; local colour confined to reported speech and observed signs only
-- lexicon-fluency premature-term flags: 0; inspector notes: 0 — stage discipline clean
-- Dot/Glad unit voice intentional by design: contradict on every detail with tranquil certainty; functions as written
-- Beryl officially payoff (l134) is good voice work — the word doing unspoken work is characterisation not drift
-metrics: {"blind_test": "PASS", "lexical_repetition_count": 27, "lexical_repetition_organic": true, "principals_tested": 4, "soft_qualifiers_density": 3.09, "stage": "OUTSIDER", "stage_pass": true}
+- Flat-voice blind test PASS: with tags removed the principals are unmistakable. Faye = brisk, run-on, imperative, gossip-comic ('Are you going to let me in, or are we doing this on the step?'); Mary = gentle, measured, parable-like, withholds the point until the doorway ('I give it to people I think might stay'); Mara = terse, conviction, no heat ('It has been here longer than the road and it will be here after'); Maggie = clipped, guarded, HR-trained reticence. No two are interchangeable.
+- voice_drift lexical_repetition FLAGGED (14, density 12.2/1k) judged BENIGN, not harmful drift: the repeats are deliberate rhetorical patterning, not monotone ("someone's town and someone's kitchen and someone's morning"; the anaphoric "the way ... the way ..."; "warm as the bread had been warm"). sentence_variance is healthy (stdev 19.45). soft_qualifiers (8) under threshold. No drift call.
+- Fluency stage OUTSIDER respected. Local idiom lives only in dialogue ("crook" = unwell, "sea-change", "dear" — all in Faye's mouth). Maggie's narration is standard English throughout.
+- WATCH (non-blocking): "op-shop" appears in a narrative clause at line 25. Judged a benign free-indirect collision, not a stage break — the whole paragraph explicitly relays Faye's tour ("Faye was deciding what Maggie needed first"), so the term is the local's framing channelled through summary, not Maggie adopting idiom in her own voice. Flag if this pattern recurs in non-reported narration.
+- lexicon_check reported 0 premature-term flags (stage OUTSIDER); concur.
+metrics: {"blind_test": "pass", "drift_call": "no", "principals_distinct": 4, "stage": "OUTSIDER"}
 evidence:
-  - {"call": "ok \u2014 isolated, serves inference", "line": 48, "span_text": "something in her voice", "tic_id": "something_language"}
-  - {"call": "ok \u2014 POV inference mode", "line": 56, "span_text": "realized", "tic_id": "filtering_verbs"}
-  - {"call": "ok \u2014 POV inference mode", "line": 84, "span_text": "seemed to", "tic_id": "filtering_verbs"}
-  - {"call": "ok", "line": 28, "span_text": "slightly", "tic_id": "soft_qualifiers"}
-  - {"call": "ok", "line": 38, "span_text": "almost", "tic_id": "soft_qualifiers"}
-  - {"call": "ok", "line": 72, "span_text": "as if", "tic_id": "soft_qualifiers"}
-  - {"call": "ok", "line": 98, "span_text": "somehow", "tic_id": "soft_qualifiers"}
-  - {"call": "ok", "line": 140, "span_text": "a little", "tic_id": "soft_qualifiers"}
+  - {"judgment": "benign-FID-not-stage-break", "line": 25, "span_text": "op-shop"}
+  - {"judgment": "Faye voice distinct", "line": 19, "span_text": "Are you going to let me in, or are we doing this on the step?"}
+  - {"judgment": "Mary voice distinct", "line": 93, "span_text": "He measures everything twice. His father was the same."}
+  - {"count": 14, "judgment": "deliberate-anaphora-benign", "tic_id": "lexical_repetition"}

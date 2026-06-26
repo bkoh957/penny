@@ -3,18 +3,16 @@ producer: inspector-ai-prose
 kind: inspector
 target: book-01/ch-02
 schema: penny-verdict/1
-score: 3
+score: 4
 ---
 
-- Flag 1 (polished contrasts): 0 rote instances. All contrasts examined are grounded in established scene detail.
-- Flag 2 (interpretive endings): 2 rote instances. See evidence.
-- Flag 3 (generic lyrical sentences): 2 rote instances. See evidence.
-- Flag 4 (airless passages): No full-scene airless passage. Cobber beach description is dense but retains breathing room; long Faye monologue sentence is intentional mimicry of her information style.
-- Flag 5 (closing cadence): 0 rote instances. Ending is cold and physical; avoids uplift-resolution shape entirely.
-- Rote instance count across flags 1-3 and 5: ~4, at the threshold but not clustered in one scene and none prominent enough to break immersion.
-- Score 3: several rote instances, prose noticeably generic in patches but readable. Not blocking.
+- reviewed_by: claude-opus-4-8 (same-model routing; cross-model unavailable this run)
+- Taste verdict: prose is largely EARNED. Figuration is specific to this coastal town and these characters; contrasts name concrete things; the close is scene-grounded, not stock uplift. No rote density approaching the blocking threshold (3+ across flags 1-3/5, or an airless full-scene under flag 4).
+- Flag 1 (polished contrasts): EARNED throughout. "Faye's face did not fall, exactly. It closed." (L41) and "It was not unfriendly. It was the opposite of unfriendly; it was the look of a woman who loved someone..." (L91) both deliver a concrete referent rather than gesturing at unnamed depth.
+- Flag 3 (generic lyrical): EARNED. "The bay lay flat and pewter under low cloud, and the headland curled around the far side of it the way the town's name promised" (L55) and "a magpie carolled from a banksia" are place-specific, not liftable mood-wallpaper.
+- Flag 4 (airless passage): NOT flagged. The long piled-clause sentences (e.g. L11, L41) are offset by deliberate short beats ("Maggie let her in." L21; "The tide was out." L55), so the passage has breathing room rather than reading as relentlessly complete.
+- Flag 5 (closing cadence): EARNED. The chapter ends on "Maggie found she did not have an answer ready" (L101) — a specific unresolved beat, not the stock hope/resolution shape.
+metrics: {"airless_passage": false, "blocking_threshold": "3+ rote across flags 1-3/5 or full-scene flag 4", "reviewed_by": "claude-opus-4-8", "rote_instances_flags_1_3_5": 0}
 evidence:
-  - {"flag": 2, "judgment": "rote", "line": "\"Good,\" Faye said, and there was something in her voice that made Maggie think being always straightforward might be more complicated in Pelican's Crook than it had been in her previous life.", "reason": "Faye's single-word \"Good\" already carries the implication. The sentence unpacks it explicitly, removing the reader's room to land the beat themselves."}
-  - {"flag": 2, "judgment": "rote", "line": "She didn't ask what he meant by odd hours. It didn't seem to call for a follow-up.", "reason": "\"She didn't ask\" was sufficient. The second sentence explains why, which tells rather than trusts."}
-  - {"flag": 3, "judgment": "rote", "line": "the sound of it filling in the gaps", "reason": "Stock phrase for ambient sound; could be lifted to any coastal beach scene without modification."}
-  - {"flag": 3, "judgment": "rote", "line": "There was a particular ease to sitting next to someone who clearly had no agenda at all.", "reason": "Names the feeling abstractly rather than finding the specific sensory or situational detail particular to Cobber on this driftwood log. Interchangeable mood-wallpaper."}
+  - {"call": "borderline-non-blocking", "flag": 2, "line": 96, "note": "Softest moment in the chapter; verges on sentimental mood-statement, but is anchored to the established bread/Mary warmth callback. Earned enough; noted, not a violation.", "quote": "warm as the bread had been warm, and for a moment there was nothing in the room but kindness"}
+  - {"call": "borderline-non-blocking", "flag": 1, "line": 85, "note": "Interiority-via-bodily-cue leans generic; precise frequency-tic counting is Tier A (voice_drift). On taste it stays the right side of earned because the gift-of-the-tree beat motivates it.", "quote": "felt something move in her chest that she had not planned on and could not have managed if she'd seen it coming"}

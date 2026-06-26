@@ -6,26 +6,15 @@ schema: penny-verdict/1
 score: 5
 ---
 
-- Faye Denton surname matches ledger; introduced ch 2 as specified.
-- Cobber real name Dennis matches ledger; fifty-something, thirty-year tenure, dawn beach presence all consistent.
-- Dot and Glad first appear ch 2 as specified; disagreement-since-1987 detail consistent (ledger gives year only; chapter adds agricultural show context without contradiction).
-- Beryl Foss: clipboard, CWA chair, cool toward newcomer — all consistent with ledger. No age given in ledger; chapter estimate of ~60 is not contradicted.
-- Dr Hartigan named in dialogue only, not appearing in person — consistent with neil-hartigan.md (first alive ch 3). No knowledge-state violation.
-- Cobber dawn sighting planted as local colour; Maggie does not act on it. Clue is seeded without knowledge-state break.
-- Fluency stage OUTSIDER respected: local idiom in other characters (Cobber) only; Maggie narration standard English throughout.
-- Timeline coherent: beach before 8am (Cobber), Faye arrives 9am, out at 11am (Dot/Glad, Beryl). No impossible sequencing.
-- Season (Autumn) and chapter position (Book 01 ch 02, Neil alive) match canon-core.
+- reviewed_by: inspector-continuity
+- No fact contradictions, no knowledge-state violations, no timeline breaks against the slice.
+- Mary Burrell on-page appearance now matches the slice: mary-burrell.md L21 records "First on-page appearance: ch 2 (brings Maggie a lemon-tree cutting from her late father garden ...). Returns ch 5." The ch-2 scene (lines 73-101) matches, including "studies her too carefully when Cal name comes up" (ch-02 L91, the carefulness sharpening into attention). Sealed culprit role kept off the page.
+- Verified consistent: Maggie ~20yr HR / "managing people across halls" (maggie-quill.md); Cal hung shelves in ch 1 + measures everything twice, father the same (cal-burrell.md); Faye Denton runs the bakery, first appears ch 2 (faye.md); Cobber on the beach, "about to leave town" for years, Maggie nods at him in ch 2 (cobber.md + the-beach.md); Dot & Glad op-shop duo who agree on nothing (dot/glad.md); Beryl Foss = CWA chair / social gatekeeper (beryl-foss.md); Saffron wellness retreat past the headland, not from here (saffron.md). Named-but-absent characters respect their later first-present schedules.
+- Knowledge-state respected: Neil alive / no death yet (canon-core), no Migraine Sight use, no premature deduction. Iris Poole feud origin kept OFF the page (iris-poole.md: "Keep the origin off the page before ch 13") - Faye closes up; Maggie senses something and decides not to push. Correct.
+- Geography matches pelicans-crook.md: headland curls around the bay (the crook), water held still, Southern Ocean, sheltered calm bay.
+- Out of scope: Mara (foreshore dune-work character) is named/present but has no entry in the provided slice - not judged. Fluency-stage (OUTSIDER) deferred to inspector-voice per rubric boundary.
+metrics: {"fact_contradictions": 0, "knowledge_state_violations": 0, "reviewed_by": "inspector-continuity", "timeline_violations": 0}
 evidence:
-  - {"chapter": "Faye Denton", "field": "faye.surname", "ledger": "Denton", "verdict": "MATCH"}
-  - {"chapter": "Dennis", "field": "cobber.real_name", "ledger": "Dennis", "verdict": "MATCH"}
-  - {"chapter": "30 years", "field": "cobber.tenure", "ledger": "30 years", "verdict": "MATCH"}
-  - {"chapter": "fifties", "field": "cobber.age", "ledger": "fifties", "verdict": "MATCH"}
-  - {"chapter": "before 8am on beach", "field": "cobber.dawn_beach", "ledger": "on beach every dawn", "verdict": "MATCH"}
-  - {"chapter": "ch 2", "field": "dot_glad.first_appear", "ledger": "ch 2", "verdict": "MATCH"}
-  - {"chapter": "1987 agricultural show", "field": "dot_glad.disagreement_since", "ledger": "1987", "verdict": "MATCH \u2014 chapter adds show context, no contradiction"}
-  - {"chapter": "clipboard under arm", "field": "beryl.clipboard", "ledger": "clipboard", "verdict": "MATCH"}
-  - {"chapter": "CWA morning tea (third Thursday)", "field": "beryl.cwa_chair", "ledger": "CWA chair", "verdict": "MATCH"}
-  - {"chapter": "named in dialogue only, not present", "field": "neil_hartigan.alive", "ledger": "first alive ch 3; alive at ch 2 position", "verdict": "MATCH"}
-  - {"chapter": "idiom in Cobber only; Maggie standard English", "field": "fluency_stage", "ledger": "OUTSIDER", "verdict": "MATCH"}
-  - {"chapter": "43", "field": "meg.age", "ledger": "43", "verdict": "MATCH"}
-  - {"chapter": "late autumn", "field": "season", "ledger": "Autumn", "verdict": "MATCH"}
+  - {"chapter": "ch-02 L73-101", "note": "ch-2 lemon-tree scene matches corrected schedule; sealed role not revealed", "slice": "mary-burrell.md L21", "slice_text": "First on-page appearance: ch 2 (brings Maggie a lemon-tree cutting ...). Returns ch 5", "type": "consistency_pass"}
+  - {"note": "Maggie nods at Cobber on the beach in ch 2 - matches canon", "slice": "cobber.md / the-beach.md", "type": "consistency_pass"}
+  - {"note": "feud origin kept off-page; Maggie senses, does not learn cause", "slice": "iris-poole.md L13", "type": "consistency_pass"}

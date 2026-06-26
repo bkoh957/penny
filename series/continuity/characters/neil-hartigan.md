@@ -8,7 +8,7 @@ links: [a-murder, victim-reveal, gift, neils-cottage]
 
 **Role:** Book 01 victim. Town GP; long-serving; beloved.
 
-Introduced warm and alive in the opening chapters — the kind of man a town builds itself around without noticing. He took Maggie's migraines seriously (ch 3); the first professional ever to do so. He sat on the edge of the bed, asked questions nobody had asked before, and did not once use the word "stress." This matters: he may have begun to suspect what her episodes truly were, and what they might mean.
+Introduced warm and alive in the opening chapters — the kind of man a town builds itself around without noticing. He took Maggie's migraines seriously (ch 3); the first professional ever to do so. He sat close, asked questions nobody had asked before, and did not once use the word "stress." This matters: he may have begun to suspect what her episodes truly were, and what they might mean.
 
 **The three-movement arc (post-death).** He is not a static victim.
 1. Saint (chs 1–8): mourned universally; uncomplicated grief.
