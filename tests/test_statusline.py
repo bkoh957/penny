@@ -37,6 +37,29 @@ def test_total_falls_back_to_current_chapter_without_outline(penny_root):
     assert "Ch 5/5" in out
 
 
+def test_total_counts_only_numbered_chapters(penny_root):
+    # Non-chapter "## " sections (Solution, Threads, the tricky "Chapter Engine"
+    # heading, an Act header) must not inflate the chapter total — only numbered
+    # "## Chapter NN" headings count. Regression for the 5/39 status-bar bug.
+    penny_root.write_stage("book=01 chapter=02 stage=DRAFT")
+    d = penny_root.path / "input" / "book-01"
+    d.mkdir(parents=True, exist_ok=True)
+    outline = (
+        "# Outline\n\n"
+        "total_chapters: 3\n\n"
+        "## Solution: the-central-mystery\n\n"
+        "## Threads\n\n"
+        "## Chapter Engine Used Throughout\n\n"
+        "## Act I — Arrival\n\n"
+        "## Chapter 01 — A\n\n"
+        "## Chapter 02 — B\n\n"
+        "## Chapter 03 — C\n\n"
+    )
+    (d / "outline.md").write_text(outline, encoding="utf-8")
+    out = penny_root.run(JSON_41)
+    assert "Ch 2/3" in out
+
+
 def test_malformed_marker_missing_chapter_renders_safely(penny_root):
     # A partially-written marker (no chapter=) must not error or render garbage.
     penny_root.write_stage("book=01 stage=DRAFT")  # run() uses check=True

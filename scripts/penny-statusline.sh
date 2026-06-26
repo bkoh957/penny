@@ -57,10 +57,13 @@ stage="$(printf '%s' "$stage_line" | sed -n 's/.*stage=\([^ ]*\).*/\1/p')"
 [ -z "$chapter" ] && chapter=0
 [ -z "$stage" ] && stage="?"
 
-# Total chapters from the book outline (## headings); fall back to current chapter.
+# Total chapters from the book outline (numbered "## Chapter NN" headings only,
+# so non-chapter sections like "## Solution", "## Threads", "## Chapter Engine
+# Used Throughout" and the Act/Track headers are not miscounted); fall back to
+# current chapter.
 outline="$ROOT/input/book-$book/outline.md"
 if [ -f "$outline" ]; then
-  total="$( { grep -c '^## ' "$outline" || true; } | head -n1)"
+  total="$( { grep -c '^## Chapter [0-9]' "$outline" || true; } | head -n1)"
 else
   total="$chapter"
 fi
