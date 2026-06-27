@@ -12,16 +12,20 @@ ledger diff then resume with `/finalize-chapter $1 $2 --commit`.
 
 ## Steps
 
-### Step 0 — Gate guard
+### Step 0 — Gate + developmental-clearance guard
 
-Hard-fail unless the chapter passed the developmental gate (`ch-NN.gate.md` shows
-`gate: PASS`) — a HOLD or a missing gate file aborts finalize:
+Hard-fail unless the chapter (a) passed the developmental gate (`ch-NN.gate.md` shows
+`gate: PASS`) AND (b) has a **fresh developmental clearance** bound to the current draft's
+sha256 (minted by `preflight clear-dev` after `/review-chapter`). A HOLD, a missing gate,
+a missing clearance, or a clearance whose hash no longer matches the draft (i.e. the draft
+was revised after clearance) all abort finalize:
 
 ```bash
 python3 scripts/preflight.py finalize $1 $2
 ```
 
-A non-zero exit aborts immediately — do not proceed.
+A non-zero exit aborts immediately — do not proceed. If it reports a missing/stale
+clearance, run `/review-chapter $1 $2`, then `python3 scripts/preflight.py clear-dev $1 $2`.
 
 ### Parse args
 

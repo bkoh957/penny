@@ -58,3 +58,21 @@ def test_agent_is_advisory_and_context_rich():
     assert "^BLOCKING" in text                        # explicitly forbids it
     assert "setting-pack" in text or "setting pack" in text
     assert "whodunit" in text.lower()                 # explicitly denied the solution
+
+
+REVIEW_CMD = Path(".claude/commands/review-chapter.md")
+FINALIZE_CMD = Path(".claude/commands/finalize-chapter.md")
+
+
+def test_review_chapter_dispatches_dev_editor_and_halts_cross_model():
+    text = REVIEW_CMD.read_text(encoding="utf-8")
+    assert "developmental-editor" in text
+    assert "developmental-edit.md" in text
+    assert "reviewed_draft_sha256" in text
+    # cross-model is a hard precondition: the command must halt, not degrade.
+    assert "halt" in text.lower()
+
+
+def test_finalize_documents_dev_clearance():
+    text = FINALIZE_CMD.read_text(encoding="utf-8")
+    assert "clear-dev" in text

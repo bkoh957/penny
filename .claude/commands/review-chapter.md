@@ -72,10 +72,32 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    - `inspector-voice` → `character-voice.md`
    - `inspector-ai-prose` → `ai-prose-taste-flags.md`
 
-8. **Dispatch-completeness check:** confirm all five inspector verdict files now
-   exist in the reviews dir. A missing one means a sub-agent dispatch silently failed
-   — stop and report it. (This is distinct from `fairplay.md` legitimately being
-   absent pre-reveal.)
+7b. **Cross-model guard + dispatch the developmental editor (context-rich, advisory).**
+
+   The developmental read MUST run on a non-drafting model (genuine fresh eyes, design §6).
+   Determine a reachable model that is **not** `drafting_model` (per `config/run-config.md`,
+   e.g. `inspector_model` / `final_read_model`). **If the only reachable model is the
+   drafting model, HALT** — print a named error and stop; do NOT degrade to a same-model
+   read (a same-model "fresh eyes" read is a soft gate Penny rejects).
+
+   Compute the draft hash to bind the read to this exact draft:
+
+   ```bash
+   dev_sha="$(python3 -c "import sys; from scripts.preflight import draft_sha256; \
+     print(draft_sha256('$book', '$chapter'))")"
+   ```
+
+   Dispatch the `developmental-editor` sub-agent with its **context-rich** inputs — the
+   chapter draft text, `config/review-rubrics/developmental-craft.md`, the setting pack,
+   a character-bible slice, and the chapter brief (NOT the whodunit solution). Pass
+   `$dev_sha` as the `reviewed_draft_sha256` it must record. It writes
+   `output/book-$book/chapters/ch-$chapter.reviews/developmental-edit.md` via
+   `scripts/penny_verdict.py` (`kind: developmental`, no `^BLOCKING:` lines).
+
+8. **Dispatch-completeness check:** confirm all five inspector verdict files AND
+   `developmental-edit.md` now exist in the reviews dir. A missing one means a sub-agent
+   dispatch silently failed — stop and report it. (This is distinct from `fairplay.md`
+   legitimately being absent pre-reveal.)
 
 9. **Compute the gate and advance the marker:**
 
@@ -97,3 +119,14 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
 10. **Surface the result** to the showrunner: report the gate verdict and, on a
     HOLD, list the blocking items from
     `output/book-$book/chapters/ch-$chapter.gate.md`.
+
+11. **Developmental clearance (showrunner gate before finalize).** The gate summary always
+    prints an advisory **Developmental** section; it never affects PASS/HOLD. Finalize is
+    blocked until you clear the developmental read for this exact draft:
+
+    ```bash
+    python3 scripts/preflight.py clear-dev $book $chapter
+    ```
+
+    Clear as-is ("noted, proceeding") or have the `drafter` revise first and re-run
+    `/review-chapter` (a revised draft changes the hash and re-requires clearance).
