@@ -78,6 +78,17 @@ def cmd_finalize(book: str, chapter: str, *, repo_root=REPO) -> int:
     if gate != "PASS":
         _fail(f"chapter {book}/{chapter} did not pass the gate (gate: {gate}); "
               f"resolve the HOLD before finalizing")
+    # second predicate: a fresh developmental clearance bound to THIS draft.
+    cert = dev_clear_path(book, chapter, repo_root)
+    if not cert.is_file():
+        _fail(f"no developmental clearance for book {book} ch {chapter} — "
+              f"run /review-chapter then `preflight clear-dev {book} {chapter}`")
+    cleared = parse_frontmatter(cert.read_text(encoding="utf-8")).get("cleared_draft_sha256")
+    current = draft_sha256(book, chapter, repo_root=repo_root)
+    if cleared != current:
+        _fail(f"developmental clearance is stale for book {book} ch {chapter} "
+              f"(draft changed since clearance: cleared {str(cleared)[:12]} != "
+              f"current {current[:12]}); revise then re-clear")
     return 0
 
 

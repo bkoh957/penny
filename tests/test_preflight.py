@@ -190,8 +190,9 @@ def _make_gate(root, book, ch, verdict):
     )
 
 
-def test_finalize_passes_on_passing_gate(tmp_path):
+def test_finalize_passes_on_passing_gate(tmp_path):   # REPLACES the old same-named test
     _make_gate(tmp_path, "01", "07", "PASS")
+    _clear_for(tmp_path, "01", "07")
     assert preflight.cmd_finalize("01", "07", repo_root=tmp_path) == 0
 
 
@@ -206,6 +207,23 @@ def test_finalize_blocks_when_gate_missing(tmp_path):
     with pytest.raises(SystemExit) as e:
         preflight.cmd_finalize("01", "07", repo_root=tmp_path)
     assert "no gate" in str(e.value)
+
+
+def test_finalize_blocks_without_dev_clearance(tmp_path):
+    _make_gate(tmp_path, "01", "07", "PASS")
+    _write_draft(tmp_path, "01", "07")          # gate PASS + draft, but never cleared
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_finalize("01", "07", repo_root=tmp_path)
+    assert "developmental clearance" in str(e.value)
+
+
+def test_finalize_blocks_on_stale_dev_clearance(tmp_path):
+    _make_gate(tmp_path, "01", "07", "PASS")
+    _clear_for(tmp_path, "01", "07", body="original\n")
+    _write_draft(tmp_path, "01", "07", body="REVISED after clearance\n")  # hash now differs
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_finalize("01", "07", repo_root=tmp_path)
+    assert "stale" in str(e.value)
 
 
 # ---------------------------------------------------------------------------
@@ -319,6 +337,14 @@ def _write_dev_report(root, book, ch, reviewed_sha, *, score=3):
         encoding="utf-8",
     )
     return rep
+
+
+def _clear_for(root, book, ch, body="prose\n"):
+    """Draft + dev report + minted clearance, all hash-consistent."""
+    _write_draft(root, book, ch, body=body)
+    sha = preflight.draft_sha256(book, ch, repo_root=root)
+    _write_dev_report(root, book, ch, sha)
+    assert preflight.cmd_clear_dev(book, ch, repo_root=root) == 0
 
 
 def test_clear_dev_mints_cert_when_hash_matches(tmp_path):
