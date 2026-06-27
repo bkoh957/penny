@@ -33,3 +33,28 @@ def test_rubric_is_advisory_never_blocking():
     text = RUBRIC.read_text(encoding="utf-8").lower()
     assert "advisory" in text
     assert "no ^blocking" in text or "never block" in text or "not block" in text
+
+
+AGENT = Path(".claude/agents/developmental-editor.md")
+
+
+def test_agent_exists_with_valid_frontmatter():
+    assert AGENT.is_file()
+    meta = parse_frontmatter(AGENT.read_text(encoding="utf-8"))
+    assert meta.get("name") == "developmental-editor"
+    assert meta.get("description")
+
+
+def test_agent_declares_contract():
+    text = AGENT.read_text(encoding="utf-8")
+    assert "developmental-craft.md" in text          # references its rubric
+    assert "producer: developmental-editor" in text
+    assert "kind: developmental" in text
+    assert "reviewed_draft_sha256" in text
+
+
+def test_agent_is_advisory_and_context_rich():
+    text = AGENT.read_text(encoding="utf-8")
+    assert "^BLOCKING" in text                        # explicitly forbids it
+    assert "setting-pack" in text or "setting pack" in text
+    assert "whodunit" in text.lower()                 # explicitly denied the solution
