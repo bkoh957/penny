@@ -11,6 +11,7 @@ Every miss exits non-zero via `preflight: <named predicate>`.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -46,6 +47,27 @@ def approved_path(book: str, repo_root) -> Path:
 def gate_path(book: str, chapter: str, repo_root) -> Path:
     return (Path(repo_root) / "output" / f"book-{book}" / "chapters"
             / f"ch-{chapter}.gate.md")
+
+
+def draft_path(book: str, chapter: str, repo_root) -> Path:
+    return (Path(repo_root) / "output" / f"book-{book}" / "chapters"
+            / f"ch-{chapter}.draft.md")
+
+
+def draft_sha256(book: str, chapter: str, *, repo_root=REPO) -> str:
+    p = draft_path(book, chapter, repo_root)
+    if not p.is_file():
+        _fail(f"no draft for book {book} ch {chapter} ({p})")
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+def dev_report_path(book: str, chapter: str, repo_root) -> Path:
+    return (Path(repo_root) / "output" / f"book-{book}" / "chapters"
+            / f"ch-{chapter}.reviews" / "developmental-edit.md")
+
+
+def dev_clear_path(book: str, chapter: str, repo_root) -> Path:
+    return Path(repo_root) / ".penny/locks" / f"book-{book}.ch-{chapter}.dev-clear"
 
 
 def cmd_finalize(book: str, chapter: str, *, repo_root=REPO) -> int:

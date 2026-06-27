@@ -1,3 +1,4 @@
+import hashlib
 import shutil
 
 import pytest
@@ -270,3 +271,35 @@ def test_approve_book_fails_without_report(tmp_path):
         preflight.cmd_approve_book("99", repo_root=tmp_path)
     assert "revision-priority" in str(e.value)
     assert not (tmp_path / ".penny/locks/book-99.approved").exists()
+
+
+# ---------------------------------------------------------------------------
+# draft sha256 + dev path helpers
+# ---------------------------------------------------------------------------
+
+def _write_draft(root, book, ch, body="prose\n"):
+    d = root / "output" / f"book-{book}" / "chapters"
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / f"ch-{ch}.draft.md"
+    p.write_text(body, encoding="utf-8")
+    return p
+
+
+def test_draft_sha256_matches_file_bytes(tmp_path):
+    p = _write_draft(tmp_path, "01", "07", body="hello draft\n")
+    expected = hashlib.sha256(p.read_bytes()).hexdigest()
+    assert preflight.draft_sha256("01", "07", repo_root=tmp_path) == expected
+
+
+def test_draft_sha256_fails_when_draft_missing(tmp_path):
+    with pytest.raises(SystemExit) as e:
+        preflight.draft_sha256("01", "07", repo_root=tmp_path)
+    assert "no draft" in str(e.value)
+
+
+def test_dev_path_helpers_shape(tmp_path):
+    rep = preflight.dev_report_path("01", "07", tmp_path)
+    cert = preflight.dev_clear_path("01", "07", tmp_path)
+    assert rep.name == "developmental-edit.md"
+    assert rep.parent.name == "ch-07.reviews"
+    assert cert.name == "book-01.ch-07.dev-clear"
