@@ -373,3 +373,21 @@ def test_clear_dev_fails_on_stale_report(tmp_path):
         preflight.cmd_clear_dev("01", "07", repo_root=tmp_path)
     assert "stale" in str(e.value)
     assert not preflight.dev_clear_path("01", "07", tmp_path).exists()
+
+
+def test_clear_dev_fails_when_report_missing_sha256_key(tmp_path):
+    """Report exists but lacks reviewed_draft_sha256 frontmatter — must fail."""
+    _write_draft(tmp_path, "01", "07", body="some prose\n")
+    rep = preflight.dev_report_path("01", "07", tmp_path)
+    rep.parent.mkdir(parents=True, exist_ok=True)
+    # write a dev report WITHOUT reviewed_draft_sha256
+    rep.write_text(
+        "---\nproducer: developmental-editor\nkind: developmental\n"
+        "target: book-01/ch-07\nschema: penny-verdict/1\nscore: 3\n---\n"
+        "\n- setting grounding thin\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_clear_dev("01", "07", repo_root=tmp_path)
+    assert "missing reviewed_draft_sha256" in str(e.value)
+    assert not preflight.dev_clear_path("01", "07", tmp_path).exists()

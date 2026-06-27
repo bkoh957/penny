@@ -56,6 +56,7 @@ def test_agent_declares_contract():
 def test_agent_is_advisory_and_context_rich():
     text = AGENT.read_text(encoding="utf-8")
     assert "^BLOCKING" in text                        # explicitly forbids it
+    assert "MUST NOT emit any" in text                # prohibition, not mere presence
     assert "setting-pack" in text or "setting pack" in text
     assert "whodunit" in text.lower()                 # explicitly denied the solution
 
@@ -76,3 +77,4 @@ def test_review_chapter_dispatches_dev_editor_and_halts_cross_model():
 def test_finalize_documents_dev_clearance():
     text = FINALIZE_CMD.read_text(encoding="utf-8")
     assert "clear-dev" in text
+    assert "gate: PASS" in text                       # dual-precondition: gate + clearance

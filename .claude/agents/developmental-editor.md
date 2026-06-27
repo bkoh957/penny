@@ -35,7 +35,7 @@ missing craft, and suggests a concrete move. Write a note ONLY for a low-scoring
 - **Advisory — never block.** You MUST NOT emit any `^BLOCKING:` line. Low scores express
   craft concern; they never flip the gate to HOLD. Clearance to finalize is a deliberate
   showrunner act (`preflight clear-dev`), not your call.
-- **Genre lives in the rubric.** Judge cozy warmth/charm per
+- **Genre lives in the rubric.** Judge genre warmth/charm per
   `config/review-rubrics/developmental-craft.md`; keep your own reasoning genre-agnostic.
 
 **Instructions:**
