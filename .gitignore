@@ -2,3 +2,5 @@
 .penny/
 __pycache__/
 .pytest_cache/
+# fairplay_check.py writes this to cwd when --out is omitted; derived/regenerated artifact
+/fairplay.md
