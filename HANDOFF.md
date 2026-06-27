@@ -2,95 +2,91 @@
 Saved: 2026-06-27 | Type: build
 
 ## What we're building
-Running the per-chapter pipeline for Book 01. This session: re-gated ch-01 to PASS,
-discovered ch-02..05 drafts were ALL stale against the revised outline (not just ch-05
-as the prior handoff thought), redrafted all four against the current outline, added
-the missing Iris Poole continuity entry, and gated ch-02..05 to PASS. Inspectors were
-switched to Sonnet. Also fixed an unrelated status-bar bug.
+Book 01 of the cozy-mystery series. This session: finalized ch-01 (the full
+post-gate prose pipeline ran for the first time ever), then did a structural revision —
+renamed the psychic gift "Migraine Sight" → **"the Too-Much"** and inserted a new
+**Ordeal chapter (ch 18, *The Only Quiet*)**, taking Book 01 from 28 → 29 chapters,
+renumbering everything downstream and re-locking the mystery. Also routed the finalize
+editors to Sonnet and fixed two latent `finalize-chapter.md` bugs.
 
 ## Git state
-- Branch: `main`. All work committed AND pushed. HEAD `6beb89e`.
-- Uncommitted changes: **none** (clean tree).
-- Tests: **all passing** (~180; full `python3 -m pytest` green this session).
-- This session's commits (oldest→newest):
-  - `299f5ae` fix(book-01): resolve ch-01 continuity HOLD; re-gate PASS
-  - `b16fd84` feat(book-01): redraft ch-02..05 against revised outline; add Iris Poole
-  - `44b64a5` feat(book-01): gate ch-02..05 to PASS (sonnet inspectors)
-  - `6beb89e` fix(statusline): count only numbered chapters in the total
+- Branch: `main`. All work committed AND pushed. HEAD `f280c8c`. Tree clean.
+- Tests: **252 passing** (`python3 -m pytest`). NOTE: subagents kept misreporting this as
+  "189" — the real number is 252; verify independently if a subagent claims otherwise.
+- `.penny/current-stage` = `book=01 chapter=01 stage=FINALIZED`.
+- Key commits this session (newest→oldest):
+  - `f280c8c` fix(finalize): derive brief from outline; commit characters/ + locations/
+  - `94ffd82` fix(book-01): culprit_first_appearance_chapter 5 → 2
+  - `0304ce7` chore: gitignore root fairplay.md
+  - `1174c9f` fix(book-01): style-sheet echo ref ch-28 → ch-29
+  - `87f08c1`/`b794820`/`a4457b6`/`76f2b82` etc. — the rename + ch-18 insert + renumber + re-lock
+  - `630b179` finalize: book 01 chapter 01
+  - `d953343` chore(config): route finalize editors (line/copy/ledger) to Sonnet
 
 ## Current pipeline state
-- **ch-01..05 all `gate: PASS`** (`.penny/current-stage` = `book=01 chapter=05 stage=REVIEWED`).
-- **None are finalized.** No chapter has been through `/finalize-chapter` (line-edit →
-  copy-edit → ledger update → promote → commit). No `.final.md` exists yet.
-- ch-06..28 not drafted. Reveal chapter is **24** (book-level `fairplay_check.py` only
-  fires there).
+- **ch-01 FINALIZED** (`.final.md` exists; continuity ledger advanced; committed).
+- **ch-02..05 are `gate: PASS` but NOT finalized** — next up for `/finalize-chapter`.
+- **ch-06..29 not drafted.** Book is now **29 chapters**; **reveal chapter is 25**
+  (`Mary at the Door`); the new ch-18 is the Ordeal (`The Only Quiet`).
+- Mystery lock present & valid (`preflight.py lock-mystery 01` exit 0); fairplay exit 0.
 
 ## Next actions
-1. **Finalize the gated chapters.** `/finalize-chapter 01 01`, then `02`, `03`, `04`,
-   `05`. Each requires `gate: PASS` (all satisfied). Note `config/run-config.md`
-   `ledger_approval` controls whether finalize pauses for a diff review or commits
-   end-to-end — check it before running. `copyedit_model: claude-opus`.
-2. **(Recommended) Fix the verdict-filename contract bug** — see Watch out for. Low
-   effort, prevents silent false HOLDs on future re-gates.
-3. Then continue drafting ch-06 onward (`/draft-chapter 01 06` → review → finalize).
+1. **Finalize ch-02..05:** `/finalize-chapter 01 02` → `03` → `04` → `05`. `ledger_approval:
+   review` so each PAUSES for a diff review; resume with `--commit`. The finalize-chapter
+   bugs are now FIXED, so it runs end-to-end (auto-derives the brief; commits characters/
+   + locations/ too) — no manual brief-extraction / hand-staging needed (that was only
+   required for ch-01 before the fix).
+2. Then draft the new Ordeal chapter and beyond: `/draft-chapter 01 06` … and eventually
+   `/draft-chapter 01 18` (The Only Quiet — see its outline entry + the spec for intent).
+3. Optional cleanup: none outstanding — both deferred items (gitignore fairplay, culprit
+   first-appearance) were resolved this session.
 
 ## Decisions made this session
-- **Drafters on Opus, inspectors on Sonnet.** User's explicit choice. Set
-  `inspector_model: claude-sonnet` in `config/run-config.md`. Pass `model: "opus"` /
-  `model: "sonnet"` on Agent dispatches (the agent defs have no `model` frontmatter, so
-  without an override they inherit the parent = Opus). Sonnet-inspecting-Opus is genuine
-  cross-model independence; also dodges the Opus session cap (which DID hit mid-session).
-- **Resolved every ledger-vs-draft conflict by treating the outline as source of truth.**
-  When a blind inspector flagged a contradiction, the fix went to whichever side
-  disagreed with the *outline*: ch-01 HR tenure → "decade" (matched ledger); ch-02 Mary
-  "first appears ch 5" → **ch 2** (outline gives her the lemon-cutting scene, so the
-  ledger was stale); ch-03 Neil "edge of the bed" → **"sat close"** (outline sets the
-  migraine in the studio, "bed" was incidental staging); ch-04 Mary-as-stranger → Maggie
-  recognises her (ripple from the ch-02 fix). ch-04 also: `footy`/`tinnie` → neutral
-  (OUTSIDER fluency).
-- **Iris Poole minimal continuity entry**, drafted from the outline + Faye's file (she's
-  the jam-feud counterpart / show judge; NOT a murder suspect; feud's buried origin is a
-  ch-13 clue, kept off-page pre-reveal). Added reciprocal `iris-poole` link in faye.md.
-- **Atomic commits**, separating the ch-01 fix, the redraft batch, the gating pass, and
-  the unrelated statusline fix.
+- **Gift renamed to "the Too-Much"** (the protagonist's own wry, ex-HR, reclaiming-an-
+  insult word). Chosen over potter-craft names (the Lustre/Kiln-light) because it's her
+  voice and it rhymes with the ch-29 payoff ("The Woman Who Saw Too Much" / Elspeth Vale's
+  "Saw too much" caption). Keep it UNDERSTATED early so the ch-29 echo detonates. Canon:
+  centring clay at the wheel is its ONLY reliable relief (set up by the new ch-18).
+- **New ch-18 "The Only Quiet" = the concentrated Ordeal** (Hero's-Journey gap the user
+  felt). All-is-lost stall → calm-at-the-wheel insight. FAIR-PLAY: names no culprit, adds
+  no clue — the clay only re-frames the planted ch-7 erasure into a *question*; the click
+  (ch-19) + Cobber (ch-20) still carry the proof.
+- **Reconcile-FIRST renumber** (user-approved): map each ledger/continuity chapter ref to
+  the *outline scene* it denotes, then renumber — do NOT blind-+1. This caught real
+  pre-existing drift: `clue-erasure` (19), `clue-cobber-dawn-witness` (20), and the Saffron
+  collapse (ch 17) were +1 ahead of their scenes, so they did NOT move; only no-drift
+  entries (`clue-car`→23, `clue-old-records`→22, reveal→25) shifted.
+- **Finalize editors → Sonnet** (line/copy/ledger). ledger-updater kept at Sonnet (NOT
+  Haiku) because knowledge-state tracking is load-bearing for fair-play.
+- **Drafters Opus, inspectors Sonnet, final-read codex** (carried from prior session).
 
 ## User preferences expressed this session
-- **Draft with Opus, inspect with Sonnet** (now in run-config; persist for future books).
-- Lead with a recommendation; decisive after a shortlist (consistent with prior memory).
-- Commit, then push to GitHub. Atomic, logically-separated commits.
+- Lead with a recommendation; decisive after a shortlist. Commit + push at the end (atomic,
+  logically-separated commits). Push to GitHub.
+- Used the superpowers flow end-to-end: brainstorm → spec → plan → subagent-driven exec →
+  final review. The review loops earned their keep (caught 3 real defects). User chose
+  subagent-driven (option 1) when offered.
 
 ## Key files right now
-- `output/book-01/chapters/ch-0{1..5}.draft.md` — all PASS, awaiting finalize.
-- `series/continuity/characters/iris-poole.md` — NEW this session; eyeball her framing
-  before she recurs (ch-13 pays off the feud).
-- `series/continuity/characters/mary-burrell.md`, `neil-hartigan.md` — ledger lines
-  corrected this session (Mary first-appears ch 2; Neil "sat close").
-- `config/run-config.md` — `inspector_model: claude-sonnet` (changed this session).
-- `scripts/penny-statusline.sh:63` + `tests/test_statusline.py` — statusline fix + new
-  regression test.
+- `input/book-01/outline.md` — now 29 chapters; new ch-18 at line ~394.
+- `series/whodunit/book-01.yaml` — total 29, reveal 25, culprit_first_appearance 2.
+- `docs/superpowers/specs/2026-06-27-book01-ordeal-chapter-and-gift-rename-design.md` and
+  `docs/superpowers/plans/2026-06-27-book01-ordeal-chapter-and-gift-rename.md` — the spec
+  & plan for this session's revision.
+- `.superpowers/sdd/progress.md` — the SDD ledger (all 5 tasks complete; reconciliation
+  map at `.superpowers/sdd/reconciliation-map.md`). `.superpowers/` is gitignored scratch.
+- `.claude/commands/finalize-chapter.md` — bugs fixed this session.
+- `config/run-config.md` — lineedit/copyedit/ledger models = sonnet.
 
 ## Watch out for
-- **Verdict-filename inconsistency (latent engine bug).** Several inspector subagents
-  wrote `inspector-<role>.md` (derived from the verdict `producer` field) instead of the
-  canonical `<rubric>.md` that `/review-chapter` expects (`continuity-drift.md`,
-  `fairplay-planting.md`, `structure-tension.md`, `character-voice.md`,
-  `ai-prose-taste-flags.md`). Because `review_gate.py` greps `^BLOCKING:` across **all**
-  `.md` files in the reviews dir, a stale duplicate (e.g. a pre-fix `inspector-voice.md`)
-  silently caused a false HOLD on ch-04 this session. I normalised names by hand and the
-  committed dirs are now clean (each has exactly the canonical 5 + `voice-drift.md` +
-  `lexicon-fluency.md`). Fix options: pin `penny_verdict.write_verdict` to the canonical
-  filename, or have the gate/`reset_reviews` reject non-canonical names. Check
-  `scripts/penny_verdict.py`'s filename logic.
-- **`reset_reviews.py` runs at the start of `/review-chapter`** and clears the dir — so a
-  re-gate reflects only that run. Good, but it means committed review dirs get rewritten
-  on every re-gate.
-- **28 chapters is correct** (matches `total_chapters: 28`); the old "29 vs 28" scare was
-  just `## Chapter Engine Used Throughout` matching a loose grep — resolved by the
-  statusline fix (`^## Chapter [0-9]`).
-- **Mary Burrell is the sealed culprit** — neither her file's drafter-visible section nor
-  any draft names/implicates her; keep it so through finalize. **Mary raised Cal** (planted
-  ch 11). **Iris is NOT the murderer** — feud is sad, not murderous (cleared ch 13).
+- **Mary Burrell is the sealed culprit; reveal is now ch 25.** Keep her identity out of all
+  drafter-visible artifacts (only `mary-burrell.md` may carry it). Mary first appears ch 2
+  (lemon cutting), returns ch 5 (market). Iris is NOT the murderer.
+- **"Migraine Sight" still appears in 6 frozen `output/**/.reviews/` sidecars** — that's
+  intentional (audit records; regenerate on next re-gate). No prose chapter contains it.
+- **`fairplay.md` (repo root) is gitignored now** — `fairplay_check.py` writes it to cwd
+  when `--out` is omitted; don't be alarmed if it reappears on disk.
 - **OUTSIDER fluency (Book 1):** no local idiom in Maggie's narration — only in dialogue.
-- **`.penny/` is gitignored** (holds the mystery lock + current-stage). Do not `git clean -fdx`.
-- **Cross-model invariant:** `final_read_model: codex` must differ from all `drafted_by`
-  stamps. Drafts are `claude-opus`; fine. Don't draft/finalize-read with the same model.
+- **`.penny/` is gitignored** (lock + current-stage + tmp briefs). Do not `git clean -fdx`.
+- **`/finalize-chapter` re-derives the brief into `.penny/tmp/`** now — that's expected.
+- **`The Only Quiet` is a PLACEHOLDER title** for ch-18 (per the spec); fine to rename.
