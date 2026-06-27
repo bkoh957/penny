@@ -22,6 +22,13 @@ def _inspector(d, name, *, blocking=None, score=3):
                   score=score)
 
 
+def _developmental(d, *, score=2, notes=("setting thin", "motivation buried")):
+    write_verdict(out_dir=d, producer="developmental-editor", kind="developmental",
+                  target="book-01/ch-07", name="developmental-edit",
+                  blocking=[], notes=list(notes), metrics={}, evidence=[], score=score,
+                  extra_frontmatter={"reviewed_draft_sha256": "abc123"})
+
+
 def test_pass_when_no_blockers(tmp_path):
     d = _reviews(tmp_path)
     _inspector(d, "inspector-continuity")
@@ -151,3 +158,32 @@ def test_no_score_spread_at_panel_one(tmp_path):
     _inspector(d, "inspector-voice", score=5)  # different dimensions, not a spread
     result = evaluate_gate(d, CONFIG)
     assert result["score_spread_log"] == []
+
+
+def test_developmental_verdict_does_not_block(tmp_path):
+    d = _reviews(tmp_path)
+    _inspector(d, "inspector-continuity")           # passing inspector keeps the panel non-empty
+    _developmental(d, score=1)                       # scathing dev read, zero blockers
+    result = evaluate_gate(d, CONFIG)
+    assert result["gate"] == "PASS"
+    assert result["blocking_count"] == 0
+    assert result["developmental"]["score"] == 1
+    assert result["developmental"]["note_count"] == 2
+
+
+def test_gate_md_renders_developmental_on_pass(tmp_path):
+    d = _reviews(tmp_path)
+    _inspector(d, "inspector-continuity")
+    _developmental(d, score=4)
+    result = evaluate_gate(d, CONFIG)
+    out = write_gate_md(tmp_path / "ch-07.gate.md", "book-01/ch-07", result)
+    assert "developmental" in out.read_text(encoding="utf-8")
+
+
+def test_gate_md_renders_developmental_absent(tmp_path):
+    d = _reviews(tmp_path)
+    _inspector(d, "inspector-continuity")            # no dev verdict present
+    result = evaluate_gate(d, CONFIG)
+    assert result["developmental"] is None
+    out = write_gate_md(tmp_path / "ch-07.gate.md", "book-01/ch-07", result)
+    assert "developmental" in out.read_text(encoding="utf-8")

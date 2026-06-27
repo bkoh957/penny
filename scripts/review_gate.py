@@ -19,6 +19,7 @@ from scripts.penny_meta import parse_frontmatter, parse_yaml_blocks
 from scripts.penny_verdict import count_blocking
 
 VERDICT_KINDS = ("inspector", "deterministic-checker")
+DEVELOPMENTAL_KIND = "developmental"
 
 
 class GateError(Exception):
@@ -74,6 +75,21 @@ def _load_verdicts(reviews_dir) -> list[dict]:
     return verdicts
 
 
+def _load_developmental(reviews_dir) -> dict | None:
+    path = Path(reviews_dir) / "developmental-edit.md"
+    if not path.is_file():
+        return None
+    text = path.read_text(encoding="utf-8")
+    meta = parse_frontmatter(text)
+    if meta.get("kind") != DEVELOPMENTAL_KIND:
+        return None
+    raw = meta.get("score")
+    score = int(raw) if raw is not None else None
+    note_count = sum(1 for ln in text.splitlines() if ln.startswith("- "))
+    return {"producer": meta.get("producer"), "score": score,
+            "note_count": note_count}
+
+
 def _detect_blocking_disagreement(verdicts, cfg) -> list[str]:
     if not cfg["escalate_on_blocking_disagreement"]:
         return []
@@ -116,6 +132,7 @@ def evaluate_gate(reviews_dir, config_path) -> dict:
         "blocking_issues": blocking_issues,
         "escalations": _detect_blocking_disagreement(verdicts, cfg),
         "score_spread_log": _detect_score_spread(verdicts, cfg),
+        "developmental": _load_developmental(reviews_dir),
     }
 
 
@@ -131,6 +148,14 @@ def write_gate_md(out_path, target, result) -> Path:
         lines.append(f"- blocking [{producer}]: {issue}")  # never ^BLOCKING:
     lines.append(f"- escalations: {result['escalations']}")
     lines.append(f"- score_spread_log: {result['score_spread_log']}")
+    dev = result.get("developmental")
+    if dev:
+        lines.append(
+            f"- developmental [{dev['producer']}]: score {dev['score']} "
+            f"({dev['note_count']} note(s)) — advisory, non-blocking; "
+            f"see developmental-edit.md")
+    else:
+        lines.append("- developmental: no developmental read found")
     lines.append("")
     out_path.write_text("\n".join(lines), encoding="utf-8")
     return out_path
