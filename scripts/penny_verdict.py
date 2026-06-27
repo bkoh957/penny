@@ -46,6 +46,7 @@ def write_verdict(
     metrics: dict,
     evidence: list[dict],
     score: int | None = None,
+    extra_frontmatter: dict | None = None,
 ) -> Path:
     """Write ``<out_dir>/<name>.md`` and return its Path. Creates out_dir if needed."""
     out_dir = Path(out_dir)
@@ -56,6 +57,8 @@ def write_verdict(
                         f"target: {target}", f"schema: {SCHEMA}"]
     if score is not None:
         lines.append(f"score: {score}")
+    for key, value in (extra_frontmatter or {}).items():
+        lines.append(f"{key}: {value}")
     lines.append("---")
     lines.append("")
 

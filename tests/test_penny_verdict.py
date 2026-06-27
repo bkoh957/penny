@@ -102,3 +102,16 @@ def test_count_blocking_agrees_with_real_status_line(penny_root):
 
     reviews = penny_root.path / "output" / "book-01" / "chapters" / "ch-07.reviews"
     assert count_blocking(reviews) == rendered == 2
+
+
+def test_write_verdict_emits_extra_frontmatter(tmp_path):
+    path = write_verdict(
+        out_dir=tmp_path, producer="developmental-editor", kind="developmental",
+        target="book-01/ch-07", name="developmental-edit", blocking=[], notes=["a note"],
+        metrics={}, evidence=[], score=3,
+        extra_frontmatter={"reviewed_draft_sha256": "abc123"},
+    )
+    meta = parse_frontmatter(path.read_text(encoding="utf-8"))
+    assert meta.get("kind") == "developmental"
+    assert meta.get("score") == "3"
+    assert meta.get("reviewed_draft_sha256") == "abc123"
