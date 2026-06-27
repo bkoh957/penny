@@ -2,6 +2,7 @@
 id: comedy
 type: thread
 links: [dot, glad, faye, glaze, maggie-quill, the-op-shop, the-bakery]
+last_advanced_chapter: 1
 ---
 # Thread: Comedy
 

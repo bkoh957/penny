@@ -17,3 +17,15 @@ Twenty years in HR, the last decade as Director — professional keeper of other
 **Character flaw.** Lonely and wanting to belong, she sometimes courts the perception as social currency — overindulges at a community gathering, performs her sharpness for approval. The price comes due the next day. Using the gift to be liked is the same move as staying in a stale marriage to feel safe: reaching for external validation instead of sitting with herself.
 
 **Series arc.** From hiding in a coastal town and apologising for taking up space → reclaiming her art, finding community and love, learning to wield her strange gift instead of fearing it.
+
+## Knowledge state
+*As of ch-01 end.* Knows The Wheelhouse physically: layout, kiln condition (elements intact, no degradation), east-wall shelving now fitted. Knows Cal Burrell by name: local carpenter, arrived at 3pm, fitted shelves, exchanged few words; she immediately liked his quietness and practicality. Knows Glaze: a ginger tom who walked in through the open door, inspected the kiln, and claimed her good apron; she chose not to remove him. Has met no other Pelican's Crook resident. Unaware of any crime or death in the town.
+
+## Established facts
+- Drove from Brunswick; arrived Pelican's Crook at ten past two on a Thursday afternoon in late April.
+- Visited Pelican's Crook once before, four years ago, for a regional arts piece (pottery trail, eight studios in three days); stood in the doorway of what is now The Wheelhouse longer than professionally necessary, held by the light on glaze; filed the feeling and did not return until after the marriage ended.
+- Has a sister, who gave her a canvas-roll trimming-tool set as a birthday present three years ago — the only birthday present from the last five years she kept.
+- Good apron (thick canvas) dates from a pottery class in Fitzroy, seven years ago — the moment she understood that pottery was her true work and that she had been doing everything else wrong.
+- Car is a hatchback. Brought: clay tools (loop, ribbon, ribs, trimming tools in the canvas roll), portable wedging board, two rolls of plastic sheeting, bag of sponges, spare apron, good apron, a box of half-glazed seconds (carted since February). Invoicing binders from her HR years packed but left in the boot.
+- Half-bag of grog-proof clay bought on impulse outside Geelong on the drive down.
+- Signed the Wheelhouse lease "on a Tuesday morning in a state she would later describe as quietly deranged."
