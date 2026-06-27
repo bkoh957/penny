@@ -2,7 +2,7 @@
 book: 01
 title: Murder of Mercy
 series: The Pelican's Crook Mysteries
-total_chapters: 28
+total_chapters: 29
 ---
 
 ## Solution: the-central-mystery
@@ -264,7 +264,7 @@ Cal returns to The Wheelhouse for a genuine job and stays longer than necessary.
 ### Track Movement
 - **M:** A deliberate breath; establishes spaces and family stakes that will later shape Mary's behaviour.
 - **P:** Maggie learns that not every problem is hers to interrogate or fix.
-- **R:** Attraction appears in practical partnership; Mara establishes a boundary with Maggie. Cal's upbringing — raised by Mary after his parents left — is planted as backstory; its significance to the revelation in ch 19 is withheld.
+- **R:** Attraction appears in practical partnership; Mara establishes a boundary with Maggie. Cal's upbringing — raised by Mary after his parents left — is planted as backstory; its significance to the revelation in ch 20 is withheld.
 - **B:** Cal begins the plinth, and Maggie sees the commission as a professional undertaking rather than an audition for belonging.
 
 ---
@@ -302,7 +302,7 @@ A migraine hits near the foreshore. In its distorted pattern-recognition, Maggie
 - **Hook:** Pruitt's correction — the fact was real, her conclusion was not — is delivered below the volume of the surf-club witnesses. He is protecting her reputation while correcting her.
 
 ### Track Movement
-- **M:** Named clue (rope, taught knot), named suspect (Calloway), named innocent explanation (thirty years of boat ramp maintenance; standard knot). Cobber's lyrical uselessness here seeds his eventual specific role in ch 19, when Maggie finally asks the right question. Calloway is partially cleared; ch 14 need only confirm his alibi in a line.
+- **M:** Named clue (rope, taught knot), named suspect (Calloway), named innocent explanation (thirty years of boat ramp maintenance; standard knot). Cobber's lyrical uselessness here seeds his eventual specific role in ch 20, when Maggie finally asks the right question. Calloway is partially cleared; ch 14 need only confirm his alibi in a line.
 - **P:** Maggie confronts the difference between not looking away and assuming she knows the truth.
 - **R:** Cal sees how much the failure costs her but does not yet know how to help without becoming angry first. Pruitt's quiet delivery of the correction is a small act of protection — the first warmth in their professional dynamic.
 - **B:** Maggie misses a commission deadline milestone, forcing her to work late and face the cost of distraction.
@@ -389,9 +389,29 @@ At the surf club, the case against Saffron collapses publicly. Her hidden alibi 
 
 ---
 
-# Act IIb — The Delayed Click and the Full Truth (Chapters 18–22)
+# Act IIb — The Delayed Click and the Full Truth (Chapters 18–23)
 
-## Chapter 18 — The Cup Returns Home
+## Chapter 18 — The Only Quiet
+
+### Chapter Summary
+Saffron's collapse has spent the last suspect. Beryl, Faye, Calloway — cleared or discredited; Maggie's credibility is gone with every constituency that matters; the town's verdict is that she is the newcomer who hurts people. She decides to stop — it was never hers to solve. That night the Too-Much comes up off the water at its worst, sharpened by shame and exhaustion, and nothing touches it: not the dark, not lying still. Only the wheel ever has. She goes to the studio not to think but because centring clay is the one thing that has ever talked the Too-Much down — medication does not reach it, time only waits it out, but the wheel quiets it. In the after-calm — not the flood, the quiet behind it — her hands do what they have always half-done: they rebuild a detail before her mind catches up. She finds she has set a trimmed cup to an exact spot on the bench and a form a hair off-true beside it, her hands recreating the spatial wrongness of Neil's cottage. The clay hands her not an answer but a question: someone reset that room by habit — whose? For the first time the Too-Much has worked with her, calm and useful, and cost no one. She cannot stop after all — but this time she will look before she speaks.
+
+### Chapter Structure
+- **Start / Desire:** Maggie wants to quit — to stop being the woman who sees too much and hurts people for it.
+- **Pressure / Obstacle:** The worst Too-Much of the book, plus the shame that there is nothing left to investigate and no one left who trusts her.
+- **Turn / Change:** At the wheel the Too-Much quiets; her hands surface the cottage's spatial wrongness as a question, not a verdict. The gift turns disciplined for the first time.
+- **Texture / Pleasure Layer:** The studio at night, the wheel's hum, wet clay, Glaze asleep on the apron, the kiln ticking as it cools.
+- **Hook:** She cannot stop — but she will bring Pruitt a habit, not a hunch.
+
+### Track Movement
+- **M:** No new clue. Recombines the planted staged-scene details (ch 7) into a precise spatial question; redirects the hunt from "who hated Neil" to "whose habit reset the room." Fair-play intact — the clay yields the question, later chapters yield the proof.
+- **P:** The gift's turning point. Clay/centring established as the only reliable relief from the Too-Much; the gift becomes usable without performance or social cost. The concentrated Ordeal→turn.
+- **R:** Quiet. Glaze present; Cal's post-argument distance felt but not worked. Romance rests.
+- **B:** The same calm wheel-work that yields her repaired-glaze signature also yields the insight — craft and gift fuse.
+
+---
+
+## Chapter 19 — The Cup Returns Home
 
 ### Chapter Summary
 At a CWA hall clean-up, Beryl conscripts Maggie, Mary and half the town into resetting a room after a fundraiser. Maggie is watching someone restore order at the far end of the hall — the precision, the efficiency, the instinct to square things — and her mind goes to Cal before she looks up and sees it is Mary. She does not immediately understand the confusion. She watches Mary reach for a shelf without looking, return a cup to a precise place, fold a tea towel in the exact crisp square she saw at the autumn market, and restore the room through muscle memory. The question sits unresolved: why does Mary move like Cal, or is it the other way around? The migraine-recorded domestic details at Neil's cottage suddenly align: the erased second cup, the damp folded towel, the wrong biscuit tin, the overly tidy room and the vase placed just slightly wrong. Mary had known Neil's house well enough to remove herself from it. The delayed click identifies Mary as the likely killer, but Maggie does not act immediately.
@@ -404,14 +424,14 @@ At a CWA hall clean-up, Beryl conscripts Maggie, Mary and half the town into res
 - **Hook:** Maggie sees Mary reset a cup in exactly the place where the erased second cup should have been.
 
 ### Track Movement
-- **M:** Delayed click connects Mary to the staged-scene evidence. The click initially registers as Cal-like — his precision, his habits — before Maggie sees it is Mary; the confusion sits unresolved and will lock into meaning in ch 19.
+- **M:** Delayed click connects Mary to the staged-scene evidence. The click initially registers as Cal-like — his precision, his habits — before Maggie sees it is Mary; the confusion sits unresolved and will lock into meaning in ch 20.
 - **P:** Maggie applies the Sight with patience rather than performance.
 - **R:** Mary's control around Cal becomes more visible; Maggie understands that affection and danger can coexist.
 - **B:** Maggie arrives carrying repaired sample bowls, and Beryl's approval gives her a quiet professional win.
 
 ---
 
-## Chapter 19 — The Evening Accounted For
+## Chapter 20 — The Evening Accounted For
 
 ### Chapter Summary
 Maggie works backwards through who had unresolved business with Neil and reconstructs the timeline of his last evening. She places Beryl (the confrontation about the health truth Neil held over her), Faye (the private family wound Neil used as leverage), and Calloway (an informal favour the old papers suggest he was closing out) — each corroborated by fragments already in the record. The picture builds: a man who had several visitors on his last evening, each of whom came, argued or pleaded, and left. A gap remains. A window no confirmed visitor fills.
@@ -420,26 +440,26 @@ The physical residue of the staged crime scene comes back to Maggie: the squared
 
 She goes back to Cobber with a specific question: that road, that evening, late. His answer is what it always is — lyrical, chaotic, half-useful — but inside it is the detail. A car he knew. Blue-green. Late, after the others. Not Cal's. Mary's.
 
-Maggie tries to understand why relief at Cal's clearing feels like falling. She asks the question she should have asked weeks earlier: Cal's parents, how he ended up here. Cobber tells her without realising he has told her anything: Mary took him on after his parents were gone. She brought him up. "She made him who he is." The ch 18 confusion locks into meaning: the staged room was reset by the woman who taught Cal every organisational habit he has. The click is now positional, hard, and fully legible.
+Maggie tries to understand why relief at Cal's clearing feels like falling. She asks the question she should have asked weeks earlier: Cal's parents, how he ended up here. Cobber tells her without realising he has told her anything: Mary took him on after his parents were gone. She brought him up. "She made him who he is." The ch 19 confusion locks into meaning: the staged room was reset by the woman who taught Cal every organisational habit he has. The click is now positional, hard, and fully legible.
 
 Maggie's phone rings on the walk home. Mary. Could Maggie come for tea?
 
 ### Chapter Structure
 - **Start / Desire:** Maggie wants to build a case that cannot repeat the pattern of Beryl and Saffron — accusation before proof.
 - **Pressure / Obstacle:** The physical evidence points to habits of precision that she initially reads as Cal's; she must carry the horror of suspecting him while she works toward proof.
-- **Turn / Change:** Cobber places Mary's car in the gap. The Cal confusion resolves: the habits belong to Mary, who raised him. The click from ch 18 locks.
+- **Turn / Change:** Cobber places Mary's car in the gap. The Cal confusion resolves: the habits belong to Mary, who raised him. The click from ch 19 locks.
 - **Texture / Pleasure Layer:** Cobber's lyrical non-answer about tides delivering the one thing that matters, the foreshore boat ramp, and Glaze waiting at the studio door when Maggie returns.
 - **Hook:** Mary's phone call on the walk home: she would like Maggie to come for tea.
 
 ### Track Movement
-- **M:** Reconstructed night places Beryl, Faye and Calloway at the cottage; gap reveals Mary's car via Cobber; Cal's upbringing (raised by Mary) is the pivot that closes the ch 18 click.
+- **M:** Reconstructed night places Beryl, Faye and Calloway at the cottage; gap reveals Mary's car via Cobber; Cal's upbringing (raised by Mary) is the pivot that closes the ch 19 click.
 - **P:** Maggie holds the horror of suspecting Cal and waits for proof — the restraint she could not manage with Beryl or Saffron, managed here because the cost is higher.
 - **R:** Cal briefly occupies the suspect position; the relief of clearing him changes what Maggie understands about her own feelings.
 - **B:** Maggie sends the surf-club committee a confident progress update rather than apologising for existing.
 
 ---
 
-## Chapter 20 — The Story She Chose to Tell
+## Chapter 21 — The Story She Chose to Tell
 
 ### Chapter Summary
 Maggie goes to Mary's house. Mary is warm, immaculate, precise — good cups, something brought from the kitchen, the manner of a woman who has been waiting to unburden herself. She tells Maggie she has been meaning to be honest: she was at Neil's house that evening. She should have gone to the police straightaway. She was frightened. They argued — about Cal, the workshop sale, Neil's habit of planting doubt in Cal's mind about his future. She left. He was alive.
@@ -467,7 +487,7 @@ Maggie now has the outline — the death, Neil's presence, a decade of waiting �
 
 ---
 
-## Chapter 21 — What the Box Holds
+## Chapter 22 — What the Box Holds
 
 ### Chapter Summary
 The cemetery box. Mary was seen carrying it out of family storage in ch 14. It is almost certainly in her house. Maggie cannot get it from Mary.
@@ -490,12 +510,12 @@ Maggie closes the box and replaces it on Cal's shelf. She asks one careful quest
 ### Track Movement
 - **M:** The mercy is earned through active search, not delivered; the evidence chain is complete; Maggie now holds the full picture.
 - **P:** Maggie carries the father's words without acting on them; the discipline of not speaking before the right moment is demonstrated in full.
-- **R:** Cal hands Maggie the evidence against the woman who raised him, unknowingly; the ch 23 conversation will be heavier for this.
+- **R:** Cal hands Maggie the evidence against the woman who raised him, unknowingly; the ch 24 conversation will be heavier for this.
 - **B:** Maggie uses the repaired bowls as a visual metaphor — irreparable history that still has to be faced honestly.
 
 ---
 
-## Chapter 22 — Proof, Not a Hunch
+## Chapter 23 — Proof, Not a Hunch
 
 ### Chapter Summary
 Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, Calloway, and the gap); Cobber's account of the blue-green car late in the gap; Mary's controlled story (which is itself evidence of consciousness of guilt — she got ahead of the witnesses before Maggie could speak); the motive shaped through the library archive; and the father's own words from Cal's papers. Pruitt makes her separate every observation from every piece of admissible evidence. He tells her something else: that he had briefly considered Cal too, independently, on the same physical evidence, before clearing him on proof rather than feeling. Maggie hears this and understands: she and Pruitt had the same thought and followed the same discipline. Together the case coheres. Pruitt does not treat the cup habit as proof. He treats it as the reason to ask the right questions and obtain the proof that will matter. Before Maggie leaves, he tells her — as a technical assessment, not a compliment — that she is the best witness he has worked with, and then catches himself having said it. She laughs. It is the first genuine laugh between them.
@@ -515,9 +535,9 @@ Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, C
 
 ---
 
-# Act III — Truth, Rupture, and Belonging (Chapters 23–28)
+# Act III — Truth, Rupture, and Belonging (Chapters 24–29)
 
-## Chapter 23 — The Worst Conversation
+## Chapter 24 — The Worst Conversation
 
 ### Chapter Summary
 Maggie tells Cal before Pruitt moves on Mary. Cal receives the news with disbelief, anger and the frightening stillness Maggie has learned means he is trying not to fall apart. He says Maggie has spent weeks pulling at things she does not understand. Maggie says she understands enough. Cal says that has always been the problem. When she tells him about his grandfather's own words, he cannot ask her to stop, but the knowledge does not make the betrayal feel smaller. Before the conversation, Maggie sends the final surf-club invoice and confirms delivery—a small, adult act that proves she will not abandon her own work in the face of emotional chaos.
@@ -537,7 +557,7 @@ Maggie tells Cal before Pruitt moves on Mary. Cal receives the news with disbeli
 
 ---
 
-## Chapter 24 — Mary at the Door
+## Chapter 25 — Mary at the Door
 
 ### Chapter Summary
 Maggie and Pruitt go to Mary's house. Mary sees them coming and opens the door before they knock. She admits confronting Neil and admits that she had waited years for a name. She did not go to kill him, but when Neil confirmed that he had hastened her father's death with the same coldness he had used to hold power over so many people, grief became rage. She pushed him. He fell. Mary does not initially see herself as a monster; she sees herself as a daughter who finally made a man answer. Pruitt gives her the father's letter. Mary reads the proof that her father begged Neil for mercy, and her certainty collapses. She killed the one person who had listened when her father asked for relief.
@@ -557,7 +577,7 @@ Maggie and Pruitt go to Mary's house. Mary sees them coming and opens the door b
 
 ---
 
-## Chapter 25 — The Town's Second Grief
+## Chapter 26 — The Town's Second Grief
 
 ### Chapter Summary
 Mary is taken to Geelong. Cal drives down and does not return for two days. The town must now hold two truths at once: Neil harmed many people, but his mercy toward Mary's father was real; Mary loved her father deeply, but she killed a man under a terrible misunderstanding. Saffron comes to The Wheelhouse for tea. Maggie offers it without trying to make a grand apology, and a quiet alliance begins. Beryl asks Maggie to place the completed bowls at a memorial-adjacent surf-club display. Maggie refuses to commodify grief. Instead, she delivers the commission privately and agrees to a separate summer open-studio promotion.
@@ -577,7 +597,7 @@ Mary is taken to Geelong. Cal drives down and does not return for two days. The 
 
 ---
 
-## Chapter 26 — A Man, Not a Saint
+## Chapter 27 — A Man, Not a Saint
 
 ### Chapter Summary
 Beryl forces an informal memorial at the pub into existence by sheer social will. People speak honestly about Neil: difficult, cruel, sometimes harmful, but capable once of genuine compassion. Faye cries. Cobber says something that sounds like nonsense until it is not. Beryl defends Maggie when someone says she should have left the family alone, explaining that truth does not become cruelty just because it hurts. Maggie does not feel absolved, but she begins to understand that belonging is not the same as universal approval. It is being known well enough for people to disagree with you and still keep a chair at the table.
@@ -597,7 +617,7 @@ Beryl forces an informal memorial at the pub into existence by sheer social will
 
 ---
 
-## Chapter 27 — Still Warm
+## Chapter 28 — Still Warm
 
 ### Chapter Summary
 Cal returns. He and Maggie talk at The Wheelhouse table with Glaze positioned between them as neutral territory. Cal cannot forgive easily; Maggie cannot apologise for finding the truth. They acknowledge both things can be true: Maggie did right, and Cal is hurt by the cost. Cal admits Mary feared Maggie would take him away from the family. Maggie says she never wanted to take him anywhere. Cal says that may be why he began wanting to go. They do not kiss and they do not solve their relationship, but they stop pretending there is nothing between them. Cal notices the finished bowls and tells Maggie they are better than the safe work she first put on the shelves. Maggie says she knows.
@@ -617,7 +637,7 @@ Cal returns. He and Maggie talk at The Wheelhouse table with Glaze positioned be
 
 ---
 
-## Chapter 28 — The Woman Who Saw Too Much
+## Chapter 29 — The Woman Who Saw Too Much
 
 ### Chapter Summary
 Late November brings returning tourists, longer light and a studio that finally feels used rather than borrowed. Maggie opens the kiln on the finished surf-club bowls and knows they are good without needing anyone else to tell her. She receives payment, accepts a place on the summer art trail and pins up a notice for a beginner pottery class. Artie arrives with a lighthouse-archive photograph from the 1970s: a young woman outside the lighthouse with her hands pressed to her temples, overwhelmed by light. On the back is written: "Elspeth Vale. Saw too much. Summer of 1978." The surname is the payload. The reader knows Saffron Vale; Maggie does not yet make the connection. Maggie returns to the wheel, Glaze settles on her good apron, and for the first time she is not waiting to see whether she belongs.
@@ -644,33 +664,33 @@ Late November brings returning tourists, longer light and a studio that finally 
 - **Ch. 3–7:** Neil's connection to Maggie, broad suspect field, staged fall, vase as murder weapon (withheld).
 - **Ch. 8–13:** Suspect interviews and the cost of Maggie's premature conclusions; Calloway false dawn (rope/knot); vase mockery planted in ch 8; vase as instrument confirmed in ch 15.
 - **Ch. 14–17:** Old death, post-mortem confirmation, false Saffron solution collapses.
-- **Ch. 18–22:** Cup click (Cal-first ambiguity); reconstructed night + Cal false lead + Cobber places Mary (ch 19); Mary's controlled deception + active motive hunt (ch 20); mercy earned through Cal's papers (ch 21); full evidence chain to Pruitt (ch 22).
-- **Ch. 23–26:** Police action, confession, arrest, moral aftermath.
-- **Ch. 28:** Elspeth Vale series hook.
+- **Ch. 19–23:** Cup click (Cal-first ambiguity); reconstructed night + Cal false lead + Cobber places Mary (ch 20); Mary's controlled deception + active motive hunt (ch 21); mercy earned through Cal's papers (ch 22); full evidence chain to Pruitt (ch 23).
+- **Ch. 24–27:** Police action, confession, arrest, moral aftermath.
+- **Ch. 29:** Elspeth Vale series hook.
 
 ## Personal Track
 
 - **Ch. 1–6:** Maggie hides behind seconds and craves approval; migraines isolate her.
 - **Ch. 7–13:** She mistakes observation for authority and hurts people (Beryl, Calloway; ch 5 market overreach is the first instance).
-- **Ch. 14–18:** She learns to wait, listen and tolerate uncertainty.
-- **Ch. 19–22:** She holds the horror of suspecting Cal and waits for proof; separates insight from proof; the discipline is demonstrated.
-- **Ch. 23–28:** She accepts that right action can cost her love, then claims her work and belonging anyway.
+- **Ch. 14–19:** She learns to wait, listen and tolerate uncertainty.
+- **Ch. 20–23:** She holds the horror of suspecting Cal and waits for proof; separates insight from proof; the discipline is demonstrated.
+- **Ch. 24–29:** She accepts that right action can cost her love, then claims her work and belonging anyway.
 
 ## Romance / Community Track
 
 - **Ch. 1–5:** Cal and Maggie irritate each other; Mary begins to intervene; Pruitt established as newcomer parallel (ch 7).
 - **Ch. 6–12:** Practical care, arguments about privacy, attraction through shared work; Faye friendship damaged (ch 12).
 - **Ch. 13–17:** Cal's concerns are vindicated; Saffron is unfairly scapegoated; Pruitt warmth builds in adversarial corrections (ch 13, 15).
-- **Ch. 18–24:** Cal false lead (ch 19); Mary's deception (ch 20); Cal unknowingly hands Maggie the evidence (ch 21); Pruitt parallel + laugh (ch 22); Cal and Maggie rupture (ch 23); arrest (ch 24).
-- **Ch. 25–28:** Saffron becomes an ally; the town accepts Maggie; Cal and Maggie choose unresolved connection. Both Cal and Pruitt tracks remain open.
+- **Ch. 19–25:** Cal false lead (ch 20); Mary's deception (ch 21); Cal unknowingly hands Maggie the evidence (ch 22); Pruitt parallel + laugh (ch 23); Cal and Maggie rupture (ch 24); arrest (ch 25).
+- **Ch. 26–29:** Saffron becomes an ally; the town accepts Maggie; Cal and Maggie choose unresolved connection. Both Cal and Pruitt tracks remain open.
 
 ## Business Track
 
 - **Ch. 1–4:** The Wheelhouse opens; Maggie displays seconds; surf-club commission begins.
 - **Ch. 5–12:** First Sight-as-performance failure at market (ch 5); Faye repair enacted without comment (ch 15); commission focus damaged by case.
 - **Ch. 13–17:** The case damages her focus; the repaired bowls reveal her signature artistic voice.
-- **Ch. 18–23:** She delivers, invoices and refuses to abandon her business during crisis.
-- **Ch. 25–28:** She establishes boundaries, joins the art trail and begins teaching.
+- **Ch. 19–24:** She delivers, invoices and refuses to abandon her business during crisis.
+- **Ch. 26–29:** She establishes boundaries, joins the art trail and begins teaching.
 
 ---
 
@@ -684,10 +704,10 @@ The reader should understand that Neil's death is suspicious; Maggie has a real 
 
 The reader should suspect Neil's past is central, feel that Mary's grief is active, understand that Maggie wants Saffron guilty for emotional reasons, see Cal and Maggie's attraction beneath their conflict, and know that Maggie's business cannot survive if she treats investigation as a substitute for building a life.
 
-## End of Act II — Chapter 22
+## End of Act II — Chapter 23
 
 The reader should be able to reconstruct Mary's likely motive, access and cover-up from the evidence already given. The father's statement should complicate the moral meaning of Neil's old act, and Pruitt's case should rest on ordinary evidence rather than unexplained intuition.
 
-## Final Movement — Chapters 23–28
+## Final Movement — Chapters 24–29
 
 Mary's arrest should feel fair, tragic and inevitable. Maggie and Cal should end closer but not resolved. The Wheelhouse should become a genuine business. The Elspeth Vale photograph should open a larger series mystery without stealing the emotional closure of Book One.
