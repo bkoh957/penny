@@ -54,6 +54,8 @@ If `$flag` equals `--commit`, enter the resume path:
      output/book-$book/chapters/ch-$chapter.ledger-diff.md \
      series/continuity/canon-core.md \
      series/continuity/threads/ \
+     series/continuity/characters/ \
+     series/continuity/locations/ \
      input/series/style-sheet.md
 
    git commit -m "finalize: book $book chapter $chapter"
@@ -131,21 +133,38 @@ Write the stage marker:
 echo "book=$book chapter=$chapter stage=FINALIZE" > .penny/current-stage
 ```
 
-**3a. Dispatch `ledger-updater`** (pass `model:` = `ledger_model` from
-`config/run-config.md`) with the loaded ledger slice (canon-core + this
-chapter's thread files) and `output/book-$book/chapters/ch-$chapter.copyedit.md`. The
-agent:
-- Writes prose-body updates within the loaded slice only (bounded write-scope).
+**3a. Derive this chapter's brief from the outline.** There is no persisted brief file —
+the brief is the chapter's section of `input/book-$book/outline.md` (design §4.2, the same
+source `/draft-chapter` and `/review-chapter` use). Extract it to a scratch file under the
+gitignored `.penny/` so the ledger-updater has scope context and `ledger_markers.py` has a
+`--brief` to read:
+
+```bash
+mkdir -p .penny/tmp
+brief=".penny/tmp/book-$book-ch-$chapter-brief.md"
+awk -v h="## Chapter $chapter " '
+  index($0, h) == 1 { grab = 1; print; next }
+  grab && (/^## / || /^# /) { exit }
+  grab { print }
+' input/book-$book/outline.md > "$brief"
+```
+
+**3b. Dispatch `ledger-updater`** (pass `model:` = `ledger_model` from
+`config/run-config.md`) with the loaded ledger slice (canon-core + the character,
+location, and thread entries named in the brief, plus their one-hop `links`), the chapter
+brief `$brief`, and `output/book-$book/chapters/ch-$chapter.copyedit.md`. The agent:
+- Writes prose-body updates within the loaded slice only (bounded write-scope) —
+  knowledge-state in `characters/`, established facts in `characters/`/`locations/`.
 - Emits `output/book-$book/chapters/ch-$chapter.ledger-diff.md` with one
   `advanced: yes/no` flag per thread.
 
-**3b. Run `ledger_markers.py`**, passing every thread file where `advanced: yes` was
+**3c. Run `ledger_markers.py`**, passing every thread file where `advanced: yes` was
 emitted:
 
 ```bash
 python3 scripts/ledger_markers.py $book $chapter \
   --canon series/continuity/canon-core.md \
-  --brief series/briefs/book-$book/ch-$chapter-brief.md \
+  --brief "$brief" \
   --text output/book-$book/chapters/ch-$chapter.copyedit.md \
   --thread-advanced series/continuity/threads/<thread-file>.md \
   [--thread-advanced series/continuity/threads/<other-thread>.md ...]
@@ -177,6 +196,8 @@ git add \
   output/book-$book/chapters/ch-$chapter.ledger-diff.md \
   series/continuity/canon-core.md \
   series/continuity/threads/ \
+  series/continuity/characters/ \
+  series/continuity/locations/ \
   input/series/style-sheet.md
 
 git commit -m "finalize: book $book chapter $chapter"
