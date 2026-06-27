@@ -14,7 +14,9 @@ Phase 3). Substitute any reachable alternate model.
 ```yaml
 drafting_model:   claude-opus
 inspector_model:  claude-sonnet    # blind graders; cross-model vs opus drafters
-copyedit_model:   claude-opus
+lineedit_model:   claude-sonnet    # finalize step 1 — prose craft on opus drafts
+copyedit_model:   claude-sonnet    # finalize step 2 — grammar/consistency
+ledger_model:     claude-sonnet    # finalize step 3a — record-keeping (load-bearing; Sonnet floor)
 final_read_model: codex            # MUST differ from drafting_model
 beta_models:      [codex, hermes, openclaw]
 ```

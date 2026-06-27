@@ -93,7 +93,9 @@ Write the stage marker:
 echo "book=$book chapter=$chapter stage=LINE-EDIT" > .penny/current-stage
 ```
 
-Dispatch the **`line-editor`** sub-agent with:
+Dispatch the **`line-editor`** sub-agent (pass `model:` = `lineedit_model` from
+`config/run-config.md`; the agent def has no `model` frontmatter, so without an override
+it inherits the parent = Opus) with:
 - `output/book-$book/chapters/ch-$chapter.draft.md` — the chapter draft.
 - `config/voice-pack/voice-pack.md` — voice rules.
 - `config/length-profile.md` — word-count band.
@@ -111,7 +113,8 @@ Write the stage marker:
 echo "book=$book chapter=$chapter stage=COPY-EDIT" > .penny/current-stage
 ```
 
-Dispatch the **`copy-editor`** sub-agent with a **fresh context** (no drafting history,
+Dispatch the **`copy-editor`** sub-agent (pass `model:` = `copyedit_model` from
+`config/run-config.md`) with a **fresh context** (no drafting history,
 no inspector verdicts):
 - `output/book-$book/chapters/ch-$chapter.lineedit.md` — the line-edited text only.
 - `input/series/style-sheet.md` — the house style sheet.
@@ -128,7 +131,8 @@ Write the stage marker:
 echo "book=$book chapter=$chapter stage=FINALIZE" > .penny/current-stage
 ```
 
-**3a. Dispatch `ledger-updater`** with the loaded ledger slice (canon-core + this
+**3a. Dispatch `ledger-updater`** (pass `model:` = `ledger_model` from
+`config/run-config.md`) with the loaded ledger slice (canon-core + this
 chapter's thread files) and `output/book-$book/chapters/ch-$chapter.copyedit.md`. The
 agent:
 - Writes prose-body updates within the loaded slice only (bounded write-scope).
