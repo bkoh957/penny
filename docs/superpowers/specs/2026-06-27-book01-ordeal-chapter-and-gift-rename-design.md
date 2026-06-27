@@ -181,8 +181,11 @@ the ledger's validity; editing the ledger invalidates it. Procedure (per CLAUDE.
 - Re-gating ch 1–5 (not required — no prose changed).
 - Any change to chapters 1–17 content beyond the rename term.
 
-## Open items to confirm at implementation
+## Resolved decisions
 
-1. Saffron alibi chapter (ledger 18 vs outline 17) and `clue-erasure` payoff (ledger 19 vs
-   outline 18) — reconcile against the outline before applying +1.
-2. Whether the new chapter's title *The Only Quiet* is final or a placeholder.
+1. **Reconcile-first confirmed.** Map each ledger chapter reference to the outline scene it
+   denotes and reconcile against the current outline *before* applying the +1 shift; do not
+   treat the ledger numbers as authoritative where they drift from the outline. (Covers the
+   Saffron alibi 18-vs-17 and `clue-erasure` payoff 19-vs-18 cases.)
+2. **Title is a placeholder.** *The Only Quiet* is a working title only; the final title can
+   change at draft time and is not load-bearing for this spec.
