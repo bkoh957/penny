@@ -81,6 +81,30 @@ def cmd_finalize(book: str, chapter: str, *, repo_root=REPO) -> int:
     return 0
 
 
+def cmd_clear_dev(book: str, chapter: str, *, repo_root=REPO) -> int:
+    rep = dev_report_path(book, chapter, repo_root)
+    if not rep.is_file():
+        _fail(f"no developmental read for book {book} ch {chapter} ({rep}) — "
+              f"run /review-chapter first")
+    reviewed = parse_frontmatter(rep.read_text(encoding="utf-8")).get("reviewed_draft_sha256")
+    if not reviewed:
+        _fail(f"developmental report missing reviewed_draft_sha256 ({rep})")
+    current = draft_sha256(book, chapter, repo_root=repo_root)
+    if reviewed != current:
+        _fail(f"developmental report is stale for book {book} ch {chapter}: "
+              f"reviewed {reviewed[:12]} != current draft {current[:12]}; re-run /review-chapter")
+    # validated — mint the certificate (the LAST write).
+    cert = dev_clear_path(book, chapter, repo_root)
+    cert.parent.mkdir(parents=True, exist_ok=True)
+    cert.write_text(
+        f"---\nbook: {book}\nchapter: {chapter}\n"
+        f"cleared_draft_sha256: {current}\n"
+        f"cleared_at: {datetime.now(timezone.utc).isoformat()}\n---\n",
+        encoding="utf-8",
+    )
+    return 0
+
+
 def cmd_draft(book: str, chapter: str, *, repo_root=REPO) -> int:
     led = ledger_path(book, repo_root)
     if not led.is_file():
@@ -208,6 +232,9 @@ def main(argv=None) -> int:
     p_fin = sub.add_parser("finalize", help="post-gate guard: chapter must have PASSed")
     p_fin.add_argument("book")
     p_fin.add_argument("chapter")
+    p_clear = sub.add_parser("clear-dev", help="mint dev-clearance cert (draft-hash bound)")
+    p_clear.add_argument("book")
+    p_clear.add_argument("chapter")
     args = ap.parse_args(argv)
     if args.cmd == "draft":
         return cmd_draft(args.book, args.chapter)
@@ -219,6 +246,8 @@ def main(argv=None) -> int:
         return cmd_lock_mystery(args.book)
     if args.cmd == "finalize":
         return cmd_finalize(args.book, args.chapter)
+    if args.cmd == "clear-dev":
+        return cmd_clear_dev(args.book, args.chapter)
     ap.error(f"unknown command {args.cmd!r}")  # pragma: no cover
 
 

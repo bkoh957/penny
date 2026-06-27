@@ -303,3 +303,47 @@ def test_dev_path_helpers_shape(tmp_path):
     assert rep.name == "developmental-edit.md"
     assert rep.parent.name == "ch-07.reviews"
     assert cert.name == "book-01.ch-07.dev-clear"
+
+
+# ---------------------------------------------------------------------------
+# clear-dev tests
+# ---------------------------------------------------------------------------
+
+def _write_dev_report(root, book, ch, reviewed_sha, *, score=3):
+    rep = preflight.dev_report_path(book, ch, root)
+    rep.parent.mkdir(parents=True, exist_ok=True)
+    rep.write_text(
+        f"---\nproducer: developmental-editor\nkind: developmental\n"
+        f"target: book-{book}/ch-{ch}\nschema: penny-verdict/1\nscore: {score}\n"
+        f"reviewed_draft_sha256: {reviewed_sha}\n---\n\n- setting grounding thin\n",
+        encoding="utf-8",
+    )
+    return rep
+
+
+def test_clear_dev_mints_cert_when_hash_matches(tmp_path):
+    _write_draft(tmp_path, "01", "07", body="reviewed body\n")
+    sha = preflight.draft_sha256("01", "07", repo_root=tmp_path)
+    _write_dev_report(tmp_path, "01", "07", sha)
+    assert preflight.cmd_clear_dev("01", "07", repo_root=tmp_path) == 0
+    cert = preflight.dev_clear_path("01", "07", tmp_path)
+    assert cert.is_file()
+    from scripts.penny_meta import parse_frontmatter
+    assert parse_frontmatter(cert.read_text(encoding="utf-8"))["cleared_draft_sha256"] == sha
+
+
+def test_clear_dev_fails_without_report(tmp_path):
+    _write_draft(tmp_path, "01", "07")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_clear_dev("01", "07", repo_root=tmp_path)
+    assert "no developmental read" in str(e.value)
+    assert not preflight.dev_clear_path("01", "07", tmp_path).exists()
+
+
+def test_clear_dev_fails_on_stale_report(tmp_path):
+    _write_dev_report(tmp_path, "01", "07", "deadbeef")          # report for an old draft
+    _write_draft(tmp_path, "01", "07", body="a DIFFERENT body\n")  # draft has since changed
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_clear_dev("01", "07", repo_root=tmp_path)
+    assert "stale" in str(e.value)
+    assert not preflight.dev_clear_path("01", "07", tmp_path).exists()
