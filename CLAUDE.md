@@ -55,7 +55,7 @@ pure stdlib — see the dependency split below.
 ## The per-chapter pipeline
 
 `/plan-mystery NN` (once per book) → `/draft-chapter NN MM` → `/review-chapter NN MM`
-(the gate) → `/finalize-chapter NN MM [--commit]`. `/beta-read <path>` is book-level
+(the gate, also dispatches context-rich `developmental-editor` advisory) → `/finalize-chapter NN MM [--commit]` (requires `preflight clear-dev` bound to draft sha256). `/beta-read <path>` is book-level
 and **non-blocking**.
 
 Chapter artifacts live under `output/book-NN/chapters/`:
@@ -64,10 +64,10 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
 
 ### Gates and the verdict convention
 
-- **`scripts/preflight.py`** is the one deterministic-gate tool, four subcommands:
+- **`scripts/preflight.py`** is the one deterministic-gate tool, five subcommands:
   `lock-mystery N` (validate fairplay+lexicon, then mint the lock — the *only* lock
   writer), `draft N CH` (lock present + ledger populated), `assemble N` (cross-model
-  routing guard), `finalize N CH` (chapter must have `gate: PASS`).
+  routing guard), `finalize N CH` (chapter must have `gate: PASS`), `clear-dev N CH` (showrunner approves developmental report).
 - **Verdict files** (`ch-MM.reviews/*.md`) share one envelope — see the docstring of
   `scripts/penny_verdict.py` (`schema: penny-verdict/1`). A **`^BLOCKING:`** line at
   column 0 is *the* blocker convention; it is counted identically by
@@ -76,6 +76,7 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
 - **`scripts/review_gate.py`** owns the panel DECISION: `PASS` iff zero blockers, else
   `HOLD`. It writes `ch-MM.gate.md` and prints `GATE: PASS|HOLD`. Exit 0 means the gate
   *evaluated* (PASS or HOLD); nonzero means an operational error.
+- **`kind: developmental`** verdicts (from the developmental-editor) are advisory: they contribute zero blockers and never prevent finalization.
 
 ### Locks and certificates
 
