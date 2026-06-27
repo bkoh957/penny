@@ -15,7 +15,7 @@ book: 01
 
 ## The Central Deception
 
-Mary enters Neil's cottage as a familiar visitor — she has been there many times over the years; she knows where everything lives. After she kills him she erases her presence: washes the second cup, refolds the tea towel, squares the chair. A normal observer sees a tidy room. the Too-Much sees the seams of the cleaning.
+Mary enters Neil's cottage as a familiar visitor — she has been there many times over the years; she knows where everything lives. After she kills him she erases her presence: washes the second cup, refolds the tea towel, squares the chair. A normal observer sees a tidy room. The Too-Much sees the seams of the cleaning.
 
 ## The Keystone Clue — The Erasure
 

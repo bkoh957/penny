@@ -1,7 +1,7 @@
 ---
 id: gift
 type: thread
-links: [maggie-quill, neil-hartigan, artie-selwood, the-lighthouse]
+links: [maggie-quill, neil-hartigan, artie-selwood, the-lighthouse, the-wheelhouse]
 ---
 # Thread: Gift (The Too-Much)
 
