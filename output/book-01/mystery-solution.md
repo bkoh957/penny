@@ -30,15 +30,15 @@ Mary enters Neil's cottage as a familiar visitor — she has been there many tim
 | ID | Planted | Pays off | Notes |
 |---|---|---|---|
 | clue-erasure | ch 7 | ch 19 | Keystone. The wrongness of the cleaned room; the cup put away by a habitual visitor |
-| clue-car-on-street | ch 11 | ch 22 | Dot & Glad's contradictory testimony; combined they describe a car on Neil's street at the wrong hour — later identified as the aunt's |
-| clue-old-records | ch 15 | ch 21 | Neil had been reviewing records from a decade ago; Maggie finds the death certificate + private notes |
+| clue-car-on-street | ch 11 | ch 23 | Dot & Glad's contradictory testimony; combined they describe a car on Neil's street at the wrong hour — later identified as the aunt's |
+| clue-old-records | ch 15 | ch 22 | Neil had been reviewing records from a decade ago; Maggie finds the death certificate + private notes |
 | clue-cobber-dawn-witness | ch 2 | ch 20 | Cobber always on the beach at dawn; his sighting fits into the aunt's timeline when Maggie assembles it in ch 20 |
 
 ## Red Herrings
 
 | ID | Misleads toward | Planted | Demolished |
 |---|---|---|---|
-| rh-saffron | Saffron | ch 9 | ch 18 — her alibi is humiliating but real (debt recovery meeting in Colac) |
+| rh-saffron | Saffron | ch 9 | ch 17 — her alibi is humiliating but real (debt recovery meeting in Colac) |
 | rh-beryl | Beryl Foss | ch 10 | ch 14 — the argument with Neil was about her diagnosis, not murder |
 | rh-faye | Faye | ch 13 | ch 13 — her secret (old wound with the jam-feud judge) is sad and old and not a murder |
 
@@ -46,10 +46,10 @@ Mary enters Neil's cottage as a familiar visitor — she has been there many tim
 
 - **ch 19:** The cup click. Maggie understands who erased the room.
 - **ch 20:** Maggie assembles the timeline — Cobber's dawn sighting, Dot/Glad's car, the aunt's familiarity with Neil's cottage.
-- **ch 21:** Maggie finds Neil's private notes. The mercy is now legible; the aunt's fatal misreading is legible.
-- **ch 22:** Maggie takes it to Pruitt, who listens with the expression of a man who wants to say no and cannot quite.
-- **ch 23:** Maggie tells Cal before Pruitt moves. The worst conversation in the book.
-- **ch 24:** Maggie and Pruitt go to the aunt's house. She opens the door before they knock — she has been waiting. The arrest is quiet.
+- **ch 22:** Maggie finds Neil's private notes. The mercy is now legible; the aunt's fatal misreading is legible.
+- **ch 23:** Maggie takes it to Pruitt, who listens with the expression of a man who wants to say no and cannot quite.
+- **ch 24:** Maggie tells Cal before Pruitt moves. The worst conversation in the book.
+- **ch 25:** Maggie and Pruitt go to the aunt's house. She opens the door before they knock — she has been waiting. The arrest is quiet.
 
 ## The Series Wound
 
@@ -63,4 +63,4 @@ The aunt is Cal's paternal aunt; her father (the dying man) was Cal's grandfathe
 
 ## Blind-drafter seam reminder
 
-The aunt's identity as culprit must not appear in: thread files, character files for any character except `mary-burrell.md`, arc-ledger, or canon-core. The only drafter-visible constraint is "culprit identity SEALED; reveal chapter 24."
+The aunt's identity as culprit must not appear in: thread files, character files for any character except `mary-burrell.md`, arc-ledger, or canon-core. The only drafter-visible constraint is "culprit identity SEALED; reveal chapter 25."

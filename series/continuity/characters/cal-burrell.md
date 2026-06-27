@@ -12,7 +12,7 @@ Another maker who works with his hands — this rhymes quietly with Maggie's pot
 
 He is the kind of man who looks at things clearly rather than away from them. When concerned he goes very still and measures things twice — the same thing he does with shelves.
 
-**Book 01 complication.** His paternal aunt is central to the murder investigation. The truth Maggie is following leads into his family. When Maggie tells him (ch 23), he goes through disbelief, then sick recognition, then stillness. He does not ask her not to do it. By ch 27 they are, by the end of the evening, still themselves — the wound is real but the decision to stay warm has been made.
+**Book 01 complication.** His paternal aunt is central to the murder investigation. The truth Maggie is following leads into his family. When Maggie tells him (ch 24), he goes through disbelief, then sick recognition, then stillness. He does not ask her not to do it. By ch 28 they are, by the end of the evening, still themselves — the wound is real but the decision to stay warm has been made.
 
 **Family context.** His paternal aunt is Mary Burrell (his father's sister). His grandfather (his father's father) died a decade ago under circumstances that are relevant to the Book 01 mystery. Family surname: **Burrell**.
 

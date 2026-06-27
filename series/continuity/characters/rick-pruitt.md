@@ -14,8 +14,8 @@ He is not the romance — deliberately, so the friction stays clean.
 
 **In Book 01:**
 - Arrives ch 7; sets up in the surf club, asks everyone to stay calm.
-- Builds a case against Saffron (chs 17–18); case collapses publicly ch 18.
-- Listens to Maggie's assembled case (ch 22) with the expression of a man who wants to say no and is not quite able to.
-- Makes the arrest (ch 24) with a quietness that does him credit. Holds the gate on the way out without saying anything.
+- Builds a case against Saffron (ch 17); case collapses publicly ch 17.
+- Listens to Maggie's assembled case (ch 23) with the expression of a man who wants to say no and is not quite able to.
+- Makes the arrest (ch 25) with a quietness that does him credit. Holds the gate on the way out without saying anything.
 
 **Character note.** Pruitt's scepticism is the right friction: Maggie cannot just announce the solution; she has to make it provable. This keeps the gift honest across the series.

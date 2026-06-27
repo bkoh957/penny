@@ -17,4 +17,4 @@ Rules (load-bearing, hold across all books):
 - Mastery is a series-long arc, not a Book 01 switch.
 
 - Status: OPEN (Book 01, ch 01 — series-long arc).
-- Key beats: binge ch 5; hangover ch 6; keystone flood ch 7; Artie's hint ch 16; the click ch 19; Artie circling again ch 28.
+- Key beats: binge ch 5; hangover ch 6; keystone flood ch 7; Artie's hint ch 16; the click ch 19; Artie circling again ch 29.
