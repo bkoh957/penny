@@ -7,7 +7,7 @@ links: [artie-selwood, vincent-calloway, saffron, the-lighthouse]
 
 Threads opened in Book 01 for future books. Deliberately unresolved.
 
-1. **Artie Selwood and the gift's origin.** Artie tells Maggie (ch 16) he once knew a woman who saw the way Maggie sees. He circles it again in ch 28 without saying it fully. He has kept a record for thirty years. The origin mystery of the Migraine Sight — drip-fed across multiple books.
+1. **Artie Selwood and the gift's origin.** Artie tells Maggie (ch 16) he once knew a woman who saw the way Maggie sees. He circles it again in ch 28 without saying it fully. He has kept a record for thirty years. The origin mystery of the Too-Much — drip-fed across multiple books.
 
 2. **Calloway's bench skeleton.** Vincent Calloway's buried secret from his years on the bench is raised but left entirely unresolved in Book 01. A thread for a future book. Do NOT resolve in Book 01.
 

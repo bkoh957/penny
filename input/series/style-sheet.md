@@ -20,3 +20,4 @@
 - Characters: Maggie Quill (protagonist). Cal Burrell (carpenter). Spellings locked for the series.
 - Places: Pelican's Crook (town, with apostrophe). Brunswick (Melbourne suburb). Otway Ranges. Fitzroy (Melbourne suburb). Geelong. Spellings locked.
 - Businesses: The Wheelhouse (Maggie's pottery studio/shop, capitalised as a proper noun).
+- Gift name: "the Too-Much" — capitalized, hyphenated coined proper noun in narration; may be lowercase/offhand in dialogue. Keep understated early so the ch-28 "Saw too much" echo lands. (Replaces the gift's earlier, retired clinical working name.)

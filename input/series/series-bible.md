@@ -31,7 +31,7 @@ Readers return to a cosy series for the people and the place far more than the p
 
 **Background.**  An artist at heart who set her craft aside long ago for a sensible life — twenty years as a corporate HR director and a marriage that went stale. After her divorce she fled the city, bought a small place in town, and opened a pottery studio, The Wheelhouse, on the main street: a return to the passion she shelved, and a flight from a life spent managing people and absorbing their problems into the solitude of making.
 
-**The old career — and why it matters.**  Twenty years as an HR director made her a professional keeper of other people’s secrets: the quiet firings, the complaints, the crises behind the leave requests. That rhymes directly with Dr Neil Hartigan, the town’s medical keeper of secrets — she instinctively understands a man whose job was knowing what everyone conceals, which gives her private insight the police lack. It also rationalises her perceptiveness without inflating it: she is a trained reader of people and rooms (the tell, the account that doesn’t match the body language), which complements the Migraine Sight rather than duplicating it — the gift floods her with physical detail; her career taught her the human undercurrent. And it gives her real internal friction: a woman who spent a career keeping confidences must now expose people, against every instinct she has.
+**The old career — and why it matters.**  Twenty years as an HR director made her a professional keeper of other people’s secrets: the quiet firings, the complaints, the crises behind the leave requests. That rhymes directly with Dr Neil Hartigan, the town’s medical keeper of secrets — she instinctively understands a man whose job was knowing what everyone conceals, which gives her private insight the police lack. It also rationalises her perceptiveness without inflating it: she is a trained reader of people and rooms (the tell, the account that doesn’t match the body language), which complements the Too-Much rather than duplicating it — the gift floods her with physical detail; her career taught her the human undercurrent. And it gives her real internal friction: a woman who spent a career keeping confidences must now expose people, against every instinct she has.
 
 **Why she stays nosy.**  She is new enough to be an outsider who notices what locals have stopped seeing, but she has sunk her savings and her hopes into this town — so she is invested, not passing through. The classic insider-outsider.
 
@@ -45,7 +45,7 @@ At heart, Maggie is an artist. The pottery is not a quirky occupation; it is a p
 
 The divorce — the end of a stale marriage — is painful, but it is also the thing that frees her. The marriage went stale because she had stopped looking honestly at her own life; she had settled, and settling meant no longer seeing clearly. Now she is a woman trying to recover, to find herself again, and to find a place where she belongs.
 
-And here is the quiet rhyme that makes the gift hers and no one else’s: the Migraine Sight is the literal version of her emotional journey. She is learning to see clearly — to perceive what is truly there rather than what she would prefer, or what she had settled for. Her recovery and her gift are the same journey in two costumes: a woman who stopped seeing her own life honestly, learning to see again. Coming to terms with the gift and coming to terms with herself are one act.
+And here is the quiet rhyme that makes the gift hers and no one else’s: the Too-Much is the literal version of her emotional journey. She is learning to see clearly — to perceive what is truly there rather than what she would prefer, or what she had settled for. Her recovery and her gift are the same journey in two costumes: a woman who stopped seeing her own life honestly, learning to see again. Coming to terms with the gift and coming to terms with herself are one act.
 
 ### The arc across the series
 
@@ -61,7 +61,7 @@ It pays off in plot, too. If she has been performing her perceptiveness for appr
 
 More than a job; it is the charm engine. A shopfront means townsfolk wander in to browse, commission, complain, and gossip — funnelling the whole community past Maggie's bench. The wheel, the kiln, the glazes give you tactile, sensory writing and a rich vein of metaphor (firing, cracking, glaze that only reveals its true colour after the heat). The kiln also makes a handy, homely place for clues, conversations, and the occasional discovery.
 
-# 3.  The Gift — The Migraine Sight
+# 3.  The Gift — The Too-Much
 
 This is the heart of the series and its most original element. Treat its rules as load-bearing: keep them firm and consistent, and the gift feels fresh and fair. Let them go soft, and it reads like the heroine simply knows whatever the plot needs.
 
@@ -411,7 +411,7 @@ This is the engine of the misdirection: once a suspect is raised and waved away,
 ## Series Seeds (use sparingly)
 
 1. Calloway’s buried bench skeleton — unresolved, a thread for a later book.
-1. Artie Selwood’s recognition of Maggie’s gift — drip-fed, the origin mystery of the Migraine Sight.
+1. Artie Selwood’s recognition of Maggie’s gift — drip-fed, the origin mystery of the Too-Much.
 1. The Saffron friendship — a reinvented woman who may become an ally.
 
 ## Design Targets for the Mystery

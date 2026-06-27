@@ -15,4 +15,4 @@ Full of embellished shipwreck history he will narrate to anyone he can corner �
 - Ch 26: Sits in the corner of the pub and watches Maggie across the room with the expression of a man with more to say when the time is right.
 - Ch 28: Comes in on the pretence of commissioning a mug; stays forty minutes circling something he is not quite saying about the woman he knew, and about the lighthouse, and about a record he has kept for thirty years. Leaves without saying it.
 
-**Series role.** Slow-drip his recognition of Maggie's gift across several books. He is the key to the origin mystery of the Migraine Sight — do not resolve in Book 01.
+**Series role.** Slow-drip his recognition of Maggie's gift across several books. He is the key to the origin mystery of the Too-Much — do not resolve in Book 01.

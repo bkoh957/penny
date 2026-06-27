@@ -17,7 +17,7 @@ total_chapters: 28
 - B-romance — a slow-burn between Maggie and Cal, carpenter, complicated when the killer is revealed to be his aunt; wounded but bonded by the end
 - C-internal — a woman who stopped seeing her own life honestly learns to see again; recovering from a stale marriage, reclaiming her art, finding a place
 - pottery-business — Maggie moves from hiding behind seconds and underpricing her work, through the surf-club commission and repaired-glaze breakthrough, to claiming The Wheelhouse as a viable studio, shop and teaching space.
-- gift — the Migraine Sight moves from painful, unfiltered sensory recording, through dangerous overconfidence and social-validation misuse, to disciplined observation that can guide but not replace proof; the origin mystery is teased through Artie and Elspeth Vale but not resolved.
+- gift — the Too-Much moves from painful, unfiltered sensory recording, through dangerous overconfidence and social-validation misuse, to disciplined observation that can guide but not replace proof; the origin mystery is teased through Artie and Elspeth Vale but not resolved.
 - victim-reveal — Neil is mourned as a saint, exposed as a sinner when his old mercy surfaces, then understood as a difficult, secretive person: capable of compassion, capable of harm, and human enough to have underestimated what truth would do to the people left behind.
 - comedy — the op-shop sisters' contradictory testimony, Faye's jam feud, Glaze the studio cat, and Maggie's mortifying faux-pas blurts keep the tone warm throughout
 - series-seeds — Artie Selwood hints he has seen Maggie's kind of sight before; Calloway's buried bench skeleton is raised but left unresolved; Mara's headland/developer conflict remains community texture unless promoted in a later book; Saffron's humiliation opens a possible future friendship and the Elspeth Vale hook.
@@ -101,7 +101,7 @@ A severe migraine overwhelms Maggie in the studio: light becomes metallic, Glaze
 
 ### Track Movement
 - **M:** Plants Neil's changed reputation and the vase that will become the keystone physical clue.
-- **P:** Establishes the Migraine Sight and Maggie's need to be taken seriously.
+- **P:** Establishes the Too-Much and Maggie's need to be taken seriously.
 - **R:** The town's unease around Neil becomes visible; Maggie is briefly drawn into sympathy with him.
 - **B:** Neil's purchase gives Maggie a first sale that feels more emotionally charged than commercially useful.
 
@@ -343,7 +343,7 @@ Near the lighthouse, another migraine begins. Artie notices with unsettling comp
 
 ### Track Movement
 - **M:** Confirms murder through ordinary forensic evidence; names the vase as the instrument; the ch 8 remark (Neil's contempt for the purchase) lands with new weight.
-- **P:** Expands the Migraine Sight into a possible series mystery.
+- **P:** Expands the Too-Much into a possible series mystery.
 - **R:** Cal's practical care creates intimacy neither of them names. Pruitt comes to the studio rather than summoning Maggie — small gesture, second instance of warmth in their dynamic.
 - **B:** Faye's repair: Maggie sees her own non-second bowl in the bakery window; Faye enacted it without comment. Cal postpones an installation to help, showing that The Wheelhouse is becoming shared ground.
 
@@ -627,7 +627,7 @@ Late November brings returning tourists, longer light and a studio that finally 
 - **Pressure / Obstacle:** The last residue of self-doubt tempts her to minimise the work and delay the art trail.
 - **Turn / Change:** Maggie claims the bowls, the studio and the future; Artie opens the larger mystery of the Sight.
 - **Texture / Pleasure Layer:** Kiln opening, summer light, tourist chatter outside the studio, Glaze's apron claim, and the tactile satisfaction of finished pottery.
-- **Hook:** Elspeth Vale's name connects the Migraine Sight to Saffron's family and launches Book Two's deeper series question.
+- **Hook:** Elspeth Vale's name connects the Too-Much to Saffron's family and launches Book Two's deeper series question.
 
 ### Track Movement
 - **M:** Series hook: Elspeth Vale and the inherited or recurring Sight mystery.

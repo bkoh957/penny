@@ -10,7 +10,9 @@ links: [the-wheelhouse, b-romance, c-internal, gift, a-murder]
 
 Twenty years in HR, the last decade as Director — professional keeper of other people's secrets. Divorced; fled the city. Opened The Wheelhouse pottery studio on Pelican's Crook main street — a return to the passion she shelved, not a whim. She is warm, observant, dry-humoured, and quietly raw from the divorce. Competent with her hands and uncertain about her new life.
 
-**The Migraine Sight.** She has suffered migraines since she was nineteen. During an episode the world becomes overwhelmingly detailed: she perceives everything in punishing clarity — textures, asymmetries, a wrong shadow — but records without understanding. Meaning arrives later, usually when she is pain-free and doing something mundane. She cannot summon the gift; the pain brings it. Every use costs her.
+**The Too-Much.** She has suffered migraines since she was nineteen. During an episode the world becomes overwhelmingly detailed: she perceives everything in punishing clarity — textures, asymmetries, a wrong shadow — but records without understanding. Meaning arrives later, usually when she is pain-free and doing something mundane. She cannot summon the gift; the pain brings it. Every use costs her.
+
+**Relief.** Centring clay at the wheel is her only reliable relief from the Too-Much — medication does not reach it, darkness only waits it out, the wheel actively quiets it. Cross-ref: [[the-wheelhouse]].
 
 **The HR background rhyme.** Twenty years reading the gap between what people say and what their bodies do; the quiet firings, the crises behind the leave requests. This rhymes directly with Dr Neil Hartigan (the town's medical keeper of secrets) and gives her insight the police lack.
 
