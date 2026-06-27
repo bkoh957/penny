@@ -2,7 +2,7 @@
 id: b-romance
 type: thread
 links: [maggie-quill, cal-burrell, the-wheelhouse]
-last_advanced_chapter: 1
+last_advanced_chapter: 2
 ---
 # Thread: B — Romance
 

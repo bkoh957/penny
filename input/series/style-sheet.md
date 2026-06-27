@@ -21,3 +21,11 @@
 - Places: Pelican's Crook (town, with apostrophe). Brunswick (Melbourne suburb). Otway Ranges. Fitzroy (Melbourne suburb). Geelong. Spellings locked.
 - Businesses: The Wheelhouse (Maggie's pottery studio/shop, capitalised as a proper noun).
 - Gift name: "the Too-Much" — capitalized, hyphenated coined proper noun in narration; may be lowercase/offhand in dialogue. Keep understated early so the ch-29 "Saw too much" echo lands. (Replaces the gift's earlier, retired clinical working name.)
+- Spelling: "towards" (not "toward") — Australian/British English preferred form. Confirmed ch-02.
+- Hyphenation: "op-shop" — hyphenated. Confirmed ch-02.
+- Hyphenation: "tea-tree" — hyphenated (native Australian plant). Confirmed ch-02.
+- Spelling: "terracotta" — one word (pottery/horticultural context). Confirmed ch-02.
+- Hyphenation: "ready-made" — hyphenated in all positions (lexicalised compound; not subject to the predicative rule). Confirmed ch-02.
+- Hyphenation: "sea-change" — hyphenated in all positions. Confirmed ch-02.
+- Hyphenation: "high-vis" — hyphenated abbreviation for high-visibility. Confirmed ch-02.
+- Characters (ch-02 introductions, spellings confirmed): Faye Denton (baker); Tania (Faye's bakery assistant, no surname given); Dot and Glad (sisters, run the op-shop, surnames not given); Cobber (beach dweller, no surname given); Beryl Foss (Country Women's Association); Saffron (wellness retreat, no surname given); Mara (foreshore dune work, no surname given); Iris Poole (jam and preserves, markets); Mary Burrell (Cal's aunt).

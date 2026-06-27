@@ -2,6 +2,7 @@
 id: a-murder
 type: thread
 links: [neil-hartigan, maggie-quill, neils-cottage, the-community-hall]
+last_advanced_chapter: 2
 ---
 # Thread: A — Murder
 

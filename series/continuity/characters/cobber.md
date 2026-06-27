@@ -15,3 +15,6 @@ A man in his fifties who has been "about to leave town" for thirty years. He is 
 **Note.** Not really a suspect — he is on the alibi grid to confirm his witness status. His account initially points the wrong way (toward a stranger), but combined with Dot/Glad's car testimony it corroborates the timeline.
 
 **Real name:** Dennis. Nobody uses it.
+
+## Established facts
+- First on-page appearance: ch 2. Around eleven, Maggie saw him on the beach sitting on a grey log "as if he had grown out of it." She lifted a hand; he lifted one back, unhurried, and went on looking at the water.

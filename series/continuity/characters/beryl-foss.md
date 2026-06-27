@@ -15,3 +15,6 @@ Runs the town's social calendar with an iron fist and a clipboard. Every fundrai
 **Arc.** Thaws from obstacle to fierce, prickly ally across the series. Her illness humanises her without diminishing her authority.
 
 **Note.** Her events (markets, fundraisers, hall clean-ups) provide the warm community set-pieces every book needs — and a stage for Maggie's gift to misfire publicly.
+
+## Established facts
+- Named to Maggie by Faye in ch 2: runs the Country Women's Association (CWA). Faye's characterisation: "She'll find you. Don't go looking — let her do it her way. And be straight with her. She can smell a person managing her from across a hall." Not seen in person in ch 2.

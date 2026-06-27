@@ -2,7 +2,7 @@
 id: c-internal
 type: thread
 links: [maggie-quill, the-wheelhouse]
-last_advanced_chapter: 1
+last_advanced_chapter: 2
 ---
 # Thread: C — Internal (Maggie's arc)
 

@@ -11,3 +11,6 @@ links: [the-op-shop, comedy, a-murder]
 See Dot for the duo dynamic. Glad's testimony on any given afternoon never quite matches Dot's: the car was dark green (Glad said dark blue — Dot), it arrived at twenty to eight (Dot said half past seven). The single real buried fact that emerges from their combined testimony: a car, unusual for that street at that hour, parked briefly outside Neil's. Neither sister knows whose it was.
 
 **Note.** Dot and Glad are best written as a unit. They are described as having "two pairs of identical, unblinking eyes" — a surveillance installation, not a pair of individuals.
+
+## Established facts
+- Named to Maggie by Faye in ch 2: runs the op-shop on the main street with her sister Dot. See Dot entry for Faye's characterisation. Not seen in person in ch 2.

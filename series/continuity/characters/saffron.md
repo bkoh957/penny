@@ -15,3 +15,6 @@ Glamorous tree-changer running a wellness and yoga retreat the locals resent —
 **Post-vindication.** Ch 26: She accepts a cup of tea from Maggie in the studio without either of them making it significant. The beginning of something. A mirror for Maggie: another woman who came here to reinvent herself.
 
 **Series seed.** A possible reluctant ally from Book 02 onward.
+
+## Established facts
+- Named to Maggie by Faye in ch 2: has "the wellness retreat up past the headland." Faye's characterisation: sells something Faye declined to name; "the town decided about her before she'd unpacked, and that's not always fair and isn't always wrong." Not seen in person in ch 2.
