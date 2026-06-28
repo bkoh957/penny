@@ -58,6 +58,13 @@ pure stdlib — see the dependency split below.
 (the gate, also dispatches context-rich `developmental-editor` advisory) → `/finalize-chapter NN MM [--commit]` (requires `preflight clear-dev` bound to draft sha256). `/beta-read <path>` is book-level
 and **non-blocking**.
 
+`/expand-outline NN [MM]` (optional, before drafting) expands skeletal stubs from
+`input/book-NN/outline-skeleton.md` into the scene-breakdown `outline.md`. It is the
+**context-rich exception** among generative roles — it reads the sealed solution to
+schedule clue beats but must **withhold it from the page by instruction**: there is no
+automated leak-guard, so the `outline-expander` agent's guardrails are the only
+protection. Drafter blindness holds until the in-story detective-click (~ch19).
+
 Chapter artifacts live under `output/book-NN/chapters/`:
 `ch-MM.draft.md` → `.lineedit.md` → `.copyedit.md` → `.final.md`, plus the review
 sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
