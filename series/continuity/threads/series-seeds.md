@@ -1,7 +1,7 @@
 ---
 id: series-seeds
 type: thread
-links: [artie-selwood, vincent-calloway, saffron, the-lighthouse]
+links: [artie-selwood, vincent-calloway, saffron, the-lighthouse, thomas-quill]
 ---
 # Thread: Series Seeds
 
@@ -12,5 +12,7 @@ Threads opened in Book 01 for future books. Deliberately unresolved.
 2. **Calloway's bench skeleton.** Vincent Calloway's buried secret from his years on the bench is raised but left entirely unresolved in Book 01. A thread for a future book. Do NOT resolve in Book 01.
 
 3. **Saffron's possible friendship.** Saffron, vindicated and still broke after the false-suspect collapse, accepts a cup of tea from Maggie (ch 26) without either of them making it significant. Another woman who came here to reinvent herself — a reluctant possible ally across the series.
+
+4. **Tommy Quill, off-page.** Maggie's ex-husband is a felt presence in Book 01 but never appears. Whether he ever returns on-page — and what his reappearance would cost her hard-won quiet — is deliberately left open. Cross-ref: [[thomas-quill]]. Do NOT bring him on-page in Book 01.
 
 - Status: OPEN (ch 01 — advances in Books 02+, not resolved in Book 01).

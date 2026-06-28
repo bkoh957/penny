@@ -1,7 +1,7 @@
 ---
 id: c-internal
 type: thread
-links: [maggie-quill, the-wheelhouse]
+links: [maggie-quill, the-wheelhouse, thomas-quill]
 last_advanced_chapter: 2
 ---
 # Thread: C — Internal (Maggie's arc)
@@ -11,3 +11,4 @@ A woman who stopped seeing her own life honestly learns to see again. Maggie fle
 - Status: OPEN (Book 01, ch 01 — multi-book arc, not resolved here).
 - Key beats: arrival and specific relief ch 1; binge-and-hangover chs 5–6; the solo investigation as a form of seeing truly chs 7–23; the kiln batch ch 29.
 - The binge (ch 5) is a character flaw in action: using the gift to be liked mirrors staying in the stale marriage to feel safe.
+- **The Tommy-voice is the concrete mechanism of this arc.** "Apologising for taking up space" is literal: short flashback bursts of her ex-husband's belittling lines fire at confidence thresholds. Sting ch1–18; they **pivot to fuel at the ch19 click** (the sight that exposed Tommy becomes her strength); spur ch19–29. Coda ch29: the voice has gone quiet and she stamps her pots "Quill" — reclaiming the name. Cross-ref: [[thomas-quill]].
