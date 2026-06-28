@@ -232,7 +232,7 @@ Saffron Vale becomes the town's preferred suspect. Neil had undermined her welln
 ## Chapter 10 — Beryl's Changed Clothes
 
 ### Chapter Summary
-Beryl becomes a plausible suspect after Maggie learns she had a loud public argument with Neil shortly before his death. At the bakery, Maggie blurts that Beryl changed clothes on the night of the murder. The room freezes. The truth is private and devastating rather than criminal: Beryl changed after a frightening medical appointment and did not want the town's pity. Pruitt warns Maggie that she cannot turn a fragment of observation into an accusation because it makes a room easier to read. After the warning he adds, quietly, that the town would rather have a convenient answer than a true one — and that being new makes her the most convenient answer available. Beryl tells her that seeing a great deal is not the same as understanding any of it. Cal witnesses the exchange and is appalled.
+Beryl becomes a plausible suspect after Maggie learns she had a loud public argument with Neil shortly before his death. At the bakery, Maggie blurts that Beryl changed clothes on the night of the murder. The room freezes. Beryl will not say why she changed — only that it is private — and the refusal, layered over her public argument with Neil, leaves her a suspect Maggie cannot dismiss even as the town turns on Maggie's cruelty. Pruitt warns Maggie that she cannot turn a fragment of observation into an accusation because it makes a room easier to read. After the warning he adds, quietly, that the town would rather have a convenient answer than a true one — and that being new makes her the most convenient answer available. Beryl tells her that seeing a great deal is not the same as understanding any of it. Cal witnesses the exchange and is appalled.
 
 ### Chapter Structure
 - **Start / Desire:** Maggie wants to test whether Beryl's argument with Neil gives her a real lead.
@@ -242,7 +242,7 @@ Beryl becomes a plausible suspect after Maggie learns she had a loud public argu
 - **Hook:** Pruitt tells Maggie that the next time she has a suspicion, she should bring him facts—not a performance.
 
 ### Track Movement
-- **M:** Beryl's motive remains possible, but Maggie's method is discredited.
+- **M:** Beryl's motive (the public argument with Neil) and her unexplained clothes-change keep her a live suspect; Maggie's method is discredited, but Beryl is not cleared — her innocent reason is withheld until ch 17.
 - **P:** Maggie confronts the harm her perception can cause when separated from empathy.
 - **R:** Cal's disapproval becomes a real breach; Beryl's trust is damaged.
 - **B:** Faye removes Maggie's pottery from the bakery counter for the afternoon to stop customers associating it with the scene.
@@ -352,7 +352,7 @@ Near the lighthouse, another migraine begins. Artie notices with unsettling comp
 ## Chapter 16 — The Case Against Saffron
 
 ### Chapter Summary
-Pruitt's circumstantial case against Saffron grows: motive, financial pressure, lies about her movements, a retreat vehicle seen near Neil's road earlier that week, a concealed medical appointment and credentials that are more embellished than she admitted. Maggie helps build the theory and feels an ugly relief. If Saffron did it, Mary and Cal are safe, and the town's pain can remain neatly outside the family Maggie has begun to care about. Cal recognises the emotional bias in her certainty and says she is beginning to sound like Mary: treating fear as evidence. The argument hurts because Maggie has begun to want his approval.
+Pruitt's circumstantial case against Saffron grows: motive, financial pressure, lies about her movements, a retreat vehicle seen near Neil's road earlier that week, a concealed medical appointment and credentials that are more embellished than she admitted. Maggie helps build the theory and feels an ugly relief. If Saffron did it, Mary and Cal are safe, and the town's pain can remain neatly outside the family Maggie has begun to care about. Cal recognises the emotional bias in her certainty and says she is beginning to sound like Mary: treating fear as evidence. The argument hurts because Maggie has begun to want his approval. And Beryl still has not explained her changed clothes — Maggie is now holding two open suspects at once, Saffron's convenient guilt and Beryl's unexplained night, and cannot close either.
 
 ### Chapter Structure
 - **Start / Desire:** Maggie wants the facts to support the answer that causes the least damage to the people she now loves.
@@ -362,7 +362,7 @@ Pruitt's circumstantial case against Saffron grows: motive, financial pressure, 
 - **Hook:** Pruitt says he may have enough to bring Saffron in for formal questioning.
 
 ### Track Movement
-- **M:** Builds a convincing but false case against Saffron.
+- **M:** Builds the Saffron case while keeping Beryl unresolved — two parallel possibles entering ch 17.
 - **P:** Maggie recognises, too late, that she wants the answer to be emotionally convenient.
 - **R:** Cal and Maggie's argument cuts deeper because care has begun to matter.
 - **B:** The plinth is finished; Maggie has a visible reminder of the life she risks abandoning to the case.
@@ -372,17 +372,17 @@ Pruitt's circumstantial case against Saffron grows: motive, financial pressure, 
 ## Chapter 17 — The Wrong Woman
 
 ### Chapter Summary
-At the surf club, the case against Saffron collapses publicly. Her hidden alibi is humiliating rather than criminal: she was meeting a debt-recovery agent in Colac during the murder window because her retreat is close to collapse. Maggie realises she helped the town blame Saffron because Saffron was convenient, controlled and outside the local family web. She apologises without expecting forgiveness. Saffron tells her that most people are wrong about her; they usually enjoy it more. Maggie returns to The Wheelhouse hollowed out, where several surf-club bowls emerge from the kiln imperfect but salvageable. Instead of binning them, she experiments with a repair glaze and finds a finish that feels genuinely hers.
+At the surf club, the case against Saffron collapses publicly. Her hidden alibi is humiliating rather than criminal: she was meeting a debt-recovery agent in Colac during the murder window because her retreat is close to collapse. Maggie realises she helped the town blame Saffron because Saffron was convenient, controlled and outside the local family web. She apologises without expecting forgiveness. Saffron tells her that most people are wrong about her; they usually enjoy it more. In the same stretch, Beryl's silence about her changed clothes finally breaks: she was at a frightening private medical appointment that night and could not bear the town's pity. The two best answers fail within a day of each other. Maggie returns to The Wheelhouse hollowed out, where several surf-club bowls emerge from the kiln imperfect but salvageable. Instead of binning them, she experiments with a repair glaze and finds a finish that feels genuinely hers.
 
 ### Chapter Structure
 - **Start / Desire:** Maggie wants the Saffron theory to become proof.
 - **Pressure / Obstacle:** Saffron's private humiliation reveals that Maggie has confused secrecy with guilt.
 - **Turn / Change:** The case loses its easy answer; Maggie gains the first real foundation for a relationship with Saffron and a new artistic direction.
 - **Texture / Pleasure Layer:** Surf-club committee discomfort, Glaze parked on Maggie's bonnet after the collapse, and the unexpected beauty of a repaired glaze.
-- **Hook:** Maggie looks at the altered bowls and realises the damage has made them better than the originals.
+- **Hook:** Two suspects gone in a day; the case has no one left in it — and Maggie, hollowed out, has only the wheel to go back to. The altered bowls tell her the damage has made them better, but she cannot yet say the same of herself.
 
 ### Track Movement
-- **M:** Act II low point; false solution collapses.
+- **M:** Act II low point: the two live possibles (Saffron, Beryl) both collapse — a true dead-end with no suspect left.
 - **P:** Maggie accepts responsibility for her part in scapegoating Saffron.
 - **R:** Saffron becomes a potential ally; Cal and Maggie are further apart after his warning proves right.
 - **B:** Maggie discovers the signature repair glaze that changes the commission from competent to personal.
