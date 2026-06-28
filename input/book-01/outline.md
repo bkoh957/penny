@@ -252,7 +252,7 @@ Beryl becomes a plausible suspect after Maggie learns she had a loud public argu
 ## Chapter 11 — The Workshop and the Headland
 
 ### Chapter Summary
-Cal returns to The Wheelhouse for a genuine job and stays longer than necessary. He asks Maggie to see the family workshop before deciding whether to sell it; in return, he agrees to build a display plinth for the surf-club bowls. Among old tools and incomplete repairs, Maggie sees how much of Cal's life has been inherited rather than chosen. Cal says little about his parents beyond that they left early; Mary stepped in and brought him up; the workshop is the last thing his father left him and Mary has never let it be sold. The comment lands as backstory. They argue over whether handmade work should reveal its flaws, then accidentally reveal what each has sacrificed to keep a life that no longer fits. At the boat ramp, Mara is working on dune restoration near a parcel of land a developer wants to acquire—land that would include both the workshop and part of the restoration ground. This is community texture and a boundary lesson, not a second Book 1 mystery. Maggie reflexively treats it as a puzzle, and Mara reminds her it is Country and community, not a clever outsider's problem to solve.
+Cal returns to The Wheelhouse for a genuine job and stays longer than necessary. He asks Maggie to see the family workshop before deciding whether to sell it; in return, he agrees to build a display plinth for the surf-club bowls. Among old tools and incomplete repairs, Maggie sees how much of Cal's life has been inherited rather than chosen. Cal says little about his parents beyond that they left early; Mary stepped in and brought him up; the workshop is the last thing his father left him and Mary has never let it be sold. The comment lands as backstory. Cal mentions, almost in passing, that Neil had been making remarks about the workshop lately — whether it was worth holding onto, whether Cal could really build his future there. Cal deflects without heat. The remark lands in Maggie's mind and does not leave. They argue over whether handmade work should reveal its flaws, then accidentally reveal what each has sacrificed to keep a life that no longer fits. At the boat ramp, Mara is working on dune restoration near a parcel of land a developer wants to acquire—land that would include both the workshop and part of the restoration ground. This is community texture and a boundary lesson, not a second Book 1 mystery. Maggie reflexively treats it as a puzzle, and Mara reminds her it is Country and community, not a clever outsider's problem to solve.
 
 ### Chapter Structure
 - **Start / Desire:** Maggie wants Cal's help with the commission and a reprieve from the case's social damage.
@@ -262,7 +262,7 @@ Cal returns to The Wheelhouse for a genuine job and stays longer than necessary.
 - **Hook:** Cal admits Mary says selling the workshop would mean abandoning the last thing that matters.
 
 ### Track Movement
-- **M:** A deliberate breath; establishes spaces and family stakes that will later shape Mary's behaviour.
+- **M:** A deliberate breath; establishes spaces and family stakes that will later shape Mary's behaviour. Neil's habit of making remarks about Cal's future and the workshop sale is planted here — seeds Cal's motive for ch 19, fair-play, without emphasis.
 - **P:** Maggie learns that not every problem is hers to interrogate or fix.
 - **R:** Attraction appears in practical partnership; Mara establishes a boundary with Maggie. Cal's upbringing — raised by Mary after his parents left — is planted as backstory; its significance to the revelation in ch 20 is withheld.
 - **B:** Cal begins the plinth, and Maggie sees the commission as a professional undertaking rather than an audition for belonging.
@@ -394,7 +394,7 @@ At the surf club, the case against Saffron collapses publicly. Her hidden alibi 
 ## Chapter 18 — The Only Quiet
 
 ### Chapter Summary
-Saffron's collapse has spent the last suspect. Beryl, Faye, Calloway — cleared or discredited; Maggie's credibility is gone with every constituency that matters; the town's verdict is that she is the newcomer who hurts people. She decides to stop — it was never hers to solve. That night the Too-Much comes up off the water at its worst, sharpened by shame and exhaustion, and nothing touches it: not the dark, not lying still. Only the wheel ever has. She goes to the studio not to think but because centring clay is the one thing that has ever talked the Too-Much down — medication does not reach it, time only waits it out, but the wheel quiets it. In the after-calm — not the flood, the quiet behind it — her hands do what they have always half-done: they rebuild a detail before her mind catches up. She finds she has set a trimmed cup to an exact spot on the bench and a form a hair off-true beside it, her hands recreating the spatial wrongness of Neil's cottage. The clay hands her not an answer but a question: someone with exact, trained habits reset that room — the kind of precision she has only ever seen in one person. For the first time the Too-Much has worked with her, calm and useful, and cost no one. She cannot stop after all — but this time she will look before she speaks.
+Saffron's collapse has spent the last suspect. Beryl, Faye, Calloway — cleared or discredited; Maggie's credibility is gone with every constituency that matters; the town's verdict is that she is the newcomer who hurts people. She decides to stop — it was never hers to solve. That night the Too-Much comes up off the water at its worst, sharpened by shame and exhaustion, and nothing touches it: not the dark, not lying still. Only the wheel ever has. She goes to the studio not to think but because centring clay is the one thing that has ever talked the Too-Much down — medication does not reach it, time only waits it out, but the wheel quiets it. In the after-calm — not the flood, the quiet behind it — her hands do what they have always half-done: they rebuild a detail before her mind catches up. She finds she has set a trimmed cup to an exact spot on the bench and a form a hair off-true beside it, her hands recreating the spatial wrongness of Neil's cottage. The clay hands her not an answer but a question: someone with exact, trained habits reset that room — the kind of precision she associates with one person. For the first time the Too-Much has worked with her, calm and useful, and cost no one. She cannot stop after all — but this time she will look before she speaks.
 
 ### Chapter Structure
 - **Start / Desire:** Maggie wants to quit — to stop being the woman who sees too much and hurts people for it.
@@ -675,8 +675,8 @@ Late November brings returning tourists, longer light and a studio that finally 
 
 - **Ch. 1–6:** Maggie hides behind seconds and craves approval; migraines isolate her.
 - **Ch. 7–13:** She mistakes observation for authority and hurts people (Beryl, Calloway; ch 5 market overreach is the first instance).
-- **Ch. 14–19:** She learns to wait, listen and tolerate uncertainty.
-- **Ch. 20–23:** She holds the horror of suspecting Cal and waits for proof; separates insight from proof; the discipline is demonstrated.
+- **Ch. 14–18:** She learns to wait, listen and tolerate uncertainty.
+- **Ch. 19–23:** She holds the horror of suspecting Cal and waits for proof; separates insight from proof; the discipline is demonstrated.
 - **Ch. 24–29:** She accepts that right action can cost her love, then claims her work and belonging anyway.
 
 ## Romance / Community Track
