@@ -6,28 +6,31 @@ the sealed solution, so the mystery must already be planned.
 
 ## Steps
 
-0. **Precondition:** the sealed solution must exist (the expander reads it). Abort if not:
+1. **Parse args:** `book` (e.g. `01`) and optional `chapter` (e.g. `05`).
+
+2. **Precondition:** the sealed solution must exist (the expander reads it). Abort if not:
 
    ```bash
    test -f output/book-$book/mystery-solution.md || { echo "no sealed solution for book $book — run /plan-mystery $book first"; exit 1; }
    ```
 
-1. **Parse args:** `book` (e.g. `01`) and optional `chapter` (e.g. `05`).
-
-2. **Write the harness state marker:**
+3. **Write the harness state marker:**
 
    ```bash
    mkdir -p .penny
    echo "book=$book chapter=${chapter:-all} stage=EXPAND" > .penny/current-stage
    ```
 
-3. **Determine target chapters:**
+4. **Determine target chapters:**
    - If `chapter` given → just that chapter.
    - Else (batch) → every `## Chapter NN` in `input/book-$book/outline-skeleton.md`
      whose section in `input/book-$book/outline.md` does **not** already contain a
      `### Scene ` heading (i.e. not yet expanded). This protects hand-crafted chapters.
+   - **If `input/book-$book/outline.md` does not exist yet**, initialize it before the
+     skip-check (copy the frontmatter from `outline-skeleton.md`, or create an empty file)
+     so that section replacement in Step 5 will work.
 
-4. **For each target chapter**, assemble the inputs listed in
+5. **For each target chapter**, assemble the inputs listed in
    `.claude/agents/outline-expander.md` (the stub for that chapter; the voice/setting/
    genre/length packs; `series/continuity/canon-core.md` + the brief-derived ledger
    slice; `input/series/series-bible.md`; and the sealed `output/book-$book/mystery-solution.md`
@@ -36,12 +39,14 @@ the sealed solution, so the mystery must already be planned.
    section** (from its `## Chapter NN` heading to the next chapter heading or EOF),
    preserving chapter order.
 
-   **The expander is context-rich and there is no automated leak-guard** — before moving
-   on, eyeball its output: it must not name the culprit as the culprit, or state the
-   motive/solution, in any chapter before the in-story detective-click (~ch19). If it does,
-   discard that chapter's output and re-dispatch with a tightened guardrail.
+6. **Post-expansion review (no automated leak-guard).** After all target chapters are
+   written, the showrunner reviews `input/book-$book/outline.md`: confirm no chapter
+   before the in-story detective-click (~ch19) names the culprit as the culprit or states
+   the motive/solution. If any chapter leaks, discard that chapter's section and re-run
+   `/expand-outline $book MM` for it with a tightened guardrail. Only commit the outline
+   once this review passes.
 
-5. **Advance the marker:**
+7. **Advance the marker:**
 
    ```bash
    echo "book=$book chapter=${chapter:-all} stage=EXPANDED" > .penny/current-stage
