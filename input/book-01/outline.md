@@ -394,7 +394,7 @@ At the surf club, the case against Saffron collapses publicly. Her hidden alibi 
 ## Chapter 18 — The Only Quiet
 
 ### Chapter Summary
-Saffron's collapse has spent the last suspect. Beryl, Faye, Calloway — cleared or discredited; Maggie's credibility is gone with every constituency that matters; the town's verdict is that she is the newcomer who hurts people. She decides to stop — it was never hers to solve. That night the Too-Much comes up off the water at its worst, sharpened by shame and exhaustion, and nothing touches it: not the dark, not lying still. Only the wheel ever has. She goes to the studio not to think but because centring clay is the one thing that has ever talked the Too-Much down — medication does not reach it, time only waits it out, but the wheel quiets it. In the after-calm — not the flood, the quiet behind it — her hands do what they have always half-done: they rebuild a detail before her mind catches up. She finds she has set a trimmed cup to an exact spot on the bench and a form a hair off-true beside it, her hands recreating the spatial wrongness of Neil's cottage. The clay hands her not an answer but a question: someone reset that room by habit — whose? For the first time the Too-Much has worked with her, calm and useful, and cost no one. She cannot stop after all — but this time she will look before she speaks.
+Saffron's collapse has spent the last suspect. Beryl, Faye, Calloway — cleared or discredited; Maggie's credibility is gone with every constituency that matters; the town's verdict is that she is the newcomer who hurts people. She decides to stop — it was never hers to solve. That night the Too-Much comes up off the water at its worst, sharpened by shame and exhaustion, and nothing touches it: not the dark, not lying still. Only the wheel ever has. She goes to the studio not to think but because centring clay is the one thing that has ever talked the Too-Much down — medication does not reach it, time only waits it out, but the wheel quiets it. In the after-calm — not the flood, the quiet behind it — her hands do what they have always half-done: they rebuild a detail before her mind catches up. She finds she has set a trimmed cup to an exact spot on the bench and a form a hair off-true beside it, her hands recreating the spatial wrongness of Neil's cottage. The clay hands her not an answer but a question: someone with exact, trained habits reset that room — the kind of precision she has only ever seen in one person. For the first time the Too-Much has worked with her, calm and useful, and cost no one. She cannot stop after all — but this time she will look before she speaks.
 
 ### Chapter Structure
 - **Start / Desire:** Maggie wants to quit — to stop being the woman who sees too much and hurts people for it.
@@ -404,30 +404,30 @@ Saffron's collapse has spent the last suspect. Beryl, Faye, Calloway — cleared
 - **Hook:** She cannot stop — but she will bring Pruitt a habit, not a hunch.
 
 ### Track Movement
-- **M:** No new clue. Recombines the planted staged-scene details (ch 7) into a precise spatial question; redirects the hunt from "who hated Neil" to "whose habit reset the room." Fair-play intact — the clay yields the question, later chapters yield the proof.
+- **M:** No new clue. Recombines the planted staged-scene details (ch 7) into a precise-habits question that points, next chapter, at the most organised person Maggie knows. Fair-play intact — the clay yields the question, later chapters yield the proof.
 - **P:** The gift's turning point. Clay/centring established as the only reliable relief from the Too-Much; the gift becomes usable without performance or social cost. The concentrated Ordeal→turn.
 - **R:** Quiet. Glaze present; Cal's post-argument distance felt but not worked. Romance rests.
 - **B:** The same calm wheel-work that yields her repaired-glaze signature also yields the insight — craft and gift fuse.
 
 ---
 
-## Chapter 19 — The Cup Returns Home
+## Chapter 19 — The Most Organised Man She Knows
 
 ### Chapter Summary
-At a CWA hall clean-up, Beryl conscripts Maggie, Mary and half the town into resetting a room after a fundraiser. Maggie is watching someone restore order at the far end of the hall — the precision, the efficiency, the instinct to square things — and her mind goes to Cal before she looks up and sees it is Mary. She does not immediately understand the confusion. She watches Mary reach for a shelf without looking, return a cup to a precise place, fold a tea towel in the exact crisp square she saw at the autumn market, and restore the room through muscle memory. The question sits unresolved: why does Mary move like Cal, or is it the other way around? The migraine-recorded domestic details at Neil's cottage suddenly align: the erased second cup, the damp folded towel, the wrong biscuit tin, the overly tidy room and the vase placed just slightly wrong. Mary had known Neil's house well enough to remove herself from it. The delayed click identifies Mary as the likely killer, but Maggie does not act immediately.
+Maggie takes the question from ch 18 — the exact, trained habits that reset Neil's cottage — and maps it against everyone she knows. The precision fits one person: Cal. His workshop is ordered to the centimetre. He returns a tool to its hook without looking. The staged-scene details fall into new alignment: the erased second cup, the folded tea towel, the squared chair, the vase set just slightly wrong — these are the decisions of a person who cannot help leaving things right. And Cal had reason to be at the cottage that evening. Neil had been planting doubt about the workshop sale for months, testing Cal's faith in his own future, and Cal knew it. Motive and habit converge, and Maggie is sick with it. She has been here before — the moment certainty crystallises and turns out to be a cruelty. She will not do it again. She will not go to Pruitt with a hunch; she will not say Cal's name; she will not make herself comfortable by making him guilty. She resolves to find proof — the discipline she could not manage with Beryl or with Saffron, managed now because the cost of being wrong is the man she is falling in love with.
 
 ### Chapter Structure
-- **Start / Desire:** Maggie wants to help with a normal community task and prove she can be useful without interrogating anyone.
-- **Pressure / Obstacle:** Mary's warmth and care conflict with the pattern Maggie begins to recognise.
-- **Turn / Change:** The case turns toward Mary, but Maggie's growth is that she chooses restraint and begins seeking corroboration rather than announcing certainty.
-- **Texture / Pleasure Layer:** CWA clean-up choreography, arguments about cup shelves, Beryl wielding a dustpan like a badge of office, and Glaze stealing a ribbon from the raffle table.
-- **Hook:** Maggie sees Mary reset a cup in exactly the place where the erased second cup should have been.
+- **Start / Desire:** Maggie wants to follow the precision question without repeating the damage she did to Beryl and Saffron.
+- **Pressure / Obstacle:** The evidence converges on the one person she cannot bear to suspect — and converges cleanly.
+- **Turn / Change:** She names Cal to herself and then holds it alone, choosing proof over accusation for the first time without external prompting.
+- **Texture / Pleasure Layer:** The Wheelhouse at dusk, a half-finished surf-club bowl on the bench, Glaze circling the kiln stand, and the specific silence of a decision not to speak.
+- **Hook:** The habits are Cal's. She will not do to him what she did to Beryl — she will find the proof it wasn't him.
 
 ### Track Movement
-- **M:** Delayed click connects Mary to the staged-scene evidence. The click initially registers as Cal-like — his precision, his habits — before Maggie sees it is Mary; the confusion sits unresolved and will lock into meaning in ch 20.
-- **P:** Maggie applies the Sight with patience rather than performance.
-- **R:** Mary's control around Cal becomes more visible; Maggie understands that affection and danger can coexist.
-- **B:** Maggie arrives carrying repaired sample bowls, and Beryl's approval gives her a quiet professional win.
+- **M:** Precision clue converges on Cal (motive: the workshop; habits: his trained precision matching the staged-scene details). No Mary yet. Maggie chooses proof over accusation.
+- **P:** The discipline applied at its highest personal cost — the restraint she failed with Beryl and Saffron, managed here because the stakes are her own heart.
+- **R:** The romance stakes spike: she is investigating the man she loves, carrying the horror in silence.
+- **B:** A surf-club bowl sits half-finished on the bench; Maggie works it without rushing, proof that she can hold difficult things and still make something.
 
 ---
 
@@ -436,25 +436,27 @@ At a CWA hall clean-up, Beryl conscripts Maggie, Mary and half the town into res
 ### Chapter Summary
 Maggie works backwards through who had unresolved business with Neil and reconstructs the timeline of his last evening. She places Beryl (the confrontation about the health truth Neil held over her), Faye (the private family wound Neil used as leverage), and Calloway (an informal favour the old papers suggest he was closing out) — each corroborated by fragments already in the record. The picture builds: a man who had several visitors on his last evening, each of whom came, argued or pleaded, and left. A gap remains. A window no confirmed visitor fills.
 
-The physical residue of the staged crime scene comes back to Maggie: the squared chair, the folded tea towel, the cup returned to its exact place, the vase set slightly wrong. Whoever reset that room had habits of precision. Her mind goes to Cal — he had reason to be at the cottage; Neil had been planting doubt about the workshop sale. Cal is the most organised person Maggie knows. The habits at the cottage fit him. She carries this without saying it, investigating the man she is falling in love with using the only discipline she has: the restraint she could not manage with Beryl or Saffron, which she manages now because the cost is higher.
+She is still carrying the weight from ch 19 — Cal, the precision habits, the motive — and the reconstruction does not ease it. She holds the horror of suspecting him while she works, knowing she will not say his name until she has something solid.
 
-She goes back to Cobber with a specific question: that road, that evening, late. His answer is what it always is — lyrical, chaotic, half-useful — but inside it is the detail. A car he knew. Blue-green. Late, after the others. Not Cal's. Mary's.
+Catching the tail end of the CWA clear-out at the community hall, she watches someone restore order at the far end of the room — the precision, the efficiency, the instinct to square things — and her mind goes to Cal before she looks up and sees it is Mary. She does not immediately understand the confusion. She watches Mary reach for a shelf without looking, return a cup to its precise place, fold a tea towel in the exact crisp square she saw at the autumn market, and restore the room through muscle memory. The question settles without answering itself: why does Mary move like Cal, or is it the other way around?
 
-Maggie tries to understand why relief at Cal's clearing feels like falling. She asks the question she should have asked weeks earlier: Cal's parents, how he ended up here. Cobber tells her without realising he has told her anything: Mary took him on after his parents were gone. She brought him up. "She made him who he is." The ch 19 confusion locks into meaning: the staged room was reset by the woman who taught Cal every organisational habit he has. The click is now positional, hard, and fully legible.
+She goes back to Cobber with a specific question: that road, that evening, late. His answer is what it always is — lyrical, chaotic, half-useful — but inside it is the detail. A car he knew. Blue-green. Late, after the others. Not Cal's. Mary's. And Cobber, unasked, accounts for Cal in the gap: he had Cal's ute at the ramp that evening, patching a trailer light — Cal's own movements independently placed, not Cal's car, not Cal's presence at the cottage.
+
+Maggie tries to understand why relief at Cal's clearing feels like falling. She asks the question she should have asked weeks earlier: Cal's parents, how he ended up here. Cobber tells her without realising he has told her anything: Mary took him on after his parents were gone. She brought him up. "She made him who he is." The ch 19 precision question locks into meaning: the staged room was reset by the woman who taught Cal every organisational habit he has. The click is now positional, hard, and fully legible.
 
 Maggie's phone rings on the walk home. Mary. Could Maggie come for tea?
 
 ### Chapter Structure
-- **Start / Desire:** Maggie wants to build a case that cannot repeat the pattern of Beryl and Saffron — accusation before proof.
-- **Pressure / Obstacle:** The physical evidence points to habits of precision that she initially reads as Cal's; she must carry the horror of suspecting him while she works toward proof.
-- **Turn / Change:** Cobber places Mary's car in the gap. The Cal confusion resolves: the habits belong to Mary, who raised him. The click from ch 19 locks.
-- **Texture / Pleasure Layer:** Cobber's lyrical non-answer about tides delivering the one thing that matters, the foreshore boat ramp, and Glaze waiting at the studio door when Maggie returns.
+- **Start / Desire:** Maggie wants to build a case that cannot repeat the pattern of Beryl and Saffron — proof before accusation.
+- **Pressure / Obstacle:** She carries the Cal suspicion from ch 19 into the reconstruction; the precision evidence she has read as his could still be his, until it isn't.
+- **Turn / Change:** Two proofs land: Cobber places the blue-green car as Mary's, not Cal's, and independently accounts for Cal in the gap. The watch-Mary-reset beat arrives; the upbringing pivot locks. Cal clears on proof, not feeling.
+- **Texture / Pleasure Layer:** The community hall winding down, Cobber's lyrical non-answer about tides delivering the one thing that matters, the foreshore boat ramp, and Glaze waiting at the studio door when Maggie returns.
 - **Hook:** Mary's phone call on the walk home: she would like Maggie to come for tea.
 
 ### Track Movement
-- **M:** Reconstructed night places Beryl, Faye and Calloway at the cottage; gap reveals Mary's car via Cobber; Cal's upbringing (raised by Mary) is the pivot that closes the ch 19 click.
-- **P:** Maggie holds the horror of suspecting Cal and waits for proof — the restraint she could not manage with Beryl or Saffron, managed here because the cost is higher.
-- **R:** Cal briefly occupies the suspect position; the relief of clearing him changes what Maggie understands about her own feelings.
+- **M:** Cal clears on proof (car = Mary's, not Cal's; his gap independently accounted via Cobber); the watch-Mary-reset beat surfaces the precision habit's true origin — Mary, who raised him. Investigative click lands on Mary. Confession still ch 25.
+- **P:** Maggie holds the horror of suspecting Cal and waits for proof — the restraint she could not manage with Beryl or Saffron, managed here because the cost is higher. The relief of clearing him is as forceful as the suspicion was.
+- **R:** Cal clears on proof; the relief changes what Maggie understands about her own feelings.
 - **B:** Maggie sends the surf-club committee a confident progress update rather than apologising for existing.
 
 ---
