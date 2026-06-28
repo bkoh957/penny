@@ -20,7 +20,7 @@ as `design §N`. The build proceeds **phase by phase**; Phases 1–5 are shipped
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (~189 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (~273 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -36,8 +36,8 @@ pure stdlib — see the dependency split below.
    LLM-graded pipeline. Each fails loud with a named predicate and a nonzero exit.
 2. **Orchestration — `.claude/commands/*.md` + `.claude/agents/*.md`.** Slash commands
    are step-by-step runbooks that shell out to `scripts/` and dispatch sub-agents.
-   Agents are role-scoped (drafter, the 5 blind inspectors, line/copy editors,
-   beta-reader, etc.).
+   Agents are role-scoped (drafter, the 5 blind inspectors, the context-rich
+   developmental-editor, line/copy editors, beta-reader, etc.).
 3. **Swappable data — `config/` (packs, rubrics, run-config), `series/`
    (continuity ledger, bibles, whodunit data), and `input/` (writer-authored
    outlines and series reference files).** The engine reads these; it never
@@ -99,6 +99,13 @@ Inspectors and beta-readers are dispatched **blind**: each gets only its narrow 
 for beta-readers — no ledger, outline, or solution). Preserve this isolation. Personas
 are distinct lenses and are **never averaged**; models are the within-persona consensus
 axis (≥K-of-M via `beta_consensus_k`).
+
+The **`developmental-editor` is the deliberate exception**: it is *context-rich*, not
+blind — it gets the setting pack, a character-bible slice, and the chapter brief (but
+**not** the whodunit solution), because a craft read must know what the chapter is trying
+to do. It runs on a non-drafting model (`/review-chapter` **halts** if none is reachable
+rather than degrade to a same-model read), is advisory (never blocks the gate), and its
+read is gated into finalize via a `clear-dev` certificate bound to the draft's sha256.
 
 ## Series memory & context discipline
 

@@ -1,92 +1,58 @@
 # Handoff — Penny / main
-Saved: 2026-06-27 | Type: build
+Saved: 2026-06-28 | Type: build
 
-## What we're building
-Book 01 of the cozy-mystery series. This session: finalized ch-01 (the full
-post-gate prose pipeline ran for the first time ever), then did a structural revision —
-renamed the psychic gift "Migraine Sight" → **"the Too-Much"** and inserted a new
-**Ordeal chapter (ch 18, *The Only Quiet*)**, taking Book 01 from 28 → 29 chapters,
-renumbering everything downstream and re-locking the mystery. Also routed the finalize
-editors to Sonnet and fixed two latent `finalize-chapter.md` bugs.
+## Where things stand
+Two pieces of work shipped this session, plus one design parked:
+
+1. **Developmental-editor review role — SHIPPED + PUSHED.** A context-rich, per-chapter
+   craft read that runs at review time on the draft; advisory toward the gate (never
+   `^BLOCKING`, never flips PASS/HOLD) but a hard precondition for finalize via a
+   `clear-dev` certificate bound to the draft's sha256. Spec → plan → 9 TDD tasks →
+   review → fix wave. (Pushed earlier at HEAD `ab65cf2`.)
+
+2. **Book-01 suspect-arc restructure — the "Cal false lead" — COMPLETE on main.** The back
+   half went from a serial suspect fade-out to a three-stage collapse-and-converge:
+   dead-end (Saffron + Beryl both fizzle, ch 17) → Cal emerges as a real suspect (ch 19;
+   evidence converges, Maggie disciplines herself and seeks proof, not accusation) → Cal
+   clears on two independent proofs = Mary converges (ch 20; the precision habit was hers,
+   she raised him). ch 24: Maggie admits she suspected him. Edited `input/book-01/outline.md`
+   + `series/whodunit/book-01.yaml`; mystery lock re-minted. Spec → plan → 5 tasks → opus
+   whole-branch review → fix wave. 273 tests green, fairplay 0 blocking.
+
+3. **Ghost / bad-marriage motivation (John Truby "ghost") — PARKED mid-brainstorm.** The
+   idea: make the divorce an active haunting that motivates Maggie (root of her
+   weakness/approval-hunger), not ambient backstory. I offered three "ghost shapes"
+   (he weaponized her seeing [recommended — ties to the Too-Much]; he made her art small;
+   she stopped seeing to survive it); the user wanted to **clarify the question first** and
+   hasn't picked. Resume by asking what they want to clarify, then settle the ghost's shape.
 
 ## Git state
-- Branch: `main`. All work committed AND pushed. HEAD `f280c8c`. Tree clean.
-- Tests: **252 passing** (`python3 -m pytest`). NOTE: subagents kept misreporting this as
-  "189" — the real number is 252; verify independently if a subagent claims otherwise.
-- `.penny/current-stage` = `book=01 chapter=01 stage=FINALIZED`.
-- Key commits this session (newest→oldest):
-  - `f280c8c` fix(finalize): derive brief from outline; commit characters/ + locations/
-  - `94ffd82` fix(book-01): culprit_first_appearance_chapter 5 → 2
-  - `0304ce7` chore: gitignore root fairplay.md
-  - `1174c9f` fix(book-01): style-sheet echo ref ch-28 → ch-29
-  - `87f08c1`/`b794820`/`a4457b6`/`76f2b82` etc. — the rename + ch-18 insert + renumber + re-lock
-  - `630b179` finalize: book 01 chapter 01
-  - `d953343` chore(config): route finalize editors (line/copy/ledger) to Sonnet
-
-## Current pipeline state
-- **ch-01 FINALIZED** (`.final.md` exists; continuity ledger advanced; committed).
-- **ch-02..05 are `gate: PASS` but NOT finalized** — next up for `/finalize-chapter`.
-- **ch-06..29 not drafted.** Book is now **29 chapters**; **reveal chapter is 25**
-  (`Mary at the Door`); the new ch-18 is the Ordeal (`The Only Quiet`).
-- Mystery lock present & valid (`preflight.py lock-mystery 01` exit 0); fairplay exit 0.
+- Branch: `main`. The false-lead work is committed (`98a3e0d`..`c4e4c50`, 7 commits incl
+  spec + plan) but **unpushed**. The dev-editor docs (`README.md`, `CLAUDE.md`) + this
+  HANDOFF are being committed now and pushed with everything.
+- Tests: `python3 -m pytest` → **273 passed**. fairplay 0 blocking; book-01 mystery lock present.
+- Untracked `.ghost.swp` is the user's own vim swap for a `ghost` working file — leave it.
+- `.superpowers/sdd/` and `.penny/` are gitignored runtime state.
 
 ## Next actions
-1. **Finalize ch-02..05:** `/finalize-chapter 01 02` → `03` → `04` → `05`. `ledger_approval:
-   review` so each PAUSES for a diff review; resume with `--commit`. The finalize-chapter
-   bugs are now FIXED, so it runs end-to-end (auto-derives the brief; commits characters/
-   + locations/ too) — no manual brief-extraction / hand-staging needed (that was only
-   required for ch-01 before the fix).
-2. Then draft the new Ordeal chapter and beyond: `/draft-chapter 01 06` … and eventually
-   `/draft-chapter 01 18` (The Only Quiet — see its outline entry + the spec for intent).
-3. Optional cleanup: none outstanding — both deferred items (gitignore fairplay, culprit
-   first-appearance) were resolved this session.
-
-## Decisions made this session
-- **Gift renamed to "the Too-Much"** (the protagonist's own wry, ex-HR, reclaiming-an-
-  insult word). Chosen over potter-craft names (the Lustre/Kiln-light) because it's her
-  voice and it rhymes with the ch-29 payoff ("The Woman Who Saw Too Much" / Elspeth Vale's
-  "Saw too much" caption). Keep it UNDERSTATED early so the ch-29 echo detonates. Canon:
-  centring clay at the wheel is its ONLY reliable relief (set up by the new ch-18).
-- **New ch-18 "The Only Quiet" = the concentrated Ordeal** (Hero's-Journey gap the user
-  felt). All-is-lost stall → calm-at-the-wheel insight. FAIR-PLAY: names no culprit, adds
-  no clue — the clay only re-frames the planted ch-7 erasure into a *question*; the click
-  (ch-19) + Cobber (ch-20) still carry the proof.
-- **Reconcile-FIRST renumber** (user-approved): map each ledger/continuity chapter ref to
-  the *outline scene* it denotes, then renumber — do NOT blind-+1. This caught real
-  pre-existing drift: `clue-erasure` (19), `clue-cobber-dawn-witness` (20), and the Saffron
-  collapse (ch 17) were +1 ahead of their scenes, so they did NOT move; only no-drift
-  entries (`clue-car`→23, `clue-old-records`→22, reveal→25) shifted.
-- **Finalize editors → Sonnet** (line/copy/ledger). ledger-updater kept at Sonnet (NOT
-  Haiku) because knowledge-state tracking is load-bearing for fair-play.
-- **Drafters Opus, inspectors Sonnet, final-read codex** (carried from prior session).
-
-## User preferences expressed this session
-- Lead with a recommendation; decisive after a shortlist. Commit + push at the end (atomic,
-  logically-separated commits). Push to GitHub.
-- Used the superpowers flow end-to-end: brainstorm → spec → plan → subagent-driven exec →
-  final review. The review loops earned their keep (caught 3 real defects). User chose
-  subagent-driven (option 1) when offered.
-
-## Key files right now
-- `input/book-01/outline.md` — now 29 chapters; new ch-18 at line ~394.
-- `series/whodunit/book-01.yaml` — total 29, reveal 25, culprit_first_appearance 2.
-- `docs/superpowers/specs/2026-06-27-book01-ordeal-chapter-and-gift-rename-design.md` and
-  `docs/superpowers/plans/2026-06-27-book01-ordeal-chapter-and-gift-rename.md` — the spec
-  & plan for this session's revision.
-- `.superpowers/sdd/progress.md` — the SDD ledger (all 5 tasks complete; reconciliation
-  map at `.superpowers/sdd/reconciliation-map.md`). `.superpowers/` is gitignored scratch.
-- `.claude/commands/finalize-chapter.md` — bugs fixed this session.
-- `config/run-config.md` — lineedit/copyedit/ledger models = sonnet.
+1. **Resume the ghost brainstorm** (item 3) — ask the user what they wanted to clarify about
+   the ghost-shape question, then design it. It threads through the Personal track and the
+   Too-Much; it is a separate spec from the false lead.
+2. **Calibration for the dev editor** (still not done): run `/review-chapter` on finalized
+   ch 01/02 — it should surface the 4 known first-draft craft issues; then a `drafter`
+   revise pass. ⚠️ Needs a reachable non-drafting model or `/review-chapter` now HALTS.
+3. **Draft the restructured chapters** through the normal pipeline when ready (the outline +
+   ledger now describe the new arc; drafter notes are logged in the SDD ledger for ch 16/17/20).
+4. Eventually resume **Phase 6** (per-book assembly + final read + revision-priority report).
 
 ## Watch out for
-- **Mary Burrell is the sealed culprit; reveal is now ch 25.** Keep her identity out of all
-  drafter-visible artifacts (only `mary-burrell.md` may carry it). Mary first appears ch 2
-  (lemon cutting), returns ch 5 (market). Iris is NOT the murderer.
-- **"Migraine Sight" still appears in 6 frozen `output/**/.reviews/` sidecars** — that's
-  intentional (audit records; regenerate on next re-gate). No prose chapter contains it.
-- **`fairplay.md` (repo root) is gitignored now** — `fairplay_check.py` writes it to cwd
-  when `--out` is omitted; don't be alarmed if it reappears on disk.
-- **OUTSIDER fluency (Book 1):** no local idiom in Maggie's narration — only in dialogue.
-- **`.penny/` is gitignored** (lock + current-stage + tmp briefs). Do not `git clean -fdx`.
-- **`/finalize-chapter` re-derives the brief into `.penny/tmp/`** now — that's expected.
-- **`The Only Quiet` is a PLACEHOLDER title** for ch-18 (per the spec); fine to rename.
+- **Deferred ledger note (pre-existing, not from this work):** `series/whodunit/book-01.yaml`
+  `clue-car-on-street` has `plant_chapter: 11`, but the blue-green car is narratively planted
+  in ch 9 (Dot & Glad) and payoff is listed 23. Not a regression; reconcile when next touching
+  the car thread.
+- **Re-planning a locked mystery = delete the lock, edit the yaml, re-run `preflight
+  lock-mystery 01`.** Never hand-edit a "locked" field; the lock is an out-of-band cert.
+- **Dev-editor advisory invariant** is load-bearing and test-pinned: a `kind: developmental`
+  verdict must never add a `^BLOCKING:` line. Two distinct hash keys: report
+  `reviewed_draft_sha256`, cert `cleared_draft_sha256`, both compared to live `draft_sha256()`.
+- Finalized ch 01–02 prose is untouched; the restructure only re-times resolutions from ch 10+.

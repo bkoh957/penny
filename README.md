@@ -40,7 +40,7 @@ Also needs `python3` and `jq` (the latter only for the status line). Run everyth
 the repo root — `pytest.ini` sets `pythonpath=.`.
 
 ```bash
-python3 -m pytest -q               # the deterministic test suite (221 passing)
+python3 -m pytest -q               # the deterministic test suite (273 passing)
 ```
 
 To verify the whole harness end to end — required inputs, formats, and every approval
@@ -57,8 +57,8 @@ gate — see **[TESTING.md](TESTING.md)**.
    is reserved for genuinely nested human-edited data — the whodunit ledgers and lexicon.)
 2. **Orchestration — `.claude/commands/*.md` + `.claude/agents/*.md`.** Slash commands are
    step-by-step runbooks that shell out to `scripts/` and dispatch sub-agents. Agents are
-   role-scoped: the drafter, the five blind inspectors, line/copy editors, beta readers,
-   the cross-model final reader.
+   role-scoped: the drafter, the five blind inspectors, the context-rich developmental
+   editor, line/copy editors, beta readers, the cross-model final reader.
 3. **Swappable data — `config/`, `input/`, and `series/`.** The engine reads these; it
    never hardcodes their content. `input/series/` holds showrunner-authored reference
    files (series bible, style sheet, whodunit ledger); `input/book-NN/` holds the
@@ -76,8 +76,9 @@ gate — see **[TESTING.md](TESTING.md)**.
 
 # 2. Per chapter — repeat for MM = 01, 02, 03 … N
 /draft-chapter NN MM
-/review-chapter NN MM        # PASS → continue; HOLD → fix draft, re-run /review-chapter
-/finalize-chapter NN MM      # add --commit to auto-commit, or approve the ledger diff manually
+/review-chapter NN MM        # 5 blind inspectors + advisory developmental editor; PASS → continue, HOLD → fix draft & re-run
+python3 scripts/preflight.py clear-dev NN MM   # showrunner clears the developmental read for this draft
+/finalize-chapter NN MM      # requires gate PASS + a fresh dev-clearance; add --commit to auto-commit
 
 # 3. Beta read (non-blocking — can run any time after assembly)
 /beta-read output/book-NN/book-NN.manuscript.md
@@ -101,10 +102,20 @@ re-planning means delete the lock, edit the yaml, re-lock.
 - `/review-chapter` is the gate: five **blind** inspectors (continuity, fairplay,
   structure, voice, AI-prose) plus deterministic 2a checkers. The panel **PASSes iff
   zero blockers**, else **HOLDs**. A HOLD is surfaced to the showrunner; re-drafting is a
-  manual re-run.
+  manual re-run. It also dispatches the **developmental editor** — the top of the edit
+  stack: a *context-rich* (not blind) craft read on the draft that scores eight craft
+  dimensions (sense of place, motivation, scene economy, subtext, interiority,
+  show-don't-tell, genre delivery, hook). It is **advisory** — it never emits a blocker
+  and never affects PASS/HOLD — but its read is a precondition for finalize (below). It
+  runs on a non-drafting model for fresh eyes; if none is reachable, `/review-chapter`
+  **halts** rather than degrade to a same-model read.
 - `/finalize-chapter` runs the post-gate prose tail (line-edit → copy-edit →
-  ledger-update → promote to `.final.md`). With `ledger_approval: review` it pauses for a
-  diff review; resume with `--commit`.
+  ledger-update → promote to `.final.md`). It refuses unless the chapter both passed the
+  gate **and** carries a fresh **developmental clearance** — an out-of-band certificate
+  bound to the draft's sha256, minted by `preflight clear-dev` when the showrunner clears
+  the developmental read. Revising the draft after clearance changes the hash and
+  re-requires it. With `ledger_approval: review` it pauses for a diff review; resume with
+  `--commit`.
 
 **3. Beta read** (`/beta-read`) fans six reader personas across models on an assembled
 text and writes per-persona reaction reports. Non-blocking — it never holds the pipeline.
@@ -119,9 +130,10 @@ the manuscript and mints `.penny/locks/book-NN.approved` — the MVP-1 finish li
 
 ## Key principles to preserve
 
-- **Gates are deterministic, never LLM judgments.** The one place a model makes a holistic
-  call is the cross-model final read — and even that emits enumerated `yes|no` booleans a
-  validator checks, not free prose.
+- **Gates are deterministic, never LLM judgments.** A model makes a holistic call in only
+  two places, and neither is a hard gate: the **advisory** developmental read (which never
+  blocks PASS/HOLD), and the cross-model final read — and even that emits enumerated
+  `yes|no` booleans a validator checks, not free prose.
 - **Locks and certificates are out-of-band.** Never represent "validated/approved" as a
   field *inside* the data it gates — a field would be a forgeable certificate.
 - **Sub-agents are dispatched blind.** Inspectors get one rubric + a ledger slice; beta
