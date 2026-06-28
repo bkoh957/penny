@@ -58,6 +58,7 @@ Maggie Quill arrives in Pelican's Crook on an overcast autumn afternoon with cla
 - **Turn / Change:** The shelves are installed, Glaze has adopted the studio, and Maggie has made an enemy—or at least an irritatingly memorable neighbour.
 - **Texture / Pleasure Layer:** Salt wind through the open doors, kiln dust, failed pots with ridiculous names, and Glaze's unapologetic inspection of the premises.
 - **Hook:** Cal asks, bluntly, whether she is opening a shop or hiding in one.
+- **Tommy burst:** Behind the relief of finally having keys, the old voice arrives — the studio he would have called a hobby, not a career, on a lease only someone quietly deranged would sign.
 
 ### Track Movement
 - **M:** None yet; establish the physical spaces that will later become story engines.
@@ -78,6 +79,7 @@ Faye arrives with sourdough, practical warmth and Pelican's Crook's unofficial r
 - **Turn / Change:** Maggie has a foothold in the community, a potential friend in Faye, and a subtle warning that Mary has opinions about Cal's future.
 - **Texture / Pleasure Layer:** Bakery gossip, sourdough, lemons in a chipped blue bowl, foreshore wind, competing versions of local history, and Faye's impeccable composure when Iris Poole's name comes up.
 - **Hook:** Mary casually asks how long Maggie expects to stay.
+- **Tommy burst:** When the warmth of the welcome settles and she feels, briefly, grateful for it, the Quill voice supplies the editorial: she has always needed people to like her.
 
 ### Track Movement
 - **M:** Introduces the future suspect pool without signalling suspects too loudly. Plants Iris Poole as the other party in the jam feud — no explanation given.
@@ -138,6 +140,7 @@ Beryl's autumn market fills the hall and foreshore with baked goods, handmade wo
 - **Turn / Change:** Maggie earns attention then loses goodwill; she leaves the market overextended, embarrassed and vulnerable to the migraine that follows.
 - **Texture / Pleasure Layer:** Iris Poole's stall at its deliberate distance from Faye's, a pelican stealing a sausage roll, Dot and Glad competing over raffle strategy, and Glaze escaping into a basket of tea towels.
 - **Hook:** Faye is looking at Maggie with something more complicated than warmth just as her phone begins to ring.
+- **Tommy burst (deepest sting):** At the market's peak, dizzy on the crowd's approval, his voice arrives with the loop itself: she is performing for people — exactly as he always said.
 
 ### Track Movement
 - **M:** Plants Mary's cup-and-tea-towel resetting habit. Seeds the jam feud with Iris Poole present and named in the hall.
@@ -158,6 +161,7 @@ Maggie crashes under a disabling migraine and spends the night in darkness, asha
 - **Turn / Change:** Neil is dead, and Maggie's connection to him becomes unfinished business.
 - **Texture / Pleasure Layer:** The quiet domesticity of lemons and soup contrasted with Glaze loudly objecting to a darkened studio.
 - **Hook:** The voicemail ends mid-thought after Neil says he has found "something worth pursuing."
+- **Tommy burst:** Laid out in the dark with the migraine as the price, his told-you-so register surfaces: she overreached for an audience and here it is.
 
 ### Track Movement
 - **M:** Murder launches; Neil's voicemail creates a private question around his final days.
@@ -178,6 +182,7 @@ The town gathers outside Neil's cottage while Sergeant Pruitt assesses what firs
 - **Turn / Change:** The death becomes suspicious; Maggie records the staged scene, but she damages her credibility by blurting before she understands what she has seen.
 - **Texture / Pleasure Layer:** A crowd in unsuitable shoes on wet grass, thermoses appearing from nowhere, and Beryl trying to organise the police as though they are late volunteers.
 - **Hook:** Pruitt picks up the vase and holds it longer than strictly necessary — not just as evidence, as an object — before telling Maggie, quietly, that observation is not the same as proof. He mentions he has been posted here two years; he is still learning what belongs where.
+- **Tommy burst:** As the Too-Much floods a staged scene only she can read and doubt breaks through anyway, the Quill voice arrives on cue: she has always imagined more than is there.
 
 ### Track Movement
 - **M:** Plants the erased second cup, reset room and wiped vase; establishes staged death. The vase is the murder weapon — used to strike Neil before he fell — though neither Maggie nor the reader yet knows it; its careful replacement by the killer is precisely what registers as wrong.
@@ -300,6 +305,7 @@ A migraine hits near the foreshore. In its distorted pattern-recognition, Maggie
 - **Turn / Change:** The theory collapses publicly at the station; surf-club witnesses carry it through the town. Maggie has now embarrassed herself in front of every social constituency that matters.
 - **Texture / Pleasure Layer:** Foreshore wind, the dark-stained rope at the boat ramp, Cobber's lyrical non-answer about tides, and Glaze appearing in a fish-and-chip queue.
 - **Hook:** Pruitt's correction — the fact was real, her conclusion was not — is delivered below the volume of the surf-club witnesses. He is protecting her reputation while correcting her.
+- **Tommy burst:** Walking into the station to risk a deduction aloud for the first time in weeks, the sharpest Quill line fires: leave the clever work to people who do it for a living.
 
 ### Track Movement
 - **M:** Named clue (rope, taught knot), named suspect (Calloway), named innocent explanation (thirty years of boat ramp maintenance; standard knot). Cobber's lyrical uselessness here seeds his eventual specific role in ch 20, when Maggie finally asks the right question. Calloway is partially cleared; ch 14 need only confirm his alibi in a line.
@@ -422,6 +428,7 @@ Maggie takes the question from ch 18 — the exact, trained habits that reset Ne
 - **Turn / Change:** She names Cal to herself and then holds it alone, choosing proof over accusation for the first time without external prompting.
 - **Texture / Pleasure Layer:** The Wheelhouse at dusk, a half-finished surf-club bowl on the bench, Glaze circling the kiln stand, and the specific silence of a decision not to speak.
 - **Hook:** The habits are Cal's. She will not do to him what she did to Beryl — she will find the proof it wasn't him.
+- **Tommy burst (PIVOT — sting becomes spur):** As the precision click lands, a Quill line surfaces — *you imagine more than is there* — and for the first time it does not sting but propels; the sight that once exposed him is the one cracking this case, and it moves her forward.
 
 ### Track Movement
 - **M:** Precision clue converges on Cal (motive: the workshop; habits: his trained precision matching the staged-scene details). No Mary yet. Maggie chooses proof over accusation.
@@ -550,6 +557,7 @@ Maggie tells Cal before Pruitt moves on Mary. Cal receives the news with disbeli
 - **Turn / Change:** Cal and Maggie's connection ruptures; both recognise that the truth has a cost no apology can remove.
 - **Texture / Pleasure Layer:** A workshop after hours, the sound of rain on corrugated iron, Glaze choosing the worst possible moment to knock over a tin of screws.
 - **Hook:** Cal says he will not stop Pruitt—but he cannot promise to forgive Maggie.
+- **Tommy burst (spur):** Cal's wound makes retreat feel almost reasonable; the Quill voice obliges — stay small, stay safe — and she sends the invoice instead.
 
 ### Track Movement
 - **M:** The case moves from investigation to action.
@@ -650,6 +658,7 @@ Late November brings returning tourists, longer light and a studio that finally 
 - **Turn / Change:** Maggie claims the bowls, the studio and the future; Artie opens the larger mystery of the Sight.
 - **Texture / Pleasure Layer:** Kiln opening, summer light, tourist chatter outside the studio, Glaze's apron claim, and the tactile satisfaction of finished pottery.
 - **Hook:** Elspeth Vale's name connects the Too-Much to Saffron's family and launches Book Two's deeper series question.
+- **Tommy burst (coda — name reclaim):** Opening the kiln, she notices the Quill voice has gone quiet; she stamps the finished pots "Quill" — her name now, not his; not a wound, the reclaim is quiet and complete.
 
 ### Track Movement
 - **M:** Series hook: Elspeth Vale and the inherited or recurring Sight mystery.
