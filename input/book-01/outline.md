@@ -49,22 +49,192 @@ A chapter should move at least two tracks. Most move three. The quieter chapters
 
 ## Chapter 01 — The Wheelhouse
 
-### Chapter Summary
-Maggie Quill arrives in Pelican's Crook on an overcast autumn afternoon with clay tools, half-glazed seconds and very little from her old marriage that she wants to keep. She opens The Wheelhouse for the first time, trying to make a working studio out of a former bait-and-tackle shed before anyone can see how frightened she is. Cal Burrell arrives to fit shelves. He is precise, curt and plainly unconvinced that Maggie's sea change will last; Maggie reads him as rude, while Cal reads her as another city outsider treating the town as a temporary backdrop. Their argument about shelf height becomes an argument about whether she is genuinely building a life or merely staging one. Glaze, a scruffy ginger cat, strolls in, inspects the kiln and chooses Maggie's best apron as home.
+### Scene 1 — The Drive: A Woman Choosing Herself
 
-### Chapter Structure
-- **Start / Desire:** Maggie wants the studio to look open, capable and permanent before the first local visitors arrive.
-- **Pressure / Obstacle:** Cal challenges her choices, notices she has displayed only seconds, and refuses to flatter her.
-- **Turn / Change:** The shelves are installed, Glaze has adopted the studio, and Maggie has made an enemy—or at least an irritatingly memorable neighbour.
-- **Texture / Pleasure Layer:** Salt wind through the open doors, kiln dust, failed pots with ridiculous names, and Glaze's unapologetic inspection of the premises.
-- **Hook:** Cal asks, bluntly, whether she is opening a shop or hiding in one.
-- **Tommy burst:** Behind the relief of finally having keys, the old voice arrives — the studio he would have called a hobby, not a career, on a lease only someone quietly deranged would sign.
+**Location:** Hatchback on the Great Ocean Road, nearing Pelican's Crook; late April, early autumn afternoon.
+
+**Purpose:** Open with movement, landscape and motive. Let Maggie think before the town/murder machinery begins.
+
+**Beat flow:**
+
+1. Start in the car, not at the shop window. The hatchback smells of iron oxide, old cardboard, damp canvas and clay dust. Everything she has chosen to keep from the old life is physically around her; everything she has refused to keep is absent.
+2. Establish the drive as long enough for self-mythologising and doubt. Brunswick has fallen away; Geelong has fallen away; the road has narrowed into coast, cliff, wet eucalypts, gulls, signs for lookouts she does not stop at because if she stops too often she might turn the car around.
+3. The coast should give pleasure. Maggie notices the sea flashing between trees, the Otways crowding the road, fern gullies dark with recent rain, the absurd courage of building a road on the edge of all that water. She is frightened, but also awake in a way she has not been for years.
+4. Establish why she chose **Pelican's Crook specifically**, not just "a coastal town." Four years earlier, she came through on a regional arts/pottery-trail assignment and stood too long in the doorway of this exact studio, held by the light on glaze and the feel of a room built for hands rather than meetings. She did not act then because she was still married, still sensible, still filing inconvenient desires away. After the divorce, she searched practical listings across the coast, but Pelican's Crook was the only place that did not feel like reinvention-as-performance. It had a real empty studio, a kiln already in place, a main street small enough that work might matter, and enough distance from Brunswick that Tommy's version of her life could not keep walking in uninvited.
+5. Make the choice economically and emotionally concrete: The Wheelhouse lease was risky but just possible with the divorce settlement/savings; the flat upstairs meant she could live over the shop; the town's off-season quiet meant she could start before anyone expected polish; the pottery trail memory gave her one private proof that she had once wanted this before the marriage ended, so it was not simply a post-divorce panic purchase.
+6. She tries on versions of the decision:
+   - sea-change, if said by a real estate agent;
+   - breakdown, if said by Tommy;
+   - artist's retreat, if said by someone with linen trousers and generational wealth;
+   - in Maggie's own words, perhaps: a woman finally driving towards the life she should have noticed sooner.
+7. Fold in why she is there: HR taught her to manage everyone else's exits; the marriage taught her to shrink; pottery was the thing she kept returning to when she needed proof her hands were still hers. The Wheelhouse is not a whim. Pelican's Crook is not random. This is the first decision in years that was not designed to look sensible to someone else.
+8. First Tommy ghost. Trigger: she lets herself feel proud of choosing the town and signing the lease.
+   - Treatment: one italic burst, no attribution tag, clearly remembered voice.
+   - Function: sting, not melodrama. Something like: *"A shop. With your savings. Christ, Mags, you do know hobbies are meant to cost less than a mortgage."*
+   - Maggie's response should show the new self: she hears it, flinches, keeps driving. Maybe she turns the radio up, then turns it off because she refuses to drown herself out.
+9. Give the reader the first glimpse of Pelican's Crook as arrival, not just map: the bay appears in a crook of coast; a headland curls around the water; the town sits on the thin shelf between sea and steep green hills as if it has been tucked there by someone trying not to wake it.
+10. Maggie clocks the triple strangeness of the name lightly if natural — Pelican's Crook sounds like a bird, an illness, and a crime. She decides this is either a sign or very bad branding. This gives voice/personality without over-explaining.
+
+**Emotional turn:** By the end of the drive, Maggie is still afraid, but the landscape has made the choice feel real and possible. She is not only fleeing Tommy/HR; she is arriving at herself.
+
+**Texture to include:** wet eucalypt, salt through the vents, road signs, empty lookouts, autumn light, sea flashing between trees, boot rattle from tools, clay dust on her sleeve, hands tight then loosening on the wheel.
+
+### Scene 2 — First Look at Town: The Map of a New Life
+
+**Location:** Pelican's Crook main street and foreshore glimpses.
+
+**Purpose:** Establish where we are. Make the town vivid before it becomes a suspect pool.
+
+**Beat flow:**
+
+1. Maggie arrives at ten past two. Off-season is visible: tourist brightness packed away, closed/short-hour signs, a bakery awning tied back, dog walkers, post office, hardware shop, two pubs, op-shop/general-store possibility, gulls in the car park.
+2. The main street runs parallel to the bay, with the sea visible between buildings and the hill rising behind. The headland/lighthouse can be glimpsed or implied without overloading Book 1's mystery.
+3. She drives the street once before parking because she is trying to look like someone who knows where she is going. This is comic and revealing: she is new enough to miss the turn, proud enough not to do a three-point turn in front of the whole town, and HR-trained enough to call this "stakeholder reconnaissance" in her head before banning herself from the phrase.
+4. Establish outsider status: no one waves because no one knows her yet; one person looks at the hatchback and looks away; she is relieved and disappointed by this in equal measure.
+5. The Wheelhouse appears as the emotional target: salt-hazed glass, weathered frontage, former bait-and-tackle bones, main-street shopfront with living space above. It should feel modest, not twee. A working room, not a postcard.
+6. Let the four-years-ago pottery-trail memory answer the "why here" again, now tied to the physical building. Maggie remembers standing in this doorway as a visiting HR professional writing a polite arts-sector piece, watching water-light move over glaze, and thinking with embarrassing clarity: *if I had a life, it would look something like this*. She had laughed at herself then and gone home. Now she has stopped laughing.
+7. The choice should feel half practical, half irrational in the right way: she could have leased somewhere cheaper, busier, safer, closer to Melbourne, but none of those places had lodged under her ribs. Pelican's Crook did. The town is not yet home; it is the one place that kept calling after she had run out of excuses not to answer.
+
+**Emotional turn:** The town is not yet home, but it is specific. Maggie can imagine being seen here, which is both terrifying and exactly the point.
+
+### Scene 3 — Unlocking The Wheelhouse: Relief and the Ghost
+
+**Location:** Inside The Wheelhouse.
+
+**Purpose:** Let the studio landing breathe. Make the room a refuge and a challenge.
+
+**Beat flow:**
+
+1. Maggie unlocks the door. This should be a body-level moment: key in lock, door sticking slightly, salt/cold/clay/old timber smell, a room that has been shut up waiting.
+2. She stands inside and does not immediately work. She lets herself feel the relief of a space where no one has asked her to be reasonable. Her own door. Her own floor. Her own kiln. Her own future mess.
+3. Second Tommy ghost. Trigger: the relief is too big; confidence threshold.
+   - Possible burst: *"You always did like the idea of things more than the work, Mags."*
+   - It should sting because it hits her fear: that this is performance, not vocation.
+4. Maggie counters it through action rather than affirmation. She opens windows/doors, checks the kiln, touches the wheel cover, lays out tools. She does not answer Tommy in exposition; she makes the room usable.
+5. Establish the kiln as better than expected and The Wheelhouse as a working studio. She checks elements, door seal, shelves, kiln wash. Let competence show. She is not a helpless newcomer; she knows the craft.
+6. Establish the defensive stock problem: she starts unpacking half-glazed seconds and safe pieces first. She tells herself they are "approachable," "starter stock," "not intimidating." Underneath: if the town rejects the work, at least it was not her best work.
+7. The old HR binders stay in the boot. Important symbolic beat: she brought them because throwing away competence is hard, but she does not bring them inside. The new life is not pure yet, but the boundary begins.
+
+**Emotional turn:** The Wheelhouse gives real relief, but the ghost tests it. Maggie's answer is not triumphant; it is practical. She keeps unpacking.
+
+### Scene 4 — Cal Arrives: Too-Much as Temptation and Comedy
+
+**Location:** The Wheelhouse, front door/east wall.
+
+**Purpose:** Establish the romance/community thread with humour, friction and the first restrained flirtation with the gift.
+
+**Beat flow:**
+
+1. Cal arrives at exactly 3pm in the ute. Preserve existing sensory detail: engine like a boat clearing its throat; tall; canvas work jacket gone soft at elbows; small level in pocket; stillness of a person who measures things for a living.
+2. Maggie has built up a private fantasy from the note `Here at 3. C.` and his efficient silence. She has decided, on very little evidence, that she likes him. This should be funny because she knows it is ridiculous and still does it.
+3. Introduction stays spare:
+   - "Cal Burrell."
+   - "Maggie Quill."
+   - Optional internal: she had prepared three versions of hello and somehow chosen the one that sounded like exchanging evidence at a border checkpoint.
+4. The Too-Much onset begins lightly. Not a full migraine; more like a warning flicker / sharpening / metal taste / sound edges. It is triggered by stress, newness, attraction, or the way Cal enters a room without asking it to rearrange itself around him.
+5. What she perceives should be too much but not plot-solving:
+   - no wedding ring, but a pale ring-line absent too — single for a while, not freshly dramatic;
+   - jacket worn at elbows, good boots repaired rather than replaced;
+   - hands nicked, clean nails, one shallow cut from recent work;
+   - he looks once at her strongest wrapped piece and once at the seconds, and understands more than she wants;
+   - when she says her name, his attention catches for half a beat — possible interest, or curiosity, or merely good manners, and she knows the gift cannot tell the difference.
+6. Maggie actively resists using it. This is crucial. She tells herself Cal is not an employee, not a candidate, not a grievance file, not a husband to be decoded before he can hurt her. She does not get to read a stranger simply because she is afraid.
+7. Humour: because she is busy nobly not reading him, she misses or bungles the actual conversation.
+8. She tries light flirting, awkward but warm. Options:
+   - She compliments the punctuality: "Three exactly. Should I be impressed or worried?"
+   - Cal answers literally: "Neither. Clock in the ute works."
+   - She tries again: "Good. I was hoping for reliable rather than ominous."
+   - He looks at the wall and says, "Ominous costs extra."
+   This gives him dry humour without making him chatty, and gives Maggie a small win.
+9. Then the shutdown. She tries to extend into social warmth — coffee, local recommendations, maybe a joking "is this where you tell me every shelf in town has a secret?" Cal turns it practical or guarded. He is not cruel; he simply refuses the performance. He is a local who has seen outsiders arrive, romanticise the place, then leave.
+10. Cal asks where she wants the shelves. Maggie realises the flirtation has died quietly beside the skirting board. She recovers by becoming competent.
+
+**Emotional turn:** Maggie is attracted/interested, embarrassed, and slightly annoyed. Cal is not a fantasy generated by a two-word note; he is a real person with boundaries. This is better for the romance.
+
+### Scene 5 — Shelves, Work, and the First Real Clash
+
+**Location:** The Wheelhouse, east wall; portable saw on pavement.
+
+**Purpose:** Preserve the original establishment: shelves, defensive stock, Cal's blunt challenge, business/personal tracks.
+
+**Beat flow:**
+
+1. Cal works. Maggie unpacks around him. Keep his dialogue sparse and practical: third bracket, clearance, airflow, grain, plugs. He measures twice. She likes the quiet and resents liking it.
+2. Maggie arranges seconds and safe pieces where the new shelves will carry them. She hides or leaves wrapped the stronger pieces — the ones with a real point of view, less saleable in her anxious mind.
+3. Cal notices. He does not make a grand speech. He asks one blunt question or makes one practical observation:
+   - "Those the ones you're selling?"
+   - Maggie: "Those are the approachable ones."
+   - Cal: "Approachable's not the same as good."
+4. This lands too close to Tommy but from a different direction. Tommy belittled; Cal refuses to flatter. Maggie initially hears them as the same because both puncture the story she is telling herself.
+5. Tommy ghost can flicker here if not overused: one short line that punishes taking up space, e.g. *"Best not lead with the strange ones. People like to know what they're buying."* Use only if it does not crowd the earlier bursts; two Tommy bursts may be enough for ch1.
+6. Maggie pushes back with humour because defensiveness alone makes her smaller:
+   - "I'm opening a pottery studio, not an emotional-growth seminar."
+   - Cal: "Shelves are cheaper than those."
+   - Maggie: "You've priced both?"
+   - Cal: "Only shelves. Emotional growth tends to go over budget."
+7. He still refuses to flatter. This establishes the core dynamic: he sees craft and evasion; she sees bluntness and the danger of being seen.
+8. He asks the hook question in some form: whether she is opening a shop or hiding in one. Keep it blunt but not cruel.
+9. She does not answer fully. She chooses one better piece to unwrap or at least looks at it. This is a micro-choice, not a solved flaw.
+
+**Emotional turn:** The shelves are not just furniture; they force the question of whether The Wheelhouse is a refuge from judgement or a place where she will risk being known.
+
+### Scene 6 — Departure, Town Quiet, and Glaze Chooses Her
+
+**Location:** The Wheelhouse doorway/interior; early autumn dark.
+
+**Purpose:** Return to warmth after the Cal friction; end with personality and belonging.
+
+**Beat flow:**
+
+1. Cal finishes, sweeps most of the sawdust, leaves enough to prove work happened. He declines coffee. Maggie is relieved because she still does not know where the tea bags are and annoyed because she wanted him to want coffee.
+2. He offers to return for upstairs shelves "whenever you're ready." This is practical but can carry a faint softness. Maggie should not over-read it; she has just lectured herself about that.
+3. He leaves. She watches the ute reverse up the street. The town settles towards evening: low cloud, sea grey-green, gulls over car park, bakery dark, hill shadow, salt wind through the open door. The chapter should now feel located.
+4. Glaze walks in. Keep the original comic inspection but heighten Maggie's personality. He is a ginger tom with one ear surrendered to experience, wearing clay dust like a credential. He inspects the kiln as if conducting compliance work.
+5. Maggie speaks to him as if he is a difficult stakeholder, then catches herself and revises: no, not stakeholder; landlord, perhaps. Or quality assurance.
+6. Glaze claims the good apron. This connects to Maggie's pottery origin (Fitzroy class, seven years ago, knowing clay was the true work). It also gives her a small choice: move the cat / protect the good apron / be sensible, or let one ridiculous local creature choose her.
+7. She lets him stay. This is a low-stakes but emotionally meaningful acceptance of mess, attachment and local complication.
+8. Final emotional beat: She has not solved her life; she has opened a door. Tommy's voice is not gone, Cal did not flatter her, the town has not welcomed her yet, and the shelves hold too many seconds. But the room is real. The kiln is real. The cat is real. The sea is outside. She is here.
+9. End close to original but with stronger agency: not happiness yet; possibility, yes — and maybe the first tiny act of defiance is that she leaves the door open.
+
+### Chapter Structure Summary
+
+- **Start / Desire:** Maggie wants to arrive in Pelican's Crook as the new version of herself: an artist with a studio, not a divorced HR director performing competence.
+- **Pressure / Obstacle:** The landscape invites her forward, but Tommy's ghost voice and her own defensive habits keep reframing the choice as foolish, temporary or performative. Cal's bluntness exposes this defence.
+- **Turn / Change:** The Wheelhouse becomes physically real: shelves fitted, kiln checked, one stronger piece nearly admitted, and Glaze installed. Maggie has not become brave, but she has stayed.
+- **Texture / Pleasure Layer:** Great Ocean Road drive, wet eucalypt, salt through car vents, off-season main street, headland/bay, salt-hazed glass, kiln smell, clay tools, sawdust, dry flirtation, Glaze's inspection.
+- **Humour Layer:** Maggie's internal labels for the decision; her failed/over-managed greeting; Too-Much restraint making her miss normal social cues; Cal's literal shutdowns; cat-as-property-inspector.
+- **Hook / Closing Question:** Is Maggie opening a shop, or hiding in one? The question remains unresolved but active.
+- **Tommy burst:** Two early stings: one on the drive/lease decision, one inside The Wheelhouse when relief makes her vulnerable. Optional third only if needed at the defensive-stock beat.
+- **Too-Much beat:** A light onset around Cal; she perceives more than she wants about his singleness, guardedness and possible interest, then chooses not to exploit it.
 
 ### Track Movement
-- **M:** None yet; establish the physical spaces that will later become story engines.
-- **P:** Maggie's instinct to hide her strongest work reveals her fear of being judged.
-- **R:** Cal and Maggie establish mutual irritation; Glaze creates the first small domestic link between them.
-- **B:** The Wheelhouse opens, but Maggie stocks it defensively rather than professionally.
+
+- **M — Mystery:** None yet. Establish the physical spaces and town geography that later become story engines. Do not imply Neil's death or the sealed culprit.
+- **P — Personal:** Stronger than original: Maggie's motive, divorce wound, Tommy ghost, restraint with Too-Much, and fear of showing her best work all land on page.
+- **R — Romance / Community:** Cal/Maggie begin with attraction, misread signals, humour and principled friction rather than only mutual irritation. Glaze creates first local/domestic claim on her.
+- **B — Business:** The Wheelhouse opens as a real working studio; shelving/display choices expose whether she believes in her own work.
+
+### Drafting Notes / Guardrails
+
+- Keep Tommy off-page. Only italic remembered lines. No phone call, text, letter or scene.
+- Do not make Cal openly flirtatious. The humour comes from Maggie trying lightly, Cal answering literally or guardedly, and both noticing more than they say.
+- The Too-Much must not become mind-reading. Maggie can infer from observable detail; she cannot know Cal's inner life with certainty. Preserve ambiguity: single and perhaps interested, not magically confirmed soulmate.
+- Do not make the gift painless. Even a light onset should have a body signal: metal taste, edge-sharp sound, too-clear details, a pressure behind one eye. She chooses restraint before it becomes a full flood.
+- Maggie's narration is OUTSIDER standard English. Local idiom belongs in locals' dialogue only.
+- Australian spelling and punctuation conventions apply: towards, realised, kerb, boot, spaced em dashes.
+- The Wheelhouse relief should not erase fear. The point is: relief and fear coexist, and she acts anyway.
+- Avoid generic self-help phrasing. Show the new self through concrete decisions: keeps driving, unlocks door, leaves HR binders in boot, checks kiln competently, risks one better pot, does not move the cat.
+
+### Possible Line-Level Prompts for Drafter
+
+These are not required text; they are tonal anchors.
+
+- Maggie has spent twenty years managing exits. This time, she is trying to enter something.
+- The road does not reassure her. It simply keeps offering the next bend.
+- The Wheelhouse is small enough to be ridiculous and solid enough to be real.
+- Cal's silence is not empty. It has measurements in it.
+- The Too-Much offers her a shortcut into Cal. She refuses it because the new Maggie is trying not to turn people into evidence before they have spoken.
+- Glaze does not adopt Maggie. He audits the premises and finds management barely adequate.
 
 ---
 

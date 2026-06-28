@@ -1,58 +1,46 @@
 # Handoff — Penny / main
 Saved: 2026-06-28 | Type: build
 
-## Where things stand
-Two pieces of work shipped this session, plus one design parked:
-
-1. **Developmental-editor review role — SHIPPED + PUSHED.** A context-rich, per-chapter
-   craft read that runs at review time on the draft; advisory toward the gate (never
-   `^BLOCKING`, never flips PASS/HOLD) but a hard precondition for finalize via a
-   `clear-dev` certificate bound to the draft's sha256. Spec → plan → 9 TDD tasks →
-   review → fix wave. (Pushed earlier at HEAD `ab65cf2`.)
-
-2. **Book-01 suspect-arc restructure — the "Cal false lead" — COMPLETE on main.** The back
-   half went from a serial suspect fade-out to a three-stage collapse-and-converge:
-   dead-end (Saffron + Beryl both fizzle, ch 17) → Cal emerges as a real suspect (ch 19;
-   evidence converges, Maggie disciplines herself and seeks proof, not accusation) → Cal
-   clears on two independent proofs = Mary converges (ch 20; the precision habit was hers,
-   she raised him). ch 24: Maggie admits she suspected him. Edited `input/book-01/outline.md`
-   + `series/whodunit/book-01.yaml`; mystery lock re-minted. Spec → plan → 5 tasks → opus
-   whole-branch review → fix wave. 273 tests green, fairplay 0 blocking.
-
-3. **Ghost / bad-marriage motivation (John Truby "ghost") — PARKED mid-brainstorm.** The
-   idea: make the divorce an active haunting that motivates Maggie (root of her
-   weakness/approval-hunger), not ambient backstory. I offered three "ghost shapes"
-   (he weaponized her seeing [recommended — ties to the Too-Much]; he made her art small;
-   she stopped seeing to survive it); the user wanted to **clarify the question first** and
-   hasn't picked. Resume by asking what they want to clarify, then settle the ghost's shape.
+## What we're building
+Penny is a Claude-Code-native harness for a 13-book cozy-mystery series. This session
+was focused on series shaping: creating a new planning-anchor doc (`input/series/series-arc.md`)
+to capture per-book premises, and parking three unassigned book ideas the user surfaced.
+No code/engine changes; pure writer-data work.
 
 ## Git state
-- Branch: `main`. The false-lead work is committed (`98a3e0d`..`c4e4c50`, 7 commits incl
-  spec + plan) but **unpushed**. The dev-editor docs (`README.md`, `CLAUDE.md`) + this
-  HANDOFF are being committed now and pushed with everything.
-- Tests: `python3 -m pytest` → **273 passed**. fairplay 0 blocking; book-01 mystery lock present.
-- Untracked `.ghost.swp` is the user's own vim swap for a `ghost` working file — leave it.
-- `.superpowers/sdd/` and `.penny/` are gitignored runtime state.
+- Branch: `main`
+- Uncommitted changes:
+  - `HANDOFF.md` (modified — this file)
+  - `docs/superpowers/specs/2026-06-28-series-arc-doc-design.md` (untracked — new spec)
+  - `input/series/series-arc.md` (untracked — new series arc doc)
+- Last commit: `65a123b` plan(book-01): outline burst-beats — sting (ch1-18), ch19 pivot, ch29 name reclaim
+- Tests: not run this session; last known state was 273 passed.
 
 ## Next actions
-1. **Resume the ghost brainstorm** (item 3) — ask the user what they wanted to clarify about
-   the ghost-shape question, then design it. It threads through the Personal track and the
-   Too-Much; it is a separate spec from the false lead.
-2. **Calibration for the dev editor** (still not done): run `/review-chapter` on finalized
-   ch 01/02 — it should surface the 4 known first-draft craft issues; then a `drafter`
-   revise pass. ⚠️ Needs a reachable non-drafting model or `/review-chapter` now HALTS.
-3. **Draft the restructured chapters** through the normal pipeline when ready (the outline +
-   ledger now describe the new arc; drafter notes are logged in the SDD ledger for ch 16/17/20).
-4. Eventually resume **Phase 6** (per-book assembly + final read + revision-priority report).
+1. **Commit the two new files** (spec + series-arc) — user hasn't asked yet; hold until told.
+2. **Continue populating `input/series/series-arc.md`** — user said "not sure which books these relate to" for the three ideas; they may have more. Ask if there are more rough ideas to capture before trying to slot any into numbered books.
+3. **Ghost brainstorm (still parked)** — the John Truby "ghost" / bad-marriage motivation for Maggie was mid-brainstorm when the previous session ended; it was not resumed this session.
+4. **Dev-editor calibration** — run `/review-chapter` on finalized ch 01/02 to surface known first-draft craft issues; still not done.
+5. **Draft restructured chapters** (ch 10, 16–20, 24) through normal pipeline when ready.
+
+## Decisions made this session
+- **`input/series/series-arc.md` is writer data, not engine data** — the engine never reads it; it's a planning anchor only. Thread open/resolve tracking stays in `series/arc-ledger.md`; mystery design stays in `series/whodunit/book-NN.yaml`. WHY NOT extend the bible: the bible is reference material (rules, tone, character), not a premises list — mixing them muddles its purpose.
+- **Unassigned ideas go in a holding section** at the bottom of series-arc.md rather than forcing a book number. Rationale: Tommy/Cal/parents ideas have sequencing logic (noted in file comments) that should inform placement later, not now.
+- **Skipped writing-plans for this task** — implementation was a single markdown file; running writing-plans would have been overhead disproportionate to the work.
+
+## User preferences expressed this session
+- **Commit only when told; push only when told.**
+- Minimum viable per-book entry: just the premise (1–2 sentences), no structured fields.
+- Planning-anchor mode: capture ideas without pressure to lock or complete.
+
+## Key files right now
+- `input/series/series-arc.md` — NEW: the series planning anchor, 13 stubs, Book 1 filled, 3 unassigned ideas at bottom.
+- `docs/superpowers/specs/2026-06-28-series-arc-doc-design.md` — NEW: spec for the above.
+- `input/series/series-bible.md` — reference; §50 "arc across the series" is the prose-level series intent.
+- `series/arc-ledger.md` — thread tracking; only Book 01 rows filled in.
 
 ## Watch out for
-- **Deferred ledger note (pre-existing, not from this work):** `series/whodunit/book-01.yaml`
-  `clue-car-on-street` has `plant_chapter: 11`, but the blue-green car is narratively planted
-  in ch 9 (Dot & Glad) and payoff is listed 23. Not a regression; reconcile when next touching
-  the car thread.
-- **Re-planning a locked mystery = delete the lock, edit the yaml, re-run `preflight
-  lock-mystery 01`.** Never hand-edit a "locked" field; the lock is an out-of-band cert.
-- **Dev-editor advisory invariant** is load-bearing and test-pinned: a `kind: developmental`
-  verdict must never add a `^BLOCKING:` line. Two distinct hash keys: report
-  `reviewed_draft_sha256`, cert `cleared_draft_sha256`, both compared to live `draft_sha256()`.
-- Finalized ch 01–02 prose is untouched; the restructure only re-times resolutions from ch 10+.
+- The **ghost brainstorm is still parked** — if user mentions Tommy or the bad-marriage ghost, that's a separate spec (`2026-06-28-tommy-quill-ghost-design.md` already exists in specs/). Don't conflate with the new series-arc work.
+- **Three unassigned ideas** have implicit sequencing logic captured in inline notes in `input/series/series-arc.md`: Tommy = mid-series (not Book 2), Cal accused = late-series (romance must have stakes), parents = c-internal-adjacent. Don't slot them without discussing.
+- `series/arc-ledger.md` Books 2–13 rows are all blank — don't try to fill them from the series-arc doc automatically; the user decides when to formalise thread tracking.
+- `.ghost.swp` in root — user's open vim swap file, leave alone.
