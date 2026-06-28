@@ -542,7 +542,7 @@ Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, C
 ## Chapter 24 — The Worst Conversation
 
 ### Chapter Summary
-Maggie tells Cal before Pruitt moves on Mary. Cal receives the news with disbelief, anger and the frightening stillness Maggie has learned means he is trying not to fall apart. He says Maggie has spent weeks pulling at things she does not understand. Maggie says she understands enough. Cal says that has always been the problem. When she tells him about his grandfather's own words, he cannot ask her to stop, but the knowledge does not make the betrayal feel smaller. Before the conversation, Maggie sends the final surf-club invoice and confirms delivery—a small, adult act that proves she will not abandon her own work in the face of emotional chaos.
+Maggie tells Cal before Pruitt moves on Mary. Cal receives the news with disbelief, anger and the frightening stillness Maggie has learned means he is trying not to fall apart. He says Maggie has spent weeks pulling at things she does not understand. Maggie says she understands enough. Cal says that has always been the problem. When she tells him about his grandfather's own words, he cannot ask her to stop, but the knowledge does not make the betrayal feel smaller. Then Maggie tells him the hardest part: for a day she believed it might be him — he had the habit and the motive — and instead of going to Pruitt she went looking for proof he didn't do it, because she had already burned Beryl and Saffron and would not do that to him. Cal does not move. The admission deepens the rupture; it is the most honest thing she has said to him, and the most brutal, and he has no answer for it. Before the conversation, Maggie sends the final surf-club invoice and confirms delivery—a small, adult act that proves she will not abandon her own work in the face of emotional chaos.
 
 ### Chapter Structure
 - **Start / Desire:** Maggie wants to protect Cal from learning through police action or town gossip.
@@ -554,7 +554,7 @@ Maggie tells Cal before Pruitt moves on Mary. Cal receives the news with disbeli
 ### Track Movement
 - **M:** The case moves from investigation to action.
 - **P:** Maggie accepts that doing the right thing does not protect her from consequences.
-- **R:** Romance rupture becomes real and earned.
+- **R:** Maggie's admission that she suspected Cal — and chose proof over accusation rather than repeat what she did to Beryl and Saffron — deepens the rupture and makes it the most honest exchange between them; it sets up the earned repair in ch 28.
 - **B:** Maggie sends the invoice and confirms delivery, demonstrating professional self-respect under pressure.
 
 ---
@@ -665,8 +665,9 @@ Late November brings returning tourists, longer light and a studio that finally 
 
 - **Ch. 3–7:** Neil's connection to Maggie, broad suspect field, staged fall, vase as murder weapon (withheld).
 - **Ch. 8–13:** Suspect interviews and the cost of Maggie's premature conclusions; Calloway false dawn (rope/knot); vase mockery planted in ch 8; vase as instrument confirmed in ch 15.
-- **Ch. 14–17:** Old death, post-mortem confirmation, false Saffron solution collapses.
-- **Ch. 19–23:** Cup click (Cal-first ambiguity); reconstructed night + Cal false lead + Cobber places Mary (ch 20); Mary's controlled deception + active motive hunt (ch 21); mercy earned through Cal's papers (ch 22); full evidence chain to Pruitt (ch 23).
+- **Ch. 14–17:** Old death, post-mortem confirmation; Saffron AND Beryl run as parallel possibles and both collapse — the double dead-end.
+- **Ch. 18–20:** The disciplined gift surfaces a precise-habits question (18); it converges on Cal (19); Cal clears on proof while the habit's origin resolves to Mary, who raised him (20).
+- **Ch. 21–23:** Mary's controlled deception + active motive hunt (21); mercy earned through Cal's papers (22); full evidence chain to Pruitt (23).
 - **Ch. 24–27:** Police action, confession, arrest, moral aftermath.
 - **Ch. 29:** Elspeth Vale series hook.
 
@@ -683,7 +684,7 @@ Late November brings returning tourists, longer light and a studio that finally 
 - **Ch. 1–5:** Cal and Maggie irritate each other; Mary begins to intervene; Pruitt established as newcomer parallel (ch 7).
 - **Ch. 6–12:** Practical care, arguments about privacy, attraction through shared work; Faye friendship damaged (ch 12).
 - **Ch. 13–17:** Cal's concerns are vindicated; Saffron is unfairly scapegoated; Pruitt warmth builds in adversarial corrections (ch 13, 15).
-- **Ch. 19–25:** Cal false lead (ch 20); Mary's deception (ch 21); Cal unknowingly hands Maggie the evidence (ch 22); Pruitt parallel + laugh (ch 23); Cal and Maggie rupture (ch 24); arrest (ch 25).
+- **Ch. 19–25:** Maggie suspects Cal and chooses proof over accusation (19–20); Mary's deception (ch 21); Cal unknowingly hands Maggie the evidence (ch 22); Pruitt parallel + laugh (ch 23); rupture — Maggie admits she suspected him (ch 24); arrest (ch 25).
 - **Ch. 26–29:** Saffron becomes an ally; the town accepts Maggie; Cal and Maggie choose unresolved connection. Both Cal and Pruitt tracks remain open.
 
 ## Business Track
@@ -704,11 +705,11 @@ The reader should understand that Neil's death is suspicious; Maggie has a real 
 
 ## Midpoint Pressure — Chapters 14–17
 
-The reader should suspect Neil's past is central, feel that Mary's grief is active, understand that Maggie wants Saffron guilty for emotional reasons, see Cal and Maggie's attraction beneath their conflict, and know that Maggie's business cannot survive if she treats investigation as a substitute for building a life.
+The reader should suspect Neil's past is central, feel that Mary's grief is active, understand that Maggie wants Saffron guilty for emotional reasons, see Cal and Maggie's attraction beneath their conflict, and know that Maggie's business cannot survive if she treats investigation as a substitute for building a life. By ch 17 the reader should feel that both Saffron and Beryl have failed as suspects — not a single Saffron collapse but a true double dead-end that leaves the case with no one in it.
 
 ## End of Act II — Chapter 23
 
-The reader should be able to reconstruct Mary's likely motive, access and cover-up from the evidence already given. The father's statement should complicate the moral meaning of Neil's old act, and Pruitt's case should rest on ordinary evidence rather than unexplained intuition.
+The reader should be able to reconstruct Mary's likely motive, access and cover-up from the evidence already given. The father's statement should complicate the moral meaning of Neil's old act, and Pruitt's case should rest on ordinary evidence rather than unexplained intuition. The reader should also understand that Cal was a fair suspect cleared on proof — not merely exonerated by feeling — and that the precision habits that pointed at him do so because Mary raised him: the habit is hers, transmitted.
 
 ## Final Movement — Chapters 24–29
 
