@@ -29,3 +29,5 @@
 - Hyphenation: "sea-change" — hyphenated in all positions. Confirmed ch-02.
 - Hyphenation: "high-vis" — hyphenated abbreviation for high-visibility. Confirmed ch-02.
 - Characters (ch-02 introductions, spellings confirmed): Faye Denton (baker); Tania (Faye's bakery assistant, no surname given); Dot and Glad (sisters, run the op-shop, surnames not given); Cobber (beach dweller, no surname given); Beryl Foss (Country Women's Association); Saffron (wellness retreat, no surname given); Mara (foreshore dune work, no surname given); Iris Poole (jam and preserves, markets); Mary Burrell (Cal's aunt).
+- Tommy-voice flashback bursts: rendered in *italics*, as one or two sentences of quoted ex-husband speech inside Maggie's narration, with no scene-break and no attribution tag (the reader learns whose voice it is from context/the first instance). Cozy register only — diminishing condescension, never abuse or threat. Keep each burst short (≤ two sentences). The wheel is the one place his voice never intrudes — never plant a burst mid-throwing.
+- Characters: Thomas "Tommy" Quill (Maggie's off-page ex-husband; real-estate broker). Spelling locked for the series.
