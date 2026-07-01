@@ -15,21 +15,21 @@ book: 01
 
 ## The Central Deception
 
-Mary enters Neil's cottage as a familiar visitor — she has been there many times over the years; she knows where everything lives. After she kills him she erases her presence: washes the second cup, refolds the tea towel, squares the chair. A normal observer sees a tidy room. The Too-Much sees the seams of the cleaning.
+Mary enters Neil's cottage as a familiar visitor — she has been there many times over the years; she knows where everything lives. After she strikes him with Maggie's heavy vase, he staggers/falls on the stairs and breaks his neck. Mary panics, then consciously erases her presence: wipes the vase, washes the second cup, folds the tea towel into her exact thirds with the tag hidden, aligns cup handles, rotates the biscuit tin label outward, and squares the chair. A normal observer sees a tidy room. The Too-Much sees the seams of the cleaning.
 
 ## The Keystone Clue — The Erasure
 
-**Planted (ch 7):** Maggie is struck by a migraine outside Neil's cottage. In the flood she perceives not what is there but what is wrong about a room that has been smoothed: a chair squared a fraction too neatly while Neil's own sits askew; a faint ring on the wood where a second cup stood; the cup washed and returned a fraction out of Neil's habitual order; a tea towel damp and refolded; the biscuit tin lid fractionally misaligned. She records: *the room has been erased.* She does not yet understand.
+**Planted (ch 7):** Maggie is brought briefly and narrowly into the scene by Pruitt because her vase is a suspected weapon and he needs local identification. In the flood she perceives not what is there but what is wrong about a room that has been smoothed: a chair squared a fraction too neatly while Neil's own sits askew; a faint ring on the wood where a second cup stood; the cup washed and returned a fraction out of Neil's habitual order; a tea towel damp and folded into exact thirds; the biscuit tin label facing outward; the wiped vase set slightly off its mark. She records: *the room has been erased.* She does not yet understand.
 
-**The keystone within the keystone:** The washed cup was dried and returned with the unthinking, proprietary familiarity of someone who knows this kitchen as well as their own. Not a stranger — someone intimate with Neil and the house, from history and family.
+**The keystone within the keystone:** The washed cup, folded towel and rotated tin were returned with the unthinking, proprietary familiarity of someone who knows kitchens as systems and believes her order is the proper order. Not a stranger — someone intimate with Neil and the house, from history and family.
 
-**Click (ch 19):** At a CWA hall clean-up, Maggie watches the aunt dry a cup and put it away with that exact gesture — the unthinking, proprietary certainty of someone who knows where everything belongs. The photograph develops. She understands what she saw through Neil's window: not two cups, but the signature of a person who belonged there, erasing herself.
+**Click (chs 18–19):** At the wheel, Maggie turns the cottage wrongness into a provisional room-vessel — a question, not evidence. Then, at a CWA hall clean-up, she watches the aunt fold a tea towel into exact thirds, hide the tag, rotate a tin label outward and align cup handles with that exact gesture — the unthinking, proprietary certainty of someone who knows where everything belongs. Maggie first thinks of Cal because he has similar precision, then learns the deeper logic: Mary raised him, and his order comes from hers. She understands what she saw in Neil's cottage: not generic tidiness, but Mary's signature erasing herself. The clay made the question visible; the evidence chain proves it.
 
 ## Supporting Clues
 
 | ID | Planted | Pays off | Notes |
 |---|---|---|---|
-| clue-erasure | ch 7 | ch 19 | Keystone. The wrongness of the cleaned room; the cup put away by a habitual visitor |
+| clue-erasure | ch 7 | ch 19 | Keystone. The wrongness of the cleaned room; Mary's specific domestic order signature hidden inside apparently ordinary tidying |
 | clue-car-on-street | ch 11 | ch 23 | Dot & Glad's contradictory testimony; combined they describe a car on Neil's street at the wrong hour — later identified as the aunt's |
 | clue-old-records | ch 15 | ch 22 | Neil had been reviewing records from a decade ago; Maggie finds the death certificate + private notes |
 | clue-cobber-dawn-witness | ch 2 | ch 20 | Cobber always on the beach at dawn; his sighting fits into the aunt's timeline when Maggie assembles it in ch 20 |
@@ -40,7 +40,7 @@ Mary enters Neil's cottage as a familiar visitor — she has been there many tim
 |---|---|---|---|
 | rh-saffron | Saffron | ch 9 | ch 17 — her alibi is humiliating but real (debt recovery meeting in Colac) |
 | rh-beryl | Beryl Foss | ch 10 | ch 14 — the argument with Neil was about her diagnosis, not murder |
-| rh-faye | Faye | ch 13 | ch 13 — her secret (old wound with the jam-feud judge) is sad and old and not a murder |
+| rh-faye | Faye | ch 12 | ch 12 — her secret (mother's last preserve entry disqualified by Iris; Neil mishandled the private pain) is sad and old and not a murder |
 
 ## The Revelation Arc
 

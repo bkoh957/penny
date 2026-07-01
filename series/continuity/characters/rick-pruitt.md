@@ -18,4 +18,4 @@ He is not the romance — deliberately, so the friction stays clean.
 - Listens to Maggie's assembled case (ch 23) with the expression of a man who wants to say no and is not quite able to.
 - Makes the arrest (ch 25) with a quietness that does him credit. Holds the gate on the way out without saying anything.
 
-**Character note.** Pruitt's scepticism is the right friction: Maggie cannot just announce the solution; she has to make it provable. This keeps the gift honest across the series.
+**Character note.** Pruitt's scepticism is the right friction: Maggie cannot just announce the solution; she has to make it provable. In ch 7 he should reject her leap from observation to proof while still recognising that her raw observations are unusually precise. He gives her the practical witness method that shapes the book: separate **what I saw**, **what it might mean**, and **what else could explain it**. This keeps the gift honest across the series and sets up frictional collaboration rather than a simple dismissive-cop obstacle. By ch 23 he asks for facts and can finally work with what she brings.

@@ -19,7 +19,7 @@ clue_schedule:
 red_herrings:
   - { id: rh-saffron, plant_chapter: 9, misleads_toward: "saffron", must_not_cheat: true }
   - { id: rh-beryl, plant_chapter: 10, misleads_toward: "beryl-foss", must_not_cheat: true }
-  - { id: rh-faye, plant_chapter: 13, misleads_toward: "faye", must_not_cheat: true }
+  - { id: rh-faye, plant_chapter: 12, misleads_toward: "faye", must_not_cheat: true }
   - { id: rh-cal, plant_chapter: 11, misleads_toward: "cal-burrell", must_not_cheat: true }
 alibi_grid:
   - { suspect: mary-burrell, chapter: 7, alibi: "dismissed as harmless grieving relative; cleared on wrong grounds — real motive untested", holds: false }

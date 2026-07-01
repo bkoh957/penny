@@ -10,7 +10,7 @@ Keep this small: every line is a tax on every chapter.
 
 ## Protagonist fixed facts
 <!-- canon-meta: {id: protagonist-fixed, refs: [maggie-quill], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->
-- **Margaret "Maggie" Quill**, 43, divorced former HR professional (twenty years in HR, latterly Director) turned potter. Runs The Wheelhouse studio on Pelican's Crook main street. OUTSIDER; arrived in autumn, Book 01. Suffers migraines that bring hyper-detailed, unranked perception (the Too-Much) — she records everything and understands later. Her ex-husband Tommy (off-page) recurs only as short *italic* flashback bursts of his belittling lines — sting early, spur after the ch19 click.
+- **Margaret "Maggie" Quill**, 43, divorced former HR professional (twenty years in HR, latterly Director) turned potter. Runs The Wheelhouse studio on Pelican's Crook main street. OUTSIDER; arrived in autumn, Book 01. Suffers migraines that bring hyper-detailed, unranked perception (the Too-Much) — strongest with rooms, objects, routines, tool use, cracks, joins, repairs and reset spaces; not mind-reading. Pottery makes provisional questions visible but never proves guilt. Her ex-husband Tommy (off-page) recurs only as short *italic* flashback bursts of his belittling lines — sting early, spur after the ch19 click.
 
 ## Current timeline position
 <!-- canon-meta: {id: current-timeline, refs: [], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: null} -->

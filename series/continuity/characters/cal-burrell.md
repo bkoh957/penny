@@ -8,16 +8,20 @@ links: [the-wheelhouse, b-romance, a-murder]
 
 **Full name:** Callum Burrell. **Known as:** Cal. **Role:** Love interest. Local carpenter. First appears: ch 1.
 
-Another maker who works with his hands — this rhymes quietly with Maggie's pottery. He fits out The Wheelhouse shelving in ch 1, says about four words, measures everything twice, and leaves sawdust on the floor. Steady where Maggie is raw, patient with her strange episodes before he understands them.
+Another maker who works with his hands — this rhymes quietly with Maggie's pottery. He fits out The Wheelhouse shelving in ch 1, says about four words, measures everything twice, and leaves sawdust on the floor. Steady where Maggie is raw, patient with her strange episodes before he understands them. Good-looking in an unpolished Australian bloke way: weathered, practical, attractive without performing attractiveness.
+
+Cal understands when Maggie flirts. He is welcoming and amused, but plays hard to get by pretending not to notice or by answering with practical deadpan. The effect should be good-natured, not cold: he is keeping the ball in play while refusing to make the first meeting too easy.
 
 He is the kind of man who looks at things clearly rather than away from them. When concerned he goes very still and measures things twice — the same thing he does with shelves.
+
+In post-murder Wheelhouse scenes, Cal should be natural practical support rather than cold antagonist: fixing the room's problems, noticing Maggie's strain, offering food/quiet, and naming boundaries with low-voiced concern. The attraction should simmer through steadiness, competence, and Maggie receiving care better than she expects. His investigative function is local/practical plausibility, not police work: he asks whether something strange to Maggie is actually strange in Pelican's Crook. Early, he is amused by her sleuth act; middle-book, he helps test one practical clue; late, their trust grows through evidence-testing without making him her Watson.
 
 **Book 01 complication.** His paternal aunt is central to the murder investigation. The truth Maggie is following leads into his family. When Maggie tells him (ch 24), he goes through disbelief, then sick recognition, then stillness. He does not ask her not to do it. By ch 28 they are, by the end of the evening, still themselves — the wound is real but the decision to stay warm has been made.
 
 **Family context.** His paternal aunt is Mary Burrell (his father's sister). His grandfather (his father's father) died a decade ago under circumstances that are relevant to the Book 01 mystery. Family surname: **Burrell**.
 
 ## Knowledge state
-*As of ch-01 end.* Knows Maggie Quill by name: new tenant at The Wheelhouse, a potter, arrived that day. Knows The Wheelhouse layout (he measured and fitted the east-wall shelving). Exchanged minimal words with Maggie; left on cordial terms, offered to return for the upstairs flat shelving. No knowledge of any crime or death.
+*As of ch-01 end.* Knows Maggie Quill by name: new tenant at The Wheelhouse, a potter, arrived that day. Knows The Wheelhouse layout (he measured and fitted the east-wall shelving). Exchanged minimal words with Maggie; understood her light flirting and deflected it with good-natured practical deadpan; left on cordial terms, offered to return for the upstairs flat shelving. No knowledge of any crime or death.
 
 ## Established facts
 - Drives a ute; engine sounds "like a boat engine clearing its throat."
