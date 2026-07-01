@@ -15,7 +15,7 @@ Introduced warm and alive in the opening chapters — the kind of man a town bui
 2. Sinner (chs 9–17): evidence emerges he had been reviewing old records and had a pattern of believing he knew best — holding private information too closely, crossing emotional boundaries, and treating correctness as moral permission.
 3. Person (chs 19–27): the fuller truth lands — in the central mercy event he acted from compassion at a dying man's repeated plea, but secrecy and arrogance made the aftermath dangerous. The town's grief re-complicates.
 
-Neil's broader wrongdoing must stay specific, not cartoon-villainous: he could expose or leverage private pain when he believed the truth would produce a better outcome. The final effect is that mercy, control, truth and harm can coexist in the same person.
+Neil's broader wrongdoing must stay specific, not cartoon-villainous: he could expose or leverage private information when he believed the truth would produce a better outcome. The final effect is that mercy, control, truth and harm can coexist in the same person.
 
 **Appearance:** First alive in ch 3. Dead by ch 6. Post-death presence continues through investigation.
 
