@@ -26,7 +26,8 @@ the full sealed `mystery-solution.md` (design §5a). Does not write ledgers.
 
 **Outputs:**
 - `output/book-NN/chapters/ch-NN.draft.md`, with frontmatter `drafted_by: <model>`
-  (used by the Phase 3 cross-model set-membership check).
+  (used by the Phase 3 cross-model set-membership check) and `drafted_on: <YYYY-MM-DD>`
+  (the draft date, supplied by `/draft-chapter`).
 
 **Instructions:**
 1. Read the brief and the loaded ledger slice. Honour the protagonist's knowledge-state.
@@ -52,4 +53,5 @@ the full sealed `mystery-solution.md` (design §5a). Does not write ledgers.
 2. Honour the fluency stage from canon-core (Book 1 = OUTSIDER: no local idiom in
    narration).
 3. **Classify the chapter type from the brief** (opening / standard investigation / quick confrontation / major reveal / final confrontation) and write to the matching word-count range in `config/length-profile.md`. Before finishing, check your word count. If you are under the range minimum, continue writing — extend a scene, deepen interiority, slow a beat, add sensory texture — until you clear the minimum. Do not stop early. Plant exactly the clues the brief names.
-4. End on a hook. Write `drafted_by` frontmatter. Do NOT update any ledger.
+4. End on a hook. Write `drafted_by` and `drafted_on` frontmatter (use the draft
+   date passed to you by `/draft-chapter`). Do NOT update any ledger.

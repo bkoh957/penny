@@ -15,4 +15,6 @@ Threads opened in Book 01 for future books. Deliberately unresolved.
 
 4. **Tommy Quill, off-page.** Maggie's ex-husband is a felt presence in Book 01 but never appears. Whether he ever returns on-page — and what his reappearance would cost her hard-won quiet — is deliberately left open. Cross-ref: [[thomas-quill]]. Do NOT bring him on-page in Book 01.
 
+5. **The Wheelhouse previous owner/tenant.** The shopfront still carries former bait-and-tackle bones and locals remember conflicting versions of who had it before Maggie. Book 01 may seed this only as building history and Dot/Glad-style local contradiction, especially around the ch 5 open studio. Do NOT promote it into the Book 01 mystery; reserve the missing/vanished previous-owner question for a future book.
+
 - Status: OPEN (ch 01 — advances in Books 02+, not resolved in Book 01).

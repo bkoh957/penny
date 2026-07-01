@@ -45,12 +45,18 @@ edit and commit with `/finalize-chapter`.
    mkdir -p output/book-$book/chapters
    ```
 
-5. **Dispatch the `drafter` sub-agent** with the inputs listed in
-   `.claude/agents/drafter.md`. Write its output to
-   `output/book-$book/chapters/ch-$chapter.draft.md` including `drafted_by`
-   frontmatter.
+5. **Capture the draft date** so the stamp is deterministic (not the agent's guess):
 
-6. **Clear/advance the marker** when done:
+   ```bash
+   draft_date=$(date +%F)   # YYYY-MM-DD
+   ```
+
+6. **Dispatch the `drafter` sub-agent** with the inputs listed in
+   `.claude/agents/drafter.md`, passing `draft_date` for the `drafted_on` stamp.
+   Write its output to `output/book-$book/chapters/ch-$chapter.draft.md` including
+   `drafted_by` and `drafted_on: $draft_date` frontmatter.
+
+7. **Clear/advance the marker** when done:
 
    ```bash
    echo "book=$book chapter=$chapter stage=DRAFTED" > .penny/current-stage
