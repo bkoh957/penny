@@ -1,83 +1,79 @@
 # Handoff — Penny / main
-Saved: 2026-06-29 | Type: build
+Saved: 2026-07-03 14:30 | Type: build
 
 ## What we're building
-Two distinct threads are live and **uncommitted**:
-1. **NEW this session (DONE, uncommitted):** the drafter now stamps a `drafted_on: <YYYY-MM-DD>`
-   date into draft frontmatter, and all five existing drafts (ch-01..05) were backfilled.
-2. **STILL PENDING from prior handoff (NOT started this session):** reconcile the two stale
-   sealed mystery files (`series/whodunit/book-01.yaml`, `output/book-01/mystery-solution.md`)
-   to the outline and re-mint the lock. See "Next actions §B".
+Expanding Penny from a single-series harness into a **one-engine, many-series** system.
+Each series becomes a self-contained pack under `packs/<slug>/`; the engine
+(`scripts/`, `.claude/`) stays shared so fixes never drift across series. The design is
+**approved and specced**; next step is the implementation plan. This is effectively a
+new engine phase, done *before* the still-unbuilt Phase 6.
 
 ## Git state
-- Branch: `main` (pushed through `6ff1272`)
-- Uncommitted changes:
-  - `.claude/agents/drafter.md` — Outputs + step 4 require `drafted_on`
-  - `.claude/commands/draft-chapter.md` — new step 5 captures `draft_date=$(date +%F)`, passes
-    to drafter; following step renumbered to 7
-  - `output/book-01/chapters/ch-01..05.draft.md` — backfilled `drafted_on` stamps
-  - `input/book-01/outline.md` — **pre-existing M, NOT mine** (user edited since prior handoff;
-    working SHA `96c502d` ≠ HEAD `25bfe99`; prior handoff wrongly said it was clean)
-  - `HANDOFF.md` — this file
-- Deleted this session: stray `output/ch-01.draft-sonnet.md` (superseded sonnet draft, was untracked)
-- Last commit: `6ff1272` feat(book-01): expand full outline to scene-breakdown (all 29 chapters)
-- Tests: **not run this session.** Drafter change is additive-only (all consumers read frontmatter
-  by single key via `parse_frontmatter(...).get("drafted_by")`, never a fixed key-set — verified
-  by grep across scripts/ and tests/). Were green (273) at prior handoff.
+- Branch: main
+- Uncommitted changes: none (clean tree)
+- Last commit: `66a32cd` docs(spec): multi-series via one engine + swappable packs
+- Tests: not re-run this session (no code changed yet); baseline ~273 passing
 
 ## Next actions
-### A. Finish the drafter-date thread (immediate)
-1. Decide whether to commit thread 1 now. Suggested split: commit the drafter feature + backfills
-   **separately** from the reconcile work (B), and leave `outline.md`/`HANDOFF.md` out of that commit.
-   Suggested: `git add .claude/agents/drafter.md .claude/commands/draft-chapter.md
-   output/book-01/chapters/ch-0{1..5}.draft.md` then commit.
-2. (Optional) run `python3 -m pytest` to reconfirm 273 green before committing.
-
-### B. Reconcile stale mystery files (carried over — re-verify against CURRENT outline first)
-**The outline changed since the prior handoff (96c502d ≠ 25bfe99), so re-verify every line item
-below against the current `input/book-01/outline.md` before applying — don't trust the old numbers blind.**
-1. `series/whodunit/book-01.yaml`:
-   - `clue-car-on-street`: plant_chapter 11 → **9** (planted via Dot & Glad, outline ch 9).
-   - `clue-old-records`: plant_chapter 15 → **14** (Neil's papers, outline ch 14).
-   - `rh-faye`: plant_chapter 13 → **12** (Faye raised+cleared, outline ch 12).
-   - `rh-cal`: yaml plant ch 11 but real Cal head-fake is structural at **ch 19** — re-point to 19 or drop.
-   - Beryl alibi grid already ch 17 ✓.
-2. `output/book-01/mystery-solution.md` (sealed: true, drafter-invisible — safe to edit as showrunner):
-   - Move keystone **click ch 19 → ch 20** (ch 19 is now the Cal head-fake).
-   - Rewrite keystone mechanism as **transmitted precision**: room-reset habit points at Cal first
-     (his trained precision), resolves to Mary because she raised Cal and taught him the habit
-     (Cobber ch 20: "She made him who he is").
-   - Fix internal inconsistencies: car payoff ch 23 (table) vs 20 (arc); Beryl demolished ch 14
-     (table) vs 17 (yaml/outline).
-3. Re-mint: `python3 scripts/preflight.py lock-mystery 01` (delete old stale lock first if required).
-4. `python3 -m pytest` to confirm green.
+1. **Wait for the user's spec review.** The brainstorming flow is paused at the
+   user-review gate — they were asked to review
+   `docs/superpowers/specs/2026-07-03-multi-series-packs-design.md`. Two items flagged
+   for their attention: (a) the exact engine-default vs pack-override config split, and
+   (b) comfort with a **fixture pack** under `tests/fixtures/` for resolver/gate tests
+   vs pointing tests at live `cozy-pelicans` content. Apply any requested changes and
+   re-commit the spec.
+2. **Once approved, invoke the `writing-plans` skill** (NOT any implementation skill) to
+   turn the spec into a TDD-ordered plan under `docs/superpowers/plans/`.
+3. Plan must order work as: land `scripts/penny_paths.py` + its own tests FIRST
+   (red→green in isolation), THEN migrate consumers one script at a time keeping the
+   full suite green, THEN the `git mv` migration into `packs/cozy-pelicans/`, THEN the
+   two new commands (`/use-series`, `/new-series`).
 
 ## Decisions made this session
-- **`drafted_on` field name** chosen to parallel `drafted_by`; ISO `YYYY-MM-DD` format.
-- **Date sourced from the command, not the agent.** `/draft-chapter` computes `date +%F` and passes
-  it in — the LLM agent can't reliably know today's date, so the stamp must be deterministic.
-- **Backfill dates derived from git, not file mtime:** ch-01 = 2026-06-28 (Opus redraft `eb5a438`);
-  ch-02 = 2026-06-22 (original add); ch-03/04/05 = 2026-06-26 (draft add). ch-04's 06-27 commit was
-  a 5-line gate fix, NOT a redraft, so its draft date is the 06-26 add.
-- **Reconcile = outline is source of truth** (carried over): conform yaml/solution.md to it, not vice versa.
+- **Strategy B (one engine, many packs) — not clone-per-repo, not engine-as-submodule**:
+  chosen because the user's stated driver is "no engine drift." Clone reintroduces the
+  drift; submodule was heavier than needed for a handful of series.
+- **Two-tier config overlay, not three**: engine ships craft-general defaults, a pack
+  overlays any file (`pack/config/<rel>` else engine `config/<rel>`). User explicitly
+  rejected a middle "genre" tier.
+- **Layered selection `--series` flag > `PENNY_SERIES` env > `.penny/current-series`
+  pointer > hard error**: pointer alone is global mutable state and unsafe for parallel
+  work; per-session env/flag gives clean parallelism. User confirmed wanting parallel
+  series builds.
+- **Beta readers = persona swap only**: `beta-readers/personas/` → pack; but
+  `beta-readers/beta-protocol.md` (K-of-M consensus mechanics tied to `beta_report.py`)
+  STAYS in the engine. The driver-value enum travels with the personas, not the protocol.
+- **Sequencing: do multi-series refactor now, defer Phase 6** (per-book assembly / final
+  read / revision-priority). User said "leave phase 6 for now." Building it series-aware
+  later avoids refactoring the same output-path scripts twice.
+- **Slug for the existing series: `cozy-pelicans`** (renameable at migration time).
 
 ## User preferences expressed this session
-- Commit/push only when told. Work on `main`.
-- Verify a delete target before removing it (did so: confirmed the sonnet draft before `rm`).
+- Lead with a recommendation, then options (consistent with saved working-style memory).
+- Wants genuine parallel multi-series capability, not just sequential switching.
+- Beta readers are a per-series lens; keep only the persona layer swappable.
 
 ## Key files right now
-- `.claude/agents/drafter.md`, `.claude/commands/draft-chapter.md` — drafter-date feature (DONE).
-- `output/book-01/chapters/ch-01..05.draft.md` — backfilled (DONE).
-- `input/book-01/outline.md` — source of truth for reconcile; **changed since prior handoff, re-verify**.
-- `series/whodunit/book-01.yaml`, `output/book-01/mystery-solution.md` — STALE; fix per Next actions §B.
-- `.penny/locks/book-01.mystery.lock` — minted against stale yaml; re-mint after §B edits.
+- `docs/superpowers/specs/2026-07-03-multi-series-packs-design.md` — the approved spec;
+  the source of truth for the plan. Read it first.
+- `scripts/preflight.py` — already threads `repo_root`; the model for how paths should be
+  parameterized. Lightest to adapt.
+- `scripts/readiness_check.py` — the widest path-hardcoder; biggest refactor target.
+- `scripts/penny-statusline.sh` — must show active series + read the active pack's
+  `.penny/current-stage`, honoring `PENNY_SERIES` for parallel terminals.
+- `CLAUDE.md` — the engine-vs-swappable rule this whole effort operationalizes.
 
 ## Watch out for
-- **Nothing is committed.** Two unrelated threads are intermingled in the working tree — split the
-  commits (A vs B) and keep the pre-existing `outline.md` edit out of the drafter-feature commit.
-- **`outline.md` is dirty and not mine** — the user edited it; reconcile (§B) must be re-verified
-  against the current text, not the prior handoff's chapter numbers.
-- Fair-play planting on the page is already correct (ch 5/7/9 verified previously) — the drift is
-  ONLY in the metadata files.
-- `mystery-solution.md` stays `sealed: true` and drafter-invisible — don't let its content leak into
-  drafter-visible files.
+- **HARD-GATE (brainstorming skill):** do NOT start implementation until the user
+  approves the written spec. We are at the review gate, not past it. After approval the
+  ONLY next skill is `writing-plans`.
+- **Test blast radius is the real risk:** many of the ~273 tests assert literal
+  `output/book-01/…`, `config/…`, `series/…` paths. Plan mitigation is: `penny_paths` +
+  tests first in isolation, then migrate consumers one at a time. Do not do the big
+  `git mv` before the resolver + tests are green.
+- `scripts/penny_meta.py`, `penny_verdict.py`, `penny_text.py` are layout-agnostic — do
+  NOT touch them.
+- The existing `HANDOFF.md` before this save was from the book-01 authoring session; this
+  overwrite intentionally replaces it with the multi-series work state.
+- Don't add a PyYAML dependency for any of this (dependency-split rule); the pointer file
+  and config parsing use `penny_meta` / plain reads.

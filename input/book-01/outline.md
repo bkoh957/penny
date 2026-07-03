@@ -75,6 +75,73 @@ Do not add more than this unless a later book needs it. The rule is: a small pro
 
 # Act I — Arrival, Connection, Murder (Chapters 1–7)
 
+## Pre-Chapter Murder Promise — Killer POV One-Pager
+
+### Recommended Title
+
+**Before**
+
+### Alternate Title Suggestions
+
+- **In a Town This Size**
+- **Familiar**
+- **The Gentle Word**
+- **A Beautiful Place to Keep a Secret**
+- **Before the Bakery Opened**
+
+### Purpose
+
+Create an immediate murder-mystery contract before Chapter 01's warmer sea-change arrival. This lets the opening breathe — Maggie can arrive happy, funny, artistically alive and slow-burn cozy — because the reader already knows the beautiful town is also a place where murder is coming.
+
+### POV / Tone
+
+- First-person killer POV, one page only.
+- Voice should be darkly cozy, morally certain, intimate, and slightly wry — not thriller, horror, or serial-killer gleefulness.
+- The killer loves Pelican's Crook and sees its beauty clearly. The menace comes from twisting cozy virtues into opportunity: familiarity, unlocked routines, known cars, short distances, doors opened to trusted faces, gentle words used to soften ugly truths.
+- The killer should believe this is justice, not murder. The moral error is sincere and dangerous.
+- Do not name the killer, Neil, Mary, Cal, father, mercy death, or the vase directly.
+
+### Core Opening Idea
+
+Use the elegant version of the concept:
+
+> In Melbourne, you had to become invisible. In Pelican's Crook, you only had to be familiar.
+
+This captures the tension: the town is perfect for murder because it is intimate, not because it is sinister. In a city, murder needs anonymity. In Pelican's Crook, murder can wear recognition.
+
+### Beat Flow
+
+1. Open before dawn or very early morning, before the bakery unlocks and before the town becomes public. The killer frames Pelican's Crook as beloved: salt-washed, harmless-looking, intimate, beautiful, routine-bound.
+2. Turn the cozy details into cover: everyone knows the cars, curtains, footpaths, bakery hours, tea habits, committee voices and back doors; a familiar knock does not alarm anyone.
+3. Establish the killer's moral wound obliquely: the town used soft words for an old death — age, peace, blessing, sadness — and never called it what the killer believes it was.
+4. Keep the justification partial. The killer is wrong, but the reader should feel the force of old grief and the danger of certainty. Do not explain the true mercy-death backstory.
+5. Include the “not far to travel” idea in a refined form: the target/right person lives close enough that justice does not have to leave town, perhaps close enough to arrive before the kettle cooled.
+6. End on an object/action image without over-identifying it: a weight lifted in both hands, something wrapped, something carried, or a familiar route taken.
+7. Final line should promise the murder and the town's misnaming of it, e.g. “By morning, Pelican's Crook would have another gentle word for death.”
+
+### Guardrails
+
+- Do not make the killer sound excited by murder. The killer should sound certain, aggrieved and controlled.
+- Do not overuse domestic/caretaker specifics that point too directly to Mary. Avoid cake tins, tea towels, Cal, “Aunty,” or father-specific language in this prologue.
+- Do not include operational planning details. This is motive/atmosphere/promise, not a how-to.
+- Do not reveal the exact method or weapon. “Weight in both hands” is enough.
+- Do not let this prologue steal agency from Maggie. It promises the crime; Maggie still earns the truth through disciplined observation and proof.
+- Keep it short enough that Chapter 01 still feels like the real start of Maggie's book.
+
+### Possible Line-Level Prompts for Drafter
+
+These are tonal anchors, not required text.
+
+- In Melbourne, you had to become invisible. In Pelican's Crook, you only had to be familiar.
+- People mistook that for innocence. It was not innocence. It was habit.
+- A familiar car could pass twice down the same street and become weather.
+- A familiar knock could open a door.
+- They had called it age. Peace. A blessing, even, because people were cruellest when they thought they were being kind.
+- No one had called it what it was.
+- The right man lived close enough for justice to arrive before the kettle cooled.
+- I lifted the weight in both hands.
+- By morning, Pelican's Crook would have another gentle word for death.
+
 ## Chapter 01 — The Wheelhouse
 
 ### Overall Summary
