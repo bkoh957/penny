@@ -229,21 +229,21 @@ Competent but stretched thin, the only real police presence for miles. Sceptical
 
 **Hook.**  His scepticism keeps the gift honest: Maggie can’t just announce the solution, she has to make it provable.
 
-## Vincent Calloway — the retired magistrate
+## Vanessa Calloway — the retired magistrate
 
 **Role.**  The law at the level of the bench. Keeper of old judgements.
 
-A retired magistrate who still carries the authority of decades on the bench. Where the Sergeant handles the present, the Magistrate embodies the town’s legal past — old cases, old rulings, old grudges from people once sentenced or once let off. A source of buried history, moral weight, and quiet menace. Knows where a great many bodies are buried, figuratively (and given the cemetery, perhaps not only figuratively).
+Aboriginal Australian retired magistrate who still carries the authority of decades on the bench. Where the Sergeant handles the present, Vanessa Calloway embodies the town’s legal past — old cases, old rulings, old grudges from people once sentenced or once let off. She knows the difference between truth, proof, justice, and peace, and has no patience for outsiders who think one clever observation gives them all four. A source of buried history, moral weight, dry humour, and quiet menace.
 
-**Hook.**  A walking archive of motive: anyone the Magistrate ever judged has a reason to remember.
+**Hook.**  A walking archive of motive: anyone Vanessa ever judged has a reason to remember. Her bench skeleton is a future series seed, not resolved in Book 01.
 
-## Artie Selwood — the elder, retired lighthouse keeper
+## Artie Selwood — the recent-arrival historian / lighthouse obsessive
 
-**Role.**  Living memory. The one who recognises the gift.
+**Role.**  Self-appointed living memory. The one who recognises the gift.
 
-The retired keeper of the lighthouse, full of embellished shipwreck history he’ll narrate to anyone he can corner — but underneath the tall tales, he genuinely knows where every secret in this town is kept. Crucially, he may be the one person who recognises what Maggie’s episodes really are, because he saw the same thing once before, long ago. A key to the series-long mystery of the gift’s origin.
+Artie seems as if he has been in Pelican’s Crook forever — shipwreck stories, lighthouse keys, corrected tourist plaques, archive boxes — but he moved to town only five to ten years before Book 01. He belongs by study, collection and persistence, not birth. Locals tease him for acting ancient-local after five minutes; he accepts this as proof of progress. Underneath the tall tales, he has genuinely learned where many records and secrets are kept.
 
-**Hook.**  Slow-drip his recognition of Maggie’s gift across several books.
+**Hook.**  Slow-drip his recognition of Maggie’s gift across several books. His knowledge comes from obsessive local-history research, records and listening, not mystical old-local status.
 
 ## Glaze — the studio cat
 
@@ -289,13 +289,13 @@ Victim, killer, and motive are locked, all drawn from inside the town so the mur
 
 ## The Killer & Motive — the Tragic Mistake (locked)
 
-**The killer.**  Cal’s aunt — his father’s sister, and daughter of the dying man Neil helped. She has lived in town her whole life and is avenging her own father. Grieving and sympathetic until the truth comes out.
+**The killer.**  Mary Kearney — Cal’s honorary aunt / mother’s old friend / workshop-adjacent caretaker, and daughter of the dying man Neil helped. She is not blood family and not a Burrell. She has lived in town her whole life and is avenging her own father. Grieving and sympathetic until the truth comes out.
 
-**The love interest.**  Cal — a local carpenter (fits out Maggie’s studio shelving in chapter one; another maker who works with his hands). The slow-burn romance of the series. His family is the family at the centre of the murder; the dying elder was his grandfather.
+**The love interest.**  Cal — a local carpenter (fits out Maggie’s studio shelving in chapter one; another maker who works with his hands). The slow-burn romance of the series. Mary is part of his chosen family: the woman who fed him, held spare keys, helped with workshop paperwork and became “Aunty Mary” by repeated care rather than legal kinship.
 
 ### The motive
 
-The aunt has carried a suspicion for years: she always believed her father’s death was no accident — that he was murdered. But for a decade she suspected the wrong person (a family rival, a carer, someone who stood to gain), nursing a cold certainty the town has long dismissed as her harmless fixation — ‘poor thing, she’s always had a bee in her bonnet about her dad.’
+Mary has carried a suspicion for years: she always believed her father’s death was no accident — that he was murdered. But for a decade she suspected the wrong person (a family rival, a carer, someone who stood to gain), nursing a cold certainty the town has long dismissed as her harmless fixation — ‘poor thing, she’s always had a bee in her bonnet about her dad.’
 
 Then a discovery reveals the death was hastened after all — vindicating her lifelong suspicion — but the hand was Dr Neil Hartigan’s. The discovery names the method and the culprit, not the mere fact of foul play; she always had the fact, she lacked the name. Her theory is confirmed and inverted in the same instant: the beloved town doctor, the last man she would ever have suspected, did it. In her grief-warped logic she cannot see mercy — only that she was right all along, and the culprit was hiding in plain sight as a saint. Decades of suspicion curdle into a fury that feels, to her, entirely justified: ‘I always knew — and now I know who.’ She confronts Neil and kills him.
 
@@ -303,13 +303,14 @@ She is both right and catastrophically wrong. Right that her father’s death wa
 
 ### Why this motive is so strong
 
-1. The killer hides in plain sight: the town knows the aunt as the eccentric with a grudge about an old death, so no one links that harmless fixation to the new murder.
+1. The killer hides in plain sight: the town knows Mary as the eccentric with a grudge about an old death, so no one links that harmless fixation to the new murder.
 1. She is sympathetic and a little frightening — not a sudden snap, but a decade-old wound finally given a target.
 1. It gives Maggie a thread to pull: why would this particular woman care so much about a death from years ago?
+1. It no longer points a neon arrow through the only blood-family relation in the book; Mary’s power over Cal comes through chosen-family care, not surname.
 
 ### The collision with the romance — the book-one wound
 
-This is the engine that can ache for volumes. Maggie is falling for Cal, and her gift leads her straight to his aunt. To solve Neil’s death — to clear the doctor’s name and prove it was mercy — Maggie must expose the woman as a killer, detonating the family she was beginning to hope she might belong to. The truth and the romance are on a collision course. Maggie isn’t unmasking a monster; she’s destroying a grieving family over a misunderstanding, and only her gift for seeing what is truly there can carry her to a truth no one else wants.
+This is the engine that can ache for volumes. Maggie is falling for Cal, and her gift leads her straight to Mary, the woman his town calls Aunty Mary because she helped raise him when actual family failed or drifted. To solve Neil’s death — to clear the doctor’s name and prove it was mercy — Maggie must expose Mary as a killer, detonating the chosen family she was beginning to hope she might belong to. The truth and the romance are on a collision course. Maggie isn’t unmasking a monster; she’s destroying a grieving household over a misunderstanding, and only her gift for seeing what is truly there can carry her to a truth no one else wants.
 
 ### Why this is the perfect machine for the series
 
@@ -317,17 +318,17 @@ Neil’s compassion is the single unbroken thread: the mercy that gets him kille
 
 ## The Keystone Clue — The Erasure (locked)
 
-The detail Maggie’s gift photographs early and only understands late. Its design does double duty: it points to the killer’s intimacy with Neil (the mercy/history thread) and, ultimately, to the aunt herself. The elegance is that the clue is not a thing present but a thing erased — the killer cleaned up to hide that she was ever there, and a normal person sees only a tidy room. Maggie’s hyper-focus sees the seams of the cleaning.
+The detail Maggie’s gift photographs early and only understands late. Its design does double duty: it points to the killer’s intimacy with Neil (the mercy/history thread) and, ultimately, to Mary herself. The elegance is that the clue is not a thing present but a thing erased — the killer cleaned up to hide that she was ever there, and a normal person sees only a tidy room. Maggie’s hyper-focus sees the seams of the cleaning.
 
 ### Stage one — what the migraine records (early, at the scene)
 
 Drawn to Neil’s home soon after the death, Maggie is struck by a migraine and, in the flood, perceives not what is there but what is subtly wrong about a room smoothed over by someone hiding their presence: a chair squared a fraction too neatly while Neil’s own sits askew; a faint ring on the wood where a second cup stood, the cup washed and reshelved — but a fraction out of Neil’s habitual order, which Maggie, a maker of cups, would clock; fresh dishwashing at the wrong hour; a tea towel damp and refolded; the biscuit tin lid not quite seated. None of it means anything to her yet. She records only: the room is wrong, the room has been erased — and the pain swallows her before she can think.
 
-The keystone within the keystone: the washed second cup was dried and returned with an unthinking, proprietary familiarity — the visitor knew this kitchen, knew where things lived, had sat here many times over many years. Not a stranger. Someone intimate with Neil and with the house. That single detail points away from an intruder and toward history and family — the mercy connection and the aunt, in one stroke.
+The keystone within the keystone: the washed second cup was dried and returned with an unthinking, proprietary familiarity — the visitor knew this kitchen, knew where things lived, had sat here many times over many years. Not a stranger. Someone intimate with Neil and with the house. That single detail points away from an intruder and toward history and family — the mercy connection and Mary, in one stroke.
 
 ### Stage two — what makes it click (late, pain-free, ordinary)
 
-Much later, in a mundane moment — tidying after a CWA event, or washing up in Maggie’s studio or Cal’s kitchen — Maggie watches the aunt dry a cup and put it away with that same unthinking, proprietary familiarity, the exact gesture of someone who knows where everything belongs. The photograph develops. Maggie understands at last what her migraine recorded at Neil’s: not two cups, but the signature of a person who belonged in that kitchen, erasing herself. The click names the killer and confirms the visit was intimate, not violent — someone Neil welcomed, someone from the family, someone tied to the old death.
+Much later, in a mundane moment — tidying after a CWA event, or washing up in Maggie’s studio or Cal’s kitchen — Maggie watches Mary dry a cup and put it away with that same unthinking, proprietary familiarity, the exact gesture of someone who knows where everything belongs. The photograph develops. Maggie understands at last what her migraine recorded at Neil’s: not two cups, but the signature of a person who belonged in that kitchen, erasing herself. The click names the killer and confirms the visit was intimate, not violent — someone Neil welcomed, someone from long familiarity, someone tied to the old death.
 
 ### Why it works
 
@@ -339,10 +340,10 @@ Much later, in a mundane moment — tidying after a CWA event, or washing up in 
 ## Decisions Still Open
 
 1. **Locked:** victim is Dr Neil Hartigan, beloved GP, killed for a begged-for mercy he performed years ago.
-1. **Locked:** keystone clue is The Erasure — the killer’s cleaned-away presence, read by Maggie’s gift and resolved later by the aunt’s habitual familiarity.
-1. **Locked:** killer is Cal’s aunt, tragically mistaken — she believes the mercy was murder.
-1. **Locked:** Cal is a carpenter; the aunt is his paternal aunt; the dying elder was his grandfather (her father).
-1. **Locked:** the aunt always believed it was murder but suspected the wrong person — a discovery finally names Neil.
+1. **Locked:** keystone clue is The Erasure — the killer’s cleaned-away presence, read by Maggie’s gift and resolved later by Mary’s habitual familiarity.
+1. **Locked:** killer is Cal’s honorary aunt / mother’s old friend, tragically mistaken — she believes the mercy was murder.
+1. **Locked:** Cal is a carpenter; Mary is his honorary aunt / chosen-family elder, not blood family; the dying elder was Mary’s father, not Cal’s grandfather.
+1. **Locked:** Mary always believed it was murder but suspected the wrong person — a discovery finally names Neil.
 1. The precise nature of the discovery that names Neil (old medical record, misfiled drug log, a note in Neil’s late-life papers).
 1. The full beat-by-beat chapter outline, now that the mystery is fixed.
 
@@ -350,13 +351,13 @@ Much later, in a mundane moment — tidying after a CWA event, or washing up in 
 
 The principle for a charm-first cosy: make everyone a suspect. The whole town under gentle suspicion means the whole town gets exposed — which is the reader’s real pleasure. Each suspect carries a motive (why they could have done it), a secret (something they’re hiding that makes them look guilty — usually not the murder), and a demolition (the clean reason they’re cleared). Because Neil knew everyone’s secrets, nearly every secret orbits him, so clearing a suspect still deepens the town.
 
-## The Double-Bluff — the aunt, suspected first and dismissed
+## The Double-Bluff — Mary, suspected first and dismissed
 
-The killer is hidden in plain sight by being suspected first — for the wrong reason. Early on, the town and Sergeant Pruitt glance at Cal’s aunt because she is the eccentric who has always gone on about her father’s death, and now there is a fresh body. But they attribute it to her general ‘instability’, not to the real motive — because no one yet knows the discovery exists that names Neil. She is cleared on the wrong grounds (‘poor thing, she’s harmless, she wouldn’t hurt a fly’) and crossed off.
+The killer is hidden in plain sight by being suspected first — for the wrong reason. Early on, the town and Sergeant Pruitt glance at Mary because she is the eccentric who has always gone on about her father’s death, and now there is a fresh body. But they attribute it to her general ‘instability’, not to the real motive — because no one yet knows the discovery exists that names Neil. She is cleared on the wrong grounds (‘poor thing, she’s harmless, she wouldn’t hurt a fly’) and crossed off.
 
 This is the engine of the misdirection: once a suspect is raised and waved away, the reader mentally crosses them off and never looks back. She hides behind her own early exoneration. The clearing is true-but-irrelevant — no one ever tested the real motive — so when the erasure clicks at the climax, the reader realises she was never actually ruled out on the thing that mattered.
 
-**Extra twist of the knife.**  Maggie herself, out of kindness, may help dismiss the aunt early — so at the end she must overturn her own exoneration.
+**Extra twist of the knife.**  Maggie herself, out of kindness, may help dismiss Mary early — so at the end she must overturn her own exoneration.
 
 ## Saffron — the loud red herring (and the false solution)
 
@@ -380,23 +381,23 @@ This is the engine of the misdirection: once a suspect is raised and waved away,
 
 ## Faye — the suspect Maggie doesn’t want to suspect
 
-**Motive.**  Thin on the surface, but Neil knew something about Faye’s family, or about the long jam-feud judge.
+**Motive.**  Thin on the surface, but Neil knew something about Faye’s family, or about the same-jam feud.
 
-**Secret.**  The 22-year jam feud hides a real old wound — a history between Faye and the judge that Neil happened to know.
+**Secret.**  The same-jam feud hides a real old wound — a history involving Faye’s mother, Iris, a recipe/entry, and a public story Neil happened to know.
 
 **Demolition.**  Cleared warmly and a little comically; her secret is poignant, not criminal. Tests Maggie’s loyalties without breaking the friendship.
 
 **Note.**  Useful for the emotional stakes of suspecting a friend.
 
-## Vincent Calloway — the dark horse
+## Vanessa Calloway — the dark horse
 
-**Motive.**  A retired magistrate and a doctor both keep the town’s secrets; perhaps Neil knew of an old judgement Calloway got wrong, or a favour that crossed a line. His gravitas makes him feel capable of it.
+**Motive.**  A retired magistrate and a doctor both keep the town’s secrets; perhaps Neil knew of an old judgement Vanessa got wrong, or a favour that crossed a line. Her gravitas makes her feel capable of it.
 
-**Secret.**  Something genuinely buried in his years on the bench.
+**Secret.**  Something genuinely buried in her years on the bench.
 
-**Demolition.**  His secret is real but unconnected to Neil’s death — a separate skeleton.
+**Demolition.**  Her secret is real but unconnected to Neil’s death — a separate skeleton.
 
-**Note.**  SERIES SEED: leave his bench skeleton dangling for a future book. Do not resolve it here.
+**Note.**  SERIES SEED: leave her bench skeleton dangling for a future book. Do not resolve it here.
 
 ## Cobber — the accidental-witness wildcard
 
@@ -406,7 +407,7 @@ This is the engine of the misdirection: once a suspect is raised and waved away,
 
 **Demolition.**  N/A — he’s a witness, not a suspect.
 
-**Note.**  Much later his account becomes the corroboration that helps Maggie place the aunt. He mirrors Maggie’s gift: he saw the truth without understanding it.
+**Note.**  Much later his account becomes the corroboration that helps Maggie place Mary. He mirrors Maggie’s gift: he saw the truth without understanding it.
 
 ## Series Seeds (use sparingly)
 

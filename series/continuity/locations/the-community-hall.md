@@ -7,6 +7,6 @@ links: [beryl-foss, pelicans-crook, comedy]
 
 Beryl's primary domain. CWA meetings, fundraisers, autumn markets, the investigation's public moments.
 
-**In Book 01.** The Wheelhouse open-studio afternoon (ch 5) has replaced the original autumn-market set-piece as the early community gathering; the hall remains Beryl's domain for later public/CWA beats. The CWA hall clean-up (ch 19) is the location of the keystone click: Maggie watches the aunt dry a cup and put it away in the kitchen there, and understands what she saw through Neil's window.
+**In Book 01.** The Wheelhouse open-studio afternoon (ch 5) has replaced the original autumn-market set-piece as the early community gathering; the hall remains Beryl's domain for later public/CWA beats. The CWA hall clean-up (ch 19) is the location of the keystone click: Maggie watches Mary dry a cup and put it away in the kitchen there, and understands what she saw through Neil's window.
 
-The hall kitchen is a plot-critical location: it is the space that allows Maggie to observe the aunt's habitual kitchen familiarity in a context unconnected to the crime. The proprietary confidence of a woman who knows exactly where everything lives, in a kitchen that is not her own.
+The hall kitchen is a plot-critical location: it is the space that allows Maggie to observe Mary's habitual kitchen familiarity in a context unconnected to the crime. The proprietary confidence of a woman who knows exactly where everything lives, in a kitchen that is not her own.

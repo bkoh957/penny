@@ -1,7 +1,7 @@
 ---
 id: the-old-cemetery
 type: location
-links: [pelicans-crook, series-seeds, vincent-calloway]
+links: [pelicans-crook, series-seeds, vanessa-calloway]
 ---
 # The Old Cemetery
 

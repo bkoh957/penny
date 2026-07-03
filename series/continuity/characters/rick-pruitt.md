@@ -10,6 +10,8 @@ links: [a-murder]
 
 Competent but stretched thin — the only real police presence for miles (based at the next town over). Sceptical of Maggie's "hunches," understandably: she can never explain how she knows things ("I just… noticed" is not evidence). Their clash-and-collaborate dynamic is a core series engine: he needs what she sees, she needs his authority to act on it, and neither fully trusts the other yet.
 
+Pruitt is not dismissive because he is stupid; he is sceptical because he is the person who has to stand in court with the mess everyone else calls truth. He lives half out of a police vehicle, drinks terrible station coffee without complaint, keeps a raincoat over the back of a chair because he is always halfway out, and writes witness notes with the neatness of a man clinging to order. His humour is dry and usually arrives late, when exhaustion has worn the polish off.
+
 He is not the romance — deliberately, so the friction stays clean.
 
 **In Book 01:**

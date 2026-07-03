@@ -10,6 +10,8 @@ links: [the-beach, a-murder]
 
 A man in his fifties who has been "about to leave town" for thirty years. He is on the beach every dawn — and therefore sees who comes and goes before the town is awake. An accidental witness to things that happen at the edges of the day. Speaks in unhurried surf-philosophy; knows more than he realises he knows.
 
+Cobber is not mystical. He sees because he is there, not because he is wise. He knows tides better than clocks, collects lost things from the beach — thongs, hats, fishing floats, one very offended picnic chair — and denies feeding gulls despite all evidence. Every year he claims he is leaving; every year he owns one more thing that would be inconvenient to move.
+
 **In Book 01:** His dawn sighting (a car, a figure, an approximate time) is a non-necessary clue planted in ch 2 and assembled into the timeline in ch 20. He mirrors Maggie's gift: he saw the truth without understanding it.
 
 **Note.** Not really a suspect — he is on the alibi grid to confirm his witness status. His account initially points the wrong way (toward a stranger), but combined with Dot/Glad's car testimony it corroborates the timeline.

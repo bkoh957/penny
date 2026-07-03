@@ -10,6 +10,8 @@ links: [a-murder, victim-reveal, gift, neils-cottage]
 
 Introduced warm and alive in the opening chapters — the kind of man a town builds itself around without noticing. He took Maggie's migraines seriously (ch 3); the first professional ever to do so. He sat close, asked questions nobody had asked before, and did not once use the word "stress." At the ch 5 open-studio closing, he can recognise the warning signs that she has pushed herself too hard again and offer practical, non-judgemental care. This matters: he may have begun to suspect what her episodes truly were, and what they might mean.
 
+Neil needs live-page contradiction before death. He remembers practical details — tea orders, medication habits, who needs embarrassment deflected — while pretending not to be sentimental about them. He can save one person from shame with brisk efficiency and then wound someone else five minutes later by saying the exact true thing in the worst possible manner. He offers care without softness, dislikes public gratitude, and has a gift for asking one question too accurately.
+
 **The three-movement arc (post-death).** He is not a static victim.
 1. Saint (chs 1–8): mourned as the town's beloved GP, with real grief.
 2. Sinner (chs 9–17): evidence emerges he had been reviewing old records and had a pattern of believing he knew best — holding private information too closely, crossing emotional boundaries, and treating correctness as moral permission.
@@ -19,4 +21,4 @@ Neil's broader wrongdoing must stay specific, not cartoon-villainous: he could e
 
 **Appearance:** First alive in ch 3. Dead by ch 6. Post-death presence continues through investigation.
 
-**Note for drafter.** Do not resolve or reveal the full backstory of why he died before ch 22. The three-movement arc is the spine of the victim-reveal thread; do not collapse it early.
+**Note for drafter.** Do not resolve or reveal the full backstory of why he died before ch 22. The three-movement arc is the spine of the victim-reveal thread; do not collapse it early. Give him at least two memorable live-page moments before death: one brusquely gentle, one brutally perceptive and socially costly.

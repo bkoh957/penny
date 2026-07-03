@@ -8,8 +8,8 @@ last_advanced_chapter: 2
 
 The warm-tone engine. Keeps the book cosy throughout the murder investigation. Primary sources:
 
-- **The op-shop sisters** (Dot & Glad): contradictory testimony on every detail except the big facts; their surveillance of the main street is invaluable but requires adjudication.
-- **Faye's jam feud**: 22 years, still no win, the agricultural-show judge sighted annually with fresh dread.
+- **The op-shop lookalikes** (Dot & Glad): unrelated women who look uncannily alike and deny it; contradictory testimony on every detail except the big facts; their surveillance of the main street is invaluable but requires adjudication.
+- **Faye/Iris same-jam feud**: Faye serves a house jam and Iris sells/serves the same one; the duplicate jam is comic public business over an old recipe/judging wound.
 - **Glaze**: the studio cat; inspects everything, sits on the good apron, draws attention to corners.
 - **Maggie's faux-pas blurts**: the gift fires without understanding; she voices a raw observation with no idea what it means or who it implicates.
 

@@ -5,7 +5,7 @@ links: [artie-selwood, gift, series-seeds, pelicans-crook]
 ---
 # The Lighthouse
 
-Sits on the headland. Artie Selwood's domain — he is the retired keeper.
+Sits on the headland. Artie Selwood's domain — he is a recent-arrival-turned-self-appointed lighthouse historian, not a lifelong local keeper.
 
 Atmosphere, history, and a bottomless well of old local secrets. The coast visible from the lighthouse is the wreck-strewn stretch where the town's founding ambiguity (rescue or plunder?) played out.
 
