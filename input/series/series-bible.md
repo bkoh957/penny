@@ -177,9 +177,9 @@ These are your series regulars — the people readers come back for. Names are p
 
 **Role.**  Series romance, kept deliberately separate from the investigation — and, in book one, unknowingly tied to the killer.
 
-A local carpenter — another maker who works with his hands, which quietly rhymes with Maggie’s pottery. He fits out the shelving in The Wheelhouse in chapter one, their first crossed wires. Because he is not the law, the romance never gets tangled in procedure, which keeps it cosy and lets the relationship breathe. He is steady where Maggie is raw, patient with her strange episodes before he understands them, and quietly the first person to take her seriously since Dr Hartigan. The book-one complication: the killer is his own paternal aunt, which puts the truth Maggie is chasing on a collision course with the family she is beginning to hope she might belong to.
+A local carpenter — another maker who works with his hands, which quietly rhymes with Maggie’s pottery. He fits out the shelving in The Wheelhouse in chapter one, their first crossed wires. Because he is not the law, the romance never gets tangled in procedure, which keeps it cosy and lets the relationship breathe. He is steady where Maggie is raw, patient with her strange episodes before he understands them, and quietly the first person to take her seriously since Dr Hartigan. The book-one complication: the killer is his honorary aunt / mother’s old friend, a chosen-family elder rather than blood family, which puts the truth Maggie is chasing on a collision course with the family she is beginning to hope she might belong to.
 
-**Hook.**  His aunt is the book-one killer (tragically mistaken). The romance survives but is wounded — fuel for the slow burn.
+**Hook.**  His chosen-family aunt is the book-one killer (tragically mistaken). The romance survives but is wounded — fuel for the slow burn.
 
 ## Faye — the jam-feud baker
 

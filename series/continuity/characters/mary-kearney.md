@@ -18,7 +18,7 @@ links: [a-murder, the-community-hall, neils-cottage]
 - She is in obvious distress at Neil Hartigan's death (ch 7), which the town reads as grief about her father's doctor, complicated by her old fixation.
 - Cal worries about her quietly — she has been strange lately, stranger than her usual grief.
 - She is raised as a possible person of interest early (ch 7, Pruitt glances at her) and dismissed as harmless. She hides behind this early exoneration.
-- She has a plausible non-murder secret around old workshop paperwork / a debt or lease arrangement / a promise to Cal's mother, which explains some defensiveness and old-paper interest without immediately pointing to murder.
+- She has a plausible non-murder secret around old workshop/property paperwork: a debt or lease arrangement, quiet payments, or a promise to Cal's mother to keep the workshop from being sold too soon. This explains defensiveness, old-paper interest, anti-selling pressure, hovering around Cal, and fear of Neil exposing old matters without immediately pointing to murder.
 
 **First on-page appearance:** ch 2 (brings Maggie a cake in an old tin; reads as a friendly, good-natured older country-town local, sincerely kind, but studies her too carefully when Cal's name comes up). Returns ch 5 (The Wheelhouse open studio — helps with tea towels, cups and cake plates in a way that later proves signature, not generic tidiness).
 
@@ -28,6 +28,7 @@ links: [a-murder, the-community-hall, neils-cottage]
 - Brought a homemade cake in an old tin (lemon or orange cake works well), wrapped in wax paper or a clean tea towel. The gift reads as neighbourly feeding first, not symbolic mystery business.
 - In ch 5, at The Wheelhouse open studio, quietly helps with cups, cake plates and tea towels in a natural domestic way; the later clue is Maggie recognising Mary's clean-up signature in hindsight, not everyone noticing strange precision.
 - In ch 8, can gently herd people into The Wheelhouse under the guise of practical care: assigning cups, moving plates, lowering voices, and making the room feel manageable. This should read as helpful community competence in the moment, but later reread as listening for suspicion and monitoring what people think. Do not villain-signal her early.
+- Ch 14 should make her workshop/property secret plausible as the thing she is hiding: a burden she preserved for Cal, not murder. Readers should be able to suspect family money, inheritance, betrayal, or Cal's future before the real motive locks in.
 - Mary-specific order signature: tea towels folded into exact thirds with the tag hidden; cup handles turned to the same angle; biscuit tins/labels rotated outward; objects returned to what Mary believes is proper order rather than necessarily to the owner's lived-in order. Plant these as caring competence, not clue spotlighting.
 - Never arrives empty-handed; carries spare tea towels; knows every hall cupboard by its sticking point; says "just a little something" about a cake that could feed ten.
 - Said of Cal: "He measures everything twice. His father was the same." / "He's had a lot of people pass through. People come down here to fix their lives and then they go back up to the city to live them, and Cal's the one who builds the shelves they leave behind."

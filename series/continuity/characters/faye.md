@@ -24,5 +24,6 @@ Faye is not fragile. She is competent, beloved and funny; the anxiety lives unde
 - Tania minds the ovens and does not panic, even when Faye says she does. Ovens go on at six; bread gone by half past eight; serious regulars arrive by eight.
 - Introduced Maggie to the town's social map in order: Dot and Glad, Cobber, Beryl Foss, Saffron, Mara, Mary Kearney, and Iris Poole.
 - Her manner when Iris Poole's name arose: went briefly, precisely closed — "the warmth still sitting on the surface like oil on water and nothing underneath it." Said only: "Iris does very good jam. Everyone says so." Sealed the subject.
+- Book 01 red-herring payoff: the jam material should leave positive clue gain, not only family dignity. A recipe card, show schedule, committee minute, entry label or clipping can provide a date that points toward the year Mary’s father died and Neil’s abrupt change afterwards.
 - Offered to send customers to The Wheelhouse ("the ones who'd actually buy a nice bowl instead of telling you it's dear") once Maggie learns the town first. Advice: "Don't come at it with a story about yourself ready-made."
 - Left flour on Maggie's clean floor without noticing; departed promptly.

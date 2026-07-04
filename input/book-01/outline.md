@@ -9,6 +9,7 @@ total_chapters: 29
 - culprit: Mary Kearney (Cal's honorary aunt / mother's old friend / workshop-adjacent caretaker; daughter of the dying man)
 - victim: Dr Neil Hartigan, the town GP
 - central deception / motive: Mary has believed for a decade that her father was murdered; a recent discovery finally named Neil as the hand behind his death. She kills him believing she is avenging a crime — but Neil eased her father's passing at the old man's own repeated, desperate plea. She is right that his death was no accident, and catastrophically wrong about what it meant. Neil's compassion is the thing that kills him; his honesty in letting the truth surface is the trigger.
+- Mary cover secret: Mary also hides a non-murder secret around Cal's workshop/property paperwork — an old promise to Cal's mother, a debt/lease arrangement, or quiet payments made to keep the workshop from being sold too soon. This explains her papers, defensiveness, anti-selling stance, hovering around Cal, and fear of Neil exposing old matters without making her automatically read as the killer.
 - suspects: Mary Kearney, Saffron, Beryl Foss, Faye, Vanessa Calloway, Cobber (witness)
 - key locations: Neil's cottage kitchen (the erasure scene), The Wheelhouse, the community hall, the beach at dawn, the old cemetery
 
@@ -34,7 +35,7 @@ Pottery is the bridge between the gift, the business, Tommy's ghost and the myst
 
 Use Maggie's right-piece talent sparingly as the warm, artistic form of her seeing. A right-piece moment is not ceramic therapy and not soul-reading: Maggie notices hands, use, hesitation, weight, balance, pressure, glaze, rim, foot, wall and fit, then offers or withholds an object. The recipient's reaction should be practical and restrained — use, refusal, silence, a tiny recalibration — never a speech about being understood. Recommended Book 1 motif beats: Cal's workshop mug/bench dish in ch 1; Neil's severe/plain useful piece before death in ch 3; Mary's dark inversion through exact handling of a lidded vessel/cake plate/tea towel in ch 5; one repair/trust beat through Faye or Beryl after Maggie damages trust; and the surf-club commission as the community-scale right piece in chs 28–29. Do not give every character a bespoke ceramic revelation.
 
-After Neil's cottage, Pruitt gives her a practical notebook discipline with three columns: **What I saw**, **What it might mean**, and **What else could explain it**. Maggie privately adds a fourth, optional studio question: **What shape does it make?** The fourth column is not proof. It helps her see when she is imposing a story onto incomplete information. Early in Act II she still lets the middle column feel like fact. After the Beryl bakery failure, she begins forcing herself to test alternate explanations. By Act III, her mature sleuth marker is: **I do not know what this means yet. I only know it does not fit.**
+After Neil's cottage, Pruitt teaches the notebook discipline once: **What I saw**, **What it might mean**, and **What else could explain it**. Use it as a training scene and private scaffold, not a repeated visible worksheet. After Chapter 10, Maggie should stay lively, funny, over-alert, tempted by neat theories, occasionally too clever and wrong in interesting ways. Her growth shows in behaviour — closing her mouth one beat later, asking a better question, testing before accusing, using humour to resist temptation — not in narration about responsible columns. Save the mature marker **I do not know what this means yet. I only know it does not fit** for one major late-act moment only.
 
 Use the three-part investigation engine throughout:
 
@@ -71,76 +72,32 @@ Use small practical mysteries sparingly to create cozy movement and make Maggie 
 
 Do not add more than this unless a later book needs it. The rule is: a small problem should reveal character, deepen a relationship, enrich Pelican's Crook, or leave one useful detail — not turn every inconvenience into a murder clue.
 
+### Middle Escalation / Positive Clue-Gain Contract
+
+The middle must not become a private-secret carousel. Every cleared suspect has to leave behind one concrete forward gain so the reader experiences escalation, not repeated moral correction.
+
+- **Saffron clears (chs 16–17):** her humiliating debt-recovery alibi in Colac proves she was out of town during the murder window, but her records also narrow the blue-green vehicle clue: the retreat vehicle seen near Neil's road was earlier in the week, and a delivery/service log or permit note proves the late vehicle had a local surf-club/workshop connection rather than Saffron's branding.
+- **Beryl clears (ch 17):** her private medical appointment gives a hard timestamp, route and weather fact. Her changed clothes matter positively: mud/rain on the appointment route eliminates one branch of the timeline and proves the clothing change was after a frightening private errand, not after murder.
+- **Faye/Iris clears (chs 12 and 19):** the jam feud material is not just family dignity. A recipe card, show schedule, committee minute or newspaper clipping gives a date that points toward the year Mary's father died and Neil's abrupt change afterwards.
+- **Vanessa Calloway clears (chs 13–14):** the rope/knot/access question proves a local habit is too common for guilt, but it also teaches Maggie to ask who knew the path/route/routine well enough to reset a scene without looking like an intruder.
+- **Cal clears (chs 20–23):** his precision habits can be explained by workshop craft and Mary's upbringing, but that explanation becomes useful because it lets Maggie separate Cal's habits from Mary's more specific domestic-order signature.
+
+### Recurring Cast Independent Wants
+
+Give each recurring local one visible project or desire unrelated to Neil's death so Pelican's Crook reads as a series world, not a suspect reservoir.
+
+- **Dot and Glad:** competing to run the art-trail raffle/op-shop window display; their contradiction is an ongoing civic sport, not just eyewitness comedy.
+- **Glaze:** steals one specific category of object — receipts, ribbon, kiln cookies, measuring tape or polished stones — so his chaos becomes a recurring pattern.
+- **Cobber:** restoring or repainting a ridiculous old dinghy/anchor/tide marker; he has a life beyond cryptic clue delivery.
+- **Iris:** preserving local recipes before they vanish; gives charm and competence beyond being Faye's jam wound.
+- **Beryl:** campaigning for an unwanted practical improvement — surf-club urn upgrade, hall storage, emergency rain plan, proper signage — making her tyranny useful civic labour.
+- **Mara:** fighting the headland development through stakes, erosion reports and council forms; she must be useful now, not only future-series infrastructure.
+- **Artie:** preparing a lighthouse/archive display everyone thinks will fail; it pays off with the Elspeth Vale hook.
+- **Saffron:** keeping the retreat solvent while maintaining brand serenity; she wants survival, not just secrecy.
+
 ---
 
 # Act I — Arrival, Connection, Murder (Chapters 1–7)
-
-## Pre-Chapter Murder Promise — Killer POV One-Pager
-
-### Recommended Title
-
-**Before**
-
-### Alternate Title Suggestions
-
-- **In a Town This Size**
-- **Familiar**
-- **The Gentle Word**
-- **A Beautiful Place to Keep a Secret**
-- **Before the Bakery Opened**
-
-### Purpose
-
-Create an immediate murder-mystery contract before Chapter 01's warmer sea-change arrival. This lets the opening breathe — Maggie can arrive happy, funny, artistically alive and slow-burn cozy — because the reader already knows the beautiful town is also a place where murder is coming.
-
-### POV / Tone
-
-- First-person killer POV, one page only.
-- Voice should be darkly cozy, morally certain, intimate, and slightly wry — not thriller, horror, or serial-killer gleefulness.
-- The killer loves Pelican's Crook and sees its beauty clearly. The menace comes from twisting cozy virtues into opportunity: familiarity, unlocked routines, known cars, short distances, doors opened to trusted faces, gentle words used to soften ugly truths.
-- The killer should believe this is justice, not murder. The moral error is sincere and dangerous.
-- Do not name the killer, Neil, Mary, Cal, father, mercy death, or the vase directly.
-
-### Core Opening Idea
-
-Use the elegant version of the concept:
-
-> In Melbourne, you had to become invisible. In Pelican's Crook, you only had to be familiar.
-
-This captures the tension: the town is perfect for murder because it is intimate, not because it is sinister. In a city, murder needs anonymity. In Pelican's Crook, murder can wear recognition.
-
-### Beat Flow
-
-1. Open before dawn or very early morning, before the bakery unlocks and before the town becomes public. The killer frames Pelican's Crook as beloved: salt-washed, harmless-looking, intimate, beautiful, routine-bound.
-2. Turn the cozy details into cover: everyone knows the cars, curtains, footpaths, bakery hours, tea habits, committee voices and back doors; a familiar knock does not alarm anyone.
-3. Establish the killer's moral wound obliquely: the town used soft words for an old death — age, peace, blessing, sadness — and never called it what the killer believes it was.
-4. Keep the justification partial. The killer is wrong, but the reader should feel the force of old grief and the danger of certainty. Do not explain the true mercy-death backstory.
-5. Include the “not far to travel” idea in a refined form: the target/right person lives close enough that justice does not have to leave town, perhaps close enough to arrive before the kettle cooled.
-6. End on an object/action image without over-identifying it: a weight lifted in both hands, something wrapped, something carried, or a familiar route taken.
-7. Final line should promise the murder and the town's misnaming of it, e.g. “By morning, Pelican's Crook would have another gentle word for death.”
-
-### Guardrails
-
-- Do not make the killer sound excited by murder. The killer should sound certain, aggrieved and controlled.
-- Do not overuse domestic/caretaker specifics that point too directly to Mary. Avoid cake tins, tea towels, Cal, “Aunty,” or father-specific language in this prologue.
-- Do not include operational planning details. This is motive/atmosphere/promise, not a how-to.
-- Do not reveal the exact method or weapon. “Weight in both hands” is enough.
-- Do not let this prologue steal agency from Maggie. It promises the crime; Maggie still earns the truth through disciplined observation and proof.
-- Keep it short enough that Chapter 01 still feels like the real start of Maggie's book.
-
-### Possible Line-Level Prompts for Drafter
-
-These are tonal anchors, not required text.
-
-- In Melbourne, you had to become invisible. In Pelican's Crook, you only had to be familiar.
-- People mistook that for innocence. It was not innocence. It was habit.
-- A familiar car could pass twice down the same street and become weather.
-- A familiar knock could open a door.
-- They had called it age. Peace. A blessing, even, because people were cruellest when they thought they were being kind.
-- No one had called it what it was.
-- The right man lived close enough for justice to arrive before the kettle cooled.
-- I lifted the weight in both hands.
-- By morning, Pelican's Crook would have another gentle word for death.
 
 ## Chapter 01 — The Wheelhouse
 
@@ -456,8 +413,9 @@ Maggie's first full day turns welcome into a social test while The Wheelhouse is
 4. Maggie connects Mary to Cal because locals call her Aunty Mary, then learns or senses the title is honorary rather than blood. Keep the moment human and slightly awkward: she tries to mention Cal lightly and hears herself sound too interested, or Mary makes the connection before Maggie has finished deciding how casual to be.
 5. Mary's attention sharpens when Cal's name comes up. Not hostile; not warm either. She studies Maggie too carefully, as if cataloguing risk under the cover of generosity.
 6. Mary explains just enough family context to establish protectiveness without backstory dump: Cal does a lot for people; locals ask before taking his time for granted; Mary has known him long enough to recognise when outsiders mistake quiet for availability.
-7. Maggie feels both welcomed and assessed. The cake is a gift; the look that comes with it is a warning she cannot yet translate.
-8. Place the Tommy burst after the warmth lands. Trigger: Maggie feels grateful and a little hungry for approval.
+7. Let Mary's non-murder cover secret sit under the warmth without explanation: she mentions, deflects or visibly manages old workshop/property paperwork connected to Cal's mother — a promise, debt, lease, or quiet payment arrangement that makes her protective of Cal's workshop and nervous about Neil's habit of exposing old matters. It should read as family/business privacy, not murder.
+8. Maggie feels both welcomed and assessed. The cake is a gift; the look that comes with it is a warning she cannot yet translate.
+9. Place the Tommy burst after the warmth lands. Trigger: Maggie feels grateful and a little hungry for approval.
    - Treatment: one italic remembered line, sting only.
    - Function: shame her need to be liked, not her competence. Something like: *"You always did need a room to approve of you before you could breathe."*
    - Maggie should not spiral. She steadies herself through the physical gift: soil, leaf, water, finding a place for the cutting.
@@ -489,7 +447,7 @@ Maggie's first full day turns welcome into a social test while The Wheelhouse is
 
 - **Start / Desire:** Maggie wants to make a good first impression without appearing needy, and to convert yesterday's brave arrival into a competent public beginning.
 - **Pressure / Obstacle:** The town offers warmth, but each welcome carries a test: listen, do not presume, and do not rush intimacy. Every person comes with local history Maggie cannot yet read.
-- **Turn / Change:** Maggie has a foothold in the community, an existing friend in Faye becoming local infrastructure, a small missing-key win, and a subtle warning that Mary has opinions about Cal's future and Maggie's place near it.
+- **Turn / Change:** Maggie has a foothold in the community, an existing friend in Faye becoming local infrastructure, a small missing-key win, and a subtle warning that Mary has opinions about Cal's future, old workshop paperwork, and Maggie's place near it.
 - **Texture / Pleasure Layer:** Bakery gossip, warm sourdough, key-ring logistics, an old hiding place or bait tin, Mary's cake tin, foreshore wind, restoration gear, competing versions of local history, Glaze inspecting the cake, and Faye's impeccable composure when Iris Poole's name comes up.
 - **Humour Layer:** Maggie rehearsing shopkeeper competence; Faye's practical rulebook; Dot and Glad contradicting each other as a civic rhythm; Cobber's unparseable local wisdom; Glaze treating hospitality gifts as compliance risks.
 - **Hook / Closing Question:** Mary casually asks how long Maggie expects to stay. Maggie realises welcome can be a question, not only a gift.
@@ -499,7 +457,7 @@ Maggie's first full day turns welcome into a social test while The Wheelhouse is
 
 - **M — Mystery:** Introduces the future suspect pool without signalling suspects too loudly. Solves the missing-key micro-mystery quickly and satisfyingly; plants Iris Poole as the other party in the same-jam feud — no explanation given. Seeds Mara/headland/developer conflict as local texture and later context, not a Book 1 solution path.
 - **P — Personal:** Maggie's hunger for belonging makes her prone to accepting warmth at face value; her restraint with Faye/Iris shows she can listen, but her need to be approved of remains live.
-- **R — Romance / Community:** Faye shifts from fond holiday acquaintance to Maggie's first real local ally. Mary is established as generous, observant and quietly protective of Cal; Cal's social gravity is felt even off-page.
+- **R — Romance / Community:** Faye shifts from fond holiday acquaintance to Maggie's first real local ally. Mary is established as generous, observant and quietly protective of Cal; her old workshop/promise secrecy gives her a plausible non-murder reason to guard papers and hover around Cal. Cal's social gravity is felt even off-page.
 - **B — Business:** The missing key makes the studio practically usable; Faye offers to recommend The Wheelhouse to local customers, but only if Maggie learns the town before trying to sell it a story. The studio begins to function as a place where the town enters, watches and tests.
 
 ### Drafting Notes / Guardrails
@@ -700,7 +658,7 @@ These are not required text; they are tonal anchors.
 ## Chapter 04 — The Things People Do Not Say
 
 ### Overall Summary
-Maggie tries to turn The Wheelhouse into a legitimate business by preparing a proper open-studio launch and pursuing the surf-club centenary bowl commission, but Neil's name creates silence rather than gossip. Cal's practical help exposes the same insecurity as her pricing: she wants to be taken seriously while still protecting herself from rejection. The chapter begins the commission spine, plants that Neil is a person locals handle carefully, and ends with Mary's unusually sharp reaction to Neil's belief that he knew what was best.
+Maggie tries to turn The Wheelhouse into a legitimate business by preparing a proper open-studio launch and pursuing the surf-club centenary bowl commission, but Neil's name creates silence rather than gossip. Cal's practical help exposes the same insecurity as her pricing: she wants to be taken seriously while still protecting herself from rejection. The chapter begins the commission spine, plants that Neil is a person locals handle carefully, and adds two live-Neil colours before the murder: he is necessary because he quietly catches a real medical/practical risk for someone else, and difficult because he later "helps" by saying a technically true thing in a socially cruel way. It ends with Mary's unusually sharp reaction to Neil's belief that he knew what was best.
 
 ### Scene 1 — Sketches for Legitimacy
 
@@ -815,13 +773,14 @@ Maggie tries to turn The Wheelhouse into a legitimate business by preparing a pr
 
 **Beat flow:**
 
-1. After the commission acceptance, Maggie encounters Mary in a social setting where Neil's name resurfaces despite everyone's effort not to linger on him.
-2. Someone offers a safe, almost automatic line — Neil would do anything for a patient, or he always meant well. The line should sound like a defence people use when they are avoiding a harder conversation.
-3. Mary goes still. Make the stillness precise: a hand pausing on a cup, a tea towel folded too crisply, a glance that disappears before Maggie can read it.
-4. Mary says Neil always believed he knew what was best. The line should be controlled, not explosive, but it lands with more anger than the room can explain.
-5. Maggie notices because the Too-Much is not active but her ordinary HR-trained perception is. She does not understand the significance; she files it alongside Neil's follow-up request and the town's careful silences.
-6. Cal, if present or mentioned, gives the moment extra charge: Maggie senses this is family-adjacent territory she has no right to enter.
-7. Close by tying the two spines together: Maggie has a commission that demands honest valuation, and a town full of people whose silences around Neil do not match. The hook is Mary's anger.
+1. After the commission acceptance, Maggie sees Neil in the town as a live institution, not just her doctor: he quietly notices an elderly local, fisherman, volunteer or committee member trying to hide a worrying symptom/practical risk and handles it without performance. He may check a wound, arrange a lift, catch a medication mistake, or prevent an unsafe drive home. He is brusque, but the reader should think: thank God he was there.
+2. In the same social stretch, let Neil's difficult side show. He "helps" someone by saying the technically correct thing too publicly — naming a risk, family issue, limitation or truth the person wanted kept private. The room flinches because he is right and cruel at once.
+3. Someone offers a safe, almost automatic line — Neil would do anything for a patient, or he always meant well. The line should sound like a defence people use when they are avoiding a harder conversation.
+4. Mary goes still. Make the stillness precise: a hand pausing on a cup, a tea towel folded too crisply, a glance that disappears before Maggie can read it.
+5. Mary says Neil always believed he knew what was best. The line should be controlled, not explosive, but it lands with more anger than the room can explain.
+6. Maggie notices because the Too-Much is not active but her ordinary HR-trained perception is. She does not understand the significance; she files it alongside Neil's follow-up request, his visible usefulness, his social cruelty, and the town's careful silences.
+7. Cal, if present or mentioned, gives the moment extra charge: Maggie senses this is family-adjacent territory she has no right to enter.
+8. Close by tying the two spines together: Maggie has a commission that demands honest valuation, and a town full of people whose silences around Neil do not match. The hook is Mary's anger.
 
 **Emotional turn:** The chapter ends with Maggie professionally committed and socially unsettled: she has work to do, but Mary's reaction suggests Neil's history runs deeper than bakery gossip.
 
@@ -836,7 +795,7 @@ Maggie tries to turn The Wheelhouse into a legitimate business by preparing a pr
 
 ### Track Movement
 
-- **M — Mystery:** Establishes Neil as a guarded subject rather than an easy gossip topic: Faye will not spend private knowledge, the committee redirects around his name, and Mary's double-meaning reaction lands harder because it breaks the silence.
+- **M — Mystery:** Establishes Neil as a guarded subject rather than an easy gossip topic: Faye will not spend private knowledge, the committee redirects around his name, Neil is visibly both necessary and socially dangerous, and Mary's double-meaning reaction lands harder because it breaks the silence.
 - **P — Personal:** Maggie's insecurity shows up as self-sabotage rather than obvious fear; she underprices because approval feels safer than respect.
 - **R — Romance / Community:** Cal helps practically and challenges with dry warmth; Maggie resents being grateful but feels the attraction underneath. Faye's restraint makes her more trustworthy; Mary's protectiveness/dark knowledge flickers.
 - **B — Business:** The surf-club commission begins and becomes the book's professional spine; the underquote creates practical pressure that will force Maggie to value her work.
@@ -1547,7 +1506,7 @@ Maggie wants the Saffron theory to work because it offers shape: Neil publicly u
 2. The work keeps being interrupted by her notes about Neil: cottage wrongness, vase, second cup, the people whose grief did not quite fit, Neil's understanding of the Too-Much, and Faye's insider cautions.
 3. Saffron's name rises because it has clean edges: Neil challenged her retreat, questioned credentials, unsettled investors, and her retreat schedule/booking records leave a practical timing question around the murder window.
 4. Maggie should feel relief at the shape. Saffron offers motive, public conflict, controlled behaviour, and an uncomfortable mirror of Maggie's own corporate-to-coastal reinvention — all easier to hold than the crowded mismatched reactions of Chapter 08.
-5. Let the personal flaw show: Maggie likes the theory because it feels orderly, but she uses the notebook columns to admit what remains unproven.
+5. Let the personal flaw show: Maggie likes the theory because it feels orderly. She can know something remains unproven and still lean toward it because the shape is satisfying.
 6. Business cost enters concretely. She neglects or postpones a commission milestone because the Saffron line gives a more immediate sense of competence.
 7. Cal appears for an ordinary practical reason — a plinth measurement, a stuck door, a shelf question, a tool left behind — and catches enough of Maggie's case notes to realise she is trying very hard to look like someone conducting an investigation.
 8. His response should be amused and grounded, not mocking: he can ask whether she has bought a magnifying glass yet, or whether the cat is taking witness statements, then point out one practical hole in the theory.
@@ -1668,7 +1627,7 @@ Maggie wants the Saffron theory to work because it offers shape: Neil publicly u
 ### Track Movement
 
 - **M — Mystery:** Launches the false Saffron theory and plants the blue-green car clue. The clue is real but not yet correctly interpreted.
-- **P — Personal:** Maggie is tempted to let Saffron's business control and incomplete alibi harden a practical timing gap into guilt, but the notebook method forces her to keep fact and interpretation separate. If a studio form appears, keep it brief and provisional rather than symbolic machinery.
+- **P — Personal:** Maggie is tempted to let Saffron's business control and incomplete alibi harden a practical timing gap into guilt. She knows better than to call it proof, but knowing better does not stop the theory from feeling deliciously neat. If a studio form appears, keep it brief and provisional rather than symbolic machinery.
 - **R — Romance / Community:** Saffron becomes an adversary; Faye's caution and the town's appetite for an outsider culprit expose the social cost of Maggie's method. Cal becomes an informal practical co-sleuth: amused by Maggie's sleuth act, attracted to her liveliness, and grounded enough to keep asking what she can actually prove.
 - **B — Business:** Maggie neglects commission planning because the case offers a more immediate sense of competence; the surf-club work begins to suffer in small, concrete ways.
 
@@ -1866,7 +1825,7 @@ These are not required text; they are tonal anchors.
 ## Chapter 11 — The Workshop and the Headland
 
 ### Overall Summary
-After the public damage of the Beryl incident, Chapter 11 gives Maggie a deliberate breath: real work, practical partnership with Cal, and a wider view of Pelican's Crook beyond the murder. Cal helps with the surf-club commission and brings Maggie into the family workshop, where inherited tools, unfinished repairs and Mary's opposition to selling reveal how much of his life has been shaped by absence and chosen-family obligation. The chapter plants future chosen-family stakes — Neil's comments about Cal's workshop, Mary's hold on the past, Mara's land boundary — while teaching Maggie that interest is not entitlement and that not every problem is hers to solve.
+After the public damage of the Beryl incident, Chapter 11 gives Maggie a deliberate breath: real work, practical partnership with Cal, and a wider view of Pelican's Crook beyond the murder. Cal helps with the surf-club commission and brings Maggie into the family workshop, where inherited tools, unfinished repairs and Mary's opposition to selling reveal how much of his life has been shaped by absence and chosen-family obligation. Add one memorable soft Cal/Maggie scene before he becomes suspect-shaped: a storm or sudden weather problem leaves them eating takeaway/bakery leftovers on the workshop or studio floor while tarps, plinth timber, kiln timing or bowls wait around them; Glaze chooses Cal's lap and Maggie is absurdly offended; they talk around their lives rather than confessing them. The chapter plants future chosen-family stakes — Neil's comments about Cal's workshop, Mary's hold on the past, Mara's land boundary — while teaching Maggie that interest is not entitlement and that not every problem is hers to solve.
 
 ### Scene 1 — A Real Job at The Wheelhouse
 
@@ -1956,17 +1915,17 @@ After the public damage of the Beryl incident, Chapter 11 gives Maggie a deliber
 
 **Beat flow:**
 
-1. Maggie and Cal argue over whether handmade work should reveal its history: visible repair, uneven glaze, knots in timber, tool marks, useful wear, structures that become stronger when repaired properly, and whether hiding imperfections is honesty or cowardice.
-2. The argument should be about objects on the surface and about themselves underneath.
-3. Maggie defends control because her work and life have been judged harshly; Cal defends use, repair and history because he lives among inherited things that still function.
-4. They accidentally reveal what each sacrificed: Maggie's old professional identity, marriage/control under Tommy, safety of competence; Cal's choices narrowed by parents leaving, Mary helping raise him, the workshop becoming a duty.
-5. Keep it intimate but restrained. No big declaration; respect grows through the fact they take each other's work seriously.
-6. A small moment of attraction can sit inside practical action: passing timber, brushing dust, both reaching for the same tool, noticing hands.
+1. Let weather or a practical snag force a pause: rain blows under the workshop door, a tarp needs securing, kiln timing runs long, a plinth glue-up cannot be moved, or a storm makes leaving pointless for twenty minutes.
+2. Cal produces takeaway, bakery leftovers, tea from a battered thermos, or whatever passes for dinner because Maggie has forgotten to eat. He does not make a speech about care; he puts food within reach.
+3. Glaze chooses Cal's lap, toolbox or folded jacket with offensive confidence. Maggie is absurdly offended because the cat has taken a position on Cal before she has.
+4. Maggie and Cal argue softly over whether handmade work should reveal its history: visible repair, uneven glaze, knots in timber, tool marks, useful wear, structures that become stronger when repaired properly, and whether hiding imperfections is honesty or cowardice.
+5. The argument should be about objects on the surface and about themselves underneath. They talk around lives rather than confessing them: Maggie's old professional identity, marriage/control under Tommy, safety of competence; Cal's choices narrowed by parents leaving, Mary helping raise him, the workshop becoming a duty.
+6. Keep it intimate but restrained. No kiss and no trauma dump. Respect grows through the fact they take each other's work seriously, pass tools/food, notice hands, and let silence sit without filling it with case talk.
 7. The plinth becomes the first real rehearsal of their shared method: his structure holding her bowls without swallowing them; Maggie notices an anomaly, Cal tests what is physically normal, neither claims certainty.
 
-**Emotional turn:** Maggie and Cal move from wary utility to genuine respect, with attraction rooted in how they each understand work and repair.
+**Emotional turn:** Maggie and Cal move from wary utility to genuine respect, with one proper reader-sigh scene rooted in work, weather, food, cat comedy and repair rather than romantic declaration.
 
-**Texture to include:** knots in timber, sanding dust, flawed glaze, repair seams, light through open doors, hand positions, screw tins, breath near but not touching, the half-repaired dinghy as visual echo.
+**Texture to include:** knots in timber, sanding dust, flawed glaze, repair seams, rain/tarp/torch if using the storm, takeaway paper or bakery leftovers, Glaze on Cal's lap/toolbox, hand positions, screw tins, breath near but not touching, the half-repaired dinghy as visual echo.
 
 ### Scene 6 — Mara at the Headland
 
@@ -1991,7 +1950,7 @@ After the public damage of the Beryl incident, Chapter 11 gives Maggie a deliber
 - **Start / Desire:** Maggie wants Cal's help with the commission and a reprieve from the case's social damage.
 - **Pressure / Obstacle:** Cal's workshop decision, Mary's opposition to selling, and Mara's larger land conflict reveal that no practical choice is isolated.
 - **Turn / Change:** Maggie and Cal gain genuine respect for each other's work, but Maggie learns that interest is not the same as entitlement.
-- **Texture / Pleasure Layer:** Workshop dust, old timber, a half-repaired dinghy, screw jars, plinth materials, Mara's practical restoration gear, dune wind, and Cal's inability to throw out a useful screw.
+- **Texture / Pleasure Layer:** Workshop dust, old timber, a half-repaired dinghy, screw jars, plinth materials, rain/tarp/takeaway if using the soft scene, Glaze choosing Cal, Mara's practical restoration gear, dune wind, and Cal's inability to throw out a useful screw.
 - **Humour Layer:** Glaze inspecting tools, Cal defending every saved screw as potentially vital, Maggie discovering that a display plinth can generate more opinions than a murder theory.
 - **Hook / Closing Question:** Cal admits Mary says selling the workshop would mean abandoning the last thing that matters.
 
@@ -1999,7 +1958,7 @@ After the public damage of the Beryl incident, Chapter 11 gives Maggie a deliber
 
 - **M — Mystery:** A deliberate breath; establishes spaces and chosen-family stakes that will later shape Mary's behaviour. Neil's habit of making remarks about Cal's future and the workshop sale is planted here — seeding Cal's motive for Chapter 19, fair-play, without emphasis.
 - **P — Personal:** Maggie learns that not every problem is hers to interrogate or fix; after harming Beryl, she practices restraint around Cal and Mara.
-- **R — Romance / Community:** Attraction appears in practical partnership; Mara establishes a boundary with Maggie. Cal's upbringing — helped/steadied by honorary Aunty Mary after his parents left — is planted as backstory; its significance to the Chapter 20 revelation is withheld.
+- **R — Romance / Community:** Attraction appears in practical partnership and one memorable soft scene before Cal becomes suspect-shaped; Mara establishes a boundary with Maggie. Cal's upbringing — helped/steadied by honorary Aunty Mary after his parents left — is planted as backstory; its significance to the Chapter 20 revelation is withheld.
 - **B — Business:** Cal begins the plinth, and Maggie sees the commission as a professional undertaking rather than an audition for belonging.
 
 ### Drafting Notes / Guardrails
@@ -2179,8 +2138,8 @@ A migraine hits near the foreshore, but Maggie now has enough discipline to keep
 **Beat flow:**
 
 1. A migraine or Too-Much surge near the foreshore sharpens ordinary details: wet rope fibres, a taught knot, dinghy gear, salt stain, a coil placement like something half-seen at Neil's shed.
-2. Maggie writes the fact in her notebook under **What I saw** rather than under a suspect's name: rope, knot, placement, condition, resemblance to Neil's gear.
-3. The old version of Maggie wants to write Calloway because he knows boats and has unresolved history with Neil. The new discipline makes her add: **What else could explain it?**
+2. Maggie records the physical fact without turning it into a person's name: rope, knot, placement, condition, resemblance to Neil's gear.
+3. The old version of Maggie wants to write Calloway because he knows boats and has unresolved history with Neil. The livelier, still-dangerous version of her wants to be right and has to take the question to someone local before she makes it a story.
 4. Cobber says something tide-like and nearly useless about Vanessa moving with the tide, but Maggie resists treating poetry as corroboration.
 5. End with Maggie deciding to show Cal the knot rather than show the town a theory.
 
@@ -2214,7 +2173,7 @@ A migraine hits near the foreshore, but Maggie now has enough discipline to keep
 
 **Beat flow:**
 
-1. Maggie takes Pruitt the observation in three-column form: what she saw, what it might mean, what else could explain it.
+1. Maggie takes Pruitt the narrow observation rather than a grand theory: rope, knot, place, time, and why it bothered her.
 2. Pruitt confirms Calloway's movements are accounted for and that the knot/rope logic is too common to support suspicion.
 3. He does not scold. He marks the growth: this is what bringing facts looks like, even when the answer is no.
 4. Maggie feels disappointed but not disgraced. The method worked because it stopped harm before it reached Calloway.
@@ -2233,8 +2192,8 @@ A migraine hits near the foreshore, but Maggie now has enough discipline to keep
 **Beat flow:**
 
 1. Maggie returns to commission work late, with the useful disappointment of a tested no instead of the shame of another public mistake.
-2. She updates the notebook: fact real, Calloway explanation unlikely, alternate explanations open.
-3. Let the line land in her own words: she does not know what it means yet; she only knows what does not fit.
+2. She lets the tested no be useful without pretending it is satisfying: the rope fact is real, the Calloway explanation is unlikely, and the open question remains.
+3. Do not use the late-act mature marker here. Let Maggie stay wry and annoyed that doing this properly gives her less drama and more work.
 4. The surf-club work waits with the patience of clay: quiet, drying, and increasingly unforgiving.
 5. End on Maggie covering bowls, not chasing another suspect. A coil or rope-textured experiment may sit on the bench: the first version too literal, the second looser, leaving room for ambiguity. The discipline is becoming behaviour.
 
@@ -2247,7 +2206,7 @@ A migraine hits near the foreshore, but Maggie now has enough discipline to keep
 - **Turn / Change:** The Calloway theory collapses privately before it can hurt him. Maggie has not solved the case, but she has protected someone by testing first.
 - **Texture / Pleasure Layer:** Foreshore wind, rope fibres, boat-ramp weed, hot chips, Cal testing the knot, Pruitt's quiet station, and late-night commission work.
 - **Hook / Closing Question:** The rope fact was real; the Calloway conclusion was not. What else does not fit?
-- **Tommy burst:** Walking into the station with a fact rather than a performance, the Quill line fires: leave the clever work to people who do it for a living. Maggie answers by staying with the columns.
+- **Tommy burst:** Walking into the station with a fact rather than a performance, the Quill line fires: leave the clever work to people who do it for a living. Maggie answers by staying in the room.
 - **Humour Layer:** Use lightly around Cal/Glaze/fish-and-chips; do not undercut the proof lesson.
 
 ### Track Movement
@@ -2274,15 +2233,15 @@ These are not required text; they are tonal anchors.
 - The rope was real. Her story about it was the thing still under construction.
 - Cal turned the knot over once and made the irritating face of a man about to be useful.
 - "Strange to you," he said. "Not necessarily strange here."
-- Pruitt looked at the three columns and did not smile. That was almost praise.
+- Pruitt looked at the narrow fact and did not smile. That was almost praise.
 - Proof, she was learning, had less drama than certainty and far better manners.
 
 ---
 
-## Chapter 14 — The Old Papers## Chapter 14 — The Old Papers
+## Chapter 14 — The Old Papers
 
 ### Overall Summary
-Pruitt learns that Neil had been sorting personal papers before his death. While Maggie fixates on the documents, Pruitt mentions that the death is still officially suspicious rather than confirmed murder, and that Calloway's movements are accounted for; he is no longer a likely killer, but his buried bench secret and an old informal favour remain unsettling enough to keep him alive as a future-series thread. Mary is seen leaving the cemetery with a box from family storage, and Cal says she has been sorting through his grandfather's belongings. In the same family-storage conversation, Cal repeats as ordinary background that Mary more or less raised him after his parents left; she knows where everything belongs because for years she was the person who made his life belong somewhere. Seed Mary's deeper pattern here: preserving family dignity, ordering grief into cupboards and labelled boxes, and deciding what truths other people can bear. Maggie does not treat this as a clue yet. In the studio, it may surface as a contained lidded vessel narrowing at the neck — a question about care and control, not "Mary is guilty." Maggie learns that Neil had intended to contact someone about an old matter and that the town's memory of him changing dates to roughly the time Mary's father died. The past begins to look less like background and more like the centre of the case.
+Pruitt learns that Neil had been sorting personal papers before his death. While Maggie fixates on the documents, Pruitt mentions that the death is still officially suspicious rather than confirmed murder, and that Calloway's movements are accounted for; he is no longer a likely killer, but his buried bench secret and an old informal favour remain unsettling enough to keep him alive as a future-series thread. Mary is seen leaving the cemetery with a box from family storage, and Cal says she has been sorting through his grandfather's belongings and old workshop/property papers connected to a promise to his mother. This gives Mary a strong innocent-seeming secret: preserving the workshop may involve a debt, lease wrinkle or quiet payments she does not want Cal to know about yet. In the same family-storage conversation, Cal repeats as ordinary background that Mary more or less raised him after his parents left; she knows where everything belongs because for years she was the person who made his life belong somewhere. Seed Mary's deeper pattern here: preserving family dignity, ordering grief into cupboards and labelled boxes, and deciding what truths other people can bear. Maggie does not treat this as a clue yet. In the studio, it may surface as a contained lidded vessel narrowing at the neck — a question about care and control, not "Mary is guilty." Maggie learns that Neil had intended to contact someone about an old matter and that an old show record, recipe-card date, cemetery note or medical-era mention places Neil close to Mary's father around the time the father died. The past begins to look less like background and more like the centre of the case.
 
 ### Cozy Texture / Emotional Calibration
 
@@ -2337,9 +2296,9 @@ Pruitt learns that Neil had been sorting personal papers before his death. While
 
 1. Mary is seen leaving the cemetery with a box from family storage, and Cal says she has been sorting through his grandfather's belongings.
 2. Use this as the light early anchor for the Chapter 21 lock: Cal says, almost casually, that Mary more or less raised him after his parents left, and that she still knows his family storage better than he does.
-3. Keep it emotional background, not clue emphasis. The beat should read as family tenderness and obligation: Mary made his meals, labelled school things, kept tools and papers in order, folded fabric one exact way, faced tins outward, returned objects according to her own logic, decided which hard truths could wait until morning, and gave his life structure when his parents did not.
+3. Keep it emotional background, not clue emphasis. The beat should read as family tenderness and obligation: Mary made his meals, labelled school things, kept tools and papers in order, folded fabric one exact way, faced tins outward, returned objects according to her own logic, decided which hard truths could wait until morning, and gave his life structure when his parents did not. Her workshop paperwork secrecy should plausibly look like a burden she preserved for Cal — not murder.
 4. Maggie registers the intimacy of that history but does not yet connect it to the staged cottage or Cal's precision habits.
-5. In the same scene or shortly after, Maggie learns that Neil had intended to contact someone about an old matter, and that the town's memory of him changing dates to roughly the time Mary's father died.
+5. In the same scene or shortly after, Maggie learns that Neil had intended to contact someone about an old matter, and that the town's memory of him changing dates to roughly the time Mary's father died. Tie this to a concrete object or record — a recipe-card/show date from the jam material, cemetery register note, library archive clipping, or old committee minute — so the old wound advances through evidence, not vibes.
 
 **Emotional turn:** Maggie shifts from dramatic suspect-hunting to patient old-record work.
 
@@ -2374,9 +2333,9 @@ Pruitt learns that Neil had been sorting personal papers before his death. While
 
 ### Track Movement
 
-- **M — Mystery:** Ignites the old-mercy thread; clears Calloway in passing while preserving a series seed.
+- **M — Mystery:** Ignites the old-mercy thread; clears Calloway in passing while preserving a series seed; gives the first concrete date/record that places Neil near Mary's father around the old death.
 - **P — Personal:** Maggie begins to investigate more patiently after her public failure.
-- **R — Romance / Community:** Mary's grief gains historical weight; Cal is pulled between family loyalty and unease. The fact that Mary raised him is re-anchored here as family background so the later precision-habit lock feels earned rather than newly introduced; her need to preserve family dignity and decide what truths others can bear begins as love, not villainy.
+- **R — Romance / Community:** Mary's grief gains historical weight; Cal is pulled between family loyalty and unease. The fact that Mary raised him is re-anchored here as family background so the later precision-habit lock feels earned rather than newly introduced; her workshop/promise secret gives her a non-murder reason to control papers; her need to preserve family dignity and decide what truths others can bear begins as love, not villainy.
 - **B — Business:** The surf-club committee asks for a progress update, making clear that Maggie cannot live entirely inside the case.
 
 ### Drafting Notes / Guardrails
@@ -2407,7 +2366,7 @@ These are not required text; they are tonal anchors.
 ## Chapter 15 — Artie's Warning
 
 ### Overall Summary
-Near the lighthouse, another migraine begins. Artie notices with unsettling competence and gets Maggie out of the glare before she loses control of the sensory flood. He mentions that he once knew a woman who "saw rooms before they happened," then retreats into shipwreck history as though he has said nothing strange. Maggie loses a day to the migraine. When she returns, Pruitt comes to the studio — not summoning her to the station. He has bad coffee from the station machine; she offers better and he drinks it without comment. He confirms the post-mortem: the broken neck fits a fall, but the blunt impact and bruising do not — the instrument was the vase, her vase, the heavy clumsy piece from ch 3. Someone used it, wiped it and put it back. The Faye remark from ch 8 surfaces: Neil had called that purchase the ugliest thing he ever paid money for. The information rearranges itself. Passing the bakery on her way home, Maggie sees one of her non-second bowls in the window. Faye has placed it without announcement. No conversation follows.
+Near the lighthouse, another migraine begins. Artie notices with unsettling competence and gets Maggie out of the glare before she loses control of the sensory flood. He mentions that he once knew a woman who "saw rooms before they happened," then retreats into shipwreck history as though he has said nothing strange. Maggie loses a day to the migraine. When she returns, Pruitt comes to the studio — not summoning her to the station. He has bad coffee from the station machine; she offers better and he drinks it without comment. This is the midpoint punch: he confirms the post-mortem and the old-record turn together. The broken neck fits a fall, but the blunt impact and bruising do not — the instrument was the vase, her vase, the heavy clumsy piece from ch 3. Someone used it, wiped it and put it back. At the same time, a concrete old record places Neil close to Mary's father on or near the night the father died. The case pivots from present-day grudges to an old wound. The Faye remark from ch 8 surfaces: Neil had called that purchase the ugliest thing he ever paid money for. Passing the bakery on her way home, Maggie sees one of her non-second bowls in the window. Faye has placed it without announcement. No conversation follows.
 
 ### Cozy Texture / Emotional Calibration
 
@@ -2460,7 +2419,7 @@ Near the lighthouse, another migraine begins. Artie notices with unsettling comp
 
 **Beat flow:**
 
-1. Start from the chapter obligation: He confirms the post-mortem: the broken neck fits a fall, but the blunt impact and bruising do not — the instrument was the vase, her vase, the heavy clumsy piece from ch 3. Someone used it, wiped it and put it back. The Faye remark from ch 8 surfaces: Neil had called that purchase the ugliest thing he ever paid money for. The information rearranges itself.
+1. Start from the chapter obligation: Pruitt confirms the post-mortem and the old-record turn together. The broken neck fits a fall, but the blunt impact and bruising do not — the instrument was the vase, her vase, the heavy clumsy piece from ch 3. Someone used it, wiped it and put it back. At the same time, the old record from Chapter 14 places Neil close to Mary's father on or near the night the father died. The question becomes not only who killed Neil, but what happened ten years ago. The Faye remark from ch 8 surfaces: Neil had called that purchase the ugliest thing he ever paid money for.
 2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
 3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
 4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
@@ -2492,14 +2451,14 @@ Near the lighthouse, another migraine begins. Artie notices with unsettling comp
 
 - **Start / Desire:** Maggie wants a quiet errand and a return to normal competence after the old-papers discovery.
 - **Pressure / Obstacle:** The migraine interrupts her control; Artie's knowledge makes the gift feel older and more dangerous than she understood.
-- **Turn / Change:** The crime becomes formally suspicious, and Maggie learns her perception may have a history beyond her own body.
+- **Turn / Change:** The crime becomes confirmed murder, the vase becomes physical evidence, and the old death becomes the real gravitational centre of the book.
 - **Texture / Pleasure Layer:** Lighthouse wind, Artie's eccentric archive habits, Cal darkening the studio and feeding Glaze without making a fuss, and Pruitt's station coffee accepted without complaint.
-- **Hook / Closing Question:** Pruitt confirms the vase — Maggie's vase — was the blunt instrument. It was wiped in a house no one had cleaned in weeks.
+- **Hook / Closing Question:** Pruitt confirms the vase — Maggie's vase — was the blunt instrument, and the old record puts Neil beside Mary's father's death. What happened ten years ago?
 - **Humour Layer:** Use lightly and only where it protects warmth without undercutting grief, privacy or danger.
 
 ### Track Movement
 
-- **M — Mystery:** Confirms murder through ordinary forensic evidence; names the vase as the instrument; the ch 8 remark (Neil's contempt for the purchase) lands with new weight.
+- **M — Mystery:** Midpoint shock: confirms murder through ordinary forensic evidence; names the vase as the instrument; pivots the book from present-day suspects to the old death; the ch 8 remark (Neil's contempt for the purchase) lands with new weight.
 - **P — Personal:** Expands the Too-Much into a possible series mystery.
 - **R — Romance / Community:** Cal's practical care creates intimacy neither of them names. Pruitt comes to the studio rather than summoning Maggie — small gesture, second instance of warmth in their dynamic.
 - **B — Business:** Faye's repair: Maggie sees her own non-second bowl in the bakery window; Faye enacted it without comment. Cal postpones an installation to help, showing that The Wheelhouse is becoming shared ground.
@@ -2657,7 +2616,7 @@ These are not required text; they are tonal anchors.
 ## Chapter 17 — The Wrong Woman
 
 ### Overall Summary
-At the surf club, the Saffron theory collapses in a controlled but uncomfortable way. Her hidden alibi is financial rather than criminal: she was meeting a debt-recovery agent in Colac during the murder window because her retreat is close to collapse. Maggie realises she leaned too hard on Saffron's privacy because Saffron was convenient, controlled and outside the local family web. She apologises without expecting forgiveness. Saffron tells her that most people are wrong about her; they usually enjoy it more. In the same stretch, Beryl's silence about her changed clothes finally breaks for a different reason: she was at a frightening private medical appointment that night and refused to let the town turn her health into public property. The two best answers fail within a day of each other. Maggie returns to The Wheelhouse hollowed out, where the non-murder business problem comes due: several surf-club bowls emerge from the kiln imperfect but salvageable after a misfire, glaze crawl, hairline crack, altered tide mark, or firing schedule compromise caused by the case stealing her focus. Instead of binning them, hiding the flaws, or pretending the batch is fine, she experiments with a repair glaze and finds a finish that feels genuinely hers. The collapse of the false answers and the repaired bowls braid: damage can be acknowledged without being erased.
+At the surf club, the Saffron theory collapses in a controlled but uncomfortable way. Her hidden alibi is financial rather than criminal: she was meeting a debt-recovery agent in Colac during the murder window because her retreat is close to collapse. The collapse still moves the case forward: her records show the retreat vehicle was near Neil's road earlier in the week, not during the murder window, and narrow the late blue-green vehicle toward a local/workshop/surf-club connection rather than Saffron's branding. Maggie realises she leaned too hard on Saffron's privacy because Saffron was convenient, controlled and outside the local family web. She apologises without expecting forgiveness. Saffron tells her that most people are wrong about her; they usually enjoy it more. In the same stretch, Beryl's silence about her changed clothes finally breaks for a different reason: she was at a frightening private medical appointment that night and refused to let the town turn her health into public property. Beryl's private reason also gives a hard timestamp, route and weather/mud fact that removes a whole branch of the timeline. The two best answers fail within a day of each other, but the case is not empty: it has lost easy suspects and gained a sharper timing/route problem. Maggie returns to The Wheelhouse hollowed out, where the non-murder business problem comes due: several surf-club bowls emerge from the kiln imperfect but salvageable after a misfire, glaze crawl, hairline crack, altered tide mark, or firing schedule compromise caused by the case stealing her focus. Instead of binning them, hiding the flaws, or pretending the batch is fine, she experiments with a repair glaze and finds a finish that feels genuinely hers. The collapse of the false answers and the repaired bowls braid: damage can be acknowledged without being erased.
 
 ### Cozy Texture / Emotional Calibration
 
@@ -2674,7 +2633,7 @@ At the surf club, the Saffron theory collapses in a controlled but uncomfortable
 
 **Beat flow:**
 
-1. Start from the chapter obligation: At the surf club, the case against Saffron collapses in a controlled, uncomfortable way rather than a spectacle. Her hidden alibi is financial rather than criminal: she was meeting a debt-recovery agent in Colac during the murder window because her retreat is close to collapse.
+1. Start from the chapter obligation: At the surf club, the case against Saffron collapses in a controlled, uncomfortable way rather than a spectacle. Her hidden alibi is financial rather than criminal: she was meeting a debt-recovery agent in Colac during the murder window because her retreat is close to collapse. Do not let the scene be only "private secret revealed": her records also narrow the blue-green vehicle clue by proving the retreat vehicle was seen earlier, not during the murder window, and that the late vehicle likely had a local/workshop/surf-club connection.
 2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
 3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
 4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
@@ -2710,7 +2669,7 @@ At the surf club, the Saffron theory collapses in a controlled but uncomfortable
 
 **Beat flow:**
 
-1. Start from the chapter obligation: Saffron tells her that most people are wrong about her; they usually enjoy it more. In the same stretch, Beryl's silence about her changed clothes finally breaks for a different kind of non-criminal secret: she was at a frightening private medical appointment that night and refused to let the town make pity out of it. The two best answers fail within a day of each other, for different reasons.
+1. Start from the chapter obligation: Saffron tells her that most people are wrong about her; they usually enjoy it more. In the same stretch, Beryl's silence about her changed clothes finally breaks for a different kind of non-criminal secret: she was at a frightening private medical appointment that night and refused to let the town make pity out of it. The private appointment must leave a positive gain: a hard timestamp, route, rain/mud/clothing fact or sighting that removes one branch of the timeline and proves the clothes change was after a private errand, not after murder. The two best answers fail within a day of each other, for different reasons, but the mystery is sharper than before.
 2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
 3. If using the right-piece motif as a repair/trust beat, make it practical and unsentimental: Maggie notices Beryl needs a heavy pen cup, raffle-ticket dish or urn-side spoon rest that will not tip, roll or make a mess during committee work. Do not make it an apology gift with a speech. It can be offered later or simply set aside here as the first object Maggie chooses for Beryl with respect rather than suspicion.
 4. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
@@ -2743,14 +2702,14 @@ At the surf club, the Saffron theory collapses in a controlled but uncomfortable
 
 - **Start / Desire:** Maggie wants the Saffron timing/alibi gap to become proof.
 - **Pressure / Obstacle:** Saffron's financial exposure reveals that an incomplete alibi can protect non-criminal stakes; Beryl's medical privacy shows a different kind of secrecy entirely.
-- **Turn / Change:** The case loses its easy answer; Maggie gains the first real foundation for a relationship with Saffron and a new artistic direction.
+- **Turn / Change:** The case loses its easy answer but gains a sharper vehicle/timeline route; Maggie gains the first real foundation for a relationship with Saffron and a new artistic direction.
 - **Texture / Pleasure Layer:** Surf-club committee discomfort, kiln log, glaze tests, Glaze parked on Maggie's bonnet after the collapse, and the unexpected beauty of a repaired glaze.
-- **Hook / Closing Question:** Two suspects gone in a day; the case has no one left in it — and Maggie, hollowed out, has only the wheel to go back to. The altered bowls tell her the damage has made them better, but she cannot yet say the same of herself.
+- **Hook / Closing Question:** Two suspects gone in a day; the case has no easy person left in it — only a local vehicle/timeline problem and the old death pulling underneath. Maggie, hollowed out, has the wheel to go back to. The altered bowls tell her the damage has made them better, but she cannot yet say the same of herself.
 - **Humour Layer:** Use lightly and only where it protects warmth without undercutting grief, privacy or danger.
 
 ### Track Movement
 
-- **M — Mystery:** Act II low point: the two live possibles (Saffron, Beryl) both collapse — a true dead-end with no suspect left.
+- **M — Mystery:** Act II low point without carousel repetition: the two live possibles (Saffron, Beryl) both collapse, but each leaves positive clue gain — Saffron narrows the vehicle clue; Beryl supplies a hard timestamp/route/weather fact.
 - **P — Personal:** Maggie accepts responsibility for leaning on Saffron's privacy harder than the facts allowed.
 - **R — Romance / Community:** Saffron becomes a potential ally; Cal and Maggie are steadier because his practical caution helped Maggie limit the damage.
 - **B — Business:** Maggie solves the kiln/commission micro-arc by discovering the signature repair glaze that changes the commission from competent to personal. This is a major artistic turning point, not garnish: revision can preserve the truth of what happened without leaving the object trapped in its damage.
@@ -2914,7 +2873,7 @@ Maggie takes the question from ch 18 — the exact, trained habits that reset Ne
 
 ### Cozy Texture / Emotional Calibration
 
-- **Cozy load-bearing texture:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, proof/not-proof columns, cooling tea, and late surf outside the studio.
+- **Cozy load-bearing texture:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, fact-versus-fear notes, cooling tea, and late surf outside the studio.
 - **Emotional engine:** The traits Maggie loves in Cal become terrifying evidence, and she chooses disciplined doubt instead of accusation.
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
@@ -2935,7 +2894,7 @@ Maggie takes the question from ch 18 — the exact, trained habits that reset Ne
 
 **Emotional turn:** The traits Maggie loves in Cal become terrifying evidence, and she chooses disciplined doubt instead of accusation.
 
-**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, proof/not-proof columns, cooling tea, and late surf outside the studio.
+**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, fact-versus-fear notes, cooling tea, and late surf outside the studio.
 
 ### Scene 2 — Cal as a Convenient Shape / Mary’s Muscle Memory
 
@@ -2953,7 +2912,7 @@ Maggie takes the question from ch 18 — the exact, trained habits that reset Ne
 
 **Emotional turn:** The Cal theory becomes less simple and more frightening: the habit she noticed may belong to a family system, not just one man.
 
-**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, proof/not-proof columns, cooling tea, and late surf outside the studio.
+**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, fact-versus-fear notes, cooling tea, and late surf outside the studio.
 
 ### Scene 3 — Workshop Motive
 
@@ -2971,7 +2930,7 @@ Maggie takes the question from ch 18 — the exact, trained habits that reset Ne
 
 **Emotional turn:** The traits Maggie loves in Cal become terrifying evidence, and she chooses disciplined doubt instead of accusation.
 
-**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, proof/not-proof columns, cooling tea, and late surf outside the studio.
+**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, fact-versus-fear notes, cooling tea, and late surf outside the studio.
 
 ### Scene 4 — A Better Kind of Doubt
 
@@ -2989,7 +2948,7 @@ Maggie takes the question from ch 18 — the exact, trained habits that reset Ne
 
 **Emotional turn:** The traits Maggie loves in Cal become terrifying evidence, and she chooses disciplined doubt instead of accusation.
 
-**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, proof/not-proof columns, cooling tea, and late surf outside the studio.
+**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, fact-versus-fear notes, cooling tea, and late surf outside the studio.
 
 ### Chapter Structure Summary
 
@@ -3427,7 +3386,7 @@ These are not required text; they are tonal anchors.
 ## Chapter 23 — Proof, Not a Hunch
 
 ### Overall Summary
-Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, Calloway, and the gap); Cobber's account of the blue-green car late in the gap; Mary's controlled story (which is itself evidence of consciousness of guilt — she got ahead of the witnesses before Maggie could speak); the motive shaped through the library archive; and the father's own words from Cal's papers. Pruitt makes her separate every observation from every piece of admissible evidence, using the same discipline he gave her in Chapter 7: what she saw, what it might mean, and what else could explain it. He tells her something else: that he had briefly considered Cal too, independently, on the same physical evidence, before clearing him on proof rather than feeling. Maggie hears this and understands: she and Pruitt had the same thought and followed the same discipline. Together the case coheres. Pruitt does not treat the cup habit or Maggie's studio form as proof. He treats them as the reason to ask the right questions and obtain the proof that will matter. Before Maggie leaves, he asks, "What are the facts?" Maggie answers cleanly. He tells her — as a technical assessment, not a compliment — that she is the best witness he has worked with, and then catches himself having said it. She laughs. It is the first genuine laugh between them.
+Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, Calloway, and the gap); Cobber's account of the blue-green car late in the gap; Mary's controlled story (which is itself evidence of consciousness of guilt — she got ahead of the witnesses before Maggie could speak); the motive shaped through the library archive; and the father's own words from Cal's papers. Pruitt makes her strip the story back to admissible facts, not notebook philosophy. He tells her something else: that he had briefly considered Cal too, independently, on the same physical evidence, before clearing him on proof rather than feeling. Maggie hears this and understands: the same facts can tempt more than one person, and the difference is what you do before you speak. Together the case coheres. Pruitt does not treat the cup habit or Maggie's studio form as proof. He treats them as the reason to ask the right questions and obtain the proof that will matter. Before Maggie leaves, he asks, "What are the facts?" Maggie answers cleanly. He tells her — as a technical assessment, not a compliment — that she is the best witness he has worked with, and then catches himself having said it. She laughs. It is the first genuine laugh between them.
 
 ### Cozy Texture / Emotional Calibration
 
@@ -3444,7 +3403,7 @@ Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, C
 
 **Beat flow:**
 
-1. Start from the chapter obligation: Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, Calloway, and the gap); Cobber's account of the blue-green car late in the gap; Mary's controlled story (which is itself evidence of consciousness of guilt — she got ahead of the witnesses before Maggie could speak); the motive shaped through the library archive; and the father's own words from Cal's papers. Pruitt makes her separate every observation from every piece of admissible evidence, using the same discipline he gave her in Chapter 7: what she saw, what it might mean, and what else could explain it.
+1. Start from the chapter obligation: Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, Calloway, and the gap); Cobber's account of the blue-green car late in the gap; Mary's controlled story (which is itself evidence of consciousness of guilt — she got ahead of the witnesses before Maggie could speak); the motive shaped through the library archive; and the father's own words from Cal's papers. Pruitt makes her separate every observation from every piece of admissible evidence in action, not by reciting the notebook lesson.
 2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
 3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
 4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
@@ -3462,7 +3421,7 @@ Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, C
 
 **Beat flow:**
 
-1. Start from the chapter obligation: He tells her something else: that he had briefly considered Cal too, independently, on the same physical evidence, before clearing him on proof rather than feeling. Maggie hears this and understands: she and Pruitt had the same thought and followed the same discipline. Together the case coheres.
+1. Start from the chapter obligation: He tells her something else: that he had briefly considered Cal too, independently, on the same physical evidence, before clearing him on proof rather than feeling. Maggie hears this and understands: having the thought was not the failure; speaking before testing would have been. Together the case coheres.
 2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
 3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
 4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
@@ -3520,7 +3479,7 @@ Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, C
 ### Track Movement
 
 - **M — Mystery:** Locks the full evidence chain into a fair-play police case: reconstruction + Cobber + Mary's controlled admission + motive + the father's words. Pottery guided the question; it does not substitute for evidence.
-- **P — Personal:** Maggie demonstrates the full arc from blurted certainty to disciplined observation; the parallel with Pruitt's independent Cal consideration confirms the discipline is real.
+- **P — Personal:** Maggie demonstrates the full arc from blurted certainty to disciplined witness-work; the parallel with Pruitt's independent Cal consideration confirms that tempting theories still happen, but behaviour and proof are what changed.
 - **R — Romance / Community:** Pruitt's parallel Cal consideration and the laugh: the professional relationship has become something neither names. The question of telling Cal is the next emotional crisis.
 - **B — Business:** The wrapped bowls and delivery paperwork remain visible pressure, but Maggie does not claim the commission success before the murder is resolved.
 
@@ -4183,7 +4142,7 @@ These are not required text; they are tonal anchors.
 ## Chapter 29 — The Woman Who Saw Too Much
 
 ### Overall Summary
-Late November brings returning tourists, longer light and a studio that finally feels used rather than borrowed. With the murder solved and the worst truth spoken, the final movement belongs to Maggie's work. She opens the kiln on the finished surf-club bowls — handmade, varied within a coherent set, useful, properly priced, and carrying subtle repair-glaze lines/tide marks — and knows they are good without needing anyone else to tell her. She receives payment, accepts a place on the summer art trail and pins up a notice for a beginner pottery class. Artie arrives with a lighthouse-archive photograph from the 1970s: a young woman outside the lighthouse with her hands pressed to her temples, overwhelmed by light. On the back is written: "Elspeth Vale. Saw too much. Summer of 1978." The surname is the payload. The reader knows Saffron Vale; Maggie does not yet make the connection. Maggie returns to the wheel, Glaze settles on her good apron, and for the first time she is not waiting to see whether she belongs.
+Late November brings returning tourists, longer light and a studio that finally feels used rather than borrowed. This should feel like a reward coda, not another full epilogue after Chapter 28's emotional/business payoff. With the murder solved and the worst truth spoken, the final movement belongs to ordinary work: paid invoice visible, art-trail form accepted, beginner pottery class notice pinned up, locals entering for practical reasons rather than applause. Artie arrives with a lighthouse-archive photograph from the 1970s: a young woman outside the lighthouse with her hands pressed to her temples, overwhelmed by light. On the back is written: "Elspeth Vale. Saw too much. Summer of 1978." The surname is the payload. The reader knows Saffron Vale; Maggie does not yet make the connection. Maggie returns to the wheel, Glaze settles on her good apron, and for the first time she is not waiting to see whether she belongs.
 
 ### Cozy Texture / Emotional Calibration
 
@@ -4267,9 +4226,9 @@ Late November brings returning tourists, longer light and a studio that finally 
 
 ### Chapter Structure Summary
 
-- **Start / Desire:** With the murder solved, Maggie wants to complete the commission and claim the professional future she has been avoiding.
+- **Start / Desire:** With the murder solved and the commission payoff already landed, Maggie wants one ordinary working day that proves The Wheelhouse will continue.
 - **Pressure / Obstacle:** The last residue of self-doubt tempts her to minimise the work and delay the art trail.
-- **Turn / Change:** Maggie claims the bowls, the studio and the future; only after that success is secure does Artie open the larger mystery of the Sight.
+- **Turn / Change:** Maggie claims the studio's ordinary future — art trail, class notice, paid work, returning customers — and only after that success is secure does Artie open the larger mystery of the Sight.
 - **Texture / Pleasure Layer:** Kiln opening, paid invoice, summer light, tourist chatter outside the studio, Glaze's apron claim, and the tactile satisfaction of finished pottery.
 - **Hook / Closing Question:** Elspeth Vale's name connects the Too-Much to Saffron's family and launches Book Two's deeper series question, but the emotional ending remains the commission success.
 - **Tommy burst (coda — name reclaim):** Opening the kiln, she notices the Quill voice has gone quiet; she stamps the finished pots "Quill" — her name now, not his; not a wound, the reclaim is quiet and complete.
@@ -4280,7 +4239,7 @@ Late November brings returning tourists, longer light and a studio that finally 
 - **M — Mystery:** Series hook: Elspeth Vale and the inherited or recurring Sight mystery.
 - **P — Personal:** Maggie belongs to herself and no longer needs external permission to value her work.
 - **R — Romance / Community:** The town, Saffron and Cal remain open relationships with room to deepen across the series.
-- **B — Business:** The final commission success closes the book: The Wheelhouse is now a working studio with paid commissions, an art-trail place and a beginner class.
+- **B — Business:** The Wheelhouse is now a working studio with paid work, an art-trail place, a beginner class and ordinary customer rhythm. Do not replay Chapter 28's commission payoff at full length; make this a short, delicious final studio scene.
 
 ### Drafting Notes / Guardrails
 
@@ -4312,8 +4271,8 @@ These are not required text; they are tonal anchors.
 ## Mystery Track
 
 - **Ch. 3–7:** Neil's connection to Maggie, broad suspect field, staged fall, vase as suspected murder weapon.
-- **Ch. 8–13:** Suspect interviews and the cost of Maggie's premature conclusions; Calloway false dawn (rope/knot); vase mockery planted in ch 8 after the vase is already suspected as the weapon; later chapters clarify what that means.
-- **Ch. 14–17:** Old death, post-mortem confirmation; Saffron AND Beryl run as parallel possibles and both collapse — the double dead-end.
+- **Ch. 8–13:** Suspect interviews and the cost of Maggie's premature conclusions; Faye and Calloway false leads are tested privately enough to leave positive clue gain rather than only shame; vase mockery planted in ch 8 after the vase is already suspected as the weapon; later chapters clarify what that means.
+- **Ch. 14–17:** Old death, post-mortem confirmation and midpoint shock; Saffron AND Beryl run as parallel possibles and both collapse, but each collapse leaves a sharper vehicle/timeline route rather than a repeated privacy lesson.
 - **Ch. 18–21:** The disciplined gift surfaces a precise-habits question (18); it converges on Cal while Mary’s matching muscle memory is seeded (19); Cal clears on proof through a narrower timeline question (20); Mary’s controlled tea story and the archive/upbringing confirmation move the habit’s origin and motive into focus (21).
 - **Ch. 21–23:** Mary's controlled deception + active motive hunt (21); mercy earned through Cal's papers (22); full evidence chain to Pruitt (23).
 - **Ch. 24–27:** Police action, confession, arrest, moral aftermath.
@@ -4322,8 +4281,8 @@ These are not required text; they are tonal anchors.
 ## Personal Track
 
 - **Ch. 1–6:** Maggie hides behind seconds and craves approval; the missing-key micro-mystery gives her a harmless first win; migraines isolate her.
-- **Ch. 7–13:** She mistakes observation for authority and hurts people (Beryl, Calloway; ch 5 market overreach is the first instance).
-- **Ch. 14–18:** She learns to wait, listen and tolerate uncertainty.
+- **Ch. 7–13:** She mistakes observation for authority and hurts Beryl publicly; she still stays lively, funny and tempted by neat theories, while Faye/Calloway teach her that private testing can still produce real gains.
+- **Ch. 14–18:** She learns to tolerate uncertainty without becoming a perfect investigator; restraint becomes behaviour, not a worksheet.
 - **Ch. 19–23:** She holds the horror of suspecting Cal, narrows the question until proof clears him, then separates insight from admissible proof; the discipline is demonstrated.
 - **Ch. 24–29:** She accepts that right action can cost her love, then claims her work and belonging anyway.
 
@@ -4331,7 +4290,7 @@ These are not required text; they are tonal anchors.
 
 - **Ch. 1–5:** Cal and Maggie irritate each other; Mary begins to intervene; Pruitt established as newcomer parallel (ch 7).
 - **Ch. 6–12:** Practical care, arguments about privacy, attraction through shared work, and Cal as an amused investigative check-in rather than a partner; Faye friendship damaged (ch 12).
-- **Ch. 13–17:** Cal's concerns are vindicated; Saffron is unfairly scapegoated; Pruitt warmth builds in adversarial corrections (ch 13, 15).
+- **Ch. 13–17:** Cal's concerns are vindicated; Saffron is unfairly scapegoated but her clearing narrows the vehicle clue; Pruitt warmth builds in adversarial corrections (ch 13, 15).
 - **Ch. 19–25:** Maggie suspects Cal and chooses proof over accusation (19); proof clears him through Cobber (20); Mary’s deception plus archive/family confirmation sharpen the focus (21); Cal unknowingly hands Maggie the evidence (ch 22); Pruitt parallel + laugh (ch 23); rupture — Maggie admits she suspected him (ch 24); arrest (ch 25).
 - **Ch. 26–29:** Saffron becomes an ally; the town accepts Maggie; Cal and Maggie choose unresolved connection. Both Cal and Pruitt tracks remain open.
 
@@ -4353,7 +4312,7 @@ The reader should understand that Neil's death is suspicious; Maggie has a real 
 
 ## Midpoint Pressure — Chapters 14–17
 
-The reader should suspect Neil's past is central, feel that Mary's grief is active, understand that Maggie wants Saffron guilty for emotional reasons, see Cal and Maggie's attraction beneath their conflict, and know that Maggie's business cannot survive if she treats investigation as a substitute for building a life. By ch 17 the reader should feel that both Saffron and Beryl have failed as suspects — not a single Saffron collapse but a true double dead-end that leaves the case with no one in it.
+The reader should suspect Neil's past is central, feel that Mary's grief is active, understand that Maggie wants Saffron guilty for emotional reasons, see Cal and Maggie's attraction beneath their conflict, and know that Maggie's business cannot survive if she treats investigation as a substitute for building a life. The midpoint punch should be unmistakable: Pruitt confirms the vase was used before the fall, and an old record places Neil near Mary's father's death. By ch 17 both Saffron and Beryl fail as suspects, but the collapse leaves the case with narrower vehicle/timeline facts rather than no momentum.
 
 ## End of Act II — Chapter 23
 
