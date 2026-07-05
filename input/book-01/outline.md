@@ -2242,7 +2242,7 @@ These are not required text; they are tonal anchors.
 ## Chapter 14 — The Old Papers
 
 ### Overall Summary
-Pruitt learns that Neil had been sorting personal papers before his death. While Maggie fixates on the documents, Pruitt mentions that the death is still officially suspicious rather than confirmed murder, and that Calloway's movements are accounted for; he is no longer a likely killer, but his buried bench secret and an old informal favour remain unsettling enough to keep him alive as a future-series thread. Mary is seen leaving the cemetery with a box from family storage, and Cal says she has been sorting through his grandfather's belongings and old workshop/property papers connected to a promise to his mother. This gives Mary a strong innocent-seeming secret: preserving the workshop may involve a debt, lease wrinkle or quiet payments she does not want Cal to know about yet. In the same family-storage conversation, Cal repeats as ordinary background that Mary more or less raised him after his parents left; she knows where everything belongs because for years she was the person who made his life belong somewhere. Seed Mary's deeper pattern here: preserving family dignity, ordering grief into cupboards and labelled boxes, and deciding what truths other people can bear. Maggie does not treat this as a clue yet. In the studio, it may surface as a contained lidded vessel narrowing at the neck — a question about care and control, not "Mary is guilty." Maggie learns that Neil had intended to contact someone about an old matter and that an old show record, recipe-card date, cemetery note or medical-era mention places Neil close to Mary's father around the time the father died. The past begins to look less like background and more like the centre of the case.
+Pruitt learns that Neil had been sorting personal papers before his death. While Maggie fixates on the documents, Pruitt mentions that the death is still officially suspicious rather than confirmed murder, and that Calloway's movements are accounted for; he is no longer a likely killer, but his buried bench secret and an old informal favour remain unsettling enough to keep him alive as a future-series thread. Mary is seen leaving the cemetery with a box from family storage, and Cal says she has been sorting through her late father's belongings and old workshop/property papers connected to a promise to his mother — her father was the old man of the household in the years Mary raised Cal, close to him but no blood between them. This gives Mary a strong innocent-seeming secret: preserving the workshop may involve a debt, lease wrinkle or quiet payments she does not want Cal to know about yet. In the same family-storage conversation, Cal repeats as ordinary background that Mary more or less raised him after his parents left; she knows where everything belongs because for years she was the person who made his life belong somewhere. Seed Mary's deeper pattern here: preserving family dignity, ordering grief into cupboards and labelled boxes, and deciding what truths other people can bear. Maggie does not treat this as a clue yet. In the studio, it may surface as a contained lidded vessel narrowing at the neck — a question about care and control, not "Mary is guilty." Maggie learns that Neil had intended to contact someone about an old matter and that an old show record, recipe-card date, cemetery note or medical-era mention places Neil close to Mary's father around the time the father died. The past begins to look less like background and more like the centre of the case.
 
 ### Cozy Texture / Emotional Calibration
 
@@ -2278,7 +2278,7 @@ Pruitt learns that Neil had been sorting personal papers before his death. While
 **Beat flow:**
 
 1. Maggie sees Mary leaving the cemetery with a box from family storage — old cardboard, careful hands, the walk of someone carrying more than weight.
-2. Cal, later, explains it plainly: Mary has been sorting his grandfather's belongings and the old workshop and property papers tied to a promise she made to his mother.
+2. Cal, later, explains it plainly: Mary has been sorting her own father's belongings and the old workshop and property papers tied to a promise she made to his mother — her father was the old man of the house in the years she raised Cal, family by care rather than blood.
 3. The secret reads as burden, not murder: preserving the workshop may involve a debt, a lease wrinkle, or quiet payments she does not want Cal to know about yet.
 4. Maggie files it as family privacy — the kind of protective secret the whole town seems built on — not as a clue.
 5. End with the box out of sight in Mary's care, and Maggie noticing only that Mary handles old paper the way she handles everything: as something to be ordered and kept safe.
@@ -2328,7 +2328,7 @@ Pruitt learns that Neil had been sorting personal papers before his death. While
 - **Start / Desire:** Maggie wants evidence that can restore her credibility after the false dawn.
 - **Pressure / Obstacle:** The papers are incomplete, the old names are guarded, and each person reveals only the part of history that protects them.
 - **Turn / Change:** The investigation shifts from Neil's present-day enemies to a death and secret from ten years earlier.
-- **Texture / Pleasure Layer:** Cemetery weather, old storage boxes, Cal's reluctant stories about his grandfather, a light early reminder that Mary raised Cal and ordered his childhood, and Artie appearing with a completely irrelevant shipwreck pamphlet.
+- **Texture / Pleasure Layer:** Cemetery weather, old storage boxes, Cal's reluctant stories about Mary's father — the old man of the house he grew up in — a light early reminder that Mary raised Cal and ordered his childhood, and Artie appearing with a completely irrelevant shipwreck pamphlet.
 - **Hook / Closing Question:** Maggie hears that Neil changed almost overnight after Mary's father died.
 - **Humour Layer:** Use lightly and only where it protects warmth without undercutting grief, privacy or danger.
 
@@ -3255,13 +3255,13 @@ These are not required text; they are tonal anchors.
 ### Overall Summary
 The cemetery box. Mary was seen carrying it out of family storage in ch 14. It is almost certainly in her house. Maggie cannot get it from Mary.
 
-She goes to Cal. She does not tell him why. She asks whether there are any of his grandfather's old papers she could look at — she has a question about Neil's connection to the family in those years. A half-truth. Not a lie. Cal finds what he has and leaves her to it.
+She goes to Cal. She does not tell him why. She asks whether there are any old family papers she could look at from the years Mary was raising him — Mary's father was the old man of that house, close to Cal but no blood — because she has a question about Neil's connection to the family in those years. A half-truth. Not a lie. Cal finds what he has and leaves her to it.
 
 The father's words are there: a letter or journal entry — the kind of thing a man in serious pain writes in the dark, addressed to no one. He was not getting better. He was asking Neil. More than once. He wanted it to end and had asked directly.
 
 Maggie reads it and understands the full picture. Neil did what the father asked for. Mary killed the one person who listened when her father said he could not bear it any longer. The final layer: Mary's controlled story — *we argued about Cal, I left, he was alive* — was designed to conceal the act. She had no idea the act was an answer to her father's prayer. She killed him to avenge a murder. She has been waiting a decade to avenge an act of mercy.
 
-Maggie closes the box and replaces it on Cal's shelf. She asks one careful question: did Mary ever know what his grandfather's last weeks were really like? Cal goes still. He says nobody talked about it. That Mary always said her father died too soon. Maggie walks home carrying more truth than Mary has ever had.
+Maggie closes the box and replaces it on Cal's shelf. She asks one careful question: did Mary ever know what her father's last weeks were really like? Cal goes still. He says nobody talked about it. That Mary always said her father died too soon. Maggie walks home carrying more truth than Mary has ever had.
 
 ### Cozy Texture / Emotional Calibration
 
@@ -3280,7 +3280,7 @@ Maggie closes the box and replaces it on Cal's shelf. She asks one careful quest
 
 1. Maggie knows the cemetery box Mary carried out of family storage in ch 14 is almost certainly in Mary's house now, and she cannot ask Mary for it without showing her hand.
 2. So she goes to Cal. Rain is loud on the corrugated iron; the workshop smells of cut timber and cold. She does not tell him why.
-3. She asks a true-enough question: whether there are any of the old family papers — his grandfather's, from the years around Neil's connection to the family — that she could look at. A half-truth. Not a lie. She hears the difference in her own mouth and hates it.
+3. She asks a true-enough question: whether there are any of the old family papers — from the years Mary raised him, when Mary's father was still the old man of the house — that she could look at. A half-truth. Not a lie. She hears the difference in her own mouth and hates it.
 4. Cal, already cleared and with no reason to suspect the question, treats it as ordinary. He goes to the back shelves and finds what the family keeps there.
 5. End with Cal handing her a box of old paper and leaving her to it — the trust that will make everything after it heavier.
 
@@ -3513,7 +3513,7 @@ These are not required text; they are tonal anchors.
 ## Chapter 24 — The Worst Conversation
 
 ### Overall Summary
-Maggie tells Cal before Pruitt moves on Mary. Cal receives the news with disbelief, anger and the frightening stillness Maggie has learned means he is trying not to fall apart. He says Maggie has spent weeks pulling at things she does not understand. Maggie says she understands enough. Cal says that has always been the problem. When she tells him about his grandfather's own words, he cannot ask her to stop, but the knowledge does not make the betrayal feel smaller. Then Maggie tells him the hardest part: for a day she believed it might be him — he had the habit and the motive — and instead of going to Pruitt she went looking for proof he didn't do it, because she had already burned Beryl and Saffron and would not do that to him. Cal does not move. The admission deepens the rupture; it is the most honest thing she has said to him, and the most brutal, and he has no answer for it. Before the conversation, Maggie checks the wrapped bowls and unsent delivery paperwork — a small, adult act that proves she will not abandon her own work, even though the commission success must wait until after the murder is resolved.
+Maggie tells Cal before Pruitt moves on Mary. Cal receives the news with disbelief, anger and the frightening stillness Maggie has learned means he is trying not to fall apart. He says Maggie has spent weeks pulling at things she does not understand. Maggie says she understands enough. Cal says that has always been the problem. When she tells him about Mary's father's own words, he cannot ask her to stop, but the knowledge does not make the betrayal feel smaller. Then Maggie tells him the hardest part: for a day she believed it might be him — he had the habit and the motive — and instead of going to Pruitt she went looking for proof he didn't do it, because she had already burned Beryl and Saffron and would not do that to him. Cal does not move. The admission deepens the rupture; it is the most honest thing she has said to him, and the most brutal, and he has no answer for it. Before the conversation, Maggie checks the wrapped bowls and unsent delivery paperwork — a small, adult act that proves she will not abandon her own work, even though the commission success must wait until after the murder is resolved.
 
 ### Cozy Texture / Emotional Calibration
 
