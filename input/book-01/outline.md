@@ -2753,77 +2753,77 @@ Saffron's collapse has spent the last suspect. Beryl, Faye, Calloway — cleared
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
 
-### Scene 1 — Quiet That Is Not Peace
+### Scene 1 — Taking the Case Down Off the Shelf
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Wheelhouse, grey morning; the counter and shelf-edge where the case notes have lived for weeks.
 
-**Purpose:** Let Maggie hit the emotional low point after every false suspect collapses. The town's crookedness becomes visible as protective silence, not as obvious villainy.
-
-**Beat flow:**
-
-1. Start with the social aftermath of all the false leads: Saffron guarded, Beryl wounded, Faye distant, Calloway embarrassed, Cal absent. Maggie has no suspect left and no constituency that fully trusts her.
-2. Give Maggie one concrete attempted retreat: close the case notebook, return to commission work, clean the wheel, or take down the improvised notes so The Wheelhouse can be a studio again.
-3. Let the town's protective silences settle into one painful insight: Pelican's Crook may be crooked, but not in the simple criminal way she wanted — its bends are privacy, kindness, shame, old obligation and fear of hurting the living.
-4. Keep this as a moral/emotional click, not a clue solution. She understands the town better, but she still has no answer.
-5. End with the Too-Much beginning to rise again, not as brilliance but as consequence: shame, exhaustion, weather and a mind that will not stop noticing.
-
-**Emotional turn:** Maggie learns to tolerate uncertainty long enough for observation to become useful.
-
-**Texture to include:** quiet studio morning, toast crumbs, kiln log, price tags, index cards, bakery window complications, library closing bell, and Glaze sitting on the fact cards.
-
-### Scene 2 — Work as Survival
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
+**Purpose:** Land the low point — every suspect spent, every constituency mistrusting her — and turn the town's "crookedness" from criminal to protective in Maggie's understanding.
 
 **Beat flow:**
 
-1. Start from the chapter obligation: That night the Too-Much comes up off the water at its worst, sharpened by shame and exhaustion, and nothing touches it: not the dark, not lying still. Only the wheel ever has. She goes to the studio not to think but because centring clay is the one thing that has ever talked the Too-Much down — medication does not reach it, time only waits it out, but the wheel quiets it.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
+1. Maggie dismantles the case with her hands: index cards off the shelf-edge, drawing pins into a saucer, the pencilled timeline peeled down. Framed as an admission — it was never hers to solve — not a decision she feels good about.
+2. Make the social cost concrete and small: a too-bright hello from Saffron across the street, Beryl's stiff market-day nod, Faye's visit shortened to the doorway, Cal's ute not slowing as it passes. Each one a withdrawal she can measure.
+3. She tries to make it a studio again — commission bowls forward, kiln log open — and cannot stop reading the town in her own gestures: everyone here folds a truth a little to protect someone still living.
+4. The insight lands as morality, not clue: Pelican's Crook is crooked the way a coastline is crooked — bent by weather and long use, not by crime. Privacy, shame, old debts, the fear of hurting the living. She wanted villains; she has neighbours.
+5. End with the Too-Much starting to lift off the day — not brilliance, consequence — shame and exhaustion and the barometer dropping ahead of rain, a pressure settling behind one eye.
 
-**Emotional turn:** Maggie learns to tolerate uncertainty long enough for observation to become useful.
+**Emotional turn:** Maggie stops hunting a criminal town and grieves a kind one — and the gift rises anyway, uninvited, as if to punish her for stopping.
 
-**Texture to include:** quiet studio morning, toast crumbs, kiln log, price tags, index cards, bakery window complications, library closing bell, and Glaze sitting on the fact cards.
+**Texture to include:** index cards curling at the corners, drawing pins in a saucer, kiln log open to a blank page, Glaze reclaiming the cleared bench, grey harbour light, cold toast, the first pressure behind one eye.
 
-### Scene 3 — The Pattern Without Performance
+### Scene 2 — The Only Thing That Talks It Down
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The main street after dark, then inside The Wheelhouse; the wheel under its canvas cover.
 
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
-
-**Beat flow:**
-
-1. Start from the chapter obligation: In the after-calm — not the flood, the quiet behind it — Maggie does one small studio exercise from what she already observed: a trimmed cup set to an exact spot, a second object placed a hair off-true, a quick sketch of the cottage counter. Keep it sparse and practical; it helps her see the question without turning pottery into a clue machine.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
-
-**Emotional turn:** Maggie learns to tolerate uncertainty long enough for observation to become useful.
-
-**Texture to include:** quiet studio morning, toast crumbs, kiln log, price tags, index cards, bakery window complications, library closing bell, and Glaze sitting on the fact cards.
-
-### Scene 4 — The Next Old Name
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
+**Purpose:** Establish, at its worst, the canonical fact that the wheel is Maggie's *only* reliable relief from the Too-Much — and get her to the bench not to investigate but to survive.
 
 **Beat flow:**
 
-1. Start from the chapter obligation: The studio exercise clarifies a question, not a clue: someone with exact, trained domestic habits reset that room — not generic tidiness, but a signature: tea towels folded into exact thirds with the tag hidden, cup handles turned to the same angle, biscuit tins rotated label-out. For the first time the Too-Much has worked with her, calm and useful, and cost no one. She cannot stop after all — but this time the mature sentence holds: she does not know what it means yet; she only knows it does not fit.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
+1. Night. The Too-Much crests to the worst of the book: every ordinary fact arriving at equal volume — the cooling kiln's tick, a receipt total she cannot un-see, the exact count of jars in the dark window, the way the streetlight edges every railing. The dark does not help; lying still does not; nothing she can swallow reaches it.
+2. She goes down to the studio — not for the case, the cards are gone — because the wheel is the one thing that has ever quieted this, and she is out of other doors.
+3. Uncover the wheel. Body knowledge takes over: wet clay, the pedal's give, slip cold at the wrist, the sequence Neil once described — centre, compress, pull, one honest problem at a time.
+4. The flood narrows. Not cured, quieted: the town's thousand simultaneous facts drop back to a single turning weight under her hands.
+5. End in the quiet *behind* the flood — the after-calm — where her mind is finally still enough to hold one shape without panicking at it.
 
-**Emotional turn:** Maggie learns to tolerate uncertainty long enough for observation to become useful.
+**Emotional turn:** The wheel does what darkness, stillness and medication cannot; for the first time the gift is survivable because the clay gives it somewhere to rest.
 
-**Texture to include:** quiet studio morning, toast crumbs, kiln log, price tags, index cards, bakery window complications, library closing bell, and Glaze sitting on the fact cards.
+**Texture to include:** canvas cover pulled back, wet-clay smell, the pedal underfoot, slip cold to the wrist, kiln ticking as it cools, sea working the groyne, one lamp, salt on the window.
+
+### Scene 3 — One Cup, Set Exactly
+
+**Location:** The bench beside the wheel, deep night, in the after-calm.
+
+**Purpose:** The disciplined studio exercise — sparse, not a clue machine — that makes the *question* visible without naming a person.
+
+**Beat flow:**
+
+1. Not a grand symbolic piece. One trimmed cup, set to an exact spot on the bench. A second object placed a hair off-true beside it. A quick pencil sketch of Neil's counter as she remembers it, on the back of a delivery docket.
+2. She is not trying to solve anything; she is trying to *see* the thing she keeps circling. The clay only ever makes the story she is already telling herself visible — that is all she asks of it.
+3. Looking between the exact cup and the off-true one, Neil's cottage overlays the bench: the wiped vase set slightly wrong, the tea towel too square, the second cup that should not have been there.
+4. The distinction sharpens into words: the room was not *tidy*. It was *arranged* — to one exact standard — and then one thing left fractionally wrong, the way a stranger leaves a house they do not live in.
+5. End by letting it stay a question. She does not reach for a name. The gift, worked through the clay, has handed her something she can actually hold.
+
+**Emotional turn:** The gift produces a disciplined question instead of a reckless verdict — the first time in the book it has cost no one, including her.
+
+**Texture to include:** bench lamp, trimming curls, pencil on the back of a delivery docket, the exact cup, the off-true object, Glaze asleep on the good apron, drying slip tightening across her knuckles.
+
+### Scene 4 — A Habit, Not a Hunch
+
+**Location:** The bench at first light, the exercise dried enough to hold.
+
+**Purpose:** Crystallise the precise-habits question as a *signature*, land the mature sentence, and hook Maggie back into the case on new terms.
+
+**Beat flow:**
+
+1. First light. She writes down what she saw as behaviours, not a person: tea towel folded into exact thirds with the tag hidden; cup handles turned to one angle; biscuit tin rotated label-out; the vase set a hair off-true.
+2. Read together, they are a signature — trained, domestic, habitual. Not "someone cleaned up." Someone who cannot leave a room wrong reset that one, and missed a single thing.
+3. She feels the old pull to convert the pattern into a name, and refuses it out loud. She has burned Beryl and Saffron doing exactly that, and she can still feel both scars.
+4. The mature sentence holds, spoken to the empty studio: she does not know what it means yet; she only knows it does not fit.
+5. End on the turn: the gift has finally worked *with* her, calm and useful, costing no one — and she knows she cannot stop. But this time she will take Pruitt a habit she can defend, not a hunch she cannot.
+
+**Emotional turn:** Maggie re-enters the case disciplined and quiet, carrying a question she can stand behind instead of a certainty she cannot.
+
+**Texture to include:** dawn grey going gold on the water, the dried cup, the off-true object, the docket list in pencil, cold tea, the kiln finally silent, Glaze stretching awake on the apron.
 
 ### Chapter Structure Summary
 
@@ -2856,12 +2856,12 @@ Saffron's collapse has spent the last suspect. Beryl, Faye, Calloway — cleared
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- The case came down off the shelf as easily as it had gone up, which was its own kind of verdict.
+- The town was not crooked the way a lie was crooked. It was crooked the way a coast was: bent by weather and long use into shapes that kept things safe.
+- The wheel did not cure the Too-Much. It gave her one door at a time, and one door she could survive.
+- She set the good cup exactly where it wanted to go and the wrong one a hair off-true, and there, between them, was Neil's kitchen.
+- A tidy room and an arranged room were not the same thing, and only one of them was a signature.
+- She did not know what it meant yet. She only knew it did not fit — and this time that was enough to carry.
 
 
 ---
@@ -2878,77 +2878,77 @@ Maggie takes the question from ch 18 — the exact, trained habits that reset Ne
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
 
-### Scene 1 — The Organised Man
+### Scene 1 — The Most Organised Man She Knows
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Wheelhouse, dusk; the bench, a leather-hard surf-club bowl under plastic, the ch-18 docket list.
 
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
-
-**Beat flow:**
-
-1. Maggie takes the question from Chapter 18 — the exact, trained habits that reset Neil's cottage — and maps it against everyone she knows.
-2. The precision fits Cal first because the reader has been taught to enjoy his competence: workshop ordered to the centimetre, tools returned by touch, plinth measurements exact.
-3. Let the craft texture be attractive before it becomes frightening. The same order that made him safe now makes him possible.
-4. Maggie writes down behaviours rather than his name: squared chair, tea towel folded into exact thirds with the tag hidden, cup handles aligned, erased second cup, biscuit tin label turned out, vase set slightly wrong.
-5. End with the Cal-shaped theory present but still private. If the early sturdy/overbuilt clay study reappears, it seems to accuse him only because Maggie is frightened; it is a form of fear, not proof.
-
-**Emotional turn:** The traits Maggie loves in Cal become terrifying evidence, and she chooses disciplined doubt instead of accusation.
-
-**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, fact-versus-fear notes, cooling tea, and late surf outside the studio.
-
-### Scene 2 — Cal as a Convenient Shape / Mary’s Muscle Memory
-
-**Location:** Workshop / CWA community hall.
-
-**Purpose:** Dramatize the chapter beat through cozy scene-work while seeding Mary’s shared habits early enough that Chapter 20 does not carry the whole revelation.
+**Purpose:** Map the precise-habits signature against everyone Maggie knows and watch it fit Cal first — because the reader has been taught to love his competence.
 
 **Beat flow:**
 
-1. Maggie sees Cal return a tool to its hook without looking, then remembers Neil's cottage: erased second cup, folded tea towel, squared chair, vase set just slightly wrong.
-2. At a CWA/community-hall setup, she sees Mary fold a tea towel, square cups, and restore a trestle table with the same muscle memory Cal has.
-3. At this stage Maggie reads the resemblance only as family influence — Mary raised him — not as a culprit click.
-4. Cozy texture should carry the clue: cups, urn, lemon slice, chair legs aligned, Mary tidying while listening to everyone else talk.
-5. End with the unsettling thought that the habit is not only Cal's, but without yet knowing what that means.
+1. Maggie takes the ch-18 question — trained domestic habits reset that room — and works down a roster: Beryl is brisk but not exact; Saffron is curated, not habitual; Faye is warm and chaotic; Dot and Glad could not agree on a tea towel.
+2. The precision fits Cal before she wants it to: a workshop ordered to the centimetre, tools returned to their hooks by touch, plinth measurements exact, offcuts sorted by species. The order that made him feel safe now makes him possible.
+3. She writes behaviours, not his name — squared chair, tea towel in thirds with the tag hidden, cup handles aligned, erased second cup, tin label out, vase a hair wrong — and notices her own hand has steadied around the list.
+4. The early sturdy, overbuilt clay study is still on the shelf. It seems to accuse him now — and she makes herself see that it accuses him only because she is frightened. It is a form of fear, not a form of proof.
+5. End with the Cal-shaped theory fully formed and entirely private. She has not said it. She will not say it.
 
-**Emotional turn:** The Cal theory becomes less simple and more frightening: the habit she noticed may belong to a family system, not just one man.
+**Emotional turn:** The competence Maggie loves in Cal becomes the exact shape of her dread — and she keeps it behind her teeth.
 
-**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, fact-versus-fear notes, cooling tea, and late surf outside the studio.
+**Texture to include:** bench lamp, the leather-hard surf-club bowl under plastic, the docket list, the sturdy clay study on the shelf, Glaze circling the kiln stand, dusk going dark on the water.
 
-### Scene 3 — Workshop Motive
+### Scene 2 — The Habit Is Not Only His
 
-**Location:** Workshop / The Wheelhouse.
+**Location:** Cal's workshop doorway, then the CWA community hall setting up for a function.
 
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
-
-**Beat flow:**
-
-1. Start from the chapter obligation: Neil had been planting doubt about the workshop sale for months, testing Cal's faith in his own future, and Cal knew it. Motive and habit converge, and Maggie is sick with it. She has been here before — the moment certainty crystallises and turns out to be a cruelty.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
-
-**Emotional turn:** The traits Maggie loves in Cal become terrifying evidence, and she chooses disciplined doubt instead of accusation.
-
-**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, fact-versus-fear notes, cooling tea, and late surf outside the studio.
-
-### Scene 4 — A Better Kind of Doubt
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
+**Purpose:** Seed Mary's matching muscle memory early — so Chapters 20–21 do not carry the whole revelation — while Maggie still reads it as family resemblance, not a click.
 
 **Beat flow:**
 
-1. Start from the chapter obligation: She will not do it again. She will not go to Pruitt with a hunch; she will not say Cal's name to him or anyone else; she will not make herself comfortable by making him guilty. She resolves to test access, timing and habit quietly — the discipline she could not manage with Beryl or with Saffron, managed now because the cost of being wrong is the man she is falling in love with.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
+1. At the workshop on an ordinary errand, Cal returns a chisel to its hook without looking, mid-sentence. The gesture lands in her like the cottage: erased second cup, folded tea towel, squared chair, vase set just wrong.
+2. Later, helping set up the CWA hall, she watches Mary work the room — tea towels folded into exact thirds, cup handles turned one way, a trestle restored to true — all while listening to everyone else talk, hands moving on their own.
+3. The two sets of hands rhyme. Maggie's stomach drops, then steadies: of course they match — Mary raised him. She reads it as influence, the way a son keeps a mother's turn of phrase.
+4. Keep the clue in the cozy load: the urn, the lemon slice, chairs squared to the trestle legs, Beryl issuing instructions no one asked for, Mary the still point tidying while she listens.
+5. End on the half-thought Maggie cannot yet finish: the habit she has been tracking is not only Cal's — and she does not know what to do with that.
 
-**Emotional turn:** The traits Maggie loves in Cal become terrifying evidence, and she chooses disciplined doubt instead of accusation.
+**Emotional turn:** The theory stops being about one man and becomes about a family system — older, larger and more frightening than a single suspect.
 
-**Texture to include:** Cal’s tool wall, plinth dust, CWA tea towels and lemon slice, Mary’s identical organising habits, fact-versus-fear notes, cooling tea, and late surf outside the studio.
+**Texture to include:** a chisel returning to its hook by touch, the CWA urn, lemon slice on a plate, folded tea towels, trestle legs squared to true, Beryl's clipboard, Mary tidying mid-conversation.
+
+### Scene 3 — What the Workshop Is Worth
+
+**Location:** Cal's workshop, late afternoon; the tool wall, the offcut bins, the bench under the window.
+
+**Purpose:** Land Cal's motive physically, in the one room that most makes him look guilty, so the reader feels Maggie's horror as the precision she loves becomes the precision that damns him.
+
+**Beat flow:**
+
+1. Maggie comes with a real errand — kiln-shelf props, or a hardwood plinth for the surf-club bowls — a favour that lets her be here without pretext. Cal is planing something; the workshop radio murmurs just under hearing.
+2. Cozy first: he hands her offcuts sorted by species, refuses payment, and there is a small, unnecessary, beautiful thing on the sill he will not call art. She is happy for four seconds.
+3. The motive surfaces through an object, not a speech — a valuation letter or a buyer's enquiry weighted under a chisel on the bench. Closing up, Cal says flatly that Neil had spent the better part of a year telling him the sensible thing was to sell.
+4. She watches him return the plane to its place without looking, and motive and habit converge in one breath: he had reason to be at the cottage, and hands that leave rooms exactly right.
+5. Body signal — metal taste, pressure behind one eye — and the sentence she refuses to say. She has been here before: the moment certainty crystallises and turns out to be a cruelty. She leaves with the offcuts and the horror both.
+
+**Emotional turn:** The room that proves Cal is careful becomes the room that proves he could have — and Maggie carries it out in silence.
+
+**Texture to include:** plane shavings, species-sorted offcuts, the weighted valuation letter, radio just under hearing, sawdust smell, the hook a tool finds without his eyes, one perfect scrap object on the sill.
+
+### Scene 4 — What I Saw Is Not What I Fear
+
+**Location:** The Wheelhouse, night; the bench, the sturdy Cal-adjacent clay form.
+
+**Purpose:** Maggie chooses proof over accusation for the first time without external prompting, and the Tommy voice pivots from sting to spur.
+
+**Beat flow:**
+
+1. Back at the studio the theory is complete and unbearable — habit, motive, opportunity, all pointing one way. Every instinct says take it to Pruitt and be rid of the weight.
+2. She refuses, deliberately and by name: she will not go to Pruitt with a hunch; she will not say Cal's name to him or to anyone; she will not buy herself comfort by making him guilty.
+3. She reframes it as work she can do quietly — test access, test timing, test whether the habit is his alone — the discipline she could not manage with Beryl or Saffron, possible now precisely because the cost of being wrong is the man she is falling in love with.
+4. Tommy pivot: as the click lands, the Quill voice surfaces — *you imagine more than is there* — and for the first time it does not shame her but propels her. The sight that once exposed him is the sight cracking this open.
+5. She revises the sturdy clay form — not smashing it, working it — and writes the sentence she needs on the docket: what I saw is not the same as what I fear. End on the resolve: she will find the proof it was not him.
+
+**Emotional turn:** Maggie turns the most terrifying suspicion of the book into disciplined work, and the belittling voice becomes, for once, an engine.
+
+**Texture to include:** night surf outside, the sturdy clay form under her hands, the docket sentence in pencil, cooling tea, Glaze on the apron, the kiln stand, the lamp's small circle of light.
 
 ### Chapter Structure Summary
 
@@ -2982,12 +2982,12 @@ Maggie takes the question from ch 18 — the exact, trained habits that reset Ne
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- The order that had made Cal feel safe was the same order that now made him possible.
+- She wrote down the chair, the towel, the cup — everything but the name, because the name was the one thing she could not take back.
+- Mary returned a trestle to true without looking at it, and Cal's hands were suddenly not only Cal's.
+- The valuation letter sat under a chisel as if it were just another thing to be filed, and it was the worst thing in the room.
+- For once Tommy's voice pushed her forward instead of down: she imagined more than was there, and this time more than was there was true.
+- What I saw is not the same as what I fear — she wrote it on the back of a docket and believed it enough to keep going.
 
 
 ---
@@ -3004,77 +3004,77 @@ Maggie lightens the problem by narrowing it: not who feels guilty, not who looks
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
 
-### Scene 1 — The Evening Accounted For
+### Scene 1 — The Shape of the Gap
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Wheelhouse table, afternoon; index cards, the kettle, drying bowls under plastic.
 
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
-
-**Beat flow:**
-
-1. Maggie works backwards through Neil's last evening with cards on The Wheelhouse table, not a wall-of-string performance.
-2. Keep this scene deliberately narrower than the old version: Beryl, Faye and Calloway are placed in quick, corroborated strokes only — each came, argued or pleaded, and left.
-3. The important shape is the gap after them. Maggie is still carrying the Cal suspicion from Chapter 19, but she refuses to make the whole chapter a panic spiral around him.
-4. Cozy/business texture interrupts the timeline: kettle clicking off, drying bowls needing covers, Glaze stealing one card, a surf-club message asking for a progress update.
-5. End with Maggie identifying one answerable question for Cobber: that road, that evening, late.
-
-**Emotional turn:** Maggie narrows the case to one answerable question; proof clears Cal before the Mary question fully opens.
-
-**Texture to include:** timeline cards at The Wheelhouse, Glaze stealing evidence, kettle clicks, Cobber at the boat ramp with a trailer light, bakery smells on the walk home, and Mary’s warm phone voice.
-
-### Scene 2 — Cobber’s Specific Answer
-
-**Location:** Foreshore / boat ramp / main street.
-
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
+**Purpose:** Reconstruct Neil's last evening as quiet card-work, not a performance, and find that the load-bearing fact is the gap after the known visitors.
 
 **Beat flow:**
 
-1. Start from the chapter obligation: Maggie asks Cobber one narrow question — that road, that evening, late — and does not embroider it into a theory. His answer stays lyrical, but inside it is clear: a blue-green car he knew, late after the others, not Cal’s.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
+1. Maggie works Neil's last evening backwards with cards on the table — not a wall of string, just a woman moving small pieces of paper into order while the kettle heats.
+2. She places the known visitors in quick corroborated strokes: Beryl came and pleaded her urn campaign; Faye dropped something and left; Calloway argued about access and went. Each arrival timed, each departure accounted for.
+3. The shape that matters is the gap after them — the late, open stretch with no one in it, the window the staged room belongs to.
+4. She is still carrying the Cal suspicion from Chapter 19 and feels it try to fill the gap; she refuses to let the afternoon become a panic spiral around him. Cozy/business interrupts on cue: the kettle clicking off, bowls needing their plastic, Glaze batting one card to the floor, a surf-club progress message she answers honestly.
+5. End by narrowing everything to a single answerable question — not who felt guilty, not who looks precise, but who was on Neil's road, late, in that gap. One person to ask: Cobber.
 
-**Emotional turn:** Maggie narrows the case to one answerable question; proof clears Cal before the Mary question fully opens.
+**Emotional turn:** Maggie converts a swamp of suspicion into one narrow, answerable question — the discipline she never managed with Beryl or Saffron.
 
-**Texture to include:** timeline cards at The Wheelhouse, Glaze stealing evidence, kettle clicks, Cobber at the boat ramp with a trailer light, bakery smells on the walk home, and Mary’s warm phone voice.
+**Texture to include:** index cards, kettle steam, bowls under plastic, Glaze knocking a card to the floor, the surf-club message, grey afternoon light, cold tea going colder.
+
+### Scene 2 — Cobber's Specific Answer
+
+**Location:** The foreshore boat ramp at dusk; Cobber working on his dinghy under a trailer light.
+
+**Purpose:** Get the narrow answer without embroidering it — the blue-green car, late, after the others, and not Cal's.
+
+**Beat flow:**
+
+1. Maggie finds Cobber at the ramp, the dinghy up on its trailer, a work light throwing everything into hard edges. She asks one narrow question — that road, that evening, late — and does not dress it as a theory.
+2. His answer stays lyrical, the way Cobber always talks, tides and habits and who belongs to which engine — but inside it is exact: a blue-green car he knew went up Neil's road late, after the others had gone.
+3. She makes herself not fill in the rest. She asks only what he saw, not what it meant, and writes it down as he says it.
+4. The detail is specific enough to be a fact, not an impression: the colour he names, the lateness, the car he knew by sight.
+5. End with Maggie holding a real fact for the first time in weeks — and the cold understanding that it is not the car she feared.
+
+**Emotional turn:** For once Maggie asks exactly the right narrow question and gets exactly one fact — and it is not the fact she was braced for.
+
+**Texture to include:** trailer work light, the dinghy hull, the wet ramp, tide smell, Cobber's rag and spanner, the blue-green named against the dark water, gulls settling for the night.
 
 ### Scene 3 — The Alibi That Hurts
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The main street, walking home in the dark; the bakery closing, ordinary town noise.
 
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
+**Purpose:** Cal clears on proof, not feeling, and the relief is given room to land before the next wound opens.
 
 **Beat flow:**
 
-1. Start from the chapter obligation: Cobber, almost incidentally, places Cal elsewhere via the ute/trailer-light detail. Cal clears on proof, not feeling. Maggie walks back through bakery smells and ordinary town noise, letting relief land before forcing the next conclusion.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
+1. Almost incidentally, inside the same lyrical account, Cobber has placed Cal elsewhere — the ute, a trailer light, a job that kept him where he could not have been on Neil's road. Cal clears on proof, not on Maggie's wanting it.
+2. Maggie walks back up the main street with the fact settling: bakery smells going cold, a closing chalkboard, the pub's light on wet road, the sea a low presence between buildings.
+3. She lets the relief actually arrive — not as triumph but as a loosening in her chest she did not know she was holding — and is honest that relief is a form of love she has not earned the right to act on yet.
+4. Underneath it, the harder fact keeps its shape: the case has not ended just because her worst suspicion has. The blue-green car still went up that road.
+5. End on the walk's small domestic grace — a lit window, a dog on a lead, someone's kettle — carrying both the relief and the dread of where the freed suspicion has to go.
 
-**Emotional turn:** Maggie narrows the case to one answerable question; proof clears Cal before the Mary question fully opens.
+**Emotional turn:** Cal is free, and Maggie lets herself feel it fully — right before she has to look at where the freed suspicion must go instead.
 
-**Texture to include:** timeline cards at The Wheelhouse, Glaze stealing evidence, kettle clicks, Cobber at the boat ramp with a trailer light, bakery smells on the walk home, and Mary’s warm phone voice.
+**Texture to include:** cold bakery smell, a closing chalkboard, pub light on wet road, a lit upstairs window, a dog on a lead, the sea between buildings, her own loosened breath.
 
 ### Scene 4 — Mary Calls for Tea
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Wheelhouse, evening; bowls under plastic, half-stacked cards, the phone.
 
-**Purpose:** End the hinge chapter on a domestic invitation rather than stacking the full family-history revelation here.
+**Purpose:** End the hinge chapter on a domestic invitation rather than stacking the full family-history pivot here (Chapter 21 carries that).
 
 **Beat flow:**
 
-1. Back at The Wheelhouse, Mary’s shared precision with Cal sits in the background as a question, not a solved answer: Cal may have the habits because Mary raised him, not because he reset Neil's room. Do not make this the full upbringing pivot; Chapter 14 has already anchored that Mary raised Cal, and Chapter 21 will make it matter.
-2. Let Maggie sit with Cal's proof-cleared absence first: relief, fear, and the practical fact that the case has not ended just because her worst suspicion has.
-3. The room should stay domestic and specific: bowls under plastic, timeline cards half-stacked, Glaze demanding dinner, kettle not yet boiled.
-4. Maggie’s phone rings. Mary asks her to come for tea with warmth that may be kindness, strategy, or both.
-5. End on the dread of a cozy invitation: tea as the next interview room.
+1. Back at the studio, Cal's shared precision with Mary sits in the background as an unfinished question — he may have the habits because Mary raised him, not because he reset Neil's room. Maggie lets it stay a question; she does not force the pivot.
+2. She sits with Cal's proof-cleared absence: relief, fear, and the plain fact that the blue-green car belonged to someone, and she can guess whose.
+3. The room stays domestic and specific: bowls under plastic, timeline cards half-stacked, Glaze demanding dinner, the kettle not yet on.
+4. The phone rings. It is Mary — warm, easy, unhurried — asking Maggie round for tea. The warmth could be kindness, could be strategy, could be both.
+5. End on the dread inside a cozy invitation: tea, in this town, is the next interview room, and Maggie has just realised whose car she is about to sit across from.
 
-**Emotional turn:** Maggie narrows the case to one answerable question; proof clears Cal before the Mary question fully opens.
+**Emotional turn:** The gentlest possible invitation lands as the opening of the most dangerous conversation of the book.
 
-**Texture to include:** timeline cards at The Wheelhouse, Glaze stealing evidence, kettle clicks, Cobber at the boat ramp with a trailer light, bakery smells on the walk home, and Mary’s warm phone voice.
+**Texture to include:** bowls under plastic, half-stacked cards, Glaze at the empty dish, the unlit kettle, the phone's ring too loud in the quiet, Mary's warm voice, the dark window.
 
 ### Chapter Structure Summary
 
@@ -3107,12 +3107,12 @@ Maggie lightens the problem by narrowing it: not who feels guilty, not who looks
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- She did not build a wall of string. She moved small pieces of paper until the evening had a shape, and the shape had a gap in it.
+- Cobber talked in tides and engines, and somewhere inside the tide was a fact: a blue-green car he knew, late, after the others.
+- The car she had been afraid of was not the car on the road, and the relief nearly took her legs out.
+- Relief, she found, was a kind of love — and like love it did not much care whether she had earned the right to feel it yet.
+- Cal was clear. The road was not. Someone had driven up it late, and she already knew the colour of the car.
+- Mary asked her to tea the way she asked whether the kettle had boiled, and Maggie understood she had just been invited into the interview room.
 
 
 ---
@@ -3137,77 +3137,77 @@ Maggie now has the outline — the death, Neil's presence, a decade of waiting �
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
 
-### Scene 1 — Mary’s Chosen Story
+### Scene 1 — The House That Was Ready
 
-**Location:** The Wheelhouse doorway / front room.
+**Location:** Mary's house, late afternoon; the front room and kitchen — everything immaculate, the good cups already out.
 
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
-
-**Beat flow:**
-
-1. Start from the chapter obligation: Maggie goes to Mary's house. Mary is warm, immaculate, precise — good cups, something brought from the kitchen, the manner of a woman who has been waiting to unburden herself. She tells Maggie she has been meaning to be honest: she was at Neil's house that evening. She should have gone to the police straightaway. She was frightened. They argued — about Cal, the workshop sale, Neil's habit of planting doubt in Cal's mind about his future.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
-
-**Emotional turn:** Maggie sits inside warmth she no longer trusts and learns to separate real grief from controlled performance.
-
-**Texture to include:** Mary’s good china, lemon cake, labelled tins, folded cloths, library folders, photocopier smell, archive dust, and the workshop doorway at dusk.
-
-### Scene 2 — What Grief Protected
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
+**Purpose:** Stage Mary's warmth as control and open her chosen story — the confession-shaped account she has decided to give.
 
 **Beat flow:**
 
-1. Start from the chapter obligation: She left. He was alive. The story is detailed. It sounds spontaneous. It has been rehearsed until it does. Mary is deploying Cal's name because she raised him, and she knows exactly what that name costs Maggie.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
+1. Maggie arrives to a house that has been readied: kettle already warm, good cups down, cake sliced, cushions squared. Mary greets her as someone she has fed and assessed, not as a threat.
+2. The precision is everywhere and domestic — tea towel in exact thirds, tins label-out — and Maggie has to sit inside it without letting her face change.
+3. Mary says she has been meaning to be honest: she was at Neil's house that evening. She should have gone to the police straightaway. She was frightened.
+4. The account is detailed and sounds spontaneous — and Maggie, twenty years trained to hear the gap between the said and the true, hears that it has been rehearsed until it sounds unrehearsed.
+5. End with Maggie accepting the tea and saying nothing that shows she has noticed the tea towel, the cups, or the polish on the story.
 
-**Emotional turn:** Maggie sits inside warmth she no longer trusts and learns to separate real grief from controlled performance.
+**Emotional turn:** Maggie sits inside a warmth she has loved and can no longer trust, and keeps her own face still.
 
-**Texture to include:** Mary’s good china, lemon cake, labelled tins, folded cloths, library folders, photocopier smell, archive dust, and the workshop doorway at dusk.
+**Texture to include:** warm kettle, good cups, sliced lemon cake, tea towel in exact thirds, tins label-out, squared cushions, afternoon light on polished surfaces, Maggie's careful hands.
 
-### Scene 3 — Maggie Hears the Mercy Thread
+### Scene 2 — Cal's Name, Placed Like a Cup
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** Mary's kitchen table, the tea poured.
 
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
-
-**Beat flow:**
-
-1. Start from the chapter obligation: Her controlled story is not only self-protection — it is the performance of a woman who understands Maggie's weak point and is pressing it. Maggie says the right things. Accepts tea. Does not mention Cobber, the gap in the timeline, the cup habit, or the fact that she spent the morning placing Mary at the cottage. She leaves knowing Mary is one move ahead: if this version reaches Pruitt, the circumstantial case is blunted. She now needs the motive — what the argument was actually about — before Mary finishes setting her version in place.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
-
-**Emotional turn:** Maggie sits inside warmth she no longer trusts and learns to separate real grief from controlled performance.
-
-**Texture to include:** Mary’s good china, lemon cake, labelled tins, folded cloths, library folders, photocopier smell, archive dust, and the workshop doorway at dusk.
-
-### Scene 4 — Archive, Upbringing, and the Lie with Love in It
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
+**Purpose:** Reveal the story as a performance that deliberately deploys Cal — because Mary raised him and knows exactly what his name costs Maggie.
 
 **Beat flow:**
 
-1. Start from the chapter obligation: She goes to the library archive: old local papers, the year Neil visibly changed. She finds the death of Mary's father, a GP's name, and an incomplete inquest note. Cal then confirms the family shape without meaning to: Mary raised him, Mary never really recovered from her father's death, and the year after he died was when her relationship with Neil went permanently cold. Now the precision habits from Chapters 19–20 make emotional sense — Cal learned them from Mary — but Maggie still lacks what Neil actually did there.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
+1. The argument, in Mary's telling, was about Cal: the workshop sale, Neil's year-long habit of planting doubt in Cal's mind about his own future. She left; Neil was alive.
+2. Maggie registers the move even as it works on her: Mary sets Cal's name down the way she sets down a cup — deliberately, in the exact place it will do the most.
+3. Mary knows Maggie's weak point because she has watched her: the newcomer who hurts people, the woman falling for Cal. The controlled story is not only self-protection; it is pressure.
+4. Keep Mary human: her grief and her love for Cal are real, which is what makes the performance so effective — she is not inventing feeling, she is aiming it.
+5. End with Maggie feeling the trap close — if this version reaches Pruitt first, the circumstantial case is blunted, and Cal's name is the thing that blunts it.
 
-**Emotional turn:** Maggie sits inside warmth she no longer trusts and learns to separate real grief from controlled performance.
+**Emotional turn:** Maggie watches the kindest woman in town press on the exact bruise she cannot defend, and understands it is being done on purpose.
 
-**Texture to include:** Mary’s good china, lemon cake, labelled tins, folded cloths, library folders, photocopier smell, archive dust, and the workshop doorway at dusk.
+**Texture to include:** poured tea, the cake untouched on Maggie's plate, Mary's steady hands, Cal's name in the warm kitchen, a ticking clock, the good cups, the smell of lemon.
+
+### Scene 3 — What Maggie Does Not Say
+
+**Location:** Mary's doorstep and the walk to the gate, dusk.
+
+**Purpose:** Demonstrate Maggie's discipline — she withholds everything she knows — and let her realise Mary is a move ahead.
+
+**Beat flow:**
+
+1. Maggie says the right things and finishes the tea. She does not mention Cobber, the gap in the timeline, the cup habit, or that she spent the morning placing Mary's car on Neil's road.
+2. The restraint costs her; every instinct trained by weeks of blurting wants to lay a card on the table. She keeps them all in her hand.
+3. At the door Mary is warm, unhurried, certain — a woman who has said her piece and believes it will hold.
+4. Walking to the gate, Maggie understands the shape of it: Mary has got ahead of the witnesses, and if the controlled version reaches Pruitt before Maggie has the motive, the whole thing dissolves into a frightened neighbour who left a living man.
+5. End on the new, narrow need: she has to know what the argument was actually about — the real motive under the workshop story — before Mary finishes setting her version in place.
+
+**Emotional turn:** Maggie leaves having won nothing and revealed nothing, which is, for her, an enormous and unfamiliar victory.
+
+**Texture to include:** the doorstep, a clean doormat, dusk over the roofs, the latch of the gate, neighbour curtains, Mary's wave, the cold air after the warm kitchen.
+
+### Scene 4 — The Year Neil Changed
+
+**Location:** The town library archive, then Cal's workshop doorway at dusk.
+
+**Purpose:** Find the shape of the motive through active search — the old death, Neil's presence, the incomplete inquest — and let Cal unknowingly confirm the family shape.
+
+**Beat flow:**
+
+1. Maggie goes to the library archive: local papers from the year everyone half-remembers Neil changing. Folders, photocopier smell, dust — patient, unglamorous work.
+2. She finds the death of Mary's father. A GP's name in the account. An inquest note that trails off — incomplete, referencing Neil's presence, cause of death recorded as natural, and something plainly missing from the record.
+3. She does not yet know what Neil did there; she knows only that he was present, that the record stops short, and that Mary's whole life bent around that year.
+4. Cal confirms the shape without meaning to — a passing exchange at the workshop doorway: Mary never really recovered from her father's death, and the year after he died was when whatever she'd had with Neil went permanently cold.
+5. The precision habits from Chapters 19–20 now make emotional sense — Cal learned them from Mary, in that house, in those years — but Maggie still lacks the one thing that matters: what Neil actually did.
+
+**Emotional turn:** The motive acquires a shape and a decade of weight, and Maggie realises she is one fact — the act itself — behind the truth.
+
+**Texture to include:** archive folders, photocopier smell, dust on old newsprint, the inquest note trailing off mid-sentence, the workshop doorway at dusk, Cal's careful voice, the year printed at the top of a page.
 
 ### Chapter Structure Summary
 
@@ -3240,12 +3240,12 @@ Maggie now has the outline — the death, Neil's presence, a decade of waiting �
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- The house had been made ready the way a witness prepares an answer: warm, immaculate, and one beat too smooth.
+- Mary set Cal's name down the way she set down a cup — deliberately, in the exact place it would do the most.
+- For the first time Maggie held every card in her hand and laid none of them on the table.
+- She had won nothing and revealed nothing, and for a woman who blurted, that was a kind of victory.
+- The inquest note stopped mid-sentence, the way a town stops talking when the next word costs too much.
+- Neil had been in the room when Mary's father died, and the record had recorded a silence.
 
 
 ---
@@ -3270,77 +3270,77 @@ Maggie closes the box and replaces it on Cal's shelf. She asks one careful quest
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
 
-### Scene 1 — The Box from Storage
+### Scene 1 — The Box She Cannot Ask For
 
-**Location:** Cemetery / storage / The Wheelhouse.
+**Location:** Cal's workshop, rain on the iron roof; the storage shelves at the back.
 
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
-
-**Beat flow:**
-
-1. Start from the chapter obligation: The cemetery box. Mary was seen carrying it out of family storage in ch 14. It is almost certainly in her house. Maggie cannot get it from Mary. She goes to Cal. She does not tell him why. She asks whether there are any of his grandfather's old papers she could look at — she has a question about Neil's connection to the family in those years.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
-
-**Emotional turn:** Trust becomes the route to proof, making the truth heavier rather than triumphant.
-
-**Texture to include:** Cal’s workshop shelves, old cardboard, rain on corrugated iron, thin paper, bench lamp, Glaze on Maggie’s coat, closing-shop smells, and repaired bowls waiting at home.
-
-### Scene 2 — Objects That Refuse to Stay Past
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
+**Purpose:** Set the moral cost — Maggie uses Cal's trust as the only route to the evidence, with a half-truth, not a lie.
 
 **Beat flow:**
 
-1. Start from the chapter obligation: A half-truth. Not a lie. Cal finds what he has and leaves her to it. The father's words are there: a letter or journal entry — the kind of thing a man in serious pain writes in the dark, addressed to no one. He was not getting better. He was asking Neil. More than once.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
+1. Maggie knows the cemetery box Mary carried out of family storage in ch 14 is almost certainly in Mary's house now, and she cannot ask Mary for it without showing her hand.
+2. So she goes to Cal. Rain is loud on the corrugated iron; the workshop smells of cut timber and cold. She does not tell him why.
+3. She asks a true-enough question: whether there are any of the old family papers — his grandfather's, from the years around Neil's connection to the family — that she could look at. A half-truth. Not a lie. She hears the difference in her own mouth and hates it.
+4. Cal, already cleared and with no reason to suspect the question, treats it as ordinary. He goes to the back shelves and finds what the family keeps there.
+5. End with Cal handing her a box of old paper and leaving her to it — the trust that will make everything after it heavier.
 
-**Emotional turn:** Trust becomes the route to proof, making the truth heavier rather than triumphant.
+**Emotional turn:** Maggie gets her route to the truth through the one door she most wanted to leave shut: Cal's trust.
 
-**Texture to include:** Cal’s workshop shelves, old cardboard, rain on corrugated iron, thin paper, bench lamp, Glaze on Maggie’s coat, closing-shop smells, and repaired bowls waiting at home.
+**Texture to include:** rain on corrugated iron, cut-timber smell, the cold workshop, back storage shelves, old cardboard soft at the corners, a bench lamp, Cal's easy unsuspecting manner, Glaze on Maggie's coat.
 
-### Scene 3 — The Old Death Reopens
+### Scene 2 — A Man Writing in the Dark
 
-**Location:** Cemetery / storage / The Wheelhouse.
+**Location:** Cal's workshop bench, alone with the box, the rain continuing.
 
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
-
-**Beat flow:**
-
-1. Start from the chapter obligation: He wanted it to end and had asked directly. Maggie reads it and understands the full picture. Neil did what the father asked for. Mary killed the one person who listened when her father said he could not bear it any longer. The final layer: Mary's controlled story — *we argued about Cal, I left, he was alive* — was designed to conceal the act. She had no idea the act was an answer to her father's prayer. She killed him to avenge a murder.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
-
-**Emotional turn:** Trust becomes the route to proof, making the truth heavier rather than triumphant.
-
-**Texture to include:** Cal’s workshop shelves, old cardboard, rain on corrugated iron, thin paper, bench lamp, Glaze on Maggie’s coat, closing-shop smells, and repaired bowls waiting at home.
-
-### Scene 4 — What Mary Kept
-
-**Location:** The Wheelhouse doorway / front room.
-
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
+**Purpose:** Deliver the father's own words — the pain, and the repeated asking — as physical documents, not summary.
 
 **Beat flow:**
 
-1. Start from the chapter obligation: She has been waiting a decade to avenge an act of mercy. Maggie closes the box and replaces it on Cal's shelf. She asks one careful question: did Mary ever know what his grandfather's last weeks were really like? Cal goes still. He says nobody talked about it. That Mary always said her father died too soon. Maggie walks home carrying more truth than Mary has ever had.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
+1. Alone at the bench, Maggie opens the box: thin paper, a letter or journal in a failing hand, the kind of thing a man in serious pain writes in the dark, addressed to no one.
+2. She reads carefully, the maker's attention turned to paper instead of clay: the pressure of the pen, where the hand shook, where it steadied to say the hardest thing.
+3. The content lands in stages. He was not getting better. He knew it. And he was asking Neil — more than once — for something the record would never name.
+4. Maggie separates fact from interpretation even now: these are his words, his repetition, his direct asking. She does not embroider them; she lets them be exactly as heavy as they are.
+5. End on the pivot approaching: she can feel the shape of what Neil did beginning to form, and does not yet want to complete it.
 
-**Emotional turn:** Trust becomes the route to proof, making the truth heavier rather than triumphant.
+**Emotional turn:** The dead man stops being a date in an inquest and becomes a voice, asking — and Maggie has to keep reading.
 
-**Texture to include:** Cal’s workshop shelves, old cardboard, rain on corrugated iron, thin paper, bench lamp, Glaze on Maggie’s coat, closing-shop smells, and repaired bowls waiting at home.
+**Texture to include:** thin paper under the bench lamp, a failing hand on the page, rain on iron, the box's old smell, her own careful fingers, the workshop dark beyond the lamp's circle.
+
+### Scene 3 — The Mercy Under the Murder
+
+**Location:** Cal's workshop bench, the letter finished.
+
+**Purpose:** Land the full inversion — the mercy, the mistaken vengeance, the concealment — as the emotional peak of the mystery.
+
+**Beat flow:**
+
+1. He wanted it to end and had asked directly. Maggie reaches the bottom of the page and understands the whole thing at once.
+2. Neil did what the father asked. Mary killed the one person who listened when her father said he could not bear it any longer.
+3. The final layer turns the whole book over: Mary's controlled story — *we argued about Cal, I left, he was alive* — was built to conceal the act. She had no idea the act was an answer to her father's prayer.
+4. She killed him to avenge a murder. She has been waiting a decade to avenge an act of mercy. Maggie sits with the size of it — Mary right, and catastrophically wrong, inside the same grief.
+5. End not in triumph but in something close to nausea: Maggie now holds a truth that will break the man in the next room and the woman who fed her cake, and the two of them love each other.
+
+**Emotional turn:** Maggie solves the murder and takes no satisfaction from it; the answer is heavier than the mystery ever was.
+
+**Texture to include:** the finished letter face-up, the bench lamp, rain slackening, Glaze shifting on her coat, the open box, her hands gone very still, the workshop cold reaching her.
+
+### Scene 4 — More Truth Than Mary Has
+
+**Location:** The workshop storage shelf and doorway, then the walk home in the wet dark.
+
+**Purpose:** Close the box on Cal's trust, get his unknowing confirmation, and send Maggie home carrying the full weight.
+
+**Beat flow:**
+
+1. Maggie closes the box and replaces it exactly on Cal's shelf — the maker's care, and a small dishonesty she will have to answer for.
+2. She asks one careful question at the doorway: did Mary ever know what her father's last weeks were really like — what he wanted? She keeps it gentle, a neighbour's question.
+3. Cal goes still. He says nobody talked about it. That Mary always said her father died too soon.
+4. The answer confirms everything and damns it: Mary never knew. The vengeance was built on a blank the family kept clean for a decade.
+5. End on the walk home through the wet dark: Maggie carrying more truth about that death than Mary — its owner and its avenger — has ever had, and knowing she cannot hold it much longer.
+
+**Emotional turn:** Maggie leaves holding the one thing the town's kindness had kept buried, and understands that speaking it will cost her Cal.
+
+**Texture to include:** the box back on its shelf, the workshop light behind her, wet dark, rain easing to a drip, the walk up the hill, a lit window, Glaze's weight, the repaired bowls waiting at home.
 
 ### Chapter Structure Summary
 
@@ -3373,12 +3373,12 @@ Maggie closes the box and replaces it on Cal's shelf. She asks one careful quest
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- It was a half-truth, not a lie, and she could hear the difference in her own mouth.
+- The hand on the page had shaken everywhere except the place where it asked for the one thing it wanted.
+- Neil had done what the man begged him to do, and Mary had spent a decade avenging the mercy.
+- She had come looking for a murderer and found a daughter who had never been told the truth about her own father.
+- Cal said nobody talked about it, and that silence was the whole crime — the one the town had kept clean for ten years.
+- She walked home holding more truth about that death than the woman who had killed for it.
 
 
 ---
@@ -3395,77 +3395,77 @@ Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, C
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
 
-### Scene 1 — No More Hunches
+### Scene 1 — Everything, On the Table
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Pelican's Crook police station, a small office; rain on the windows, labelled folders, bad biscuits.
 
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
-
-**Beat flow:**
-
-1. Start from the chapter obligation: Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, Calloway, and the gap); Cobber's account of the blue-green car late in the gap; Mary's controlled story (which is itself evidence of consciousness of guilt — she got ahead of the witnesses before Maggie could speak); the motive shaped through the library archive; and the father's own words from Cal's papers. Pruitt makes her separate every observation from every piece of admissible evidence in action, not by reciting the notebook lesson.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
-
-**Emotional turn:** Maggie earns recognition for disciplined witness-work, not cleverness.
-
-**Texture to include:** station folders, bad biscuits, fluorescent hum, rain on windows, evidence laid out on a table, invoice paperwork, wrapped bowls, and Glaze sabotaging delivery notes.
-
-### Scene 2 — Building the Proof Chain
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
+**Purpose:** Maggie brings the whole case, and Pruitt forces her — in action, not by lecture — to separate observation from admissible fact.
 
 **Beat flow:**
 
-1. Start from the chapter obligation: He tells her something else: that he had briefly considered Cal too, independently, on the same physical evidence, before clearing him on proof rather than feeling. Maggie hears this and understands: having the thought was not the failure; speaking before testing would have been. Together the case coheres.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
+1. Maggie lays it out on the station table in order: the reconstructed evening (Beryl, Faye, Calloway, and the gap); Cobber's blue-green car late in the gap; Mary's controlled story; the motive shaped through the archive; the father's own words.
+2. Pruitt will not let her narrate it as a story. He stops her at each item: which of these did you see, which did someone tell you, which can be checked, which is you interpreting.
+3. The discipline is demonstrated, not recited — no three-column speech, just Pruitt making her hold each fact up to the light and Maggie doing it without bristling.
+4. Mary's controlled story reframes in his hands: a woman who got ahead of the witnesses is a woman conscious of what they would say.
+5. End with the case beginning to cohere on the table — not as Maggie's cleverness, but as a set of facts that survive being checked.
 
-**Emotional turn:** Maggie earns recognition for disciplined witness-work, not cleverness.
+**Emotional turn:** Maggie's observation becomes a properly bounded investigative lead, and she takes the discipline as help, not insult.
 
-**Texture to include:** station folders, bad biscuits, fluorescent hum, rain on windows, evidence laid out on a table, invoice paperwork, wrapped bowls, and Glaze sabotaging delivery notes.
+**Texture to include:** labelled folders, fluorescent hum, rain on the window, bad biscuits on a chipped plate, the case laid out in Maggie's order then re-sorted into Pruitt's, a pen tapping the desk.
 
-### Scene 3 — The Ordinary Evidence Matters
+### Scene 2 — He Thought It Too
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** Across the station table.
 
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
-
-**Beat flow:**
-
-1. Start from the chapter obligation: Pruitt does not treat the cup habit as proof. He treats it as the reason to ask the right questions and obtain the proof that will matter. Before Maggie leaves, he asks, "What are the facts?" Maggie answers cleanly. He tells her — as a technical assessment, not a compliment — that she is the best witness he has worked with, and then catches himself having said it.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
-
-**Emotional turn:** Maggie earns recognition for disciplined witness-work, not cleverness.
-
-**Texture to include:** station folders, bad biscuits, fluorescent hum, rain on windows, evidence laid out on a table, invoice paperwork, wrapped bowls, and Glaze sabotaging delivery notes.
-
-### Scene 4 — A Fact Maggie Can Stand Behind
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Dramatize the chapter beat through cozy scene-work: make the room, ritual, craft task or local exchange carry the clue and the feeling together.
+**Purpose:** The Pruitt parallel — he independently suspected Cal and cleared him on proof — teaching Maggie that the difference is behaviour, not innocence of thought.
 
 **Beat flow:**
 
-1. Start from the chapter obligation: She laughs. It is the first genuine laugh between them.
-2. Keep Maggie's immediate want concrete rather than abstract; she should be trying to protect a relationship, recover credibility, finish work, understand a fact, or avoid another public mistake.
-3. Let cozy texture carry information: food, weather, craft, domestic order, animal interruption, local ritual, or community choreography should do story work rather than decorate the scene.
-4. Preserve ambiguity until the outline explicitly resolves it. If a fact is real, separate the fact from Maggie's interpretation of it.
-5. End the scene with a small change in pressure: a boundary crossed or respected, a clue clarified or complicated, a relationship warmed or damaged, or a business obligation made harder to ignore.
+1. Pruitt tells her something he did not have to: he had briefly considered Cal himself, independently, on the same physical evidence, before clearing him on proof rather than feeling.
+2. Maggie hears it and the last of her shame about Chapter 19 loosens — having the thought was never the failure; speaking before testing would have been.
+3. The two of them fit their pieces together — his procedural checks, her reconstruction — and the case coheres between them, neither claiming it alone.
+4. Keep Mary human even here: they are building a case against a grieving daughter, and Pruitt's restraint acknowledges it.
+5. End with the shape complete enough to act on, and Maggie understanding that she and Pruitt are, quietly, the same kind of careful.
 
-**Emotional turn:** Maggie earns recognition for disciplined witness-work, not cleverness.
+**Emotional turn:** Maggie stops carrying the private verdict against herself; the difference between her and a crank was never the thought, only what she did next.
 
-**Texture to include:** station folders, bad biscuits, fluorescent hum, rain on windows, evidence laid out on a table, invoice paperwork, wrapped bowls, and Glaze sabotaging delivery notes.
+**Texture to include:** the two sets of notes meeting on the table, fluorescent hum, rain, Pruitt's even voice, a folder turned so she can read it, the biscuits neither of them eats.
+
+### Scene 3 — What Are the Facts
+
+**Location:** The station table, the case nearly assembled.
+
+**Purpose:** Pruitt refuses to treat the cup habit as proof and names Maggie's real skill in technical terms.
+
+**Beat flow:**
+
+1. Pruitt sets the cup habit and Maggie's studio form firmly to one side: not proof, he says — the reason to ask the right questions and get the proof that will stand.
+2. He runs it once more, the way it will have to survive a courtroom, and asks her flatly: what are the facts?
+3. Maggie answers cleanly — no interpretation, no performance, just the facts, in order, each one checkable.
+4. Pruitt tells her, as a technical assessment and not a compliment, that she is the best witness he has worked with — then visibly catches himself having said it.
+5. End on the small human crack in his procedure: the man who deals only in facts has just said something warm by accident.
+
+**Emotional turn:** Maggie earns recognition for disciplined witness-work, not cleverness — the exact opposite of the applause she once chased.
+
+**Texture to include:** the assembled case, fluorescent hum, Pruitt's biro, the chipped plate, his almost-embarrassment, rain thinning on the glass.
+
+### Scene 4 — The First Laugh
+
+**Location:** The station, then the doorway out.
+
+**Purpose:** End on the earned warmth between Maggie and Pruitt and hand the next crisis — telling Cal — to the reader.
+
+**Beat flow:**
+
+1. Maggie laughs — the first genuine laugh between them — at his catching himself, at the bad biscuits, at the sheer relief of being trusted with a fact.
+2. It is not romance; it is the recognition of a fellow careful person, two newcomers who deal only in what can be checked.
+3. Pruitt tells her what happens next in procedural terms: he has enough to move carefully on Mary.
+4. Business pressure keeps its place — the wrapped bowls and unsent delivery paperwork are still waiting; she has not let the case eat her livelihood, and she does not claim the commission's success yet.
+5. At the door, Pruitt asks the question that turns the book toward its rupture: does Cal know what she suspects?
+
+**Emotional turn:** Maggie gets the professional trust she once tried to counterfeit — and immediately feels the cost of it in the shape of Cal.
+
+**Texture to include:** the doorway, rain finally stopping, the wet street, Pruitt's folder under his arm, the abandoned biscuits, the question hanging, the walk back toward the wrapped bowls.
 
 ### Chapter Structure Summary
 
@@ -3498,12 +3498,12 @@ Maggie goes to Pruitt with everything: the reconstructed evening (Beryl, Faye, C
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- She laid the case out in her order, and Pruitt quietly re-sorted it into the only order that would survive a courtroom.
+- Having the thought had never been the failure, he said. Speaking before testing would have been.
+- He asked what the facts were, and for once she gave him only those.
+- He told her she was the best witness he had worked with, then looked as though he wished he could file the sentence somewhere she couldn't see it.
+- It was the first time they had laughed, and it was over bad biscuits and a fact that would end a woman's freedom.
+- Does Cal know what you suspect, he asked, and the whole warm room went cold.
 
 
 ---
@@ -3522,77 +3522,77 @@ Maggie tells Cal before Pruitt moves on Mary. Cal receives the news with disbeli
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
 
-### Scene 1 — The Conversation She Avoided
+### Scene 1 — Before She Knocks
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Wheelhouse, evening; the wrapped surf-club bowls and unsent invoice — then the rain-cold walk to Cal's workshop.
 
-**Purpose:** Stage the truth-telling as an adult act Maggie chooses before police action makes it unavoidable; the wrapped surf-club bowls prove she is still holding her work even though the public success must wait until after the case is solved.
-
-**Beat flow:**
-
-1. Maggie checks the wrapped surf-club bowls, delivery notes and unsent invoice before she goes to Cal; the practical inventory is proof that she will keep her own life intact, but she does not push the commission into public success before justice lands.
-2. She chooses a contained place for the conversation — workshop doorway, The Wheelhouse table, or a rain-cold threshold — where work objects make running away harder.
-3. She tells Cal Pruitt is moving on Mary. Do not soften the first blow; Cal receives it with disbelief, anger and frightening stillness.
-4. Let the wrapped bowls, invoice, rain or screw tins keep the scene grounded while emotion spikes.
-5. End with Cal asking for the thing Maggie cannot give: a version in which his family is not broken by the truth.
-
-**Emotional turn:** Maggie tells the truth where it costs her most and accepts that right action does not guarantee forgiveness.
-
-**Texture to include:** wrapped surf-club bowls, final invoice, workshop rain, screw tins, old tools, cold doorway air, and Glaze choosing the worst possible moment to cause a small disaster.
-
-### Scene 2 — Cal’s Loyalty Breaks Open
-
-**Location:** Workshop / The Wheelhouse.
-
-**Purpose:** Let Cal defend the woman who raised him without making him irrational; his loyalty is love under impact.
+**Purpose:** Stage the truth-telling as an adult act Maggie chooses before police action forces it; the wrapped bowls prove she is still holding her own work.
 
 **Beat flow:**
 
-1. Cal says Maggie has spent weeks pulling at things she does not understand; this should be protective anger, not generic romance conflict.
-2. Maggie says she understands enough and immediately knows the phrase is inadequate.
-3. Cal names what Mary was to him in lived detail — meals, school forms, tools, roofs, birthdays, the person who stayed — so the accusation costs the reader too.
-4. Maggie holds the line because proof now matters more than being liked, but she does not confuse that with moral superiority.
-5. End with Cal hearing enough to know he cannot simply reject the evidence.
+1. Before she goes, Maggie checks the wrapped surf-club bowls, the delivery notes, the unsent invoice. The inventory is proof she will keep her own life intact — but she does not push the commission into public success before justice lands.
+2. She chooses a contained place on purpose — Cal's workshop, where work objects make it harder for either of them to walk out.
+3. She tells Cal, without softening the first blow, that Pruitt is moving on Mary.
+4. Cal receives it with disbelief, then anger, then the frightening stillness Maggie has learned means he is trying not to come apart.
+5. End with Cal asking for the one thing she cannot give him: a version of the truth in which his family is not broken by it.
 
 **Emotional turn:** Maggie tells the truth where it costs her most and accepts that right action does not guarantee forgiveness.
 
-**Texture to include:** wrapped surf-club bowls, final invoice, workshop rain, screw tins, old tools, cold doorway air, and Glaze choosing the worst possible moment to cause a small disaster.
+**Texture to include:** wrapped surf-club bowls, the unsent invoice, rain-cold air, the workshop doorway, screw tins, Cal going very still, the smell of cut timber.
 
-### Scene 3 — Maggie Says the Unforgivable
+### Scene 2 — What Mary Was to Him
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** Cal's workshop, rain on the iron, the bench between them.
 
-**Purpose:** Force Maggie to confess the Cal head-fake because honesty matters more than preserving her image.
+**Purpose:** Let Cal defend the woman who raised him without becoming irrational — loyalty as love under impact.
 
 **Beat flow:**
 
-1. Maggie explains the precision habit, the workshop motive, and why she briefly believed the evidence might point at him.
-2. She admits she did not accuse him because she had already burned Beryl and Saffron and would not repeat that harm with someone she loved.
-3. Cal does not reward the restraint. To him, being privately suspected still wounds.
-4. Keep this as the brutal midpoint of the conversation, not a therapeutic disclosure.
-5. End in silence: the most honest thing she has said to him is also the cruellest.
+1. Cal says Maggie has spent weeks pulling at things she does not understand. It is protective anger, not generic romance conflict — a man defending the only family he chose.
+2. Maggie says she understands enough, and hears immediately how inadequate the phrase is.
+3. Cal names what Mary was to him in lived detail — the meals, the school forms, the tools, the roofs mended, the birthdays, the person who stayed when others left — so the accusation costs the reader too.
+4. Maggie holds the line because proof now matters more than being liked, and is careful not to mistake that for being right about him as a person.
+5. End with Cal hearing enough — the archive, the car, the father's words — to know he cannot simply throw the evidence out.
 
-**Emotional turn:** Maggie tells the truth where it costs her most and accepts that right action does not guarantee forgiveness.
+**Emotional turn:** Cal's loyalty is not stupidity but grief for a mother-figure, and it makes Maggie's truth heavier, not lighter.
 
-**Texture to include:** wrapped surf-club bowls, final invoice, workshop rain, screw tins, old tools, cold doorway air, and Glaze choosing the worst possible moment to cause a small disaster.
+**Texture to include:** rain on iron, the bench between them, screw tins, old tools on the wall, the workshop radio off for once, Cal's hands still at his sides.
+
+### Scene 3 — The Unforgivable Honesty
+
+**Location:** Cal's workshop, later in the same conversation.
+
+**Purpose:** Force Maggie to confess the Cal head-fake, because honesty matters more than protecting her own image.
+
+**Beat flow:**
+
+1. Maggie tells him the hardest part: the precision habit, the workshop motive, and that for a day she believed the evidence might point at him.
+2. She admits she did not accuse him — she went looking for proof it was not him — because she had already burned Beryl and Saffron and would not do that to someone she loved.
+3. Cal does not reward the restraint. To him, being privately suspected at all still wounds; the mercy she showed him is also the proof she once doubted him.
+4. Keep it the brutal midpoint, not a therapeutic disclosure: the most honest thing she has ever said to him is also the cruellest.
+5. End in silence — a knocked screw tin threatening to spill and then not — the two of them inside the thing that cannot be taken back.
+
+**Emotional turn:** Maggie chooses the truth that damages her most and learns that honesty and cruelty can be the same sentence.
+
+**Texture to include:** the quiet after rain, a knocked screw tin threatening to spill, Cal's unreadable stillness, the cold bench, Glaze at the doorway, the dark yard beyond.
 
 ### Scene 4 — Love Without Permission
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** Cal's workshop doorway, then the walk home; the wrapped bowls left behind.
 
-**Purpose:** Leave the relationship ruptured but not melodramatically closed; love is present and unusable.
+**Purpose:** Leave the relationship ruptured but not melodramatically closed, and wire the Tommy spur.
 
 **Beat flow:**
 
-1. Cal understands Pruitt must act, but understanding does not become forgiveness.
-2. Maggie does not ask him to absolve her. That restraint is part of her growth.
-3. Glaze or a small workshop mishap may interrupt with brief, painful normality, not comedy that breaks the scene.
+1. Cal understands Pruitt must act. Understanding does not become forgiveness, and he does not pretend it does.
+2. Maggie does not ask him to absolve her — that restraint is part of her growth, and it costs her.
+3. A small workshop mishap — Glaze, a spilled tin — intrudes with brief, painful normality, not comedy that breaks the scene.
 4. Cal says he will not stop Pruitt, but he cannot promise Maggie anything else.
-5. End with Maggie leaving the wrapped bowls and delivery paperwork behind as evidence that her work continues even when romance does not.
+5. Tommy spur: the wound makes retreat feel almost reasonable — the Quill voice obliging, *stay small, stay safe* — and instead of abandoning her work she goes home and checks the commission paperwork, keeping her life even as the romance ruptures.
 
-**Emotional turn:** Maggie tells the truth where it costs her most and accepts that right action does not guarantee forgiveness.
+**Emotional turn:** Maggie loses the man and keeps herself; the belittling voice tempts her to shrink, and she declines.
 
-**Texture to include:** wrapped surf-club bowls, final invoice, workshop rain, screw tins, old tools, cold doorway air, and Glaze choosing the worst possible moment to cause a small disaster.
+**Texture to include:** the workshop doorway, cold night air, spilled screws on concrete, Glaze underfoot, the ute dark in the yard, the walk uphill, the wrapped bowls and paperwork waiting at The Wheelhouse.
 
 ### Chapter Structure Summary
 
@@ -3626,12 +3626,12 @@ Maggie tells Cal before Pruitt moves on Mary. Cal receives the news with disbeli
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- She checked the wrapped bowls before she went, because whatever else broke tonight, her work was not going to be the thing she abandoned.
+- Cal did not shout. He went to the stillness she had learned to fear, the one that meant he was holding himself together by the edges.
+- He named what Mary had been to him — meals, roofs, birthdays, the person who stayed — until the accusation carried a weight the evidence never showed.
+- She had gone looking for proof it was not him. To Cal, that she had needed the proof at all was the wound.
+- The most honest thing she had ever said to him was also the cruellest, and there was no way to say only the first half.
+- He would not stop Pruitt. He could not promise her anything else. She went home and checked the invoice, because staying small was the one thing she would not do.
 
 
 ---
@@ -3648,77 +3648,77 @@ Maggie and Pruitt go to Mary's house. Mary sees them coming and opens the door b
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
 
-### Scene 1 — Mary Opens Her Door
+### Scene 1 — She Opens Before They Knock
 
-**Location:** Mary's house doorway / front room.
+**Location:** Mary's front doorstep, evening; the readied house behind her.
 
-**Purpose:** Stage Mary’s composure as the last version of her control: she sees the truth arriving and tries to host it.
+**Purpose:** Stage Mary's composure as the last version of her control — she sees the truth arriving and tries to host it.
 
 **Beat flow:**
 
-1. Maggie and Pruitt arrive at Mary’s house or Mary comes to the door before the knock; she has seen them coming and has already decided how the room will behave.
-2. Use ordinary hospitality as pressure: kettle warm, cups ready, cake tin closed, cloth folded, doormat clean.
-3. Mary greets Maggie as someone she has fed and assessed, not as an enemy.
-4. Pruitt keeps the procedure restrained; Maggie notices that justice here will be quiet, not triumphant.
-5. End with Mary inviting them in or opening the door wider, turning hospitality into a trap she built for herself.
+1. Maggie and Pruitt come up the path; Mary opens the door before they knock. She has seen them coming and has already decided how the room will behave.
+2. The house is readied the way it always is: kettle warm, cups down, cake tin closed, cloth folded, doormat clean. Hospitality as the last exercise of control.
+3. Mary greets Maggie as someone she has fed and assessed — not as an enemy, not even now.
+4. Pruitt keeps the procedure quiet and restrained; Maggie sees that justice here will not be triumphant, only sad.
+5. End with Mary opening the door wider and inviting them in — turning her own hospitality into the trap she has built for herself.
 
-**Emotional turn:** Justice arrives without triumph; Maggie witnesses a woman who is guilty, grieving and human.
+**Emotional turn:** Mary meets the end of everything with a warm kettle, and the composure is the most heartbreaking thing in the room.
 
-**Texture to include:** Mary’s cake tins, clean doormat, warm kettle, good cups, a folded cloth, thin letter paper, neighbour curtains, and the restraint of Pruitt’s arrest.
+**Texture to include:** the clean doormat, the door opening before the knock, a warm kettle, good cups set out, the closed cake tin, a folded cloth, neighbour curtains, Pruitt's quiet at the step.
 
 ### Scene 2 — Kindness as Control
 
-**Location:** Mary's front room / kitchen table.
+**Location:** Mary's front room and kitchen table, tea offered.
 
-**Purpose:** Reveal how Mary’s genuine care and controlling secrecy come from the same root.
-
-**Beat flow:**
-
-1. Mary admits she confronted Neil and had waited years for a name; she frames the confrontation as a daughter finally making a man answer.
-2. She still tries to arrange the telling: what Cal should know, what neighbours should not see, where cups go, how grief should be spoken.
-3. Maggie recognises the same pattern seeded in cake tins, soup, folded cloths and family storage: Mary preserves people by deciding truth for them.
-4. Mary’s motive should feel emotionally legible without becoming justified.
-5. End with the strike/fall/staging admission landing in a room that remains painfully domestic.
-
-**Emotional turn:** Justice arrives without triumph; Maggie witnesses a woman who is guilty, grieving and human.
-
-**Texture to include:** Mary’s cake tins, clean doormat, warm kettle, good cups, a folded cloth, thin letter paper, neighbour curtains, and the restraint of Pruitt’s arrest.
-
-### Scene 3 — The Door Becomes a Trap
-
-**Location:** Mary's house doorway / front room.
-
-**Purpose:** Let legal truth and moral truth separate before the father’s words collapse Mary’s certainty.
+**Purpose:** Reveal how Mary's genuine care and her controlling secrecy grow from the same root.
 
 **Beat flow:**
 
-1. Mary says she did not go to kill Neil, but rage and certainty made the fatal moment possible: the vase blow, the fall down the stairs, the broken neck, and the choice to wipe/reset the room afterwards.
-2. Pruitt gives or names the father’s words as evidence; he does not perform judgement.
-3. Mary still sees herself as a daughter avenging a murder, not as a murderer seeking advantage.
-4. The threshold/door imagery should matter: she opened doors, closed truths, and now cannot close this one.
-5. End with Mary reading or being forced to face the proof she most feared.
+1. Mary admits she confronted Neil and had waited years for a name; she frames it as a daughter finally making a man answer.
+2. Even now she tries to arrange the telling — what Cal should know, what the neighbours should not see, where the cups go, how grief ought to be spoken.
+3. Maggie recognises the pattern she has been seeing since Chapter 2: the cake tins, the soup, the folded cloths, the family storage — Mary preserves the people she loves by deciding the truth for them.
+4. The motive is emotionally legible without being justified: a decade of certainty, a father she could not save, a name she finally had.
+5. End with the strike, the fall, the staging admission landing in a room that stays painfully domestic — a woman describing a killing across her own good cups.
 
-**Emotional turn:** Justice arrives without triumph; Maggie witnesses a woman who is guilty, grieving and human.
+**Emotional turn:** Maggie understands that Mary's kindness and Mary's crime are the same instinct — to control the story so no one she loves has to carry it.
 
-**Texture to include:** Mary’s cake tins, clean doormat, warm kettle, good cups, a folded cloth, thin letter paper, neighbour curtains, and the restraint of Pruitt’s arrest.
+**Texture to include:** the kitchen table, good cups, the closed cake tin, a folded cloth, tea poured and going cold, the ordinary clock, Mary's steady hostess hands.
 
-### Scene 4 — Maggie Understands Too Late
+### Scene 3 — The Door She Cannot Close
 
-**Location:** Mary's front room / kitchen table.
+**Location:** Mary's kitchen, the admission complete; Pruitt at the table.
 
-**Purpose:** Make the climax humane and accountable: the letter supplies moral truth, not detective agency.
+**Purpose:** Let legal truth and moral truth separate before the father's words collapse Mary's certainty.
 
 **Beat flow:**
 
-1. Mary reads that her father repeatedly begged Neil for mercy; her certainty collapses in stages, not theatrically all at once.
-2. Maggie understands that Mary killed the one person who had listened when her father asked for relief.
-3. The father’s words reframe motive and mercy, but Maggie’s proof chain has already brought them here; do not let the letter solve the case for her.
-4. Pruitt arrests Mary with restraint; neighbours may see curtains move, but the scene avoids spectacle.
-5. End with Mary asking whether Cal will ever understand, making the next chapter emotional rather than procedural.
+1. Mary says she did not go to kill Neil — but rage and certainty made the fatal moment possible: the vase blow, the fall down the stairs, the broken neck, and the choice to wipe and reset the room afterwards.
+2. Pruitt gives or names the father's words as evidence. He does not perform judgement; he lets the paper do it.
+3. Mary still sees herself as a daughter avenging a murder, not as a murderer seeking anything for herself.
+4. The threshold imagery pays off: she has spent a lifetime opening doors and closing truths, and this is the one truth she cannot close.
+5. End with Mary being handed, or made to face, the proof she has feared for a decade without knowing it was proof.
 
-**Emotional turn:** Justice arrives without triumph; Maggie witnesses a woman who is guilty, grieving and human.
+**Emotional turn:** The killing is spoken plainly, and for the first time Mary's certainty has a crack in it she cannot fold away.
 
-**Texture to include:** Mary’s cake tins, clean doormat, warm kettle, good cups, a folded cloth, thin letter paper, neighbour curtains, and the restraint of Pruitt’s arrest.
+**Texture to include:** thin letter paper on the good tablecloth, Pruitt's restraint, the vase absent but present in every word, the kettle gone cold, the door standing open to the hall.
+
+### Scene 4 — What Mary Never Knew
+
+**Location:** Mary's kitchen, then the doorway and the quiet street.
+
+**Purpose:** Make the climax humane and accountable — the letter supplies moral truth, not detective agency — and land the arrest without spectacle.
+
+**Beat flow:**
+
+1. Mary reads that her father repeatedly begged Neil for mercy. Her certainty collapses in stages, not theatrically all at once — a decade of grief re-sorting itself in real time.
+2. Maggie understands, fully, that Mary killed the one person who had listened when her father said he could not bear it any longer.
+3. The father's words reframe the mercy and the murder — but Maggie's proof chain has already brought them to this door; the letter breaks Mary, it does not solve the case for Maggie.
+4. Pruitt arrests Mary with restraint. Neighbours' curtains move; the scene refuses spectacle, staying small and domestic to the end.
+5. End with Mary, as she is led out, asking Maggie the question that turns the next chapter emotional rather than procedural: will Cal ever understand why she did it?
+
+**Emotional turn:** Justice arrives without triumph; Maggie witnesses a woman who is guilty, grieving and human, and is given no comfort for being right.
+
+**Texture to include:** the thin letter in Mary's hands, the collapse behind her eyes, the clean doormat again on the way out, neighbour curtains, Pruitt's low voice, the cold street, the cake tin left closed on the bench.
 
 ### Chapter Structure Summary
 
@@ -3752,12 +3752,12 @@ Maggie and Pruitt go to Mary's house. Mary sees them coming and opens the door b
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- She opened the door before they knocked, because she had already decided how the room would behave.
+- The kettle was warm and the cups were down, and she was going to host the end of her own life if it killed her.
+- Mary had spent a lifetime opening doors and closing truths, and this was the one truth she could not fold away.
+- She had killed the one man who listened when her father said he could not bear it, and she had waited ten years to do it.
+- The letter broke Mary; it did not solve anything for Maggie, who had already walked the proof all the way to this door.
+- As they led her out she asked whether Cal would ever understand, and Maggie had no cup to set that question in.
 
 
 ---
