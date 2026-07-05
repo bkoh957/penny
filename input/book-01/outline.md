@@ -3774,77 +3774,77 @@ Mary is taken to Geelong. Cal drives down and does not return for two days. The 
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
 
-### Scene 1 — The Second Grief Arrives
+### Scene 1 — The Practical Silence
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The main street and bakery, grey morning; Cal's workshop dark and shut.
 
-**Purpose:** Show the town absorbing Mary’s arrest as a second grief, not a tidy solution.
-
-**Beat flow:**
-
-1. Mary is taken to Geelong and Cal leaves town for two days; Maggie experiences the absence as a practical silence — no ute, no workshop noise, no answer to give anyone.
-2. The bakery queue is subdued rather than juicy: people buy bread, lower voices, and struggle with holding Neil’s mercy and Mary’s guilt together.
-3. Maggie chooses not to become the explainer. She lets the town have grief without forcing her version of the truth into every room.
-4. Use grey sea, closed doors, quiet errands and Glaze’s ordinary demands to keep the aftermath lived-in.
-5. End with Maggie understanding that solving the case has not restored order yet; it has only made honest grief possible.
-
-**Emotional turn:** Maggie makes amends through changed behaviour and professional boundaries rather than self-punishment.
-
-**Texture to include:** subdued bakery queue, grey sea, tea with Saffron, Glaze inspecting her handbag, surf-club bunting arguments, wrapped bowls, and art-trail flyers.
-
-### Scene 2 — Town Love Turns Complicated
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Let Saffron and Maggie begin repair through changed behaviour rather than apology speeches.
+**Purpose:** Show the town absorbing Mary's arrest as a second grief, and Maggie choosing not to be the explainer.
 
 **Beat flow:**
 
-1. Saffron comes to The Wheelhouse for tea in a scene that is awkward before it is warm.
-2. Maggie offers tea without over-explaining, defending herself, or asking to be forgiven for suspecting her.
-3. Saffron sees the effort and chooses one small truth in return: not absolution, but the beginning of a quieter alliance.
-4. Glaze inspecting Saffron’s handbag or scarf can add lightness without undercutting the apology.
-5. End with both women understanding that being misread is not the same as being known.
+1. Mary has been taken to Geelong; Cal has driven down and not come back. Maggie feels the absence as a practical silence — no ute clearing its throat, no workshop radio, no saw, nothing to answer.
+2. The bakery queue is subdued, not juicy: people buy bread and lower their voices, holding Neil's mercy and Mary's guilt in the same breath and not managing it well.
+3. Faye is gentle and tired behind the counter; the town does not know where to put the two truths, and neither does Maggie.
+4. Maggie chooses, deliberately, not to become the explainer — not to walk her version of the truth into every room. She lets the town have its grief without narrating it.
+5. End with the understanding that solving the case has not restored order; it has only made honest grief possible, which is harder and better.
 
-**Emotional turn:** Maggie makes amends through changed behaviour and professional boundaries rather than self-punishment.
+**Emotional turn:** Maggie learns that being right did not fix the town; it only let it stop pretending, and that is its own kind of grief.
 
-**Texture to include:** subdued bakery queue, grey sea, tea with Saffron, Glaze inspecting her handbag, surf-club bunting arguments, wrapped bowls, and art-trail flyers.
+**Texture to include:** grey sea at the end of the street, the dark shut workshop, a subdued bakery queue, Faye's tired hands, lowered voices, closed doors, Glaze wanting his dinner regardless.
 
-### Scene 3 — Cal Between Two Truths
+### Scene 2 — Tea With Saffron
 
-**Location:** Workshop / The Wheelhouse.
+**Location:** The Wheelhouse, afternoon; the counter, two cups, the kettle.
 
-**Purpose:** Keep Cal mostly absent so his pain has space; let community business continue around it.
-
-**Beat flow:**
-
-1. Maggie hears second-hand that Cal has driven to Geelong or is dealing with Mary’s legal/family fallout.
-2. No one asks Maggie to interpret Cal’s grief, and she resists the urge to make his silence about herself.
-3. Beryl arrives with a practical surf-club proposal that risks turning the completed bowls into memorial-adjacent sentiment before the town has absorbed the truth.
-4. Maggie listens fully before answering, demonstrating the growth she lacked with Beryl earlier.
-5. End with Maggie refusing the memorial display and offering a cleaner sequence: the murder is solved, grief is allowed to settle, then the commission can stand as work rather than consolation merchandise.
-
-**Emotional turn:** Maggie makes amends through changed behaviour and professional boundaries rather than self-punishment.
-
-**Texture to include:** subdued bakery queue, grey sea, tea with Saffron, Glaze inspecting her handbag, surf-club bunting arguments, wrapped bowls, and art-trail flyers.
-
-### Scene 4 — No Clean Monster
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Land the cozy justice contract: consequences are real, but no one is flattened into monster or saint.
+**Purpose:** Begin repair with Saffron through changed behaviour rather than an apology speech.
 
 **Beat flow:**
 
-1. Maggie wraps and stores the bowls rather than rushing them into the room, making the business boundary concrete.
-2. The town’s conversations hold two truths at once: Neil harmed people and gave mercy; Mary loved deeply and killed wrongly.
-3. Maggie notices where old habits of protective silence might start again and chooses not to feed them.
-4. Use art-trail flyers, bunting arguments, wrapped bowls and grey weather as normal life returning under strain.
-5. End with Maggie’s changed behaviour, not self-punishment, as the first real amends.
+1. Saffron comes to The Wheelhouse for tea in a scene that is awkward before it is warm — two women who mirrored and resented each other, one of whom the case nearly ruined.
+2. Maggie offers tea and does not over-explain, does not defend having suspected her, does not ask to be forgiven. She just makes it properly and hands it over.
+3. Saffron sees the effort — the absence of performance — and offers one small truth in return: not absolution, the beginning of a quieter alliance.
+4. Glaze investigates Saffron's expensive handbag or scarf, adding lightness without undercutting the repair.
+5. End on the recognition that runs both ways: being misread is not the same as being known, and they have each been both.
 
-**Emotional turn:** Maggie makes amends through changed behaviour and professional boundaries rather than self-punishment.
+**Emotional turn:** Two women who came here to reinvent themselves stop competing and start, tentatively, keeping each other's company.
 
-**Texture to include:** subdued bakery queue, grey sea, tea with Saffron, Glaze inspecting her handbag, surf-club bunting arguments, wrapped bowls, and art-trail flyers.
+**Texture to include:** two cups, the kettle, Saffron's careful linen, Glaze nosing the handbag, grey light on glaze, the quiet studio, the tea done right.
+
+### Scene 3 — What Beryl Wants
+
+**Location:** The Wheelhouse, the wrapped bowls stacked; Beryl arriving with a proposal.
+
+**Purpose:** Test Maggie's growth — she listens fully before refusing to turn the commission into memorial merchandise.
+
+**Beat flow:**
+
+1. Word reaches Maggie second-hand that Cal is in Geelong dealing with Mary's legal and family fallout; no one asks her to interpret his grief, and she resists making his silence about herself.
+2. Beryl arrives with a practical, well-meant surf-club proposal: place the finished bowls at a memorial-adjacent display now, while feeling is high.
+3. Maggie listens all the way through before answering — the exact courtesy she failed to give Beryl earlier in the book.
+4. Then she refuses to commodify grief: the bowls will not become consolation merchandise. She offers a cleaner sequence — let grief settle, then the commission can stand as work at a proper summer open-studio promotion.
+5. End with Beryl, unexpectedly, respecting the boundary — the two of them on better terms than the bakery disaster left them.
+
+**Emotional turn:** Maggie holds a professional line rooted in values instead of fear, and mends something with Beryl by listening first.
+
+**Texture to include:** wrapped bowls stacked, Beryl's clipboard and bunting samples, the surf-club diary, the grey window, Glaze on the paperwork, the kettle again.
+
+### Scene 4 — Amends Are a Behaviour
+
+**Location:** The Wheelhouse, evening; wrapping and storing the bowls.
+
+**Purpose:** Land the cozy-justice contract — consequences real, no one flattened — and hook the art-trail question.
+
+**Beat flow:**
+
+1. Maggie wraps and stores the bowls properly rather than rushing them into the room, making the business boundary a physical act.
+2. The town's conversations, overheard and reported, hold two truths at once: Neil harmed people and gave mercy; Mary loved deeply and killed wrongly. No clean monster, no clean saint.
+3. Maggie notices where the old habit of protective silence could start closing over the truth again, and chooses not to feed it.
+4. Her amends are changed behaviour, not self-punishment: she is not grovelling, she is doing the next right thing quietly.
+5. End on the hook: the open-studio organiser asks whether Maggie is ready to put her own name on the art-trail map — a question about belonging she could not have answered in Chapter 1.
+
+**Emotional turn:** Maggie makes amends by how she acts, not how she suffers, and is offered a place in the town's summer on her own terms.
+
+**Texture to include:** bubble wrap and newspaper, the storage shelf, the art-trail flyer on the counter, evening light going, Glaze supervising, the cooling kettle, the organiser's question left open.
 
 ### Chapter Structure Summary
 
@@ -3877,12 +3877,12 @@ Mary is taken to Geelong. Cal drives down and does not return for two days. The 
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- The workshop stayed dark and the street stayed quiet, and Maggie learned that a solved case is not the same as a mended town.
+- She made the tea properly and said none of the things she had rehearsed, and that turned out to be the apology.
+- Being misread was not the same as being known, and she and Saffron had been each other's proof of both.
+- She let Beryl finish, every word of it, before she said no — which was the whole difference between this year and the last time.
+- The bowls were not consolation, and she would not let grief buy them at that price.
+- Amends, she was learning, were a thing you did, not a thing you suffered.
 
 
 ---
@@ -3899,77 +3899,77 @@ Beryl forces an informal memorial at the pub into existence by sheer social will
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
 
-### Scene 1 — Neil as a Man
+### Scene 1 — Beryl Makes a Memorial
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The pub, evening; the back room, trestle tables, sausage rolls.
 
-**Purpose:** Resolve Neil’s victim arc through a public ritual that allows complexity.
+**Purpose:** Resolve Neil's victim arc through a public ritual that allows complexity.
 
 **Beat flow:**
 
-1. Beryl forces an informal memorial at the pub into being because someone must organise grief before it curdles.
-2. People start with safe saint-story lines and gradually admit sharper truths: difficult, cruel, necessary, sometimes kind.
-3. Faye’s response should be embodied — wet laugh, tears, work-rough hands — not a speech about moral complexity.
-4. Keep food and pub texture active: sausage rolls, chips, paper napkins, stacked chairs, someone saving Maggie a seat.
-5. End with the saint version of Neil beginning to fail without the monster version replacing it.
+1. Beryl forces an informal memorial at the pub into existence by sheer social will — someone has to organise grief before it curdles, and she has appointed herself.
+2. The room assembles: pub chips and sausage rolls, paper napkins, stacked chairs pressed into service, the whole subdued town in one warm loud space.
+3. People begin with the safe lines — Neil was a good doctor, Neil would come out at any hour — the saint story everyone reaches for first.
+4. Faye's grief is embodied, not a speech: a wet laugh that turns to tears and back, work-rough hands around a glass.
+5. End with the saint version starting to fail under the weight of what everyone actually knows, and no monster arriving to replace it.
 
-**Emotional turn:** The town gives Neil and Maggie complicated acceptance rather than clean absolution.
+**Emotional turn:** The town gathers to bury a simple story about Neil and finds it will not stay buried.
 
-**Texture to include:** pub sausage rolls, paper napkins, Beryl policing speeches, Faye’s wet laugh, Cobber’s odd toast, pub chips, stacked chairs, and someone saving Maggie a seat.
+**Texture to include:** pub sausage rolls, paper napkins, stacked chairs, Faye's wet laugh, the warm loud room, condensation on the glasses, Beryl at the head of it all.
 
 ### Scene 2 — The Saint Story Fails
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The pub, mid-memorial; the speeches.
 
 **Purpose:** Let the town choose honesty over sentimental cleanup.
 
 **Beat flow:**
 
-1. One speaker offers a too-clean tribute; another corrects it gently or Beryl interrupts with civic brutality.
-2. Maggie sees how much easier false comfort would be and why Pelican’s Crook is tempted by it.
-3. Faye or Saffron names a wound Neil caused without making that wound permission for murder.
-4. Cobber’s odd toast can sound like nonsense until it lands as the right shape of truth.
-5. End with Neil becoming smaller than a saint and larger than a villain.
+1. One speaker offers a too-clean tribute; another gently corrects it, or Beryl interrupts with civic brutality — the tribute is not allowed to be a lie.
+2. Maggie sees, from the edge, how much easier false comfort would be, and why Pelican's Crook is tempted by it.
+3. Faye or Saffron names a real wound Neil caused — a cruelty, a public humiliation — without letting that wound become permission for murder.
+4. Cobber offers a toast that sounds like nonsense — tides, salvage, something about what the sea gives back — until it lands as exactly the right shape of the truth.
+5. End with Neil becoming, out loud and communally, smaller than a saint and larger than a villain.
 
-**Emotional turn:** The town gives Neil and Maggie complicated acceptance rather than clean absolution.
+**Emotional turn:** The room chooses an honest, uncomfortable Neil over a comfortable false one — and is better for it.
 
-**Texture to include:** pub sausage rolls, paper napkins, Beryl policing speeches, Faye’s wet laugh, Cobber’s odd toast, pub chips, stacked chairs, and someone saving Maggie a seat.
+**Texture to include:** a raised glass, a too-clean eulogy faltering, Beryl's interruption, Cobber's odd toast, Saffron's careful honesty, the pub gone briefly quiet.
 
 ### Scene 3 — The Ugly Help He Gave
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The pub, the room now honest; Maggie at the edge.
 
-**Purpose:** Let the mercy truth become communal understanding without making Neil saintly.
-
-**Beat flow:**
-
-1. Someone names the mercy toward Mary’s father carefully, perhaps not in legal detail but enough for the room to understand the tragic misunderstanding.
-2. People react differently: discomfort, gratitude, anger, shame at earlier certainty.
-3. Maggie does not lead the room. She witnesses, which is a different role from solving.
-4. Beryl defends the necessity of truth when someone suggests Maggie should have left the family alone.
-5. End with Maggie not absolved but allowed to remain in the room.
-
-**Emotional turn:** The town gives Neil and Maggie complicated acceptance rather than clean absolution.
-
-**Texture to include:** pub sausage rolls, paper napkins, Beryl policing speeches, Faye’s wet laugh, Cobber’s odd toast, pub chips, stacked chairs, and someone saving Maggie a seat.
-
-### Scene 4 — A Motive with Mercy in It
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Close the communal aftermath with complicated acceptance.
+**Purpose:** Let the mercy truth become communal understanding without making Neil saintly, and let Beryl defend Maggie.
 
 **Beat flow:**
 
-1. The pub ritual winds down into ordinary tasks: collecting glasses, wrapping leftovers, stacking chairs.
-2. Maggie feels the difference between universal approval and belonging: people can disagree with her and still keep a chair.
-3. Use one small comic/social beat — Beryl policing speeches, Cobber’s toast, Faye’s wet laugh — to restore cozy warmth.
-4. Neil’s arc resolves as human: harmful, compassionate, secretive, and not reducible.
-5. End with someone saving Maggie a seat or plate, a quiet sign that the town is not done with her.
+1. Someone names the mercy toward Mary's father carefully — not in legal detail, but enough for the room to grasp the tragic misunderstanding at the centre of everything.
+2. People react differently and honestly: discomfort, unexpected gratitude, anger, shame at their own earlier certainty about Neil and about Maggie.
+3. Maggie does not lead the room. She witnesses — a humbler role than solving — and lets the town do its own reckoning.
+4. When someone says Maggie should have left the family alone, Beryl defends her flatly: truth does not become cruelty just because it hurts.
+5. End with Maggie not absolved — she does not feel forgiven — but plainly allowed to remain in the room.
 
-**Emotional turn:** The town gives Neil and Maggie complicated acceptance rather than clean absolution.
+**Emotional turn:** The mercy at the heart of the murder becomes something the whole town has to hold, and Maggie is included in the holding.
 
-**Texture to include:** pub sausage rolls, paper napkins, Beryl policing speeches, Faye’s wet laugh, Cobber’s odd toast, pub chips, stacked chairs, and someone saving Maggie a seat.
+**Texture to include:** lowered voices, the mercy spoken plainly, Beryl's blunt defence, shamed faces, Maggie still at the edge, a hand on her shoulder, the pub's warmth.
+
+### Scene 4 — A Chair at the Table
+
+**Location:** The pub, winding down; glasses collected, chairs stacked.
+
+**Purpose:** Close the communal aftermath with complicated acceptance and hook the Artie photograph.
+
+**Beat flow:**
+
+1. The ritual winds down into ordinary tasks: collecting glasses, wrapping leftovers, folding and stacking chairs — grief becoming chores, the town's way of surviving.
+2. Maggie feels the exact difference between universal approval and belonging: people can disagree with what she did and still keep a chair for her.
+3. One small comic beat restores the warmth — Beryl policing the last speech, Cobber's toast quoted back, Faye's wet laugh.
+4. Neil's arc resolves as human: harmful, compassionate, secretive, not reducible to either story.
+5. End with someone saving Maggie a seat or pressing a plate on her — and, in passing, a mention of the old lighthouse photograph Artie has been trying for weeks to show her.
+
+**Emotional turn:** Maggie understands belonging as being known well enough to be disagreed with and kept anyway — and the next mystery brushes past unnoticed.
+
+**Texture to include:** collected glasses, wrapped leftovers, stacked chairs, a saved seat, a plate pressed into her hands, Artie's mention of the photograph, the pub emptying into the dark street.
 
 ### Chapter Structure Summary
 
@@ -4002,12 +4002,12 @@ Beryl forces an informal memorial at the pub into existence by sheer social will
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- Beryl organised the grief the way she organised everything else: before anyone had agreed to it, and better than they could have done themselves.
+- The saint story failed the way thin ice fails — quietly, all at once, with everyone pretending they had not heard the crack.
+- Cobber's toast sounded like nonsense right up until it was the truest thing anyone had said all night.
+- Truth did not become cruelty just because it hurt, Beryl said, and dared the room to argue.
+- Maggie did not feel forgiven. She felt kept, which turned out to be different and enough.
+- Belonging was being known well enough to be disagreed with and still handed a plate.
 
 
 ---
@@ -4026,77 +4026,77 @@ Cal returns after the murder is solved and the town has begun absorbing the trut
 
 ### Scene 1 — Still Warm from the Kiln
 
-**Location:** Surf club / The Wheelhouse.
+**Location:** The Wheelhouse, night; the kiln still warm, the table lamp, Glaze between them.
 
-**Purpose:** Use the finished bowls and kiln warmth as neutral ground for Cal’s return.
+**Purpose:** Use the finished bowls and kiln warmth as neutral ground for Cal's return.
 
 **Beat flow:**
 
-1. Cal returns to The Wheelhouse after two days away; the kiln or wrapped bowls are still warm enough to make work physically present between them.
-2. Glaze positions himself between them as comic neutral territory, preventing the scene from becoming pure anguish.
-3. Maggie does not ask where Cal has been until he offers it; restraint is her first apology.
-4. Cal notices the finished bowls before he can talk about Mary because craft is safer than family.
-5. End with both of them at the same table but not yet on the same side emotionally.
+1. Cal comes back to The Wheelhouse after two days in Geelong. The kiln is still warm and the finished bowls are out; work is physically present in the room, a thing to look at instead of each other.
+2. Glaze installs himself squarely between them on the table — comic neutral territory that keeps the scene from becoming pure anguish.
+3. Maggie does not ask where he has been until he offers it. The restraint is her first real apology, and he registers it as one.
+4. Cal reaches for the bowls before he can reach for Mary — craft is the safer subject, and both of them know it and let it be.
+5. End with the two of them at the same table and not yet on the same side, the kiln's warmth doing what words cannot yet.
 
-**Emotional turn:** Maggie and Cal let two truths coexist: she did right, and he is hurt.
+**Emotional turn:** Cal comes back into the room, which is not the same as coming back to her, and the kiln keeps both possibilities warm.
 
-**Texture to include:** kiln warmth, finished bowls, table lamp, Glaze as neutral territory, repair-glaze seams, plinth adjustments, night air, and the good apron claimed again.
+**Texture to include:** kiln warmth, the finished bowls out on the bench, the table lamp, Glaze planted between them, night air at the door, the good apron over a stool.
 
 ### Scene 2 — The Commission Stands on Its Own
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Wheelhouse, the finished set laid out.
 
-**Purpose:** Let professional completion after the solved murder prove Maggie’s changed confidence.
+**Purpose:** Let professional completion after the solved murder prove Maggie's changed confidence.
 
 **Beat flow:**
 
-1. With Mary arrested and the town no longer using the bowls as memorial shorthand, Maggie confirms delivery/payment or prepares the final surf-club handover. The final bowls should be useful, varied, clearly hers, and honest about process rather than identical, safe souvenir pieces.
-2. Frame the commission as the community-scale right-piece payoff. Maggie is no longer trying to make safe souvenir bowls or individual ceramic portraits; she is making work that fits this surf club and town: salt air, rough hands, committee use, imperfect history, repair lines, practical weight, and public ceremony without prettiness-as-apology.
-3. Cal sees she has finished ambitious work, not just safe work: handmade variation, visible repair-inspired lines, proper pricing, and no apology in the invoice. She knows it is good.
-4. The business beat should not decorate the romance; it is the proof that Maggie is no longer waiting for permission to claim competence, and that the book can end in work rather than in murder.
-5. Keep dialogue sparse and practical around packing, glaze, weight and transport.
+1. With Mary arrested and the town no longer using the bowls as memorial shorthand, Maggie confirms the final surf-club handover — delivery, payment, the work standing free of grief. The bowls are useful, varied, clearly hers, honest about process rather than identical souvenir pieces.
+2. Frame the set as the community-scale right piece: not souvenir sameness and not individual ceramic portraits, but work fitted to this club and town — salt air, rough hands, committee use, imperfect history, repair lines, practical weight, ceremony without prettiness-as-apology.
+3. Cal sees she has finished ambitious work, not safe work: handmade variation, visible repair-inspired lines, proper pricing, no apology in the invoice. She knows it is good.
+4. The business beat is not decoration for the romance; it is the proof Maggie has stopped waiting for permission to claim competence, and that the book can end in work rather than in murder.
+5. Keep the dialogue sparse and practical — packing, glaze, weight, transport.
 6. End with Cal acknowledging the work before he can acknowledge the relationship.
 
-**Emotional turn:** Maggie and Cal let two truths coexist: she did right, and he is hurt.
+**Emotional turn:** Maggie's work stands on its own in front of the one person whose eye she once feared, and she lets it.
 
-**Texture to include:** kiln warmth, finished bowls, table lamp, Glaze as neutral territory, repair-glaze seams, plinth adjustments, night air, and the good apron claimed again.
+**Texture to include:** the finished set laid out, repair-glaze seams and tide lines, the invoice unhidden, packing materials, glaze notes, the plinth Cal made, sparse practical talk.
 
-### Scene 3 — Repair as Proof of Change
+### Scene 3 — Two Truths at the Table
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Wheelhouse table, the lamp low.
 
 **Purpose:** Stage romantic repair as two people holding incompatible truths without forcing resolution.
 
 **Beat flow:**
 
-1. Cal says he cannot forgive easily; Maggie says she cannot apologise for finding the truth.
-2. They acknowledge both things can be true: Maggie did right, and Cal is hurt by the cost.
-3. Cal admits Mary feared Maggie would take him away from the family; Maggie refuses the premise without mocking Mary’s fear.
-4. Their attraction remains present but disciplined; do not solve it with a kiss.
-5. End with the first honest warmth returning, still fragile.
+1. Cal says he cannot forgive easily; Maggie says she cannot apologise for finding the truth. Both statements are allowed to stand.
+2. They acknowledge both things can be true at once: Maggie did right, and Cal is hurt by the cost of it.
+3. Cal admits Mary feared Maggie would take him away from the family. Maggie says she never wanted to take him anywhere.
+4. Cal says, quietly, that this may be why he began wanting to go — the most either of them has admitted about what is between them. Their attraction stays present and disciplined; they do not solve it with a kiss.
+5. End with the first honest warmth returning, still fragile, still real.
 
-**Emotional turn:** Maggie and Cal let two truths coexist: she did right, and he is hurt.
+**Emotional turn:** They stop pretending there is nothing between them, without pretending the wound is healed.
 
-**Texture to include:** kiln warmth, finished bowls, table lamp, Glaze as neutral territory, repair-glaze seams, plinth adjustments, night air, and the good apron claimed again.
+**Texture to include:** the low lamp, two mugs, Glaze shifting sides, night surf, the quiet after a hard sentence, Cal's stillness gone softer, the bowls catching the light.
 
-### Scene 4 — The Last Piece Clicks
+### Scene 4 — I Know
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Wheelhouse, late; the bowls against Cal's plinth, Glaze on the good apron.
 
-**Purpose:** Use Cal’s comment on the bowls to close Maggie’s artistic-confidence arc after the murder plot has fully resolved.
+**Purpose:** Close Maggie's artistic-confidence arc through Cal's comment on the bowls, echoing Chapter 01.
 
 **Beat flow:**
 
-1. Cal notices the finished bowls are better than the safe pieces she first put on the shelves: varied, useful, carrying deliberate repair-inspired seams/tide lines, and set against the plinth he made without being swallowed by it.
-2. Let this echo Chapter 01 without spelling it out: the first right piece fit Cal's hand; the final set fits a community. Cal should feel the echo before he has language for it.
-3. Maggie says she knows — not defensively, not asking him to confirm it, but as earned fact.
-4. This line should answer Chapter 01’s “shop or hiding place” question through craft rather than speech.
-5. Glaze settles on the good apron or near the work, claiming the scene’s domestic continuity.
-6. End with connection open, not resolved: the relationship has room to continue across the series.
+1. Cal notices the finished bowls are better than the safe pieces she first put on the shelves: varied, useful, carrying deliberate repair-inspired seams and tide lines, set against the plinth he made without being swallowed by it.
+2. Let it echo Chapter 01 without spelling it out — the first right piece fit Cal's hand; this set fits a whole community. Cal feels the echo before he has language for it.
+3. He says they are better than the safe work. Maggie says she knows — not defensively, not asking him to confirm it, but as earned fact.
+4. The line answers Chapter 01's "shop or hiding place" question through craft rather than speech: she is not hiding in the shop anymore.
+5. Glaze settles on the good apron, claiming the domestic continuity from Chapter 01.
+6. End with the connection open, not resolved: the relationship has room to continue across the series.
 
-**Emotional turn:** Maggie and Cal let two truths coexist: she did right, and he is hurt.
+**Emotional turn:** Maggie owns her own work out loud, and the answer to the book's opening question is finally, quietly, "a shop."
 
-**Texture to include:** kiln warmth, finished bowls, table lamp, Glaze as neutral territory, repair-glaze seams, plinth adjustments, night air, and the good apron claimed again.
+**Texture to include:** the bowls against the plinth, repair seams catching the lamp, Glaze on the good apron, night air, Cal's unspoken recognition, "I know," the open door of the future.
 
 ### Chapter Structure Summary
 
@@ -4129,12 +4129,12 @@ Cal returns after the murder is solved and the town has begun absorbing the trut
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- The kiln was still warm when Cal came back, and for a while the work was the only thing either of them could safely look at.
+- She did not ask where he had been. The not-asking was the first true thing she had to offer him.
+- She could not apologise for finding the truth, and he could not forgive it quickly, and they let both be true across the same table.
+- Mary had been afraid Maggie would take him away. Maggie had never wanted to take him anywhere — and Cal said that might be why he wanted to go.
+- He said the new bowls were better than the safe ones. She said she knew, and it was not a boast, only a fact she had finally earned.
+- The plinth held the bowls without swallowing them, and neither of them needed to say what that was a picture of.
 
 
 ---
@@ -4151,78 +4151,78 @@ Late November brings returning tourists, longer light and a studio that finally 
 - **Lightness strategy:** Let humour come from local choreography, food/craft business, Glaze, or awkward practical tasks; do not joke over grief or privacy.
 - **Scene-work rule:** Every investigative beat should be embedded in an embodied room, ritual, errand, meal, weather moment, craft task, or community exchange.
 
-### Scene 1 — The Commission Paid
+### Scene 1 — The Commission, Paid
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Wheelhouse, late November; returning summer light, the kiln, the receipt book.
 
-**Purpose:** Open with late-November life proving The Wheelhouse has become used, not borrowed, and let the commission success be the book's final answer after the murder resolution.
-
-**Beat flow:**
-
-1. Returning tourists, longer light, open door, class notice drafts, paid surf-club invoice and used shelves show the business has a pulse after the solved murder rather than because of it.
-2. Maggie opens the kiln on the finished or follow-up work and knows it is good without needing a witness: not identical souvenir bowls, but useful handmade work whose variation and repair-inspired lines are part of the value.
-3. The commission should land as the final right-piece motif beat: not a soul-moment for one person, but work fitted to a place, a committee, rough use, salt weather and public memory. Maggie has made something that belongs without making herself smaller.
-4. She receives or records payment, confirms the bowls have been accepted on their own terms, and lets the paid invoice sit visibly in the studio rather than hiding it in a drawer.
-5. The town enters through practical rhythms — art-trail forms, summer questions, someone asking about beginner classes — not applause.
-6. End the scene on a plain business fact: the commission is complete, paid and recognisably hers.
-
-**Emotional turn:** Maggie claims the studio, her name and the next mystery without needing permission first.
-
-**Texture to include:** summer light, returning tourists, kiln opening, receipt book, class sign-up notice, bakery biscuits, Artie’s old lighthouse photograph, wet clay, and the Quill stamp.
-
-### Scene 2 — What the Town Lets Her Keep
-
-**Location:** The Wheelhouse / town spaces.
-
-**Purpose:** Close the town/belonging arc with modest, earned acceptance rooted in work rather than applause.
+**Purpose:** Open on late-spring life proving the studio is used, not borrowed, with the commission as the book's final answer.
 
 **Beat flow:**
 
-1. Artie arrives with the lighthouse-archive photograph as if it is just another local object he forgot to mention properly.
-2. Maggie reads the back of the photograph: “Elspeth Vale. Saw too much. Summer of 1978.”
-3. The phrase should strike her body first, then her mind. This is the first time her private language appears outside herself.
-4. Maggie does not yet connect Vale to Saffron in a full explanatory way; the reader can feel the payload.
-5. End with the series question opened but contained: the commission success remains the emotional landing; Elspeth Vale is the next door, not the last word.
+1. Returning tourists, longer light, the door propped open, class-notice drafts, the paid surf-club invoice and used shelves show the business has a pulse after the solved murder rather than because of it.
+2. Maggie opens the kiln on the finished or follow-up work and knows it is good without needing a witness — not identical souvenir bowls, but useful handmade work whose variation and repair-inspired lines are the value.
+3. The commission lands as the final right-piece beat: not a soul-moment for one person, but work fitted to a place — a committee, rough use, salt weather, public memory. She has made something that belongs without making herself smaller.
+4. She records the payment and lets the paid invoice sit visibly in the studio rather than hiding it in a drawer.
+5. The town enters through practical rhythms — an art-trail form, a summer question, someone asking about beginner classes — not applause.
+6. End on the plain business fact: the commission is complete, paid, and recognisably hers.
 
-**Emotional turn:** Maggie claims the studio, her name and the next mystery without needing permission first.
+**Emotional turn:** Maggie claims the studio, her name and the work without needing anyone's permission first.
 
-**Texture to include:** summer light, returning tourists, kiln opening, receipt book, class sign-up notice, bakery biscuits, Artie’s old lighthouse photograph, wet clay, and the Quill stamp.
+**Texture to include:** late-November light, returning tourists, the kiln opening, the receipt book, the paid invoice out on the counter, wet clay, the class-sign-up notice, the propped door.
 
-### Scene 3 — The Woman Who Saw Too Much
+### Scene 2 — Elspeth Vale
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Wheelhouse counter; Artie arriving with the lighthouse-archive photograph.
 
-**Purpose:** Let the series hook land as a small coda after the commission success, not as a replacement for it.
+**Purpose:** Land the series hook as a small coda, not a replacement for the commission's emotional landing.
 
 **Beat flow:**
 
-1. Maggie receives payment, confirms an art-trail place, or pins up a beginner pottery class notice.
-2. Let Faye, Saffron, Beryl, or another local give small practical signals of acceptance rather than sentimental speeches.
-3. Cal remains open but unresolved; the town does not hand Maggie a crown, it hands her work.
-4. Use Glaze, flyers, sea light, class sign-up sheet and summer tourist noise to make belonging operational.
+1. Artie arrives with the lighthouse-archive photograph as if it is just another local object he forgot to mention properly — no ceremony, the way real revelations arrive here.
+2. The photo: a young woman outside the lighthouse in the 1970s, hands pressed to her temples, overwhelmed by light.
+3. Maggie reads the back: “Elspeth Vale. Saw too much. Summer of 1978.” The phrase strikes her body before her mind — the first time her own private language has ever appeared outside her own head.
+4. She does not yet connect Vale to Saffron in any full, explanatory way; the reader feels the payload she cannot.
+5. End with the series question opened but contained: the commission success stays the emotional landing; Elspeth Vale is the next door, not the last word.
+
+**Emotional turn:** Maggie's most private truth — that she sees too much — turns out to have a name and a history older than she is.
+
+**Texture to include:** Artie's unhurried manner, the old photograph, the young woman's hands at her temples, the pencilled name on the back, the counter, summer light, the studio going still around one small object.
+
+### Scene 3 — What the Town Lets Her Keep
+
+**Location:** The Wheelhouse and doorway; the town's ordinary summer traffic.
+
+**Purpose:** Close the belonging arc with modest, earned acceptance rooted in work.
+
+**Beat flow:**
+
+1. Maggie confirms an art-trail place, or pins up a beginner pottery class notice — small operational acts of staying.
+2. Faye, Saffron, Beryl or another local give small practical signals of acceptance rather than sentimental speeches: a recommendation, a spare chair, a name added to a list.
+3. Cal remains open but unresolved — present at the edges, not a resolution the town hands over.
+4. Use Glaze, flyers, sea light and summer tourist noise to make belonging operational rather than declared.
 5. End with Maggie understanding that belonging is not being universally approved of; it is being included in the next ordinary thing.
 
-**Emotional turn:** Maggie claims the studio, her name and the next mystery without needing permission first.
+**Emotional turn:** The town hands Maggie work and inclusion instead of a crown, and she finds that is exactly what she wanted.
 
-**Texture to include:** summer light, returning tourists, kiln opening, receipt book, class sign-up notice, bakery biscuits, Artie’s old lighthouse photograph, wet clay, and the Quill stamp.
+**Texture to include:** the class-sign-up sheet, art-trail flyers, Faye's practical warmth, Saffron's nod, summer tourists at the window, Glaze at the door, sea light on glaze.
 
-### Scene 4 — The Wheelhouse Opens Again
+### Scene 4 — The Name Made Hers
 
-**Location:** The Wheelhouse / town spaces.
+**Location:** The Wheelhouse, the wheel; the photograph pinned somewhere safe.
 
-**Purpose:** Finish on Maggie choosing work and future mystery from a place of grounded confidence.
+**Purpose:** Finish on Maggie choosing work and the future mystery from grounded confidence, with the Tommy name-reclaim coda.
 
 **Beat flow:**
 
-1. Maggie returns to the wheel after the Elspeth hook rather than chasing Artie down the street; this shows discipline.
-2. She lets the question remain open and makes a note or pins the photograph somewhere safe.
-3. Glaze settles on her good apron or near the wheel, echoing Chapter 01 but with ownership transformed.
-4. Maggie centres clay with the Too-Much present but not ruling her; observation now has somewhere to go.
-5. End with The Wheelhouse open, the paid commission visible, Maggie not waiting to see whether she belongs, and the Elspeth Vale question tucked safely into the future rather than taking the ending away from her work.
+1. Maggie returns to the wheel after the Elspeth hook rather than chasing Artie down the street — the discipline of a woman who can let a question wait.
+2. She lets the question stay open and pins the photograph somewhere safe: not solved, not ignored, kept.
+3. Glaze settles on the good apron near the wheel, echoing Chapter 01 — the same cat, the same apron, ownership transformed.
+4. She centres clay with the Too-Much present but no longer ruling her; observation now has somewhere to go.
+5. Tommy coda: opening the kiln she notices the Quill voice has gone quiet, and she stamps the finished pots "Quill" — the name made hers, not his. Not a wound; the reclaim is quiet and complete. End with the Wheelhouse open, the paid commission visible, Maggie not waiting to see whether she belongs, and Elspeth Vale tucked safely into the future.
 
-**Emotional turn:** Maggie claims the studio, her name and the next mystery without needing permission first.
+**Emotional turn:** Maggie reclaims her own name through her own work, and the woman who saw too much finally has somewhere to put it.
 
-**Texture to include:** summer light, returning tourists, kiln opening, receipt book, class sign-up notice, bakery biscuits, Artie’s old lighthouse photograph, wet clay, and the Quill stamp.
+**Texture to include:** the wheel, wet clay centring, Glaze on the good apron, the pinned photograph, the "Quill" stamp pressed into a foot ring, summer light, the open door, the quiet where Tommy's voice used to be.
 
 ### Chapter Structure Summary
 
@@ -4256,12 +4256,12 @@ Late November brings returning tourists, longer light and a studio that finally 
 
 These are not required text; they are tonal anchors.
 
-- The town did not offer information so much as arrange it attractively and wait to see who would touch it.
-- Maggie had learned that a true detail could still be the wrong thing to say aloud.
-- The useful work waited with the patience of clay: quiet, drying, and increasingly unforgiving.
-- In Pelican's Crook, privacy was not absence. It was a room everyone knew how not to enter.
-- The question felt clever until she heard what it cost.
-- Proof, she was learning, had less drama than certainty and far better manners.
+- The studio had stopped feeling borrowed. It felt used, which was better, and harder to earn.
+- The invoice was paid and she left it out where she could see it, because hiding good news was a habit she was done with.
+- "Elspeth Vale. Saw too much. Summer of 1978." — her own private language, in someone else's handwriting, older than she was.
+- She did not chase Artie down the street. She went back to the wheel, because the question would keep and the clay would not.
+- Glaze took the good apron the way he had on the first day, except now the apron, the cat and the room were hers.
+- She stamped the pots Quill — her name now, not his — and the voice that used to argue had nothing left to say.
 
 
 ---
