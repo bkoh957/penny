@@ -133,6 +133,53 @@ At maximum overload, let perception bleed: she ‘sees’ the cold of a room, �
 
 The maladaptive use: lonely and wanting acceptance, she performs her perceptiveness as a party trick for social approval, overindulges at a gathering, and pays with a brutal migraine the next day. A binge and its hangover — the gift as a vice, mirroring her larger arc of learning self-worth. Detailed in the Character Notes; placed at the Act I community set-piece.
 
+# 3b.  The Sleuth Method & The Chapter Engine
+
+This is how every book runs, whatever the particular mystery. Each book's specific clue schedule and motif beats live in that book's outline; the reusable method lives here.
+
+## The Sleuth Method
+
+Maggie is a reluctant, meticulous witness, not a human lie detector or Holmesian profiler. Her Too-Much is visual, tactile and structural: objects returned to the wrong place, rooms reset according to someone else's habits, routines interrupted, tool marks, wear, weight, balance, cracks, joins, weak points, repairs, overworking and strain. Her core weakness is not seeing too little; it is deciding too soon what a real anomaly means.
+
+Pottery is the bridge between the gift, the business, Tommy's ghost and the mystery — but never magical evidence. When Maggie cannot make sense of an observation, she returns to the bench. In sketching, pinching, throwing, cutting apart, repairing or remaking clay, she discovers the shape of the story she is currently telling herself. That story may be partly right, unfair, incomplete, or entirely wrong. **A crack tells the story of what happened to the clay, not the secret moral truth of the person holding it.** Pottery is a question, never a verdict: do not turn it into a clue machine, and do not give every character a bespoke ceramic revelation.
+
+Use Maggie's right-piece talent sparingly as the warm, artistic form of her seeing. A right-piece moment is not ceramic therapy and not soul-reading: Maggie notices hands, use, hesitation, weight, balance, pressure, glaze, rim, foot, wall and fit, then offers or withholds an object. The recipient's reaction should be practical and restrained — use, refusal, silence, a tiny recalibration — never a speech about being understood.
+
+Pruitt teaches the notebook discipline once, and it becomes her private scaffold: **What I saw**, **What it might mean**, and **What else could explain it**. Use it as a training scene, not a repeated visible worksheet. Once she has learned it she should stay lively, funny, over-alert, tempted by neat theories, occasionally too clever and wrong in interesting ways. Her growth shows in behaviour — closing her mouth one beat later, asking a better question, testing before accusing, using humour to resist temptation — not in narration about responsible columns. Save the mature marker **"I do not know what this means yet. I only know it does not fit"** for one major late-act moment per book.
+
+## The Three-Part Investigation Engine
+
+- **Maggie** notices an anomaly and may translate it into a provisional clay form — *what does not fit?*
+- **Cal** is Maggie's informal practical co-sleuth: he tests local, practical and physical plausibility without replacing Pruitt or becoming an official investigator — *is this actually unusual here?*
+- **Pruitt** verifies evidence, timelines and proof — *can this survive testing?*
+
+## False Leads
+
+Keep only one major public investigative failure per book (in Book 1, the Beryl bakery incident). Other false leads should be quieter, more evidence-based, and varied in what they protect: business failure, medical privacy, family dignity, local-normal routines, old obligations, or simple refusal to be town property. Do not make every secret an identical category of concealment, and do not treat privacy as guilt. In the middle, every cleared suspect must leave behind one concrete forward gain, so the reader experiences escalation rather than a private-secret carousel.
+
+## The Four Tracks
+
+Every book runs on four story tracks:
+
+- **M — Mystery:** evidence, suspects, motive, victim revelation, fair-play logic.
+- **P — Personal:** Maggie's migraines, guilt, old HR failure, confidence, and learning to separate observation from certainty.
+- **R — Romance / Community:** Cal, the town's chosen-family loyalties, belonging, and local politics.
+- **B — Business:** The Wheelhouse, commissions, professional confidence, pricing, sales, and Maggie's artistic voice.
+
+A chapter should move at least two tracks; most move three. Quieter chapters are deliberately allowed to move **R + B + P** while the murder thread rests, so the book reads as a lived-in coastal mystery rather than a procession of interviews.
+
+## Every Chapter a Complete Mini-Story
+
+1. **Start / Desire** — what Maggie wants in this scene or chapter.
+2. **Pressure / Obstacle** — the person, event, social cost, clue, or practical problem that blocks her.
+3. **Turn / Change** — what is materially different by the end.
+4. **Texture / Pleasure Layer** — humour, coastal life, pottery, food, local rituals, animal business, or relational warmth.
+5. **Hook** — the unresolved question or complication that earns the next chapter.
+
+## Small Practical Mysteries
+
+Use small practical mysteries sparingly to create cosy movement and make Maggie likeable through usefulness rather than interrogation. They should not all feed the murder. The rule: a small problem should reveal character, deepen a relationship, enrich Pelican's Crook, or leave one useful detail — not turn every inconvenience into a murder clue. (Each book's specific micro-arcs live in that book's outline.)
+
 # 4.  The Town — Pelican’s Crook
 
 A small fictional town on the Great Ocean Road, tucked between Lorne and Apollo Bay. Fictional by design, so geography bends to the story. The name carries a quiet triple meaning: a “crook” is a bend in the coastline; in Australian slang “crook” means unwell (echoing Maggie’s migraines); and a crook is a criminal. Three meanings, one cosy-mystery town.
@@ -252,6 +299,19 @@ Artie seems as if he has been in Pelican’s Crook forever — shipwreck stories
 A scruffy, clay-dusted ginger tom who decided The Wheelhouse is home and Maggie is staff. Obligatory cosy companion, comic relief, and a soft place for Maggie (and the reader) to land after the hard scenes. Occasionally, conveniently, draws attention to the right corner of a room.
 
 **Hook.**  Named for the glaze he’s permanently dusted in; considers the kiln his personal heater.
+
+## Standing Wants — the cast's own lives
+
+Give each recurring local one visible project or desire unrelated to any single mystery, so Pelican's Crook reads as a series world, not a suspect reservoir.
+
+- **Dot and Glad:** competing to run the art-trail raffle / op-shop window display; their contradiction is an ongoing civic sport, not just eyewitness comedy.
+- **Glaze:** steals one specific category of object — receipts, ribbon, kiln cookies, measuring tape or polished stones — so his chaos becomes a recurring pattern.
+- **Cobber:** restoring or repainting a ridiculous old dinghy/anchor/tide marker; he has a life beyond cryptic clue delivery.
+- **Iris:** preserving local recipes before they vanish; charm and competence beyond being Faye's jam wound.
+- **Beryl:** campaigning for an unwanted practical improvement — surf-club urn upgrade, hall storage, emergency rain plan, proper signage — making her tyranny useful civic labour.
+- **Mara:** fighting the headland development through stakes, erosion reports and council forms; useful now, not only future-series infrastructure.
+- **Artie:** preparing a lighthouse/archive display everyone thinks will fail; in Book 1 it pays off with the Elspeth Vale hook.
+- **Saffron:** keeping the retreat solvent while maintaining brand serenity; she wants survival, not just secrecy.
 
 # 6.  Book One — The Victim
 

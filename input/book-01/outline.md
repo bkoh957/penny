@@ -27,73 +27,44 @@ total_chapters: 29
 
 ## Chapter Engine Used Throughout
 
-### Sleuth Method Contract
+### Method, Tracks & Cast — see the Series Bible
 
-Maggie is a reluctant, meticulous witness, not a human lie detector or Holmesian profiler. Her Too-Much is visual, tactile and structural: objects returned to the wrong place, rooms reset according to someone else's habits, routines interrupted, tool marks, wear, weight, balance, cracks, joins, weak points, repairs, overworking and strain. Her core weakness is not seeing too little; it is deciding too soon what a real anomaly means.
+The reusable engine now lives in `input/series/series-bible.md`, not here:
+the sleuth method (reluctant-witness gift, pottery-as-thinking, the right-piece
+principle, the notebook discipline, the three-part Maggie/Cal/Pruitt engine), the
+four story tracks (M/P/R/B), the five-beat chapter mini-story, and each recurring
+local's standing want — see **§3b The Sleuth Method & The Chapter Engine** and the
+**Standing Wants** subsection of **§5 The Recurring Cast**. This section keeps only
+the **Book-1-specific applications** of that engine.
 
-Pottery is the bridge between the gift, the business, Tommy's ghost and the mystery — but never magical evidence. When Maggie cannot make sense of an observation, she returns to the bench. In sketching, pinching, throwing, cutting apart, repairing or remaking clay, she discovers the shape of the story she is currently telling herself. That story may be partly right, unfair, incomplete, or entirely wrong. **A crack tells the story of what happened to the clay, not the secret moral truth of the person holding it.**
+### Book 1 Right-Piece Motif Beats
 
-Use Maggie's right-piece talent sparingly as the warm, artistic form of her seeing. A right-piece moment is not ceramic therapy and not soul-reading: Maggie notices hands, use, hesitation, weight, balance, pressure, glaze, rim, foot, wall and fit, then offers or withholds an object. The recipient's reaction should be practical and restrained — use, refusal, silence, a tiny recalibration — never a speech about being understood. Recommended Book 1 motif beats: Cal's workshop mug/bench dish in ch 1; Neil's severe/plain useful piece before death in ch 3; Mary's dark inversion through exact handling of a lidded vessel/cake plate/tea towel in ch 5; one repair/trust beat through Faye or Beryl after Maggie damages trust; and the surf-club commission as the community-scale right piece in chs 28–29. Do not give every character a bespoke ceramic revelation.
+Use the right-piece talent sparingly (method in the bible). Book 1 beats: Cal's workshop mug/bench dish in ch 1; Neil's severe/plain useful piece before death in ch 3; Mary's dark inversion through exact handling of a lidded vessel/cake plate/tea towel in ch 5; one repair/trust beat through Faye or Beryl after Maggie damages trust; and the surf-club commission as the community-scale right piece in chs 28–29.
 
-After Neil's cottage, Pruitt teaches the notebook discipline once: **What I saw**, **What it might mean**, and **What else could explain it**. Use it as a training scene and private scaffold, not a repeated visible worksheet. After Chapter 10, Maggie should stay lively, funny, over-alert, tempted by neat theories, occasionally too clever and wrong in interesting ways. Her growth shows in behaviour — closing her mouth one beat later, asking a better question, testing before accusing, using humour to resist temptation — not in narration about responsible columns. Save the mature marker **I do not know what this means yet. I only know it does not fit** for one major late-act moment only.
+### Book 1 Studio Body of Work
 
-Use the three-part investigation engine throughout:
+Keep the private studio work sparse and evolving, at hinge points only: the ugly vase, a quiet divided Faye/Iris form if needed, the distorted room-vessel, cracked/repaired commission bowls, a light rope/coil experiment if it earns its place, a contained Mary-adjacent lidded vessel kept subtle, and the final surf-club bowls.
 
-- **Maggie:** notices an anomaly and may translate it into a provisional clay form — what does not fit?
-- **Cal:** becomes Maggie's informal practical co-sleuth — tests local, practical and physical plausibility without replacing Pruitt or becoming an official investigator — is this actually unusual here?
-- **Pruitt:** verifies evidence, timelines and proof — can this survive testing?
+### Book 1 Method Timing
 
-Do not make one bespoke suspect portrait per chapter, and do not turn pottery into a clue machine. Use a sparse, evolving private body of studio work at hinge points only: the ugly vase, a quiet divided Faye/Iris form if needed, the distorted room-vessel, cracked/repaired commission bowls, a light rope/coil experiment if it earns its place, a contained Mary-adjacent lidded vessel kept subtle, and the final surf-club bowls. Pottery is a question, never a verdict.
+- The single major public investigative failure is the **Beryl bakery incident** (the varied-false-leads and don't-treat-privacy-as-guilt principles are in the bible).
+- Pruitt teaches the three-column notebook after Neil's cottage; from ~ch 10 Maggie's growth shows in behaviour, not narration. Save the mature marker *"I do not know what this means yet. I only know it does not fit"* for one major late-act moment.
 
-Keep only one major public investigative failure: the Beryl bakery incident. Other false leads should be quieter, more evidence-based, and varied in what they protect: business failure, medical privacy, family dignity, local-normal routines, old obligations, or simple refusal to be town property. Do not make every secret an identical category of concealment, and do not treat privacy as guilt.
-
-Every chapter carries a complete mini-story:
-
-1. **Start / Desire** — What Maggie wants in this scene or chapter.
-2. **Pressure / Obstacle** — The person, event, social cost, clue, or practical problem that blocks her.
-3. **Turn / Change** — What is materially different by the end.
-4. **Texture / Pleasure Layer** — Humour, coastal life, pottery, food, local rituals, animal business, or relational warmth.
-5. **Hook** — The unresolved question or complication that earns the next chapter.
-
-### Story Tracks
-
-- **M — Mystery:** evidence, suspects, motive, victim revelation, fair-play logic.
-- **P — Personal:** Maggie's migraines, guilt, old HR failure, confidence, and learning to separate observation from certainty.
-- **R — Romance / Community:** Cal, Mary, Faye, Saffron, chosen-family loyalty, belonging, and town politics.
-- **B — Business:** The Wheelhouse, the surf-club commission, professional confidence, pricing, sales, and Maggie's artistic voice.
-
-A chapter should move at least two tracks. Most move three. The quieter chapters are intentionally allowed to move **R + B + P** while the murder thread rests, so the book feels like a lived-in coastal mystery rather than a procession of interviews.
-
-Use small practical mysteries sparingly to create cozy movement and make Maggie likeable through usefulness rather than interrogation. They should not all feed the murder. Recommended micro-arcs for Book 1:
+### Book 1 Micro-Arcs
 
 - **Missing Wheelhouse key (chs 1–2):** an arrival logistics problem solved through object/lock observation and local knowledge; quick payoff, possible tiny old-tenant seed only.
 - **Jam-feud mini-mystery (chs 5–12):** what really happened to the shared/same-jam origin and Faye's mother's preserve entry, why the town remembers the cheap version, and why the truth is emotionally incomplete; private payoff, no forced reconciliation.
 - **Kiln/commission repair problem (chs 13–17, payoff 28–29):** business/art pressure independent of the murder; failed firing or flawed bowls become the repair-glaze breakthrough.
 
-Do not add more than this unless a later book needs it. The rule is: a small problem should reveal character, deepen a relationship, enrich Pelican's Crook, or leave one useful detail — not turn every inconvenience into a murder clue.
+### Middle Escalation / Positive Clue-Gain — Book 1
 
-### Middle Escalation / Positive Clue-Gain Contract
-
-The middle must not become a private-secret carousel. Every cleared suspect has to leave behind one concrete forward gain so the reader experiences escalation, not repeated moral correction.
+Every cleared suspect leaves one concrete forward gain (the principle is in the bible; these are the Book-1 clearances):
 
 - **Saffron clears (chs 16–17):** her humiliating debt-recovery alibi in Colac proves she was out of town during the murder window, but her records also narrow the blue-green vehicle clue: the retreat vehicle seen near Neil's road was earlier in the week, and a delivery/service log or permit note proves the late vehicle had a local surf-club/workshop connection rather than Saffron's branding.
 - **Beryl clears (ch 17):** her private medical appointment gives a hard timestamp, route and weather fact. Her changed clothes matter positively: mud/rain on the appointment route eliminates one branch of the timeline and proves the clothing change was after a frightening private errand, not after murder.
 - **Faye/Iris clears (chs 12 and 19):** the jam feud material is not just family dignity. A recipe card, show schedule, committee minute or newspaper clipping gives a date that points toward the year Mary's father died and Neil's abrupt change afterwards.
 - **Vanessa Calloway clears (chs 13–14):** the rope/knot/access question proves a local habit is too common for guilt, but it also teaches Maggie to ask who knew the path/route/routine well enough to reset a scene without looking like an intruder.
 - **Cal clears (chs 20–23):** his precision habits can be explained by workshop craft and Mary's upbringing, but that explanation becomes useful because it lets Maggie separate Cal's habits from Mary's more specific domestic-order signature.
-
-### Recurring Cast Independent Wants
-
-Give each recurring local one visible project or desire unrelated to Neil's death so Pelican's Crook reads as a series world, not a suspect reservoir.
-
-- **Dot and Glad:** competing to run the art-trail raffle/op-shop window display; their contradiction is an ongoing civic sport, not just eyewitness comedy.
-- **Glaze:** steals one specific category of object — receipts, ribbon, kiln cookies, measuring tape or polished stones — so his chaos becomes a recurring pattern.
-- **Cobber:** restoring or repainting a ridiculous old dinghy/anchor/tide marker; he has a life beyond cryptic clue delivery.
-- **Iris:** preserving local recipes before they vanish; gives charm and competence beyond being Faye's jam wound.
-- **Beryl:** campaigning for an unwanted practical improvement — surf-club urn upgrade, hall storage, emergency rain plan, proper signage — making her tyranny useful civic labour.
-- **Mara:** fighting the headland development through stakes, erosion reports and council forms; she must be useful now, not only future-series infrastructure.
-- **Artie:** preparing a lighthouse/archive display everyone thinks will fail; it pays off with the Elspeth Vale hook.
-- **Saffron:** keeping the retreat solvent while maintaining brand serenity; she wants survival, not just secrecy.
 
 ---
 
