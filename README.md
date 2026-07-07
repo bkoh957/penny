@@ -1,19 +1,36 @@
 # Penny
 
-A Claude-Code-native harness for producing a 13-book commercial fiction series (cozy
-mystery, Book 1) with **independent quality review**. Penny turns a per-book mystery
-design into finished, cross-model-reviewed manuscript prose, one chapter at a time,
-behind a wall of deterministic gates.
+A Claude-Code-native harness for producing commercial fiction series (cozy mystery,
+Book 1 of the first series) with **independent quality review**. Penny turns a per-book
+mystery design into finished, cross-model-reviewed manuscript prose, one chapter at a
+time, behind a wall of deterministic gates.
+
+This repo **is the engine, packaged as a Claude Code plugin** — see
+`.claude-plugin/plugin.json` and its marketplace manifest. Commands live in top-level
+`commands/`, agents in `agents/`, deterministic checkers in `scripts/`.
 
 **The one architectural rule:** the engine is genre- and location-agnostic. Everything
-project-specific lives in swappable `config/` (packs, rubrics, run-config), `input/`
+project-specific lives in a **series folder** — an ordinary directory you `cd` into and
+run Claude Code from, holding that series' `config/` overrides, `input/`
 (showrunner-authored files: series bible, style sheet, whodunit ledger, per-book outlines),
-and `series/` (derived continuity data) — **never** in `scripts/` or the command/agent
-logic. When you add behaviour, decide whether it belongs to the fixed engine or to a
-swappable pack, and keep them apart.
+`series/` (derived continuity data), `output/`, and `.penny/` runtime state — **never**
+in `scripts/` or the command/agent logic. When you add behaviour, decide whether it
+belongs to the fixed engine or to a series' own data, and keep them apart.
+
+**Series selection is by directory, not a flag or pointer.** There is no `--series`
+flag, no `PENNY_SERIES` env var, and no `current-series` pointer file. The **active
+series is the current working directory**: `scripts/penny_paths.py` walks up from cwd
+to the nearest `.penny/` marker and hard-errors if it finds none. Config reads
+**overlay**: a series' own `config/<rel>` wins if present, else this repo's shipped
+default under `config/`. Run `/new-series <name>` from anywhere to scaffold a new
+series folder's directory contract (default under `~/myBooks/`); then `cd` there and
+run `/plan-mystery 01`.
 
 Design intent: `penny-design-v3.md` (+ `penny-PRD-v3.md`); the `-v3` files supersede the
-un-suffixed originals. Sections are cited in code as `design §N`.
+un-suffixed originals, and
+`docs/superpowers/specs/2026-07-07-engine-plugin-series-folders-design.md` supersedes
+both for the plugin/series-folder topology described here. Sections are cited in code
+as `design §N`.
 
 ---
 
@@ -36,12 +53,15 @@ are shipped**, and Phase 6 is the MVP-1 endpoint — a finished, cross-model-rev
 pip install -r requirements.txt    # only third-party dep: PyYAML
 ```
 
-Also needs `python3` and `jq` (the latter only for the status line). Run everything from
-the repo root — `pytest.ini` sets `pythonpath=.`.
+Also needs `python3` and `jq` (the latter only for the status line). The engine's own
+test suite runs from this repo root — `pytest.ini` sets `pythonpath=.`:
 
 ```bash
 python3 -m pytest -q               # the deterministic test suite (273 passing)
 ```
+
+Working on an actual book happens from inside a **series folder**, not this repo — see
+"Series folders" below.
 
 To verify the whole harness end to end — required inputs, formats, and every approval
 gate — see **[TESTING.md](TESTING.md)**.
@@ -55,16 +75,33 @@ gate — see **[TESTING.md](TESTING.md)**.
    LLM-graded pipeline. Each fails loud with a named predicate and a non-zero exit.
    (`penny_meta.py` is the dependency-free parser for Penny's small YAML subset; PyYAML
    is reserved for genuinely nested human-edited data — the whodunit ledgers and lexicon.)
-2. **Orchestration — `.claude/commands/*.md` + `.claude/agents/*.md`.** Slash commands are
-   step-by-step runbooks that shell out to `scripts/` and dispatch sub-agents. Agents are
-   role-scoped: the drafter, the five blind inspectors, the context-rich developmental
-   editor, line/copy editors, beta readers, the cross-model final reader.
-3. **Swappable data — `config/`, `input/`, and `series/`.** The engine reads these; it
-   never hardcodes their content. `input/series/` holds showrunner-authored reference
-   files (series bible, style sheet, whodunit ledger); `input/book-NN/` holds the
-   per-book outline. `series/` holds derived continuity data (canon-core, character/
-   location/thread ledger entries). Swap the packs and you change genre or location
-   without touching the engine.
+2. **Orchestration — `commands/*.md` + `agents/*.md`.** Slash commands are step-by-step
+   runbooks that shell out to `scripts/` (via `${CLAUDE_PLUGIN_ROOT}/scripts/...`) and
+   dispatch sub-agents. Agents are role-scoped: the drafter, the five blind inspectors,
+   the context-rich developmental editor, line/copy editors, beta readers, the
+   cross-model final reader.
+3. **Swappable data — each series folder's `config/`, `input/`, and `series/`.** The
+   engine reads these; it never hardcodes their content. `input/series/` holds
+   showrunner-authored reference files (series bible, style sheet, whodunit ledger);
+   `input/book-NN/` holds the per-book outline. `series/` holds derived continuity data
+   (canon-core, character/location/thread ledger entries). Swap the series folder and
+   you change genre or location without touching the engine.
+
+### Series folders
+
+A **series is an ordinary directory** — its own `config/` overrides, `series/`
+continuity, `input/`, `output/`, and a `.penny/` marker + runtime state — that you `cd`
+into and run Claude Code from. There is no `--series` flag, no `PENNY_SERIES` env var,
+and no `current-series` pointer file: the **active series is the current working
+directory**. `scripts/penny_paths.py` resolves it by walking up from cwd to the nearest
+`.penny/` marker (a hard error if none is found — the engine never guesses which series
+you mean). Config reads **overlay**: a series' own `config/<rel>` wins if present, else
+this repo's shipped default under `config/`; data paths (`series/`, `input/`,
+`output/`, `.penny/`) always resolve against the series root.
+
+Run `/new-series <name>` from anywhere to scaffold a new series folder's directory
+contract (default location `~/myBooks/<name>/`, root configurable); it invents no story
+content. Then `cd` into it and run `/plan-mystery 01` to begin.
 
 ---
 
@@ -149,6 +186,7 @@ dependency-split rule, and `HANDOFF.md` for current session state.
 
 ## Status line
 
-`scripts/penny-statusline.sh` (wired in `.claude/settings.json`) reads harness state from
-`.penny/current-stage` and `output/`, plus the session JSON from stdin. Honours
-`$PENNY_ROOT` (default `.`).
+`scripts/penny-statusline.sh` (wired in `.claude/settings.json`) reads harness state
+from the **active series**, resolved via `scripts/penny_paths.py` (`current-stage` and
+`output/` under that series root), plus the session JSON from stdin. `$PENNY_ROOT`
+(default `.`) is only the idle fallback for when cwd isn't inside any series.

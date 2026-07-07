@@ -1,7 +1,7 @@
 # Line-Edit Rubric [STABLE]
 
 > Scope: sentence-level refinement only. No new content. No story changes.
-> Design §7. Consumed by `.claude/agents/line-editor.md`.
+> Design §7. Consumed by `agents/line-editor.md`.
 
 ## What to refine
 

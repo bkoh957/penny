@@ -4,18 +4,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-**Penny** is a Claude-Code-native harness for producing a 13-book commercial fiction
-series (cozy mystery, Book 1) with independent quality review. The non-negotiable
-architectural rule: **the engine is genre/location-agnostic — everything
-project-specific lives in swappable `config/`, `series/`, and `input/`, never in
-`scripts/` or the command/agent logic.** When adding behavior, ask whether it belongs to the fixed
-engine or to a swappable pack, and keep them separate.
+**Penny** is a Claude-Code-native harness for producing commercial fiction series
+(cozy mystery, Book 1 of the first series) with independent quality review. This repo
+**is the engine, packaged as a Claude Code plugin** (`.claude-plugin/plugin.json` +
+marketplace manifest): commands live in top-level `commands/`, agents in `agents/`,
+deterministic checkers in `scripts/`. The non-negotiable architectural rule: **the
+engine is genre/location-agnostic — everything project-specific lives in a swappable
+per-series folder, never in `scripts/` or the command/agent logic.** When adding
+behavior, ask whether it belongs to the fixed engine or to a series' own data, and keep
+them separate.
+
+Each **series is an ordinary folder you `cd` into** and run Claude Code from — its own
+`config/` overrides, `series/` continuity, `input/`, `output/`, and `.penny/` runtime
+state. There is no `--series` flag, no `PENNY_SERIES` env var, and no `current-series`
+pointer: the **active series is the working directory**, resolved by
+`scripts/penny_paths.py` walking up from cwd to the nearest `.penny/` marker (hard error
+if none found). `/new-series <name>` scaffolds a new series folder's directory contract
+under `~/myBooks/` (configurable). Config reads overlay: a series' `config/<rel>` wins
+if present, else the plugin's shipped default under this repo's `config/`; data paths
+(`series/`, `input/`, `output/`, `.penny/`) always resolve against the series root, not
+the plugin root.
 
 Source of truth for design intent is `penny-design-v3.md` (+ `penny-PRD-v3.md`); the
-`-v3` files supersede the un-suffixed originals. Sections are cited throughout the code
-as `design §N`. The build proceeds **phase by phase**; Phases 1–5 are shipped, Phase 6
-(per-book assembly + final holistic read + revision-priority report) is next. Check
-`HANDOFF.md` at session start for current state.
+`-v3` files supersede the un-suffixed originals, and
+`docs/superpowers/specs/2026-07-07-engine-plugin-series-folders-design.md` supersedes
+both for the plugin/series-folder topology described here. Sections are cited
+throughout the code as `design §N`. The build proceeds **phase by phase**; Phases 1–5
+are shipped, Phase 6 (per-book assembly + final holistic read + revision-priority
+report) is next. Check `HANDOFF.md` at session start for current state.
 
 ## Commands
 
@@ -34,14 +50,20 @@ pure stdlib — see the dependency split below.
 1. **Deterministic engine — `scripts/*.py`.** Pure-Python gates and checkers that
    **never make an LLM judgment**, so they survive the "soft gate" weakness of an
    LLM-graded pipeline. Each fails loud with a named predicate and a nonzero exit.
-2. **Orchestration — `.claude/commands/*.md` + `.claude/agents/*.md`.** Slash commands
-   are step-by-step runbooks that shell out to `scripts/` and dispatch sub-agents.
-   Agents are role-scoped (drafter, the 5 blind inspectors, the context-rich
-   developmental-editor, line/copy editors, beta-reader, etc.).
-3. **Swappable data — `config/` (packs, rubrics, run-config), `series/`
-   (continuity ledger, bibles, whodunit data), and `input/` (writer-authored
-   outlines and series reference files).** The engine reads these; it never
-   hardcodes their content.
+2. **Orchestration — `commands/*.md` + `agents/*.md`.** Slash commands
+   are step-by-step runbooks that shell out to `scripts/` (referenced from runbooks as
+   `${CLAUDE_PLUGIN_ROOT}/scripts/...` so they resolve regardless of which series folder
+   is the cwd) and dispatch sub-agents. Agents are role-scoped (drafter, the 5 blind
+   inspectors, the context-rich developmental-editor, line/copy editors, beta-reader,
+   etc.).
+3. **Swappable data — the active series folder's `config/` (packs, rubrics,
+   run-config overrides), `series/` (continuity ledger, bibles, whodunit data), and
+   `input/` (writer-authored outlines and series reference files).** The engine reads
+   these; it never hardcodes their content. This repo ships `config/` **defaults**
+   (review rubrics, line/copy-edit style, self-audit, the outline template, the beta
+   protocol) that apply unless a series overrides them — see the config-overlay note
+   above. A series' `series/`, `input/`, and `output/` have no plugin-side default; they
+   live only in the series folder.
 
 ### Dependency-split rule (load-bearing)
 

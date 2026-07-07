@@ -1,7 +1,7 @@
 # Copy-Edit Rubric [STABLE]
 
 > Scope: grammar, punctuation, spelling, and consistency. No style rewrites.
-> Design §7. Consumed by `.claude/agents/copy-editor.md`.
+> Design §7. Consumed by `agents/copy-editor.md`.
 > The copy-editor agent runs in fresh context: text + style sheet only.
 
 ## Governing document

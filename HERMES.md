@@ -10,13 +10,24 @@ Penny/Booko is a harness for producing a 13-book commercial cozy mystery series 
 
 ## Non-negotiable architecture rule
 
-The engine is genre- and location-agnostic.
+The engine is genre- and location-agnostic. This repo is now structured as a Claude
+Code **plugin** (design: engine-plugin + series-folders): commands live in top-level
+`commands/`, agents in top-level `agents/` (no longer under `.claude/`); `.claude/`
+holds only local settings (`.claude/settings.json`).
 
-- Fixed engine/orchestration: `scripts/`, `.claude/commands/`, `.claude/agents/`
-- Swappable project data: `config/`, `input/`, `series/`
-- Output/runtime artifacts: `output/`, `.penny/`
+- Fixed engine/orchestration: `scripts/`, `commands/`, `agents/`
+- Swappable project data (belongs to a **series folder**, not this repo): `config/`
+  overrides, `input/`, `series/`
+- Output/runtime artifacts (also series-folder-local): `output/`, `.penny/`
 
-Do not hardcode Book 01, Pelican's Crook, Maggie, cozy mystery details, clues, or voice-pack details into `scripts/` or command/agent logic. Put project-specific material in `config/`, `input/`, or `series/`.
+A series is an ordinary folder you `cd` into and run Claude Code from; the active
+series is resolved from the **current working directory** by
+`scripts/penny_paths.py` (walks up from cwd to the nearest `.penny/` marker — hard
+error if none). There is no `--series` flag, `PENNY_SERIES` env var, or
+`current-series` pointer. Config reads overlay: a series' own `config/<rel>` wins if
+present, else this repo's shipped default.
+
+Do not hardcode Book 01, Pelican's Crook, Maggie, cozy mystery details, clues, or voice-pack details into `scripts/` or command/agent logic. Put project-specific material in the active series folder's `config/`, `input/`, or `series/`.
 
 Use "the protagonist" in engine-layer files; do not hardcode the current protagonist name there.
 
@@ -39,7 +50,8 @@ HANDOFF.md     # current project state and next actions
 CLAUDE.md      # upstream Claude-native harness conventions
 ```
 
-If drafting/reviewing, also read the relevant command and agent files under `.claude/` before acting.
+If drafting/reviewing, also read the relevant command and agent files under `commands/`
+and `agents/` before acting.
 
 ## Essential commands
 
@@ -68,7 +80,7 @@ wc -w output/book-01/chapters/ch-MM.draft.md
 
 ## Chapter workflow
 
-The Claude-native slash commands are documented in `.claude/commands/`. When operating via Hermes/Booko, follow the same runbooks manually unless the interactive agent supports the slash command directly.
+The Claude-native slash commands are documented in `commands/`. When operating via Hermes/Booko, follow the same runbooks manually unless the interactive agent supports the slash command directly.
 
 Per book:
 
