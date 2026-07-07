@@ -19,10 +19,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from scripts import penny_paths
 from scripts.penny_meta import (parse_frontmatter, strip_frontmatter,
                                  write_frontmatter_field)
 
-REPO = Path(__file__).resolve().parents[1]
 MANUSCRIPT_SCHEMA = "penny-manuscript/1"
 FINAL_READ_SCHEMA = "penny-final-read/1"
 FINAL_READ_BOOLEANS = ("standalone", "mystery_resolved", "thread_left_open")
@@ -34,7 +34,7 @@ def _fail(predicate: str):
 
 
 def book_dir(book: str, repo_root) -> Path:
-    return Path(repo_root) / "output" / f"book-{book}"
+    return penny_paths.output_path(f"book-{book}", root=repo_root)
 
 
 def chapters_dir(book: str, repo_root) -> Path:
@@ -62,7 +62,8 @@ def _stamps(value) -> set[str]:
     return set()
 
 
-def cmd_assemble(book: str, *, repo_root=REPO, now=None) -> int:
+def cmd_assemble(book: str, *, repo_root=None, now=None) -> int:
+    repo_root = repo_root if repo_root is not None else penny_paths.series_root()
     cdir = chapters_dir(book, repo_root)
     finals = sorted(cdir.glob("ch-*.final.md"), key=_chapter_num)
     if not finals:
@@ -104,7 +105,8 @@ def cmd_assemble(book: str, *, repo_root=REPO, now=None) -> int:
     return 0
 
 
-def cmd_seal(book: str, *, repo_root=REPO) -> int:
+def cmd_seal(book: str, *, repo_root=None) -> int:
+    repo_root = repo_root if repo_root is not None else penny_paths.series_root()
     man = manuscript_path(book, repo_root)
     if not man.is_file():
         _fail(f"no manuscript to seal for book {book} ({man}) — run assemble first")
@@ -123,7 +125,8 @@ def cmd_seal(book: str, *, repo_root=REPO) -> int:
     return 0
 
 
-def validate_final_read(book: str, *, repo_root=REPO) -> int:
+def validate_final_read(book: str, *, repo_root=None) -> int:
+    repo_root = repo_root if repo_root is not None else penny_paths.series_root()
     fr = final_read_path(book, repo_root)
     if not fr.is_file():
         _fail(f"no final-read artifact for book {book} ({fr})")
