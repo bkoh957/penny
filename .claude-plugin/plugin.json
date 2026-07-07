@@ -1,0 +1,8 @@
+{
+  "name": "penny-engine",
+  "description": "Claude-Code-native harness for producing commercial fiction series with independent quality review — genre/location-agnostic engine, swappable config/series/input packs.",
+  "version": "0.1.0",
+  "author": {
+    "name": "bkoh957"
+  }
+}

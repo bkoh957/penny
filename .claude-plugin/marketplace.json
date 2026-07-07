@@ -1,0 +1,13 @@
+{
+  "name": "penny-engine-marketplace",
+  "owner": {
+    "name": "bkoh957"
+  },
+  "plugins": [
+    {
+      "name": "penny-engine",
+      "source": ".",
+      "description": "The Penny fiction-production engine: per-chapter drafting/review/finalize pipeline, blind inspector panel, and the /new-series scaffolder — this repo is the plugin."
+    }
+  ]
+}
