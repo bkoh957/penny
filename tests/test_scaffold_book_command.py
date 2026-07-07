@@ -1,6 +1,6 @@
 from pathlib import Path
 
-CMD = Path(".claude/commands/scaffold-book.md")
+CMD = Path("commands/scaffold-book.md")
 RUN_CONFIG = Path("config/run-config.md")
 
 
@@ -16,7 +16,9 @@ def test_command_dispatches_scaffolder():
 
 def test_command_runs_unchanged_lock_on_approve():
     text = CMD.read_text(encoding="utf-8")
-    assert "preflight.py lock-mystery" in text, "approval must run the shipped lock"
+    assert "scripts/preflight.py" in text and "preflight.py\" lock-mystery" in text, (
+        "approval must run the shipped lock"
+    )
 
 
 def test_command_deletes_lock_on_rederive():

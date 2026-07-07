@@ -21,11 +21,11 @@ a missing clearance, or a clearance whose hash no longer matches the draft (i.e.
 was revised after clearance) all abort finalize:
 
 ```bash
-python3 scripts/preflight.py finalize $1 $2
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" finalize $1 $2
 ```
 
 A non-zero exit aborts immediately — do not proceed. If it reports a missing/stale
-clearance, run `/review-chapter $1 $2`, then `python3 scripts/preflight.py clear-dev $1 $2`.
+clearance, run `/review-chapter $1 $2`, then `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" clear-dev $1 $2`.
 
 ### Parse args
 
@@ -166,7 +166,7 @@ brief `$brief`, and `output/book-$book/chapters/ch-$chapter.copyedit.md`. The ag
 emitted:
 
 ```bash
-python3 scripts/ledger_markers.py $book $chapter \
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/ledger_markers.py" $book $chapter \
   --canon series/continuity/canon-core.md \
   --brief "$brief" \
   --text output/book-$book/chapters/ch-$chapter.copyedit.md \

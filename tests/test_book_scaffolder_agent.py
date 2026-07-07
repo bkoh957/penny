@@ -1,6 +1,6 @@
 from pathlib import Path
 
-AGENT = Path(".claude/agents/book-scaffolder.md")
+AGENT = Path("agents/book-scaffolder.md")
 
 
 def test_agent_file_exists():

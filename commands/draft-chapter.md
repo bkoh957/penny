@@ -14,7 +14,7 @@ edit and commit with `/finalize-chapter`.
    any chapter is drafted. Hard-fail aborts before context assembly:
 
    ```bash
-   python3 scripts/preflight.py draft $1 $2
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" draft $1 $2
    ```
 
    A non-zero exit means the book's mystery is absent, unpopulated, or unlocked —
@@ -52,7 +52,7 @@ edit and commit with `/finalize-chapter`.
    ```
 
 6. **Dispatch the `drafter` sub-agent** with the inputs listed in
-   `.claude/agents/drafter.md`, passing `draft_date` for the `drafted_on` stamp.
+   `agents/drafter.md`, passing `draft_date` for the `drafted_on` stamp.
    Write its output to `output/book-$book/chapters/ch-$chapter.draft.md` including
    `drafted_by` and `drafted_on: $draft_date` frontmatter.
 

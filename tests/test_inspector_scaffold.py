@@ -11,7 +11,7 @@ EXPECTED_RUBRICS = [
     "character-voice.md",
 ]
 
-AGENTS = Path(".claude/agents")
+AGENTS = Path("agents")
 INSPECTORS = {
     "inspector-continuity": "continuity-drift.md",
     "inspector-fairplay": "fairplay-planting.md",
@@ -59,7 +59,7 @@ def test_five_distinct_producers():
     assert len(producers) == 5, f"expected 5 distinct producers, got {producers}"
 
 
-COMMAND = Path(".claude/commands/review-chapter.md")
+COMMAND = Path("commands/review-chapter.md")
 
 
 def test_review_chapter_command_wires_the_bus():

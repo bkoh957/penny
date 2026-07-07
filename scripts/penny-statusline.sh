@@ -7,12 +7,18 @@
 set -uo pipefail
 
 ROOT="${PENNY_ROOT:-.}"
+# Resolve bundled scripts via the plugin root (design: engine-plugin +
+# series-folders) so this works when installed as a plugin and invoked from an
+# arbitrary series folder. Fall back to resolving our own dir (this script's
+# parent's scripts/) when $CLAUDE_PLUGIN_ROOT is unset — e.g. running this
+# script directly, as tests do, outside the Claude Code plugin host.
+PLUGIN_SCRIPTS="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}/scripts"
 # Resolve the active series' state via the penny_paths CLI shim rather than
 # assuming $ROOT is the series root (design: engine-plugin + series-folders).
 # Both calls degrade to empty output (never error/hang) when cwd isn't inside
 # a series, so the status line still renders an idle segment.
-STAGE_FILE="$(python3 -m scripts.penny_paths resolve penny current-stage 2>/dev/null)"
-SERIES="$(python3 -m scripts.penny_paths active 2>/dev/null)"
+STAGE_FILE="$(python3 "$PLUGIN_SCRIPTS/penny_paths.py" resolve penny current-stage 2>/dev/null)"
+SERIES="$(python3 "$PLUGIN_SCRIPTS/penny_paths.py" active 2>/dev/null)"
 series_prefix=""
 [ -n "${SERIES:-}" ] && series_prefix="[$SERIES] "
 # When inside a series, anchor ROOT on that same series so outline/reviews below

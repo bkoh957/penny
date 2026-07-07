@@ -59,7 +59,7 @@ def test_beta_protocol_documents_contract_and_phase6_seam():
 
 
 def test_beta_reader_agent_is_blind_and_well_formed():
-    path = ROOT / ".claude/agents/beta-reader.md"
+    path = ROOT / "agents/beta-reader.md"
     fm = parse_frontmatter(path.read_text(encoding="utf-8"))
     assert fm["name"] == "beta-reader"
     assert "description" in fm
@@ -75,7 +75,7 @@ def test_beta_reader_agent_is_blind_and_well_formed():
 
 
 def test_beta_read_command_fans_out_and_is_non_blocking():
-    text = (ROOT / ".claude/commands/beta-read.md").read_text(encoding="utf-8").lower()
+    text = (ROOT / "commands/beta-read.md").read_text(encoding="utf-8").lower()
     assert "beta_models" in text and "panel_size" in text and "beta_consensus_k" in text
     assert "beta-reader" in text                 # dispatches the agent
     assert "collapse_persona" in text            # per-persona collapse step

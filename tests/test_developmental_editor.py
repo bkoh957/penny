@@ -35,7 +35,7 @@ def test_rubric_is_advisory_never_blocking():
     assert "no ^blocking" in text or "never block" in text or "not block" in text
 
 
-AGENT = Path(".claude/agents/developmental-editor.md")
+AGENT = Path("agents/developmental-editor.md")
 
 
 def test_agent_exists_with_valid_frontmatter():
@@ -61,8 +61,8 @@ def test_agent_is_advisory_and_context_rich():
     assert "whodunit" in text.lower()                 # explicitly denied the solution
 
 
-REVIEW_CMD = Path(".claude/commands/review-chapter.md")
-FINALIZE_CMD = Path(".claude/commands/finalize-chapter.md")
+REVIEW_CMD = Path("commands/review-chapter.md")
+FINALIZE_CMD = Path("commands/finalize-chapter.md")
 
 
 def test_review_chapter_dispatches_dev_editor_and_halts_cross_model():

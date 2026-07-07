@@ -17,7 +17,7 @@ earned by the shipped checker; this command never writes a certificate.
 2. **Structural gate (deterministic):**
 
    ```bash
-   python3 scripts/outline_check.py "$outline"
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/outline_check.py" "$outline"
    ```
 
    A non-zero exit means the outline is not shaped like an outline yet (missing
@@ -33,7 +33,7 @@ earned by the shipped checker; this command never writes a certificate.
 
 4. **Dispatch the `book-scaffolder` sub-agent** with `{ outline_text, book_number }`.
    It writes the derived artifacts UNLOCKED to their real homes (see
-   `.claude/agents/book-scaffolder.md`): the gated mystery →
+   `agents/book-scaffolder.md`): the gated mystery →
    `series/whodunit/book-$book.yaml`; non-mystery strands →
    `series/continuity/threads/` + `series/arc-ledger.md`; cast & locations →
    `series/continuity/characters|locations/`; always-true facts →
@@ -47,8 +47,8 @@ earned by the shipped checker; this command never writes a certificate.
      approving:
 
      ```bash
-     python3 scripts/readiness_check.py "$book"
-     python3 scripts/fairplay_check.py "series/whodunit/book-$book.yaml" --target "book-$book"
+     python3 "${CLAUDE_PLUGIN_ROOT}/scripts/readiness_check.py" "$book"
+     python3 "${CLAUDE_PLUGIN_ROOT}/scripts/fairplay_check.py" "series/whodunit/book-$book.yaml" --target "book-$book"
      ```
 
    - **Collapse (expandable)** the non-mystery Threads, the Cast & Locations, and the
@@ -61,7 +61,7 @@ earned by the shipped checker; this command never writes a certificate.
    UNCHANGED checker:
 
    ```bash
-   python3 scripts/preflight.py lock-mystery "$book"
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" lock-mystery "$book"
    ```
 
    It mints `.penny/locks/book-$book.mystery.lock` iff fairplay + lexicon pass;

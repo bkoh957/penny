@@ -2,8 +2,8 @@ from pathlib import Path
 
 from scripts.penny_meta import parse_frontmatter
 
-CMD = Path(".claude/commands/plan-mystery.md")
-AGENT = Path(".claude/agents/mystery-planner.md")
+CMD = Path("commands/plan-mystery.md")
+AGENT = Path("agents/mystery-planner.md")
 
 
 def test_plan_mystery_command_exists():

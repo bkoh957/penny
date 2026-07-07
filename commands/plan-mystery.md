@@ -32,7 +32,7 @@ validation passed (the only writer is `preflight.py lock-mystery`).
 7. **Validate and lock (LAST):**
 
    ```bash
-   python3 scripts/preflight.py lock-mystery $book
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" lock-mystery $book
    ```
 
    This runs `fairplay_check.py` (numeric fairness + culprit/victim/suspect

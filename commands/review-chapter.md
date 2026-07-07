@@ -15,7 +15,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
 2. **Re-run cleanup (so the gate reflects ONLY this run):**
 
    ```bash
-   python3 scripts/reset_reviews.py output/book-$book/chapters/ch-$chapter.reviews
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/reset_reviews.py" output/book-$book/chapters/ch-$chapter.reviews
    ```
 
 3. **Write the harness state marker:**
@@ -32,12 +32,12 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
 5. **Run the 2a deterministic checkers:**
 
    ```bash
-   python3 scripts/voice_drift.py output/book-$book/chapters/ch-$chapter.draft.md \
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/voice_drift.py" output/book-$book/chapters/ch-$chapter.draft.md \
      --out output/book-$book/chapters/ch-$chapter.reviews
    ```
 
    ```bash
-   python3 scripts/lexicon_check.py output/book-$book/chapters/ch-$chapter.draft.md \
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/lexicon_check.py" output/book-$book/chapters/ch-$chapter.draft.md \
      --out output/book-$book/chapters/ch-$chapter.reviews \
      --target book-$book/ch-$chapter
    ```
@@ -50,7 +50,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    reveal chapter):
 
    ```bash
-   python3 scripts/fairplay_check.py series/whodunit/book-$book.yaml \
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/fairplay_check.py" series/whodunit/book-$book.yaml \
      --out output/book-$book/chapters/ch-$chapter.reviews
    ```
 
@@ -65,7 +65,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
 7. **Dispatch the 5 blind inspector sub-agents**, each with the chapter text, its one
    rubric, and the ledger slice (structure also gets the roster). Each writes its
    verdict into `output/book-$book/chapters/ch-$chapter.reviews/` via
-   `scripts/penny_verdict.py`:
+   `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py`:
    - `inspector-continuity` → `continuity-drift.md`
    - `inspector-fairplay` → `fairplay-planting.md`
    - `inspector-structure` → `structure-tension.md` (+ roster)
@@ -83,8 +83,8 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    Compute the draft hash to bind the read to this exact draft:
 
    ```bash
-   dev_sha="$(python3 -c "import sys; from scripts.preflight import draft_sha256; \
-     print(draft_sha256('$book', '$chapter'))")"
+   dev_sha="$(python3 -c "import sys; sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}'); \
+     from scripts.preflight import draft_sha256; print(draft_sha256('$book', '$chapter'))")"
    ```
 
    Dispatch the `developmental-editor` sub-agent with its **context-rich** inputs — the
@@ -92,7 +92,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    a character-bible slice, and the chapter brief (NOT the whodunit solution). Pass
    `$dev_sha` as the `reviewed_draft_sha256` it must record. It writes
    `output/book-$book/chapters/ch-$chapter.reviews/developmental-edit.md` via
-   `scripts/penny_verdict.py` (`kind: developmental`, no `^BLOCKING:` lines).
+   `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py` (`kind: developmental`, no `^BLOCKING:` lines).
 
 8. **Dispatch-completeness check:** confirm all five inspector verdict files AND
    `developmental-edit.md` now exist in the reviews dir. A missing one means a sub-agent
@@ -102,7 +102,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
 9. **Compute the gate and advance the marker:**
 
    ```bash
-   gate_out="$(python3 scripts/review_gate.py output/book-$book/chapters/ch-$chapter.reviews)"
+   gate_out="$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" output/book-$book/chapters/ch-$chapter.reviews)"
    echo "$gate_out"
    if printf '%s' "$gate_out" | grep -q '^GATE: HOLD'; then
      stage=GATE-HELD
@@ -125,7 +125,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
     blocked until you clear the developmental read for this exact draft:
 
     ```bash
-    python3 scripts/preflight.py clear-dev $book $chapter
+    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" clear-dev $book $chapter
     ```
 
     Clear as-is ("noted, proceeding") or have the `drafter` revise first and re-run

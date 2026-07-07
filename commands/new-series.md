@@ -7,7 +7,7 @@ argument-hint: <name> [myBooks-root]
 The multi-series front door (design: engine-plugin + series-folders — see
 `docs/superpowers/specs/2026-07-03-multi-series-packs-design.md`). The engine is
 genre/location-agnostic; every series lives in its own folder **outside** this repo,
-anchored by a `.penny/` marker that `scripts/penny_paths.py`'s `series_root()` walks
+anchored by a `.penny/` marker that `${CLAUDE_PLUGIN_ROOT}/scripts/penny_paths.py`'s `series_root()` walks
 up from cwd to find. This command creates that folder's directory contract — the
 exact shape `series_root()` and the config overlay (`config_path()`) expect — and
 **invents no story content**: no bible, no cast, no whodunit. Those come later, from

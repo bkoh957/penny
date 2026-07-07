@@ -50,9 +50,9 @@ def test_config_file_exists_and_nonempty(relpath):
 
 
 REQUIRED_CLAUDE_FILES = [
-    ".claude/agents/_TEMPLATE.md",
-    ".claude/agents/drafter.md",
-    ".claude/commands/draft-chapter.md",
+    "agents/_TEMPLATE.md",
+    "agents/drafter.md",
+    "commands/draft-chapter.md",
 ]
 
 
@@ -64,7 +64,7 @@ def test_claude_file_exists_and_nonempty(relpath):
 
 
 def test_draft_chapter_writes_current_stage():
-    text = Path(".claude/commands/draft-chapter.md").read_text(encoding="utf-8")
+    text = Path("commands/draft-chapter.md").read_text(encoding="utf-8")
     assert ".penny/current-stage" in text, (
         "draft-chapter must document writing the harness state marker (design §11)"
     )

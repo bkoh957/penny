@@ -32,13 +32,13 @@ If `$flag` equals `--approve`, enter the approval path — do NOT re-run any age
 2. Seal the manuscript (stamp `read_by` from the final read):
 
    ```bash
-   python3 scripts/assemble_book.py seal $book
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/assemble_book.py" seal $book
    ```
 
 3. Run the precondition gate + mint the `.approved` cert (its last write):
 
    ```bash
-   python3 scripts/preflight.py approve-book $book
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" approve-book $book
    ```
 
    A nonzero exit aborts — the cert is NOT minted; resolve the named predicate first.
@@ -46,7 +46,7 @@ If `$flag` equals `--approve`, enter the approval path — do NOT re-run any age
 4. Call the reserved per-book demotion hook (Phase-6 no-op; pinned signature):
 
    ```bash
-   python3 scripts/canon_core_review.py --book $book \
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/canon_core_review.py" --book $book \
      --canon-core series/continuity/canon-core.md
    ```
 
@@ -64,7 +64,7 @@ If `$flag` equals `--approve`, enter the approval path — do NOT re-run any age
 
 ```bash
 echo "book=$book stage=ASSEMBLE" > .penny/current-stage
-python3 scripts/assemble_book.py assemble $book
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/assemble_book.py" assemble $book
 ```
 
 A nonzero exit (chapter gap, missing `drafted_by`, outline mismatch) aborts.
@@ -72,7 +72,7 @@ A nonzero exit (chapter gap, missing `drafted_by`, outline mismatch) aborts.
 ### Step 2 — Cross-model pre-flight gate (built Phase 3; wired here)
 
 ```bash
-python3 scripts/preflight.py assemble $book
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" assemble $book
 ```
 
 This enforces `final_read_model != drafting_model` and `final_read_model ∉ drafted_by`
@@ -92,7 +92,7 @@ The agent MUST be `final_read_model` (must not be a drafter). It writes
 ### Step 4 — Validate the final-read shape (hard gate)
 
 ```bash
-python3 scripts/assemble_book.py validate-read $book
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/assemble_book.py" validate-read $book
 ```
 
 A nonzero exit means a malformed/hedged read (`standalone`/`mystery_resolved`/
@@ -102,7 +102,7 @@ to approval with a malformed read.
 ### Step 5 — Build the revision-priority report (deterministic)
 
 ```bash
-python3 scripts/revision_priority.py $book
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/revision_priority.py" $book
 ```
 
 Reads the 6 `output/book-$book/reports/<persona>.converged.md` (from `/beta-read`) +

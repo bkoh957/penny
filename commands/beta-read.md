@@ -26,7 +26,7 @@ writes `.penny/current-stage` and never emits `BLOCKING:` lines.
    panel `degraded`). Each sub-agent receives ONLY `{ text, persona_file }` — no
    ledgers, outline, solution, or rules.
 
-4. **Each sub-agent** writes one raw reading via `scripts/beta_report.py`
+4. **Each sub-agent** writes one raw reading via `${CLAUDE_PLUGIN_ROOT}/scripts/beta_report.py`
    (`build_raw_reading` → `write_raw_reading`) into the `--out` dir.
 
 5. **Collapse.** For each persona, load its raw readings and call

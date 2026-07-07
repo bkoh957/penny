@@ -31,7 +31,7 @@ the sealed solution, so the mystery must already be planned.
      so that section replacement in Step 5 will work.
 
 5. **For each target chapter**, assemble the inputs listed in
-   `.claude/agents/outline-expander.md` (the stub for that chapter; the voice/setting/
+   `agents/outline-expander.md` (the stub for that chapter; the voice/setting/
    genre/length packs; `series/continuity/canon-core.md` + the brief-derived ledger
    slice; `input/series/series-bible.md`; and the sealed `output/book-$book/mystery-solution.md`
    + `series/whodunit/book-$book.yaml`). Dispatch the `outline-expander` sub-agent and
