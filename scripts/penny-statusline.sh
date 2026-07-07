@@ -5,7 +5,14 @@
 set -uo pipefail
 
 ROOT="${PENNY_ROOT:-.}"
-STAGE_FILE="$ROOT/.penny/current-stage"
+# Resolve the active series' state via the penny_paths CLI shim rather than
+# assuming $ROOT is the series root (design: engine-plugin + series-folders).
+# Both calls degrade to empty output (never error/hang) when cwd isn't inside
+# a series, so the status line still renders an idle segment.
+STAGE_FILE="$(python3 -m scripts.penny_paths resolve penny current-stage 2>/dev/null)"
+SERIES="$(python3 -m scripts.penny_paths active 2>/dev/null)"
+series_prefix=""
+[ -n "${SERIES:-}" ] && series_prefix="[$SERIES] "
 
 # Consume stdin once (the session JSON).
 session_json="$(cat)"
@@ -41,7 +48,7 @@ append_ccstatusline() {
 
 # No harness state yet → idle.
 if [ ! -f "$STAGE_FILE" ]; then
-  append_ccstatusline "$(printf 'Penny · idle · ctx %s%%' "$ctx")"
+  append_ccstatusline "$(printf '%sPenny · idle · ctx %s%%' "$series_prefix" "$ctx")"
   exit 0
 fi
 
@@ -81,5 +88,5 @@ else
   blocking=0
 fi
 
-append_ccstatusline "$(printf 'Penny · Book %s · Ch %s/%s · %s · gate: %s blocking · ctx %s%%' \
-  "$book" "$chapter_disp" "$total" "$stage" "$blocking" "$ctx")"
+append_ccstatusline "$(printf '%sPenny · Book %s · Ch %s/%s · %s · gate: %s blocking · ctx %s%%' \
+  "$series_prefix" "$book" "$chapter_disp" "$total" "$stage" "$blocking" "$ctx")"

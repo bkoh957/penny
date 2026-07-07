@@ -9,19 +9,29 @@ def test_idle_when_no_stage_file(penny_root):
     assert out == "Penny · idle · ctx 41%"
 
 
+def test_series_name_prefixed_when_inside_a_series(penny_root):
+    # The series root is resolved via the penny_paths CLI shim (not $PENNY_ROOT
+    # blind trust) and its folder name is prepended to the rendered line.
+    penny_root.write_stage("book=01 chapter=01 stage=DRAFT")
+    out = penny_root.run(JSON_41)
+    assert out.startswith(f"[{penny_root.path.name}] Penny · Book 01")
+
+
 def test_full_render_with_outline_and_blocking(penny_root):
     penny_root.write_stage("book=03 chapter=07 stage=COPY-EDIT")
     penny_root.write_outline("03", 24)
     penny_root.write_blocking("03", "07", 2)
     out = penny_root.run(JSON_41)
-    assert out == "Penny · Book 03 · Ch 7/24 · COPY-EDIT · gate: 2 blocking · ctx 41%"
+    series = penny_root.path.name
+    assert out == f"[{series}] Penny · Book 03 · Ch 7/24 · COPY-EDIT · gate: 2 blocking · ctx 41%"
 
 
 def test_no_reviews_means_zero_blocking(penny_root):
     penny_root.write_stage("book=01 chapter=01 stage=DRAFT")
     penny_root.write_outline("01", 24)
     out = penny_root.run(JSON_41)
-    assert out == "Penny · Book 01 · Ch 1/24 · DRAFT · gate: 0 blocking · ctx 41%"
+    series = penny_root.path.name
+    assert out == f"[{series}] Penny · Book 01 · Ch 1/24 · DRAFT · gate: 0 blocking · ctx 41%"
 
 
 def test_missing_context_percentage_renders_question_mark(penny_root):
@@ -64,6 +74,6 @@ def test_malformed_marker_missing_chapter_renders_safely(penny_root):
     # A partially-written marker (no chapter=) must not error or render garbage.
     penny_root.write_stage("book=01 stage=DRAFT")  # run() uses check=True
     out = penny_root.run(JSON_41)
-    assert out.startswith("Penny · Book 01")
+    assert f"[{penny_root.path.name}] Penny · Book 01" in out
     assert "Ch 0/0" in out
     assert out.endswith("ctx 41%")
