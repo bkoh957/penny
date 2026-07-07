@@ -15,6 +15,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from scripts import penny_paths
 from scripts.penny_meta import parse_frontmatter, parse_yaml_blocks
 from scripts.penny_verdict import count_blocking
 
@@ -178,11 +179,12 @@ def _default_out(reviews_dir) -> Path:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Penny Review Bus gate evaluator")
     parser.add_argument("reviews_dir")
-    parser.add_argument("--config", default="config/run-config.md")
+    parser.add_argument("--config", default=None)
     parser.add_argument("--out", default=None)
     args = parser.parse_args(argv)
+    config = args.config or str(penny_paths.config_path("run-config.md"))
     try:
-        result = evaluate_gate(args.reviews_dir, args.config)
+        result = evaluate_gate(args.reviews_dir, config)
     except GateError as exc:
         print(f"review_gate: {exc}", file=sys.stderr)
         return 2
