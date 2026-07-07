@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # penny-statusline.sh — render Penny harness state for the Claude Code status line.
-# Harness state is read from files under $PENNY_ROOT (default "."); the Claude Code
-# session JSON arrives on stdin. Only the first line of stdout becomes the status line.
+# Harness state is resolved from the current directory's series via penny_paths
+# (design: engine-plugin + series-folders); $PENNY_ROOT (default ".") is only the
+# idle fallback for when cwd isn't inside a series. The Claude Code session JSON
+# arrives on stdin. Only the first line of stdout becomes the status line.
 set -uo pipefail
 
 ROOT="${PENNY_ROOT:-.}"
@@ -13,6 +15,11 @@ STAGE_FILE="$(python3 -m scripts.penny_paths resolve penny current-stage 2>/dev/
 SERIES="$(python3 -m scripts.penny_paths active 2>/dev/null)"
 series_prefix=""
 [ -n "${SERIES:-}" ] && series_prefix="[$SERIES] "
+# When inside a series, anchor ROOT on that same series so outline/reviews below
+# resolve coherently with STAGE_FILE (not to a divergent $PENNY_ROOT). STAGE_FILE
+# is `<series>/.penny/current-stage`, so dirname-of-dirname is the series root.
+# Idle/outside-a-series (empty STAGE_FILE) keeps the $PENNY_ROOT fallback.
+if [ -n "$STAGE_FILE" ]; then ROOT="$(dirname "$(dirname "$STAGE_FILE")")"; fi
 
 # Consume stdin once (the session JSON).
 session_json="$(cat)"

@@ -74,6 +74,6 @@ def test_malformed_marker_missing_chapter_renders_safely(penny_root):
     # A partially-written marker (no chapter=) must not error or render garbage.
     penny_root.write_stage("book=01 stage=DRAFT")  # run() uses check=True
     out = penny_root.run(JSON_41)
-    assert f"[{penny_root.path.name}] Penny · Book 01" in out
+    assert out.startswith(f"[{penny_root.path.name}] Penny · Book 01")
     assert "Ch 0/0" in out
     assert out.endswith("ctx 41%")
