@@ -88,3 +88,59 @@ def test_cli_resolve_and_active(tmp_path):
         cwd=s, capture_output=True, text=True, env=env,
     )
     assert out2.stdout.strip() == "cozy-pelicans"
+
+
+def _make_genre_series(tmp_path, slug="cozy-mystery"):
+    """A tmp series that declares a genre which really exists in the engine."""
+    (tmp_path / ".penny").mkdir()
+    (tmp_path / "series.yaml").write_text(f"genre: {slug}\n", encoding="utf-8")
+    return tmp_path
+
+
+def test_genre_reads_series_yaml(tmp_path):
+    s = _make_genre_series(tmp_path)
+    assert pp.genre(root=s) == "cozy-mystery"
+
+
+def test_genre_missing_series_yaml_fails(tmp_path):
+    (tmp_path / ".penny").mkdir()
+    with pytest.raises(SystemExit) as e:
+        pp.genre(root=tmp_path)
+    assert "series.yaml" in str(e.value)
+
+
+def test_genre_unknown_slug_fails(tmp_path):
+    s = _make_genre_series(tmp_path, slug="no-such-genre")
+    with pytest.raises(SystemExit) as e:
+        pp.genre(root=s)
+    assert "no-such-genre" in str(e.value)
+
+
+def test_genre_dir_points_into_plugin(tmp_path):
+    s = _make_genre_series(tmp_path)
+    assert pp.genre_dir(root=s) == pp.plugin_root() / "genres" / "cozy-mystery"
+
+
+def test_config_path_series_overrides_genre_and_default(tmp_path):
+    s = _make_genre_series(tmp_path)
+    ov = s / "config" / "review-rubrics"
+    ov.mkdir(parents=True)
+    (ov / "structure-tension.md").write_text("series", encoding="utf-8")
+    assert pp.config_path("review-rubrics/structure-tension.md", root=s) == ov / "structure-tension.md"
+
+
+def test_config_path_genre_tier_between_series_and_default(tmp_path, monkeypatch):
+    # Simulate a genre-pack override by pointing genre_dir at a tmp dir that has the file.
+    s = _make_genre_series(tmp_path)
+    fake_genre = tmp_path / "fake-genre"
+    (fake_genre / "review-rubrics").mkdir(parents=True)
+    (fake_genre / "review-rubrics" / "fairplay-planting.md").write_text("genre", encoding="utf-8")
+    monkeypatch.setattr(pp, "genre_dir", lambda g=None, root=None: fake_genre)
+    got = pp.config_path("review-rubrics/fairplay-planting.md", root=s)
+    assert got == fake_genre / "review-rubrics" / "fairplay-planting.md"
+
+
+def test_config_path_falls_to_engine_default_when_no_override(tmp_path):
+    s = _make_genre_series(tmp_path)  # no series override, cozy genre ships no such file yet
+    got = pp.config_path("review-rubrics/character-voice.md", root=s)
+    assert got == pp.plugin_root() / "config" / "review-rubrics/character-voice.md"

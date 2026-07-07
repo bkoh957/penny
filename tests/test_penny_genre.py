@@ -101,3 +101,19 @@ def test_real_cozy_manifest_conforms():
     import yaml
     manifest = yaml.safe_load((gdir / "genre.yaml").read_text())
     assert pg.validate_manifest(manifest, gdir, plugin_root=engine) == []
+
+
+def _make_genre_series(tmp_path, slug="cozy-mystery"):
+    """A tmp series that declares a genre which really exists in the engine."""
+    (tmp_path / ".penny").mkdir()
+    (tmp_path / "series.yaml").write_text(f"genre: {slug}\n", encoding="utf-8")
+    return tmp_path
+
+
+def test_load_manifest_resolves_genre_from_series(tmp_path):
+    """End-to-end: load_manifest(root=...) resolves the genre via penny_paths.genre()
+    and returns the shipped cozy-mystery manifest."""
+    s = _make_genre_series(tmp_path)
+    manifest = pg.load_manifest(root=s)
+    assert manifest["genre"] == "cozy-mystery"
+    assert manifest["planning"]["command"] == "plan-mystery"

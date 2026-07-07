@@ -33,8 +33,15 @@ def _root(root: Path | None) -> Path:
 
 
 def config_path(rel: str, root: Path | None = None) -> Path:
-    override = _root(root) / "config" / rel
-    return override if override.exists() else plugin_root() / "config" / rel
+    series_override = _root(root) / "config" / rel
+    if series_override.exists():
+        return series_override
+    g = _declared_genre(root)
+    if g:
+        genre_override = genre_dir(g=g, root=root) / rel
+        if genre_override.exists():
+            return genre_override
+    return plugin_root() / "config" / rel
 
 
 def series_path(rel: str, root: Path | None = None) -> Path:
@@ -55,6 +62,39 @@ def penny_path(rel: str, root: Path | None = None) -> Path:
 
 def active(root: Path | None = None) -> str:
     return _root(root).name
+
+
+def _read_genre_decl(series_yaml: Path) -> str | None:
+    for line in series_yaml.read_text(encoding="utf-8").splitlines():
+        s = line.strip()
+        if s.startswith("genre:"):
+            return s.split(":", 1)[1].strip()
+    return None
+
+
+def _declared_genre(root: Path | None = None) -> str | None:
+    """The series' declared genre, or None if series.yaml/genre absent (lenient — for config_path)."""
+    series_yaml = _root(root) / "series.yaml"
+    if not series_yaml.is_file():
+        return None
+    return _read_genre_decl(series_yaml)
+
+
+def genre(root: Path | None = None) -> str:
+    """Active series' genre; hard error if undeclared/unknown (strict — for callers that require it)."""
+    series_yaml = _root(root) / "series.yaml"
+    if not series_yaml.is_file():
+        sys.exit(f"penny-paths: no series.yaml (cannot resolve genre) at {series_yaml}")
+    g = _read_genre_decl(series_yaml)
+    if not g:
+        sys.exit(f"penny-paths: series.yaml has no 'genre:' line ({series_yaml})")
+    if not (plugin_root() / "genres" / g).is_dir():
+        sys.exit(f"penny-paths: unknown genre '{g}' (no genres/{g}/ in plugin)")
+    return g
+
+
+def genre_dir(g: str | None = None, root: Path | None = None) -> Path:
+    return plugin_root() / "genres" / (g or genre(root=root))
 
 
 def _main(argv: list[str]) -> int:
