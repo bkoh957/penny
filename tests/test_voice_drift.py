@@ -85,9 +85,13 @@ def test_evidence_capped_at_five_per_tic():
 def test_cli_writes_verdict_with_no_blocking_lines(tmp_path):
     chapter = tmp_path / "ch-07.draft.md"
     chapter.write_text((FIX / "tics.md").read_text(encoding="utf-8"), encoding="utf-8")
+    # --config is passed explicitly so this test never needs series_root() to
+    # resolve a '.penny/' marker at cwd — independent of whether the engine repo
+    # itself carries a series marker (it won't, post the engine/series split).
     rc = subprocess.run(
         [sys.executable, str(REPO / "scripts/voice_drift.py"), str(chapter),
-         "--out", str(tmp_path), "--target", "book-01/ch-07"],
+         "--out", str(tmp_path), "--target", "book-01/ch-07",
+         "--config", str(DEFAULT_CONFIG)],
         cwd=REPO, capture_output=True, text=True,
     )
     assert rc.returncode == 0, rc.stderr

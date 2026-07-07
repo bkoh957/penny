@@ -4,3 +4,6 @@ __pycache__/
 .pytest_cache/
 # fairplay_check.py writes this to cwd when --out is omitted; derived/regenerated artifact
 /fairplay.md
+# fixture series' .penny/ marker is checked-in fixture data, not runtime state
+!tests/fixtures/series-fixture/.penny/
+!tests/fixtures/series-fixture/.penny/**

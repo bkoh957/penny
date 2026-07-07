@@ -116,12 +116,21 @@ def test_load_fraction_reads_run_config():
 
 
 def test_cli_writes_blocking_verdict(tmp_path):
+    # fairplay_check.py's CLI has no --repo-root flag: check_fairplay() always
+    # resolves repo_root via penny_paths.series_root() from cwd. Give the
+    # subprocess its own '.penny' marker (mirroring _make_series in
+    # test_penny_paths.py) rather than relying on the engine repo's own marker,
+    # which is not guaranteed once the engine/series split lands.
+    cli_root = tmp_path / "cli-root"
+    (cli_root / ".penny").mkdir(parents=True)
+    (cli_root / "config").mkdir(parents=True)
+    (cli_root / "series").mkdir(parents=True)
     rc = subprocess.run(
         [sys.executable, str(REPO / "scripts/fairplay_check.py"),
          str(LED / "unfair_clue_after_reveal.yaml"),
          "--out", str(tmp_path), "--run-config", str(RUN_CONFIG),
          "--target", "book-01/ch-22"],
-        cwd=REPO, capture_output=True, text=True,
+        cwd=cli_root, capture_output=True, text=True,
     )
     assert rc.returncode == 0, rc.stderr
     verdict = (tmp_path / "fairplay.md").read_text(encoding="utf-8")
