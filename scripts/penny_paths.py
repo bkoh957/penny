@@ -6,7 +6,8 @@ Two roots:
     (that series' DATA). Hard error if none — never guess which series.
 
 Data paths (series/, input/, output/, .penny/) anchor on the series root.
-Config paths overlay: series override if present, else plugin default.
+Config paths overlay three tiers, first hit wins: series override →
+genre pack (genres/<genre>/, when the series declares a genre) → plugin default.
 """
 from __future__ import annotations
 
@@ -94,6 +95,9 @@ def genre(root: Path | None = None) -> str:
 
 
 def genre_dir(g: str | None = None, root: Path | None = None) -> Path:
+    """Path to a genre pack in the plugin. If `g` is given it is used as-is
+    (unvalidated); otherwise the active series' genre is resolved via the strict
+    `genre()` (which hard-exits on a missing/unknown genre)."""
     return plugin_root() / "genres" / (g or genre(root=root))
 
 
