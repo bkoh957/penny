@@ -17,13 +17,18 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml
 
+from scripts import penny_paths
 from scripts.penny_meta import parse_canon_meta
 from scripts.penny_text import strip_dialogue
 from scripts.penny_verdict import write_verdict
 
-REPO = Path(__file__).resolve().parents[1]
-DEFAULT_LEXICON = REPO / "config/setting-pack/lexicon.yaml"
-DEFAULT_CANON_CORE = REPO / "series/continuity/canon-core.md"
+
+def default_lexicon(repo_root=None):
+    return penny_paths.config_path("setting-pack/lexicon.yaml", root=repo_root)
+
+
+def default_canon_core(repo_root=None):
+    return penny_paths.series_path("continuity/canon-core.md", root=repo_root)
 
 STAGE_RANK = {"OUTSIDER": 0, "SETTLING": 1, "BELONGING": 2}
 REQUIRED = ("term", "narration_ok_from_stage", "auto_detectable")
@@ -123,8 +128,8 @@ def main(argv=None) -> int:
     ap.add_argument("--validate", action="store_true",
                     help="validate the whole lexicon (lock-time gate) and exit")
     ap.add_argument("--out", default=None, help="reviews dir to write lexicon-fluency.md")
-    ap.add_argument("--lexicon", default=str(DEFAULT_LEXICON))
-    ap.add_argument("--canon-core", default=str(DEFAULT_CANON_CORE))
+    ap.add_argument("--lexicon", default=str(default_lexicon()))
+    ap.add_argument("--canon-core", default=str(default_canon_core()))
     ap.add_argument("--target", default="unknown")
     args = ap.parse_args(argv)
 
