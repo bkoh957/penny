@@ -1,0 +1,23 @@
+genre: cozy-mystery
+conventions: conventions.md
+planning:
+  command: plan-mystery
+  artifact: series/whodunit/book-{NN}.yaml
+  validator: fairplay
+  lock: mystery
+inspectors:
+  - continuity
+  - fairplay
+  - structure
+  - voice
+  - ai-prose
+gates:
+  - fairplay
+  - lexicon
+rubrics:
+  - review-rubrics/fairplay-planting.md
+tracks:
+  - M
+  - P
+  - R
+  - B
