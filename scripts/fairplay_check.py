@@ -16,10 +16,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml
 
+from scripts import penny_paths
 from scripts.penny_meta import load, parse_yaml_blocks
 from scripts.penny_verdict import write_verdict
 
-DEFAULT_RUN_CONFIG = Path("config/run-config.md")
+
+def default_run_config(repo_root=None):
+    return penny_paths.config_path("run-config.md", root=repo_root)
+
+
 _REQUIRED = ("book", "total_chapters", "reveal_chapter", "culprit",
              "culprit_first_appearance_chapter")
 
@@ -56,13 +61,13 @@ def _is_int_in_range(v, lo, hi) -> bool:
 def _resolves(entity_id: str, repo_root: Path) -> bool:
     """True iff the id has a home as a static identity OR a continuity entry.
     Presence only — never reads the file's contents."""
-    static = Path(repo_root) / "series/characters" / f"{entity_id}.static.md"
-    cont = Path(repo_root) / "series/continuity/characters" / f"{entity_id}.md"
+    static = penny_paths.series_path(f"characters/{entity_id}.static.md", root=repo_root)
+    cont = penny_paths.series_path(f"continuity/characters/{entity_id}.md", root=repo_root)
     return static.is_file() or cont.is_file()
 
 
 def check_fairplay(ledger_path, *, culprit_by_fraction: float, repo_root=None) -> dict:
-    repo_root = Path(repo_root) if repo_root is not None else Path(__file__).resolve().parents[1]
+    repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
     led = _load_ledger(ledger_path)
     blocking: list[str] = []
     notes: list[str] = []
@@ -153,7 +158,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Fair-play ledger-consistency checker.")
     ap.add_argument("ledger", help="path to series/whodunit/book-NN.yaml")
     ap.add_argument("--out", default=None, help="reviews dir to write fairplay.md")
-    ap.add_argument("--run-config", default=str(DEFAULT_RUN_CONFIG))
+    ap.add_argument("--run-config", default=str(default_run_config()))
     ap.add_argument("--target", default="unknown")
     args = ap.parse_args(argv)
 
