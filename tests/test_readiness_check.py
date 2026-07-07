@@ -53,10 +53,13 @@ def test_engine_all_ready_no_book(tmp_path):
 
 
 def test_missing_engine_file_flagged(tmp_path):
+    # Delete a *data* path (canon-core), not a config override: config paths fall
+    # back to the plugin default, so a deleted override is never "missing". Only a
+    # no-fallback data path can prove readiness flags a genuinely-absent file.
     _engine_ready(tmp_path)
-    (tmp_path / "config/run-config.md").unlink()
+    (tmp_path / "series/continuity/canon-core.md").unlink()
     report = readiness_check.check_readiness(repo_root=tmp_path)
-    assert _by(report["engine_and_config"], "run-config")["status"] == "missing"
+    assert _by(report["engine_and_config"], "canon-core")["status"] == "missing"
     assert report["summary"]["verdict"] == "NOT-READY"
     assert report["summary"]["missing"] >= 1
 

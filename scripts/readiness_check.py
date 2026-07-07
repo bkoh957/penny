@@ -26,6 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml
 
+from scripts import penny_paths
 from scripts.fairplay_check import check_fairplay, load_fraction
 
 REPO = Path(__file__).resolve().parents[1]
@@ -59,13 +60,25 @@ def _check(name, kind, status, path=None, detail=None) -> dict:
     return entry
 
 
+def _resolve(rel: str, repo_root) -> Path:
+    if rel.startswith("config/"):
+        return penny_paths.config_path(rel[len("config/"):], root=repo_root)
+    if rel.startswith("series/"):
+        return penny_paths.series_path(rel[len("series/"):], root=repo_root)
+    if rel.startswith("input/"):
+        return penny_paths.input_path(rel[len("input/"):], root=repo_root)
+    if rel.startswith("output/"):
+        return penny_paths.output_path(rel[len("output/"):], root=repo_root)
+    return Path(repo_root) / rel
+
+
 def _file_check(name, rel, repo_root) -> dict:
-    status = "ready" if (Path(repo_root) / rel).is_file() else "missing"
+    status = "ready" if _resolve(rel, repo_root).is_file() else "missing"
     return _check(name, "file", status, path=rel)
 
 
 def _dir_check(name, rel, expected_min, repo_root) -> dict:
-    d = Path(repo_root) / rel
+    d = _resolve(rel, repo_root)
     if not d.is_dir():
         return _check(name, "dir", "missing", path=rel)
     n = len(list(d.glob("*.md")))
@@ -75,7 +88,8 @@ def _dir_check(name, rel, expected_min, repo_root) -> dict:
     return _check(name, "dir", "ready", path=rel, detail=f"{n} file(s)")
 
 
-def engine_checks(repo_root) -> list[dict]:
+def engine_checks(repo_root=None) -> list[dict]:
+    repo_root = repo_root or penny_paths.series_root()
     out = []
     for name, rel, kind, expected_min in ENGINE_CHECKS:
         if kind == "dir":
