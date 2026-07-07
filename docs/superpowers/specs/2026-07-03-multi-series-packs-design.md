@@ -1,6 +1,12 @@
 # Spec — Multi-series via one engine + swappable packs
 
-Saved: 2026-07-03 | Status: design approved, pending spec review
+Saved: 2026-07-03 | Status: **SUPERSEDED** by `2026-07-07-engine-plugin-series-folders-design.md`
+
+> This `packs/`-resolver approach was replaced. The showrunner's workflow (series as ordinary
+> folders you `cd` into) makes the whole selection layer here — `--series`, `PENNY_SERIES`, the
+> `.penny/current-series` pointer, the precedence resolver, and the `packs/<slug>/` nesting —
+> unnecessary: the active series is just the working directory. Kept for the record; the
+> config-overlay and one-engine/no-drift reasoning carried forward into the new spec.
 
 ## Problem
 
