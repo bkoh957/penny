@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml
 
+from scripts import penny_paths
 from scripts.penny_meta import parse_frontmatter
 from scripts.penny_verdict import write_verdict
 from scripts.penny_text import (
@@ -30,7 +31,9 @@ from scripts.penny_text import (
     strip_frontmatter,
 )
 
-DEFAULT_CONFIG = Path(__file__).resolve().parents[1] / "config/voice-pack/ai-tics-config.yaml"
+
+def default_config(repo_root=None) -> Path:
+    return penny_paths.config_path("voice-pack/ai-tics-config.yaml", root=repo_root)
 
 
 def load_config(path) -> dict:
@@ -195,11 +198,12 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Voice-drift checker (evidence-only).")
     ap.add_argument("chapter", help="path to the chapter markdown file")
     ap.add_argument("--out", default=None, help="reviews dir to write voice-drift.md")
-    ap.add_argument("--config", default=str(DEFAULT_CONFIG))
+    ap.add_argument("--config", default=None,
+                     help="tic config path (default: overlay resolution from series root)")
     ap.add_argument("--target", default="unknown")
     args = ap.parse_args(argv)
 
-    cfg = load_config(args.config)
+    cfg = load_config(args.config or default_config())
     text = Path(args.chapter).read_text(encoding="utf-8")
     result = analyze(text, cfg)
 
