@@ -1,0 +1,77 @@
+"""Load and validate a genre manifest (genres/<genre>/genre.yaml).
+
+The manifest is genuinely nested human-edited data, so this module (unlike the
+stdlib-only penny_paths) uses PyYAML — consistent with the dependency-split rule.
+It is the ONLY reader of the nested manifest; penny_paths reads only the flat
+series.yaml.
+"""
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import yaml
+
+MANIFEST_KEYS = ("genre", "conventions", "planning", "inspectors", "gates", "rubrics", "tracks")
+_PLANNING_KEYS = ("command", "artifact", "validator", "lock")
+
+
+def validate_manifest(manifest: dict, genre_dir: Path, *, plugin_root: Path) -> list[str]:
+    """Return a list of error strings (empty means valid)."""
+    errs: list[str] = []
+    for k in MANIFEST_KEYS:
+        if k not in manifest:
+            errs.append(f"manifest missing required key: {k}")
+    if errs:
+        return errs
+
+    if manifest["genre"] != genre_dir.name:
+        errs.append(f"genre '{manifest['genre']}' does not match directory '{genre_dir.name}'")
+
+    planning = manifest["planning"]
+    if not isinstance(planning, dict):
+        errs.append("planning must be a mapping")
+    else:
+        for k in _PLANNING_KEYS:
+            if k not in planning:
+                errs.append(f"planning missing key: {k}")
+        if "artifact" in planning and "{NN}" not in str(planning["artifact"]):
+            errs.append("planning.artifact must contain the {NN} book placeholder")
+        cmd = planning.get("command")
+        if cmd and not (plugin_root / "commands" / f"{cmd}.md").is_file():
+            errs.append(f"planning.command '{cmd}' -> commands/{cmd}.md not found")
+        val = planning.get("validator")
+        if val is not None and not (plugin_root / "scripts" / f"{val}_check.py").is_file():
+            errs.append(f"planning.validator '{val}' -> scripts/{val}_check.py not found")
+
+    for name in manifest.get("inspectors", []):
+        if not (plugin_root / "agents" / f"inspector-{name}.md").is_file():
+            errs.append(f"inspector '{name}' -> agents/inspector-{name}.md not found")
+
+    # conventions + rubric files: resolve through the overlay (genre dir OR engine default)
+    conv = manifest["conventions"]
+    if not (genre_dir / conv).is_file():
+        errs.append(f"conventions '{conv}' not found in {genre_dir}")
+    for rel in manifest.get("rubrics", []):
+        if not ((genre_dir / rel).is_file() or (plugin_root / "config" / rel).is_file()):
+            errs.append(f"rubric '{rel}' not found in genre pack or engine defaults")
+
+    for key in ("inspectors", "gates", "rubrics", "tracks"):
+        if not isinstance(manifest.get(key), list):
+            errs.append(f"{key} must be a list")
+    return errs
+
+
+def load_manifest(genre: str | None = None, *, root: Path | None = None) -> dict:
+    from scripts import penny_paths
+    if genre is None:
+        genre = penny_paths.genre(root=root)
+    genre_dir = penny_paths.plugin_root() / "genres" / genre
+    mpath = genre_dir / "genre.yaml"
+    if not mpath.is_file():
+        sys.exit(f"penny-genre: no manifest at {mpath}")
+    manifest = yaml.safe_load(mpath.read_text(encoding="utf-8"))
+    errs = validate_manifest(manifest, genre_dir, plugin_root=penny_paths.plugin_root())
+    if errs:
+        sys.exit("penny-genre: invalid manifest:\n  - " + "\n  - ".join(errs))
+    return manifest
