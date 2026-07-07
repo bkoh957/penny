@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml
 
-from scripts import assemble_book, revision_priority
+from scripts import assemble_book, penny_paths, revision_priority
 from scripts.fairplay_check import check_fairplay, load_fraction
 from scripts.lexicon_check import load_lexicon, stage_drift, validate_lexicon
 from scripts.penny_meta import load, parse_frontmatter, parse_yaml_blocks
@@ -33,28 +33,29 @@ def _fail(predicate: str):
 
 
 def ledger_path(book: str, repo_root) -> Path:
-    return Path(repo_root) / "series/whodunit" / f"book-{book}.yaml"
+    return penny_paths.series_path(f"whodunit/book-{book}.yaml", root=repo_root)
 
 
 def lock_path(book: str, repo_root) -> Path:
-    return Path(repo_root) / ".penny/locks" / f"book-{book}.mystery.lock"
+    return penny_paths.penny_path(f"locks/book-{book}.mystery.lock", root=repo_root)
 
 
 def approved_path(book: str, repo_root) -> Path:
-    return Path(repo_root) / ".penny/locks" / f"book-{book}.approved"
+    return penny_paths.penny_path(f"locks/book-{book}.approved", root=repo_root)
 
 
 def gate_path(book: str, chapter: str, repo_root) -> Path:
-    return (Path(repo_root) / "output" / f"book-{book}" / "chapters"
+    return (penny_paths.output_path(f"book-{book}/chapters", root=repo_root)
             / f"ch-{chapter}.gate.md")
 
 
 def draft_path(book: str, chapter: str, repo_root) -> Path:
-    return (Path(repo_root) / "output" / f"book-{book}" / "chapters"
+    return (penny_paths.output_path(f"book-{book}/chapters", root=repo_root)
             / f"ch-{chapter}.draft.md")
 
 
-def draft_sha256(book: str, chapter: str, *, repo_root=REPO) -> str:
+def draft_sha256(book: str, chapter: str, *, repo_root=None) -> str:
+    repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
     p = draft_path(book, chapter, repo_root)
     if not p.is_file():
         _fail(f"no draft for book {book} ch {chapter} ({p})")
@@ -62,15 +63,16 @@ def draft_sha256(book: str, chapter: str, *, repo_root=REPO) -> str:
 
 
 def dev_report_path(book: str, chapter: str, repo_root) -> Path:
-    return (Path(repo_root) / "output" / f"book-{book}" / "chapters"
+    return (penny_paths.output_path(f"book-{book}/chapters", root=repo_root)
             / f"ch-{chapter}.reviews" / "developmental-edit.md")
 
 
 def dev_clear_path(book: str, chapter: str, repo_root) -> Path:
-    return Path(repo_root) / ".penny/locks" / f"book-{book}.ch-{chapter}.dev-clear"
+    return penny_paths.penny_path(f"locks/book-{book}.ch-{chapter}.dev-clear", root=repo_root)
 
 
-def cmd_finalize(book: str, chapter: str, *, repo_root=REPO) -> int:
+def cmd_finalize(book: str, chapter: str, *, repo_root=None) -> int:
+    repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
     gp = gate_path(book, chapter, repo_root)
     if not gp.is_file():
         _fail(f"no gate for book {book} ch {chapter} ({gp}) — run /review-chapter first")
@@ -92,7 +94,8 @@ def cmd_finalize(book: str, chapter: str, *, repo_root=REPO) -> int:
     return 0
 
 
-def cmd_clear_dev(book: str, chapter: str, *, repo_root=REPO) -> int:
+def cmd_clear_dev(book: str, chapter: str, *, repo_root=None) -> int:
+    repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
     rep = dev_report_path(book, chapter, repo_root)
     if not rep.is_file():
         _fail(f"no developmental read for book {book} ch {chapter} ({rep}) — "
@@ -116,7 +119,8 @@ def cmd_clear_dev(book: str, chapter: str, *, repo_root=REPO) -> int:
     return 0
 
 
-def cmd_draft(book: str, chapter: str, *, repo_root=REPO) -> int:
+def cmd_draft(book: str, chapter: str, *, repo_root=None) -> int:
+    repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
     led = ledger_path(book, repo_root)
     if not led.is_file():
         _fail(f"no ledger for book {book} ({led}) — run /plan-mystery {book}")
@@ -129,7 +133,7 @@ def cmd_draft(book: str, chapter: str, *, repo_root=REPO) -> int:
 
 
 def _drafted_by_set(book: str, repo_root) -> set[str]:
-    chapters = Path(repo_root) / "output" / f"book-{book}" / "chapters"
+    chapters = penny_paths.output_path(f"book-{book}/chapters", root=repo_root)
     stamps: set[str] = set()
     for ch in sorted(chapters.glob("ch-*.draft.md")):
         m = parse_frontmatter(ch.read_text(encoding="utf-8")).get("drafted_by")
@@ -139,11 +143,12 @@ def _drafted_by_set(book: str, repo_root) -> set[str]:
 
 
 def _final_read_path(book: str, repo_root) -> Path:
-    return Path(repo_root) / "output" / f"book-{book}" / f"book-{book}.final-read.md"
+    return penny_paths.output_path(f"book-{book}/book-{book}.final-read.md", root=repo_root)
 
 
-def cmd_assemble(book: str, *, repo_root=REPO, run_config=None) -> int:
-    run_config = run_config or (Path(repo_root) / "config/run-config.md")
+def cmd_assemble(book: str, *, repo_root=None, run_config=None) -> int:
+    repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
+    run_config = run_config or penny_paths.config_path("run-config.md", root=repo_root)
     cfg = parse_yaml_blocks(load(run_config))
     drafting = cfg.get("drafting_model")
     final_read = cfg.get("final_read_model")
@@ -169,7 +174,8 @@ def cmd_assemble(book: str, *, repo_root=REPO, run_config=None) -> int:
     return 0
 
 
-def cmd_approve_book(book: str, *, repo_root=REPO) -> int:
+def cmd_approve_book(book: str, *, repo_root=None) -> int:
+    repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
     man = assemble_book.manuscript_path(book, repo_root)
     if not man.is_file():
         _fail(f"no manuscript for book {book} ({man}) — run /assemble-book first")
@@ -196,9 +202,9 @@ def cmd_approve_book(book: str, *, repo_root=REPO) -> int:
     return 0
 
 
-def cmd_lock_mystery(book: str, *, repo_root=REPO, run_config=None) -> int:
-    repo_root = Path(repo_root)
-    run_config = run_config or (repo_root / "config/run-config.md")
+def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None) -> int:
+    repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
+    run_config = run_config or penny_paths.config_path("run-config.md", root=repo_root)
     led = ledger_path(book, repo_root)
     if not led.is_file():
         _fail(f"no ledger to lock for book {book} ({led})")
@@ -208,8 +214,8 @@ def cmd_lock_mystery(book: str, *, repo_root=REPO, run_config=None) -> int:
     if fp["blocking"]:
         _fail("fairplay failed; lock NOT written:\n  - " + "\n  - ".join(fp["blocking"]))
     # 2. lexicon schema validation (+ stage drift).
-    errors = validate_lexicon(load_lexicon(repo_root / "config/setting-pack/lexicon.yaml"))
-    canon = repo_root / "series/continuity/canon-core.md"
+    errors = validate_lexicon(load_lexicon(penny_paths.config_path("setting-pack/lexicon.yaml", root=repo_root)))
+    canon = penny_paths.series_path("continuity/canon-core.md", root=repo_root)
     if not canon.is_file():
         _fail(f"no canon-core to validate stage drift ({canon})")
     drift = stage_drift(canon.read_text(encoding="utf-8"))
