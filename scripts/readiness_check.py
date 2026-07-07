@@ -171,7 +171,7 @@ def book_input_checks(book, repo_root) -> list[dict]:
 def _fairplay_check(book, led_rel, repo_root) -> dict:
     """Structural fairplay validity (numeric fairness), excluding entity-existence
     — that is reported separately by character-entities."""
-    cfg = Path(repo_root) / "config/run-config.md"
+    cfg = penny_paths.config_path("run-config.md", root=repo_root)
     if not cfg.is_file():
         return _check("mystery-fairplay", "check", "blocked", path=led_rel,
                       detail="requires config/run-config.md")
@@ -238,7 +238,8 @@ def _summarize(*check_groups) -> dict:
     return {**counts, "verdict": verdict}
 
 
-def check_readiness(book=None, *, repo_root=REPO) -> dict:
+def check_readiness(book=None, *, repo_root=None) -> dict:
+    repo_root = repo_root if repo_root is not None else penny_paths.series_root()
     engine = engine_checks(repo_root)
     report: dict = {"book": book}
     if book is None:
