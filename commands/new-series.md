@@ -46,14 +46,13 @@ inside the new folder, via `/scaffold-book` or `/plan-mystery`.
    mkdir -p "$target"/input
    mkdir -p "$target"/output
    touch "$target"/series/continuity/canon-core.md
-   touch "$target"/config/run-config.md
    ```
 
-   These `config/` stubs are **override files, empty on purpose**: `config_path()`
-   falls back to the plugin's shipped default (its own `config/run-config.md`,
-   `config/voice-pack/…`, etc.) for anything this series hasn't overridden. An empty
-   `run-config.md` here means "inherit every engine default" until the showrunner
-   edits one in.
+   The `config/` directories are created empty: `config_path()` will fall back to the
+   plugin's shipped defaults (its own `config/run-config.md`, `config/voice-pack/…`,
+   etc.) for anything this series hasn't overridden. A new series inherits ALL engine
+   config defaults; to override one, the showrunner adds that file under the series'
+   `config/` later (e.g., edit `$target/config/run-config.md`).
 
 4. **`git init` the new folder** — each series is its own repo, independent of the
    engine's:
