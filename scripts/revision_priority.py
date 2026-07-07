@@ -23,9 +23,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from scripts import penny_paths
 from scripts.penny_meta import parse_yaml_blocks, strip_frontmatter
 
-REPO = Path(__file__).resolve().parents[1]
 SCHEMA = "penny-revision-priority/1"
 
 
@@ -34,7 +34,7 @@ def _fail(predicate: str):
 
 
 def book_dir(book: str, repo_root) -> Path:
-    return Path(repo_root) / "output" / f"book-{book}"
+    return penny_paths.output_path(f"book-{book}", root=repo_root)
 
 
 def report_path(book: str, repo_root) -> Path:
@@ -79,8 +79,9 @@ def _score_spreads(chapters_dir) -> list[tuple[int, dict]]:
     return out
 
 
-def aggregate(book: str, *, repo_root=REPO, config_path=None) -> dict:
-    config_path = config_path or (Path(repo_root) / "config/run-config.md")
+def aggregate(book: str, *, repo_root=None, config_path=None) -> dict:
+    repo_root = repo_root if repo_root is not None else penny_paths.series_root()
+    config_path = config_path or penny_paths.config_path("run-config.md", root=repo_root)
     th = _load_thresholds(config_path)
     converged = _load_converged(book_dir(book, repo_root) / "reports")
 
@@ -138,7 +139,8 @@ def write_report(out_path, result) -> Path:
     return out_path
 
 
-def cmd_report(book: str, *, repo_root=REPO, config_path=None) -> int:
+def cmd_report(book: str, *, repo_root=None, config_path=None) -> int:
+    repo_root = repo_root if repo_root is not None else penny_paths.series_root()
     result = aggregate(book, repo_root=repo_root, config_path=config_path)
     write_report(report_path(book, repo_root), result)
     print(f"REVISION-PRIORITY: {len(result['escalate'])} escalation(s)")
