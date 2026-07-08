@@ -1,7 +1,7 @@
 ---
 id: maggie-quill
 type: character
-links: [the-wheelhouse, b-romance, c-internal, gift, a-murder, thomas-quill]
+links: []
 ---
 <!-- canon-meta: {id: maggie-quill, refs: [protagonist-fixed], active_window: "1-13", last_referenced: null, reconfirmed_at: null, keep_reason: "series protagonist"} -->
 # Margaret "Maggie" Quill

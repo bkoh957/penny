@@ -2,7 +2,7 @@ from pathlib import Path
 
 from scripts.penny_meta import parse_canon_meta, parse_canon_sections
 
-CANON = Path(__file__).resolve().parents[1] / "series/continuity/canon-core.md"
+CANON = Path(__file__).resolve().parent / "fixtures/cozy/series/continuity/canon-core.md"
 REQUIRED = {"id", "refs", "active_window", "last_referenced", "reconfirmed_at", "keep_reason"}
 
 
