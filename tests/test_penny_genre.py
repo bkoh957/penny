@@ -1,3 +1,6 @@
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -117,3 +120,53 @@ def test_load_manifest_resolves_genre_from_series(tmp_path):
     manifest = pg.load_manifest(root=s)
     assert manifest["genre"] == "cozy-mystery"
     assert manifest["planning"]["command"] == "plan-mystery"
+
+
+def _cozy_series(tmp_path):
+    (tmp_path / ".penny").mkdir()
+    (tmp_path / "series.yaml").write_text("genre: cozy-mystery\n", encoding="utf-8")
+    return tmp_path
+
+
+def test_inspectors_accessor(tmp_path):
+    s = _cozy_series(tmp_path)
+    assert pg.inspectors(root=s) == ["continuity", "fairplay", "structure", "voice", "ai-prose"]
+
+
+def test_gates_accessor(tmp_path):
+    s = _cozy_series(tmp_path)
+    assert pg.gates(root=s) == ["fairplay", "lexicon"]
+
+
+def test_planning_accessor(tmp_path):
+    s = _cozy_series(tmp_path)
+    p = pg.planning(root=s)
+    assert p["command"] == "plan-mystery"
+    assert p["artifact"] == "series/whodunit/book-{NN}.yaml"
+    assert p["validator"] == "fairplay"
+    assert p["lock"] == "mystery"
+
+
+def test_cli_inspectors_newline_joined(tmp_path):
+    s = _cozy_series(tmp_path)
+    env = {**os.environ, "PYTHONPATH": str(pp.plugin_root())}
+    out = subprocess.run([sys.executable, "-m", "scripts.penny_genre", "inspectors"],
+                         cwd=s, capture_output=True, text=True, env=env)
+    assert out.returncode == 0
+    assert out.stdout.split() == ["continuity", "fairplay", "structure", "voice", "ai-prose"]
+
+
+def test_cli_planning_command(tmp_path):
+    s = _cozy_series(tmp_path)
+    env = {**os.environ, "PYTHONPATH": str(pp.plugin_root())}
+    out = subprocess.run([sys.executable, "-m", "scripts.penny_genre", "planning-command"],
+                         cwd=s, capture_output=True, text=True, env=env)
+    assert out.stdout.strip() == "plan-mystery"
+
+
+def test_cli_planning_lock(tmp_path):
+    s = _cozy_series(tmp_path)
+    env = {**os.environ, "PYTHONPATH": str(pp.plugin_root())}
+    out = subprocess.run([sys.executable, "-m", "scripts.penny_genre", "planning-lock"],
+                         cwd=s, capture_output=True, text=True, env=env)
+    assert out.stdout.strip() == "mystery"

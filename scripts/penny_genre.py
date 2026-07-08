@@ -75,3 +75,40 @@ def load_manifest(genre: str | None = None, *, root: Path | None = None) -> dict
     if errs:
         sys.exit("penny-genre: invalid manifest:\n  - " + "\n  - ".join(errs))
     return manifest
+
+
+def inspectors(root: Path | None = None) -> list[str]:
+    return load_manifest(root=root)["inspectors"]
+
+
+def gates(root: Path | None = None) -> list[str]:
+    return load_manifest(root=root)["gates"]
+
+
+def planning(root: Path | None = None) -> dict:
+    return load_manifest(root=root)["planning"]
+
+
+def _main(argv: list[str]) -> int:
+    if not argv:
+        print("usage: penny_genre <inspectors|gates|planning-command|planning-artifact|planning-lock|planning-validator>",
+              file=sys.stderr)
+        return 2
+    cmd = argv[0]
+    if cmd == "inspectors":
+        print("\n".join(inspectors()))
+        return 0
+    if cmd == "gates":
+        print("\n".join(gates()))
+        return 0
+    if cmd.startswith("planning-"):
+        key = cmd[len("planning-"):]
+        val = planning().get(key)
+        print("" if val is None else val)
+        return 0
+    print(f"penny_genre: unknown command '{cmd}'", file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(_main(sys.argv[1:]))
