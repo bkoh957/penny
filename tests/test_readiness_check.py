@@ -1,24 +1,29 @@
 """Tests for the pre-flight readiness checklist (scripts/readiness_check.py).
 
-Builds tmp repos (engine files copied from the real repo) and asserts the
-ready/missing/blocked classification for engine config and per-book inputs.
+Builds tmp repos (engine neutral defaults from the plugin root, overlaid with
+the cozy fixture's series overrides) and asserts the ready/missing/blocked
+classification for engine config and per-book inputs.
 """
 import shutil
+from pathlib import Path
 
 import yaml
 
 from scripts import readiness_check
 
-SRC = readiness_check.REPO
-# A self-contained ledger fixture (margaret / edwin-tilley / thomas, structurally
-# fair). Deliberately NOT the real series/ stub — that is project content a user
-# clears, and tests must not depend on it.
-FIXTURE_LEDGER = SRC / "tests/fixtures/ledgers/fair.yaml"
+REPO = readiness_check.REPO
+# A self-contained cozy series fixture: real copies of the config OVERRIDES
+# (run-config, voice/setting/genre packs, beta personas) + canon-core. It does
+# NOT contain the engine's neutral config DEFAULTS (rubrics, line/copy-edit,
+# self-audit, outline-template, beta-protocol) — those come from the plugin root.
+SRC = Path(__file__).resolve().parent / "fixtures" / "cozy"
+FIXTURE_LEDGER = REPO / "tests/fixtures/ledgers/fair.yaml"
 
 
 def _engine_ready(tmp):
-    """Copy the shipped engine config + canon-core so engine checks all pass."""
-    shutil.copytree(SRC / "config", tmp / "config")
+    """Assemble engine neutral defaults + the fixture's overrides + canon-core."""
+    shutil.copytree(readiness_check.penny_paths.plugin_root() / "config", tmp / "config")
+    shutil.copytree(SRC / "config", tmp / "config", dirs_exist_ok=True)
     (tmp / "series/continuity").mkdir(parents=True, exist_ok=True)
     shutil.copy(SRC / "series/continuity/canon-core.md",
                 tmp / "series/continuity/canon-core.md")

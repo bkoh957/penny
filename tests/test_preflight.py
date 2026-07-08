@@ -1,26 +1,33 @@
 import hashlib
 import shutil
+from pathlib import Path
 
 import pytest
 
 from scripts import preflight
 
 SRC = preflight.REPO
+# The cozy series fixture: real copies of the config OVERRIDES (run-config,
+# packs, lexicon) + canon-core. Test-fixture ledgers (FAIR/UNFAIR below) still
+# come from the real repo's tests/fixtures/ledgers/ — those are engine test
+# data, not series content, and are unaffected by the config-cutover.
+FIXTURE = Path(__file__).resolve().parent / "fixtures" / "cozy"
 
 
 def _scaffold_lockable(tmp_path, *, ledger_fixture, valid_lexicon=True):
-    """Build a tmp repo able to run lock-mystery: real run-config, real canon-core,
-    a (valid or malformed) lexicon, a resolvable character corpus, and a ledger."""
-    # run-config + canon-core copied from the real repo (both valid).
+    """Build a tmp repo able to run lock-mystery: fixture run-config, fixture
+    canon-core, a (valid or malformed) lexicon, a resolvable character corpus,
+    and a ledger."""
+    # run-config + canon-core copied from the cozy fixture (both valid).
     (tmp_path / "config").mkdir(parents=True, exist_ok=True)
-    shutil.copy(SRC / "config/run-config.md", tmp_path / "config/run-config.md")
+    shutil.copy(FIXTURE / "config/run-config.md", tmp_path / "config/run-config.md")
     (tmp_path / "series/continuity").mkdir(parents=True, exist_ok=True)
-    shutil.copy(SRC / "series/continuity/canon-core.md",
+    shutil.copy(FIXTURE / "series/continuity/canon-core.md",
                 tmp_path / "series/continuity/canon-core.md")
-    # lexicon: real (valid) or a malformed stub.
+    # lexicon: fixture (valid) or a malformed stub.
     (tmp_path / "config/setting-pack").mkdir(parents=True, exist_ok=True)
     if valid_lexicon:
-        shutil.copy(SRC / "config/setting-pack/lexicon.yaml",
+        shutil.copy(FIXTURE / "config/setting-pack/lexicon.yaml",
                     tmp_path / "config/setting-pack/lexicon.yaml")
     else:
         (tmp_path / "config/setting-pack/lexicon.yaml").write_text(
