@@ -1,6 +1,6 @@
 ---
-name: plan-book
 description: Plan a book — resolve the active series' genre and delegate to that genre's planning runbook.
+argument-hint: <book-number>
 ---
 
 # /plan-book NN

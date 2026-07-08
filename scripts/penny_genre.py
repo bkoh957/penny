@@ -10,6 +10,10 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+# Allow `import scripts.*` when this file is run directly as `python3 scripts/penny_genre.py`
+# (direct-run puts scripts/ on sys.path, not the repo root). Harmless under pytest.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 import yaml
 
 MANIFEST_KEYS = ("genre", "conventions", "planning", "inspectors", "gates", "rubrics", "tracks")

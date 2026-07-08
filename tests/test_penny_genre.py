@@ -156,6 +156,20 @@ def test_cli_inspectors_newline_joined(tmp_path):
     assert out.stdout.split() == ["continuity", "fairplay", "structure", "voice", "ai-prose"]
 
 
+def test_cli_direct_file_invocation_no_pythonpath(tmp_path):
+    """Runbooks invoke penny_genre.py as a direct file path (not `-m`), with no
+    PYTHONPATH set. Without a sys.path shim in the module itself, the deferred
+    `from scripts import penny_paths` inside load_manifest() raises
+    ModuleNotFoundError. Reproduces the exact runbook invocation."""
+    s = _cozy_series(tmp_path)
+    script = pp.plugin_root() / "scripts" / "penny_genre.py"
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    out = subprocess.run([sys.executable, str(script), "inspectors"],
+                         cwd=s, capture_output=True, text=True, env=env)
+    assert out.returncode == 0, out.stderr
+    assert out.stdout.split() == ["continuity", "fairplay", "structure", "voice", "ai-prose"]
+
+
 def test_cli_planning_command(tmp_path):
     s = _cozy_series(tmp_path)
     env = {**os.environ, "PYTHONPATH": str(pp.plugin_root())}
