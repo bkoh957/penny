@@ -15,6 +15,10 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+# Direct-file invocation (as the command runbooks do via ${CLAUDE_PLUGIN_ROOT})
+# puts scripts/ on sys.path, not the repo root — add the root so `from scripts import …` resolves.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from scripts import penny_paths
 from scripts.penny_meta import parse_frontmatter, parse_yaml_blocks
 from scripts.penny_verdict import count_blocking
