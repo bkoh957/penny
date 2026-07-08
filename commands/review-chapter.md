@@ -1,5 +1,5 @@
 ---
-description: Run the developmental gate on one chapter — dispatch the 5 blind inspectors + the 2a checkers, then compute PASS/HOLD.
+description: Run the developmental gate on one chapter — dispatch the genre's blind inspectors + the 2a checkers, then compute PASS/HOLD.
 argument-hint: <book-number> <chapter-number>
 ---
 # /review-chapter
@@ -62,15 +62,31 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    emitted (identical behaviour to the old `unknown` placeholder, but now reading real
    data written by `/finalize-chapter`).
 
-7. **Dispatch the 5 blind inspector sub-agents**, each with the chapter text, its one
-   rubric, and the ledger slice (structure also gets the roster). Each writes its
+7. **Resolve the active genre's inspector set:**
+
+   ```bash
+   INSPECTORS="$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/penny_genre.py" inspectors)"
+   ```
+
+   `$INSPECTORS` is the active genre's blind-inspector set (for a cozy series:
+   `continuity fairplay structure voice ai-prose`). The genre chooses WHICH
+   inspectors run; the static table below is the engine's fixed reference for each
+   inspector's rubric and verdict file:
+
+   | inspector | agent | rubric | verdict file |
+   |---|---|---|---|
+   | continuity | inspector-continuity | continuity-drift.md | continuity-drift.md |
+   | fairplay | inspector-fairplay | fairplay-planting.md | fairplay-planting.md |
+   | structure | inspector-structure | structure-tension.md | structure-tension.md (also gets the thread roster) |
+   | voice | inspector-voice | character-voice.md | character-voice.md |
+   | ai-prose | inspector-ai-prose | ai-prose-taste-flags.md | ai-prose-taste-flags.md |
+
+   **Dispatch, blind, exactly the inspectors named in `$INSPECTORS`** — for each, the
+   `inspector-<name>` sub-agent with the chapter text, its rubric (from the table
+   above), and the ledger slice (structure also gets the roster). Each writes its
    verdict into `output/book-$book/chapters/ch-$chapter.reviews/` via
-   `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py`:
-   - `inspector-continuity` → `continuity-drift.md`
-   - `inspector-fairplay` → `fairplay-planting.md`
-   - `inspector-structure` → `structure-tension.md` (+ roster)
-   - `inspector-voice` → `character-voice.md`
-   - `inspector-ai-prose` → `ai-prose-taste-flags.md`
+   `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py`, to the verdict file named in the
+   table above.
 
 7b. **Cross-model guard + dispatch the developmental editor (context-rich, advisory).**
 
@@ -94,8 +110,9 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    `output/book-$book/chapters/ch-$chapter.reviews/developmental-edit.md` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py` (`kind: developmental`, no `^BLOCKING:` lines).
 
-8. **Dispatch-completeness check:** confirm all five inspector verdict files AND
-   `developmental-edit.md` now exist in the reviews dir. A missing one means a sub-agent
+8. **Dispatch-completeness check:** confirm one verdict file (per the static table's
+   `verdict file` column) for each inspector named in `$INSPECTORS`, AND
+   `developmental-edit.md`, now exist in the reviews dir. A missing one means a sub-agent
    dispatch silently failed — stop and report it. (This is distinct from `fairplay.md`
    legitimately being absent pre-reveal.)
 
