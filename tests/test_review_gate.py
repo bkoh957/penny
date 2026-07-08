@@ -7,7 +7,7 @@ from scripts.penny_meta import parse_frontmatter
 from scripts.penny_verdict import write_verdict
 from scripts.review_gate import GateError, evaluate_gate, write_gate_md, main
 
-CONFIG = Path("config/run-config.md").resolve()
+CONFIG = (Path(__file__).resolve().parent / "fixtures" / "cozy" / "config" / "run-config.md")
 
 
 def _reviews(tmp_path):

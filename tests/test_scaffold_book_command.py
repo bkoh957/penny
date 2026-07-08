@@ -1,7 +1,7 @@
 from pathlib import Path
 
 CMD = Path("commands/scaffold-book.md")
-RUN_CONFIG = Path("config/run-config.md")
+RUN_CONFIG = Path(__file__).resolve().parent / "fixtures" / "cozy" / "config" / "run-config.md"
 
 
 def test_command_gates_on_outline_check():
