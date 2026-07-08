@@ -128,10 +128,17 @@ def main(argv=None) -> int:
     ap.add_argument("--validate", action="store_true",
                     help="validate the whole lexicon (lock-time gate) and exit")
     ap.add_argument("--out", default=None, help="reviews dir to write lexicon-fluency.md")
-    ap.add_argument("--lexicon", default=str(default_lexicon()))
-    ap.add_argument("--canon-core", default=str(default_canon_core()))
+    # Defaults stay None here and resolve lazily below: computing them eagerly
+    # would call series_root() at parser-construction, so the checker would
+    # require a series root even when the caller overrides both paths.
+    ap.add_argument("--lexicon", default=None)
+    ap.add_argument("--canon-core", default=None)
     ap.add_argument("--target", default="unknown")
     args = ap.parse_args(argv)
+    if args.lexicon is None:
+        args.lexicon = str(default_lexicon())
+    if args.canon_core is None:
+        args.canon_core = str(default_canon_core())
 
     if args.validate:
         errors = validate_lexicon(load_lexicon(args.lexicon))

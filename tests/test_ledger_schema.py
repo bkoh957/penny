@@ -2,7 +2,7 @@ from pathlib import Path
 
 from scripts.penny_meta import load, parse_frontmatter
 
-CONTINUITY = Path("series/continuity")
+CONTINUITY = Path(__file__).resolve().parent / "fixtures/cozy/series/continuity"
 VALID_TYPES = {"character", "location", "thread"}
 TYPE_DIRS = {"characters": "character", "locations": "location", "threads": "thread"}
 

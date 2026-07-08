@@ -7,7 +7,8 @@ import pytest
 from scripts.voice_drift import analyze, load_config, segment_sentences
 
 REPO = Path(__file__).resolve().parents[1]
-DEFAULT_CONFIG = REPO / "config/voice-pack/ai-tics-config.yaml"
+FIXTURE = Path(__file__).resolve().parent / "fixtures" / "cozy"
+DEFAULT_CONFIG = FIXTURE / "config/voice-pack/ai-tics-config.yaml"
 
 
 def test_default_config_has_required_keys():

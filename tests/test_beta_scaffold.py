@@ -4,7 +4,7 @@ from scripts.penny_meta import parse_frontmatter
 from scripts.beta_report import DRIVER_BY_PERSONA
 
 ROOT = Path(__file__).resolve().parents[1]
-PERSONA_DIR = ROOT / "config/beta-readers/personas"
+PERSONA_DIR = Path(__file__).resolve().parent / "fixtures/cozy/config/beta-readers/personas"
 
 
 def test_all_six_personas_present():

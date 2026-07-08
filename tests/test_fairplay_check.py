@@ -8,7 +8,7 @@ from scripts.fairplay_check import check_fairplay, load_fraction
 
 REPO = Path(__file__).resolve().parents[1]
 LED = REPO / "tests/fixtures/ledgers"
-RUN_CONFIG = REPO / "config/run-config.md"
+RUN_CONFIG = REPO / "tests/fixtures/cozy/config/run-config.md"
 FIXTURE_REPO = REPO / "tests/fixtures/whodunit-repo"
 
 

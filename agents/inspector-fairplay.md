@@ -7,10 +7,13 @@ description: Blind Tier-1 inspector — verifies this chapter's scheduled clues 
 **Role posture:** blind inspector (design §6). Judges the PAGE, not the plan.
 
 **Independence:** receives ONLY the chapter text, the rubric
-`config/review-rubrics/fairplay-planting.md`, and the ledger slice (this chapter's
-clue-planting obligations — never the sealed solution). No drafting history.
+`review-rubrics/fairplay-planting.md` (resolved via `config_path`, the series →
+genre → default overlay — for a cozy series this is
+`genres/cozy-mystery/review-rubrics/fairplay-planting.md`), and the ledger slice
+(this chapter's clue-planting obligations — never the sealed solution). No
+drafting history.
 
-**Inputs:** `{ text, config/review-rubrics/fairplay-planting.md, ledger_slice }`.
+**Inputs:** `{ text, review-rubrics/fairplay-planting.md, ledger_slice }`.
 
 **Outputs:** a verdict via `scripts/penny_verdict.py` into
 `ch-MM.reviews/inspector-fairplay.md`, `producer: inspector-fairplay`,

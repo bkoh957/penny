@@ -2,8 +2,7 @@ from pathlib import Path
 
 import yaml
 
-REPO = Path(__file__).resolve().parents[1]
-LEXICON = REPO / "config/setting-pack/lexicon.yaml"
+LEXICON = Path(__file__).resolve().parent / "fixtures/cozy/config/setting-pack/lexicon.yaml"
 REQUIRED = ("term", "narration_ok_from_stage", "auto_detectable")
 STAGES = {"OUTSIDER", "SETTLING", "BELONGING"}
 

@@ -6,9 +6,15 @@ RUBRICS = Path("config/review-rubrics")
 EXPECTED_RUBRICS = [
     "ai-prose-taste-flags.md",  # pre-existing (2a)
     "continuity-drift.md",
-    "fairplay-planting.md",
     "structure-tension.md",
     "character-voice.md",
+]
+
+# fairplay-planting.md is cozy-mystery-genre-specific (Phase 3a): it lives in the
+# genre pack, not the engine-default rubric dir.
+GENRE_RUBRICS = Path("genres/cozy-mystery/review-rubrics")
+GENRE_EXPECTED_RUBRICS = [
+    "fairplay-planting.md",
 ]
 
 AGENTS = Path("agents")
@@ -24,13 +30,17 @@ INSPECTORS = {
 def test_all_rubric_files_exist():
     for name in EXPECTED_RUBRICS:
         assert (RUBRICS / name).is_file(), f"missing rubric {name}"
+    for name in GENRE_EXPECTED_RUBRICS:
+        assert (GENRE_RUBRICS / name).is_file(), f"missing genre rubric {name}"
 
 
 def test_new_rubrics_have_thresholds_and_boundary_sections():
-    for name in EXPECTED_RUBRICS:
-        text = (RUBRICS / name).read_text(encoding="utf-8").lower()
-        assert "threshold" in text, f"{name}: no thresholds guidance"
-        assert "boundary" in text, f"{name}: no boundary-with-other-tiers section"
+    paths = [RUBRICS / name for name in EXPECTED_RUBRICS]
+    paths += [GENRE_RUBRICS / name for name in GENRE_EXPECTED_RUBRICS]
+    for path in paths:
+        text = path.read_text(encoding="utf-8").lower()
+        assert "threshold" in text, f"{path}: no thresholds guidance"
+        assert "boundary" in text, f"{path}: no boundary-with-other-tiers section"
 
 
 def test_all_inspector_agents_exist_with_valid_frontmatter():

@@ -70,8 +70,8 @@ def test_parse_canon_meta_absent_returns_empty():
 
 def test_real_canon_core_declares_a_valid_stage():
     from pathlib import Path
-    repo = Path(__file__).resolve().parents[1]
-    text = (repo / "series/continuity/canon-core.md").read_text(encoding="utf-8")
+    fixture = Path(__file__).resolve().parent / "fixtures/cozy"
+    text = (fixture / "series/continuity/canon-core.md").read_text(encoding="utf-8")
     meta = parse_canon_meta(text)
     assert meta.get("fluency_stage") in {"OUTSIDER", "SETTLING", "BELONGING"}
 
