@@ -157,7 +157,10 @@ def test_to_yaml_round_trips(tmp_path):
     assert parsed["book"] == "01"
 
 
-def test_main_no_book_real_repo_emits_yaml(capsys):
+def test_main_no_book_emits_engine_config_yaml(capsys, monkeypatch):
+    # Run main() end-to-end against the self-contained cozy fixture (it carries
+    # its own .penny marker), not this repo's live series data.
+    monkeypatch.chdir(SRC)
     rc = readiness_check.main([])
     assert rc == 0
     out = capsys.readouterr().out

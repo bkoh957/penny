@@ -76,6 +76,27 @@ def test_main_writes_evidence_only_verdict(tmp_path):
     assert "arvo" in verdict
 
 
+def test_main_explicit_paths_need_no_series_root(tmp_path, monkeypatch):
+    # Run from a directory with no .penny marker: when the caller supplies
+    # explicit --lexicon/--canon-core, main() must not resolve series_root()
+    # for defaults it isn't using (regression: eager argparse default eval).
+    from scripts.lexicon_check import main
+    monkeypatch.chdir(tmp_path)  # no .penny at or above here
+    lexicon = tmp_path / "lex.yaml"
+    lexicon.write_text(
+        "terms:\n  - term: arvo\n    narration_ok_from_stage: SETTLING\n    auto_detectable: true\n",
+        encoding="utf-8")
+    canon = tmp_path / "canon.md"
+    canon.write_text("<!-- canon-meta: {fluency_stage: OUTSIDER} -->\n", encoding="utf-8")
+    chap = tmp_path / "ch.md"
+    chap.write_text("A slow arvo.\n", encoding="utf-8")
+    out = tmp_path / "reviews"
+    rc = main([str(chap), "--out", str(out), "--lexicon", str(lexicon),
+               "--canon-core", str(canon), "--target", "book-01/ch-01"])
+    assert rc == 0
+    assert (out / "lexicon-fluency.md").is_file()
+
+
 def test_missing_stage_hard_fails(tmp_path):
     from scripts.lexicon_check import current_stage
     canon = tmp_path / "canon.md"
