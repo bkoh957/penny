@@ -7,3 +7,5 @@ __pycache__/
 # fixture series' .penny/ marker is checked-in fixture data, not runtime state
 !tests/fixtures/series-fixture/.penny/
 !tests/fixtures/series-fixture/.penny/**
+!tests/fixtures/cozy/.penny/
+!tests/fixtures/cozy/.penny/**

@@ -48,3 +48,9 @@ def penny_root(tmp_path):
         "write_outline": staticmethod(write_outline),
         "write_blocking": staticmethod(write_blocking), "run": staticmethod(run),
     })
+
+
+@pytest.fixture
+def cozy_fixture():
+    """Path to the self-contained fixture cozy series (tests/fixtures/cozy/)."""
+    return Path(__file__).resolve().parent / "fixtures" / "cozy"

@@ -1,0 +1,14 @@
+# Authoritative tic thresholds + compounding lists (PyYAML). Tunable Book-1 seeds.
+# Detection patterns live in scripts/voice_drift.py; values live here.
+# ai-tics-detection.md is the prose companion (non-parsed).
+bodily_reaction:     { per_1k: 2, flag_at: 3 }
+wave_templates:      { per_1k: 1, flag_at: 2 }
+something_language:  { per_1k: 1, flag_at: 2 }
+filtering_verbs:     { per_1k: 3, flag_at: 4 }
+soft_qualifiers:     { per_1k: 4, flag_at: 5, cluster_in_sentence: 2 }
+cinematic_fragments: { max_clusters_per_chapter: 1 }
+metaphor_pool_rule:  { same_domain_flag_at: 3, total_flag_at: 5 }
+sentence_variance:   { min_stdev: 4.0 }
+lexical_repetition:  { opener_repeat_flag_at: 3, content_word_per_1k_flag_at: 8 }
+banned_phrases: []
+metaphor_pool: [wave, storm, weight, knife, thread, shadow, flame, spark, abyss, hollow]
