@@ -337,22 +337,13 @@ def status_line(book, repo_root=None) -> str:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Outline-review feedback ledger tool.")
-    ap.add_argument("cmd", choices=["append", "status", "render"])
+    ap.add_argument("cmd", choices=["status"])
     ap.add_argument("book")
-    ap.add_argument("--points", help="append: path to a JSON array of {source,text}")
     ap.add_argument("--root", default=None, help="repo/series root override (tests)")
     args = ap.parse_args(argv)
     root = Path(args.root) if args.root else None
-
     if args.cmd == "status":
         print(status_line(args.book, repo_root=root))
-        return 0
-    if args.cmd == "render":
-        _cli_render(args.book, root)
-        return 0
-    if args.cmd == "append":
-        _cli_append(args.book, args.points, root)
-        return 0
     return 0
 
 
@@ -360,16 +351,9 @@ if __name__ == "__main__":
     raise SystemExit(main())
 ```
 
-Add temporary stubs so the module imports (replaced in Tasks 3–4):
-
-```python
-def _cli_render(book, root):  # implemented in Task 3
-    pass
-
-
-def _cli_append(book, points_path, root):  # implemented in Task 4
-    pass
-```
+No stubs: `main` is complete for this task. Tasks 3 and 4 extend its `choices` and add
+one branch each as they add the `render`/`append` functions, so `main` stays coherent at
+every task.
 
 - [ ] **Step 4: Run tests to verify they pass**
 
@@ -421,7 +405,7 @@ Expected: FAIL — `render_view` not defined.
 
 - [ ] **Step 3: Write the minimal implementation**
 
-Replace the `_cli_render` stub and add `render_view`:
+Add `render_view` and `_cli_render`:
 
 ```python
 def render_view(ledger) -> str:
@@ -447,6 +431,19 @@ def _cli_render(book, root):
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(render_view(ledger), encoding="utf-8")
     print(f"rendered {p}")
+```
+
+Then extend `main` to accept `render` — change the `choices` line and add the branch:
+
+```python
+    ap.add_argument("cmd", choices=["status", "render"])
+```
+```python
+    if args.cmd == "status":
+        print(status_line(args.book, repo_root=root))
+    elif args.cmd == "render":
+        _cli_render(args.book, root)
+    return 0
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -513,7 +510,7 @@ Expected: FAIL — `_cli_append` is a no-op stub; ledger not written.
 
 - [ ] **Step 3: Write the minimal implementation**
 
-Add `write_ledger` and replace the `_cli_append` stub:
+Add `write_ledger` and `_cli_append`:
 
 ```python
 def write_ledger(ledger, book, repo_root=None) -> None:
@@ -531,6 +528,20 @@ def _cli_append(book, points_path, root):
     write_ledger(ledger, book, repo_root=root)
     _cli_render(book, root)
     print(f"appended {len(new_points)} item(s) to book-{book} outline ledger")
+```
+
+Then extend `main` to accept `append` — change the `choices` line, add the `--points`
+argument, and add the branch:
+
+```python
+    ap.add_argument("cmd", choices=["status", "render", "append"])
+    ...
+    ap.add_argument("--points", help="append: path to a JSON array of {source,text}")
+```
+```python
+    elif args.cmd == "append":
+        _cli_append(args.book, args.points, root)
+    return 0
 ```
 
 - [ ] **Step 4: Run the full suite**
