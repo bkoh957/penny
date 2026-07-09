@@ -1,4 +1,6 @@
 import copy
+import os
+
 import scripts.outline_feedback as of
 
 
@@ -51,3 +53,54 @@ def test_append_does_not_mutate_input_ledger():
     ledger = _seed()
     of.append_items(ledger, [{"source": "claude", "text": "c"}], reviewed_sha="s")
     assert len(ledger["items"]) == 2 and ledger["reviewed_outline_sha256"] == "oldsha"
+
+
+def _write_ledger(tmp_path, book, ledger):
+    d = tmp_path / "output" / f"book-{book}" / "reports"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "outline-feedback.yaml").write_text(of.yaml.safe_dump(ledger), encoding="utf-8")
+
+
+def _write_outline(tmp_path, book, text):
+    d = tmp_path / "input" / f"book-{book}"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "outline.md").write_text(text, encoding="utf-8")
+
+
+def test_status_nudges_when_no_ledger(tmp_path):
+    line = of.status_line("01", repo_root=tmp_path)
+    assert "no outline review yet" in line
+
+
+def test_status_stale_when_outline_changed(tmp_path):
+    _write_outline(tmp_path, "01", "new outline text")
+    _write_ledger(tmp_path, "01", {"book": "01", "reviewed_outline_sha256": "stale",
+                                   "items": [{"id": "OF-1", "source": "claude", "pass": 1,
+                                              "state": "open", "text": "x"}]})
+    line = of.status_line("01", repo_root=tmp_path)
+    assert "changed since" in line and "re-run" in line
+
+
+def test_status_open_backlog_when_fresh(tmp_path):
+    _write_outline(tmp_path, "01", "body")
+    sha = of.sha256_of(tmp_path / "input" / "book-01" / "outline.md")
+    _write_ledger(tmp_path, "01", {"book": "01", "reviewed_outline_sha256": sha,
+        "items": [
+            {"id": "OF-1", "source": "claude", "pass": 1, "state": "open", "text": "x"},
+            {"id": "OF-2", "source": "codex", "pass": 1, "state": "solved", "text": "y"},
+        ]})
+    line = of.status_line("01", repo_root=tmp_path)
+    assert "1 open" in line and "OF-1" in line
+
+
+def test_status_clean_when_fresh_and_none_open(tmp_path):
+    _write_outline(tmp_path, "01", "body")
+    sha = of.sha256_of(tmp_path / "input" / "book-01" / "outline.md")
+    _write_ledger(tmp_path, "01", {"book": "01", "reviewed_outline_sha256": sha,
+        "items": [{"id": "OF-1", "source": "claude", "pass": 1, "state": "solved", "text": "x"}]})
+    assert "no open items" in of.status_line("01", repo_root=tmp_path)
+
+
+def test_status_cli_always_exits_zero(tmp_path, capsys):
+    # even with a garbage/absent setup, status must never block a draft
+    assert of.main(["status", "99", "--root", str(tmp_path)]) == 0

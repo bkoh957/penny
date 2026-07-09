@@ -12,6 +12,7 @@ Zero LLM/genre judgment. See spec 2026-07-09-outline-developmental-review-design
 """
 from __future__ import annotations
 
+import argparse
 import copy
 import hashlib
 import sys
@@ -91,3 +92,39 @@ def append_items(ledger, new_points, *, reviewed_sha) -> dict:
         next_id += 1
     out["reviewed_outline_sha256"] = reviewed_sha
     return out
+
+
+def open_items(ledger) -> list:
+    return [it for it in ledger.get("items", []) if it.get("state") == "open"]
+
+
+def status_line(book, repo_root=None) -> str:
+    if not ledger_path(book, repo_root).is_file():
+        return f"no outline review yet — consider /review-outline {book}"
+    ledger = load_ledger(book, repo_root)
+    cur = sha256_of(outline_src_path(book, repo_root))
+    if cur != ledger.get("reviewed_outline_sha256", ""):
+        return f"⚠ OUTLINE changed since its last review — re-run /review-outline {book}"
+    opens = open_items(ledger)
+    if opens:
+        ids = ", ".join(it["id"] for it in opens)
+        rel = f"output/book-{book}/reports/outline-feedback.yaml"
+        return (f"⚠ OUTLINE: {len(opens)} open feedback item(s) ({ids}) — "
+                f"see {rel}. Drafting anyway.")
+    return f"✓ outline reviewed — no open items (book {book})"
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description="Outline-review feedback ledger tool.")
+    ap.add_argument("cmd", choices=["status"])
+    ap.add_argument("book")
+    ap.add_argument("--root", default=None, help="repo/series root override (tests)")
+    args = ap.parse_args(argv)
+    root = Path(args.root) if args.root else None
+    if args.cmd == "status":
+        print(status_line(args.book, repo_root=root))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
