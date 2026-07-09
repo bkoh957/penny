@@ -172,16 +172,19 @@ def main(argv=None) -> int:
     # only the status *operation* (path resolution, ledger load, etc.) once argv parses.
     args = ap.parse_args(argv)
     root = Path(args.root) if args.root else None
-    try:
-        if args.cmd == "status":
+    if args.cmd == "status":
+        # status is advisory and must never block /draft-chapter — see module
+        # docstring. This exit-0 guarantee is scoped to status ONLY: render and
+        # append are operator-driven and must fail loudly (see below).
+        try:
             print(status_line(args.book, repo_root=root))
-        elif args.cmd == "render":
-            _cli_render(args.book, root)
-        elif args.cmd == "append":
-            _cli_append(args.book, args.points, root)
-    except (Exception, SystemExit) as exc:
-        # status is advisory and must never block /draft-chapter — see module docstring.
-        print(f"(outline-review {args.cmd} unavailable: {exc})")
+        except (Exception, SystemExit) as exc:
+            print(f"(outline-review status unavailable: {exc})")
+        return 0
+    elif args.cmd == "render":
+        _cli_render(args.book, root)
+    elif args.cmd == "append":
+        _cli_append(args.book, args.points, root)
     return 0
 
 

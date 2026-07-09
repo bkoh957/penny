@@ -3,6 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 import scripts.outline_feedback as of
 
 
@@ -168,6 +170,14 @@ def test_cli_append_writes_ledger_and_view(tmp_path):
     assert [it["id"] for it in ledger2["items"]] == ["OF-1", "OF-2", "OF-3"]
     assert ledger2["items"][2] == {"id": "OF-3", "source": "claude", "pass": 2,
                                    "state": "open", "text": "new concern"}
+
+
+def test_append_missing_points_exits_nonzero(tmp_path):
+    # append is operator-driven, not the advisory /draft-chapter banner — a bad
+    # invocation (no --points) must propagate as a nonzero exit, not be swallowed
+    # into a printed message + return 0. See _cli_append's SystemExit.
+    with pytest.raises(SystemExit):
+        of.main(["append", "01", "--root", str(tmp_path)])
 
 
 def test_render_groups_open_first_and_tags_source():
