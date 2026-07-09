@@ -117,9 +117,34 @@ def status_line(book, repo_root=None) -> str:
     return f"✓ outline reviewed — no open items (book {book})"
 
 
+def render_view(ledger) -> str:
+    book = ledger.get("book", "?")
+    lines = [f"# Outline review — book {book}", "",
+             "_Side-by-side feedback; edit `state` in outline-feedback.yaml to disposition._", ""]
+    buckets = [("Open", "open"), ("Solved", "solved"), ("Rejected", "rejected")]
+    for title, state in buckets:
+        rows = [it for it in ledger.get("items", []) if it.get("state") == state]
+        lines.append(f"## {title} ({len(rows)})")
+        if not rows:
+            lines.append("_none_")
+        for it in rows:
+            lines.append(f"- **{it.get('id')}** · _{it.get('source')}_ · pass {it.get('pass')}")
+            lines.append(f"  {it.get('text', '').strip()}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def _cli_render(book, root):
+    ledger = load_ledger(book, repo_root=root)
+    p = view_path(book, repo_root=root)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(render_view(ledger), encoding="utf-8")
+    print(f"rendered {p}")
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Outline-review feedback ledger tool.")
-    ap.add_argument("cmd", choices=["status"])
+    ap.add_argument("cmd", choices=["status", "render"])
     ap.add_argument("book")
     ap.add_argument("--root", default=None, help="repo/series root override (tests)")
     # NOTE: argparse usage errors (missing `book`, `cmd` outside choices) still exit 2
@@ -131,6 +156,8 @@ def main(argv=None) -> int:
     try:
         if args.cmd == "status":
             print(status_line(args.book, repo_root=root))
+        elif args.cmd == "render":
+            _cli_render(args.book, root)
     except (Exception, SystemExit) as exc:
         # status is advisory and must never block /draft-chapter — see module docstring.
         print(f"(outline-review status unavailable: {exc})")

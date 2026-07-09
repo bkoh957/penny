@@ -121,3 +121,16 @@ def test_status_main_returns_zero_when_resolution_raises(tmp_path, monkeypatch):
         lambda *a, **k: (_ for _ in ()).throw(SystemExit("no series root")),
     )
     assert of.main(["status", "01", "--root", str(tmp_path)]) == 0
+
+
+def test_render_groups_open_first_and_tags_source():
+    ledger = {"book": "01", "reviewed_outline_sha256": "s", "items": [
+        {"id": "OF-1", "source": "claude", "pass": 1, "state": "solved", "text": "fixed ch9"},
+        {"id": "OF-2", "source": "codex", "pass": 1, "state": "open", "text": "romance thin"},
+        {"id": "OF-3", "source": "claude", "pass": 1, "state": "rejected", "text": "disagree"},
+    ]}
+    md = of.render_view(ledger)
+    assert md.index("Open") < md.index("Solved") < md.index("Rejected")
+    assert "OF-2" in md and "codex" in md and "romance thin" in md
+    # a purely-solved/rejected item still appears, just not under Open
+    assert "OF-1" in md and "OF-3" in md
