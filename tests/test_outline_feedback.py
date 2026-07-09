@@ -123,6 +123,34 @@ def test_status_main_returns_zero_when_resolution_raises(tmp_path, monkeypatch):
     assert of.main(["status", "01", "--root", str(tmp_path)]) == 0
 
 
+def test_cli_append_writes_ledger_and_view(tmp_path):
+    _write_outline(tmp_path, "01", "the outline body")
+    points = tmp_path / "pts.json"
+    points.write_text(of.json.dumps([
+        {"source": "claude", "text": "romance thin ch7-11"},
+        {"source": "codex", "text": "ch9 beat too vague"},
+    ]), encoding="utf-8")
+
+    rc = of.main(["append", "01", "--points", str(points), "--root", str(tmp_path)])
+    assert rc == 0
+
+    ledger = of.load_ledger("01", repo_root=tmp_path)
+    assert [it["id"] for it in ledger["items"]] == ["OF-1", "OF-2"]
+    assert all(it["state"] == "open" and it["pass"] == 1 for it in ledger["items"])
+    assert ledger["reviewed_outline_sha256"] == of.sha256_of(
+        tmp_path / "input" / "book-01" / "outline.md")
+    assert of.view_path("01", repo_root=tmp_path).is_file()
+
+    # second pass appends without disturbing the first pass's items/states
+    (tmp_path / "input" / "book-01" / "outline.md").write_text("edited body", encoding="utf-8")
+    points.write_text(of.json.dumps([{"source": "claude", "text": "new concern"}]), encoding="utf-8")
+    of.main(["append", "01", "--points", str(points), "--root", str(tmp_path)])
+    ledger2 = of.load_ledger("01", repo_root=tmp_path)
+    assert [it["id"] for it in ledger2["items"]] == ["OF-1", "OF-2", "OF-3"]
+    assert ledger2["items"][2] == {"id": "OF-3", "source": "claude", "pass": 2,
+                                   "state": "open", "text": "new concern"}
+
+
 def test_render_groups_open_first_and_tags_source():
     ledger = {"book": "01", "reviewed_outline_sha256": "s", "items": [
         {"id": "OF-1", "source": "claude", "pass": 1, "state": "solved", "text": "fixed ch9"},

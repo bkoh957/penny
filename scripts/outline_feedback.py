@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import copy
 import hashlib
+import json
 import sys
 from pathlib import Path
 
@@ -142,11 +143,29 @@ def _cli_render(book, root):
     print(f"rendered {p}")
 
 
+def write_ledger(ledger, book, repo_root=None) -> None:
+    p = ledger_path(book, repo_root)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(yaml.safe_dump(ledger, sort_keys=False, allow_unicode=True), encoding="utf-8")
+
+
+def _cli_append(book, points_path, root):
+    if not points_path:
+        raise SystemExit("append: --points <json-file> is required")
+    new_points = json.loads(Path(points_path).read_text(encoding="utf-8"))
+    reviewed_sha = sha256_of(outline_src_path(book, repo_root=root))
+    ledger = append_items(load_ledger(book, repo_root=root), new_points, reviewed_sha=reviewed_sha)
+    write_ledger(ledger, book, repo_root=root)
+    _cli_render(book, root)
+    print(f"appended {len(new_points)} item(s) to book-{book} outline ledger")
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Outline-review feedback ledger tool.")
-    ap.add_argument("cmd", choices=["status", "render"])
+    ap.add_argument("cmd", choices=["status", "render", "append"])
     ap.add_argument("book")
     ap.add_argument("--root", default=None, help="repo/series root override (tests)")
+    ap.add_argument("--points", help="append: path to a JSON array of {source,text}")
     # NOTE: argparse usage errors (missing `book`, `cmd` outside choices) still exit 2
     # here via parse_args — that's a mis-written invocation, not a showrunner runtime
     # state, so it is deliberately NOT suppressed. The exit-0 guarantee below covers
@@ -158,9 +177,11 @@ def main(argv=None) -> int:
             print(status_line(args.book, repo_root=root))
         elif args.cmd == "render":
             _cli_render(args.book, root)
+        elif args.cmd == "append":
+            _cli_append(args.book, args.points, root)
     except (Exception, SystemExit) as exc:
         # status is advisory and must never block /draft-chapter — see module docstring.
-        print(f"(outline-review status unavailable: {exc})")
+        print(f"(outline-review {args.cmd} unavailable: {exc})")
     return 0
 
 
