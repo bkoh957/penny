@@ -54,7 +54,10 @@ def load_ledger(book, repo_root=None) -> dict:
     p = ledger_path(book, repo_root)
     if not p.is_file():
         return empty_ledger(book)
-    data = yaml.safe_load(p.read_text(encoding="utf-8"))
+    try:
+        data = yaml.safe_load(p.read_text(encoding="utf-8"))
+    except yaml.YAMLError:
+        return empty_ledger(book)
     if not isinstance(data, dict):
         return empty_ledger(book)
     data.setdefault("items", [])
@@ -108,7 +111,7 @@ def status_line(book, repo_root=None) -> str:
     opens = open_items(ledger)
     if opens:
         ids = ", ".join(it["id"] for it in opens)
-        rel = f"output/book-{book}/reports/outline-feedback.yaml"
+        rel = f"output/book-{book}/reports/{ledger_path(book, repo_root).name}"
         return (f"⚠ OUTLINE: {len(opens)} open feedback item(s) ({ids}) — "
                 f"see {rel}. Drafting anyway.")
     return f"✓ outline reviewed — no open items (book {book})"
@@ -119,10 +122,18 @@ def main(argv=None) -> int:
     ap.add_argument("cmd", choices=["status"])
     ap.add_argument("book")
     ap.add_argument("--root", default=None, help="repo/series root override (tests)")
+    # NOTE: argparse usage errors (missing `book`, `cmd` outside choices) still exit 2
+    # here via parse_args — that's a mis-written invocation, not a showrunner runtime
+    # state, so it is deliberately NOT suppressed. The exit-0 guarantee below covers
+    # only the status *operation* (path resolution, ledger load, etc.) once argv parses.
     args = ap.parse_args(argv)
     root = Path(args.root) if args.root else None
-    if args.cmd == "status":
-        print(status_line(args.book, repo_root=root))
+    try:
+        if args.cmd == "status":
+            print(status_line(args.book, repo_root=root))
+    except (Exception, SystemExit) as exc:
+        # status is advisory and must never block /draft-chapter — see module docstring.
+        print(f"(outline-review status unavailable: {exc})")
     return 0
 
 

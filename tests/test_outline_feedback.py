@@ -1,5 +1,4 @@
 import copy
-import os
 
 import scripts.outline_feedback as of
 
@@ -104,3 +103,21 @@ def test_status_clean_when_fresh_and_none_open(tmp_path):
 def test_status_cli_always_exits_zero(tmp_path, capsys):
     # even with a garbage/absent setup, status must never block a draft
     assert of.main(["status", "99", "--root", str(tmp_path)]) == 0
+
+
+def test_status_tolerates_malformed_ledger_yaml(tmp_path):
+    _write_outline(tmp_path, "01", "body")
+    d = tmp_path / "output" / "book-01" / "reports"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "outline-feedback.yaml").write_text("items: [unbalanced: [brack", encoding="utf-8")
+    line = of.status_line("01", repo_root=tmp_path)
+    assert isinstance(line, str)
+    assert of.main(["status", "01", "--root", str(tmp_path)]) == 0
+
+
+def test_status_main_returns_zero_when_resolution_raises(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        of, "status_line",
+        lambda *a, **k: (_ for _ in ()).throw(SystemExit("no series root")),
+    )
+    assert of.main(["status", "01", "--root", str(tmp_path)]) == 0
