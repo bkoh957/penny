@@ -235,8 +235,12 @@ OF-3` / `reject OF-3` shortcut is a trivial later add, not built in v1.
 ### Rendered reading view: `output/book-NN/reports/outline-review.md`
 
 `scripts/outline_feedback.py render NN` regenerates a **side-by-side** markdown snapshot
-from the yaml — grouped by pass, then by `source`, each item showing `id`, `state`, and
-`text` (open items foregrounded, solved/rejected collapsed). This is the "two letters next
+from the yaml — grouped by **state** (Open → Solved → Rejected), each item tagged with its
+`id`, `source`, and `pass` and showing its `text` (open items foregrounded, solved/rejected
+collapsed). (Implementation note: the shipped grouping is by-state rather than the
+originally-sketched by-pass/source, per the plan's Task 3 refinement — a worklist reads
+better foregrounded by disposition; `source` is preserved as a per-item tag so the
+independent takes stay distinguishable.) This is the "two letters next
 to each other" reading surface; the **yaml remains the source of truth** and tools never
 trust the rendered `.md`. (Matches the user's "structured data in its own file, `.md` as
 the doc" preference.) The view is a snapshot: after a manual state edit, re-render (or the
