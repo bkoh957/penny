@@ -1,4 +1,7 @@
 import copy
+import subprocess
+import sys
+from pathlib import Path
 
 import scripts.outline_feedback as of
 
@@ -121,6 +124,22 @@ def test_status_main_returns_zero_when_resolution_raises(tmp_path, monkeypatch):
         lambda *a, **k: (_ for _ in ()).throw(SystemExit("no series root")),
     )
     assert of.main(["status", "01", "--root", str(tmp_path)]) == 0
+
+
+def test_status_subprocess_exits_zero_without_series_root(tmp_path):
+    # This is the real path /draft-chapter's Step 0b hits: `status $1` with NO
+    # --root, so penny_paths.series_root() walks up from cwd looking for a
+    # .penny/ marker. tmp_path has none — series_root() would sys.exit — so
+    # this proves the exit-0 guarantee holds end-to-end, not just when
+    # status_line/--root are mocked/supplied.
+    script = Path(__file__).resolve().parents[1] / "scripts" / "outline_feedback.py"
+    result = subprocess.run(
+        [sys.executable, str(script), "status", "01"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0
 
 
 def test_cli_append_writes_ledger_and_view(tmp_path):
