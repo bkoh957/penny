@@ -1,79 +1,92 @@
-# Handoff — Penny / main
-Saved: 2026-07-03 14:30 | Type: build
+# Handoff — Penny (fiction-series engine) / main
+Saved: 2026-07-09 | Type: build
 
 ## What we're building
-Expanding Penny from a single-series harness into a **one-engine, many-series** system.
-Each series becomes a self-contained pack under `packs/<slug>/`; the engine
-(`scripts/`, `.claude/`) stays shared so fixes never drift across series. The design is
-**approved and specced**; next step is the implementation plan. This is effectively a
-new engine phase, done *before* the still-unbuilt Phase 6.
+Penny = ONE engine (a Claude Code plugin) driving MANY series (active series = cwd via a
+`.penny/` marker), with a swappable genre-pack layer. Priority: **no engine drift** — all
+genre/series-specific data lives in `genres/<g>/` packs or the series folder, never in
+`scripts/`. **This session designed + shipped a brand-new capability: the pre-draft outline
+developmental review tier** (spec → plan → subagent-driven build → merged to main).
 
 ## Git state
-- Branch: main
-- Uncommitted changes: none (clean tree)
-- Last commit: `66a32cd` docs(spec): multi-series via one engine + swappable packs
-- Tests: not re-run this session (no code changed yet); baseline ~273 passing
+- Branch: `main`, **clean vs `origin/main` — pushed** (merge `f0799e6`). Suite **324 green**
+  (was 308; +16 new tests in `tests/test_outline_feedback.py`).
+- Only uncommitted change: this `HANDOFF.md` (commit it after reading).
+- Feature landed via `feat/outline-review` (now deleted) merged `--no-ff` — Phase-3a pattern
+  (branch → merge), not direct-on-main.
+
+## What shipped this session — outline developmental review
+An **advisory, pre-draft** craft-review tier so outline defects are caught before they cost
+a draft. Files:
+- `scripts/outline_feedback.py` — the ONLY new engine logic (fully unit-tested). Append-only
+  ID'd feedback **ledger** (`output/book-NN/reports/outline-feedback.yaml`), `status` banner
+  (open backlog + outline staleness; **bulletproof exit-0** — never blocks a draft), `render`
+  side-by-side view, `append` CLI (render/append fail loudly — exit-0 is scoped to `status`).
+- `agents/outline-reviewer.md` — Claude panel member: solution-blind, **prose feedback (no
+  scores)**, dedup across passes, emits a JSON array of `{"text": ...}`.
+- `commands/review-outline.md` — `/review-outline NN [--focus "…"]`: dispatches an
+  **independent Claude+Codex panel** (identical solution-blind inputs), tags each point with
+  `source`, appends to the ledger. Side-by-side, **NOT converged** (deliberately inverts the
+  beta layer's K-of-M).
+- `genres/cozy-mystery/review-rubrics/outline-craft.md` — the 6-area coverage rubric (pack data).
+- `commands/draft-chapter.md` — new non-blocking step `0b` runs the banner.
+- Design intent: `docs/superpowers/specs/2026-07-09-outline-developmental-review-design.md`;
+  plan: `docs/superpowers/plans/2026-07-09-outline-developmental-review.md`.
 
 ## Next actions
-1. **Wait for the user's spec review.** The brainstorming flow is paused at the
-   user-review gate — they were asked to review
-   `docs/superpowers/specs/2026-07-03-multi-series-packs-design.md`. Two items flagged
-   for their attention: (a) the exact engine-default vs pack-override config split, and
-   (b) comfort with a **fixture pack** under `tests/fixtures/` for resolver/gate tests
-   vs pointing tests at live `cozy-pelicans` content. Apply any requested changes and
-   re-commit the spec.
-2. **Once approved, invoke the `writing-plans` skill** (NOT any implementation skill) to
-   turn the spec into a TDD-ordered plan under `docs/superpowers/plans/`.
-3. Plan must order work as: land `scripts/penny_paths.py` + its own tests FIRST
-   (red→green in isolation), THEN migrate consumers one script at a time keeping the
-   full suite green, THEN the `git mv` migration into `packs/cozy-pelicans/`, THEN the
-   two new commands (`/use-series`, `/new-series`).
+1. **LIVE SHAKEDOWN of the new tier (UAT).** The deterministic core is tested, but the
+   agent/command/**Codex panel** layer is unit-test-exempt by design — run `/review-outline`
+   on a real book-01 outline in `~/myBooks/cozy-pelicans/` and judge (a) reviewer quality and
+   (b) that the **Codex plugin runtime is actually reachable** for the second panel member
+   (degrades to Claude-only + "independence reduced" note if not — never halts).
+2. **Phase 4 (thriller genre pack) is STILL specced-but-unapproved** — untouched this session.
+   Spec: `docs/superpowers/specs/2026-07-08-thriller-genre-pack-design.md`; resolve its 5
+   `[DECISION]` flags, then writing-plans → subagent-driven-development. (We built the
+   outline-review tier *ahead* of Phase 4 at the user's direction; §14 of its spec had
+   recommended after-Phase-4, but the user chose to implement it now.)
+3. A thriller pack, when built, should ship its own `review-rubrics/outline-craft.md` so
+   `/review-outline` works there too (the rubric is genre data; the engine is agnostic).
 
 ## Decisions made this session
-- **Strategy B (one engine, many packs) — not clone-per-repo, not engine-as-submodule**:
-  chosen because the user's stated driver is "no engine drift." Clone reintroduces the
-  drift; submodule was heavier than needed for a handful of series.
-- **Two-tier config overlay, not three**: engine ships craft-general defaults, a pack
-  overlays any file (`pack/config/<rel>` else engine `config/<rel>`). User explicitly
-  rejected a middle "genre" tier.
-- **Layered selection `--series` flag > `PENNY_SERIES` env > `.penny/current-series`
-  pointer > hard error**: pointer alone is global mutable state and unsafe for parallel
-  work; per-session env/flag gives clean parallelism. User confirmed wanting parallel
-  series builds.
-- **Beta readers = persona swap only**: `beta-readers/personas/` → pack; but
-  `beta-readers/beta-protocol.md` (K-of-M consensus mechanics tied to `beta_report.py`)
-  STAYS in the engine. The driver-value enum travels with the personas, not the protocol.
-- **Sequencing: do multi-series refactor now, defer Phase 6** (per-book assembly / final
-  read / revision-priority). User said "leave phase 6 for now." Building it series-aware
-  later avoids refactoring the same output-path scripts twice.
-- **Slug for the existing series: `cozy-pelicans`** (renameable at migration time).
+- **Independent panel, side-by-side, no synthesis** — reviewer disagreement is the signal;
+  averaging (K-of-M) would destroy it. Independence = **tool difference** (Claude + Codex),
+  per the front-door spec's no-API model note.
+- **Prose feedback, no numeric scores** — a scorecard read as mechanistic to the showrunner;
+  the rubric is a *coverage checklist*, not a grade sheet.
+- **ID'd feedback ledger with owner-set state** (`open`/`solved`/`rejected`), **append-only**:
+  the command only appends new `OF-<n>` items; the showrunner owns `state` by editing the yaml
+  (terminal-native, no command ceremony). Re-runs never overwrite dispositions.
+- **Banner keyed on staleness + open-count**, never blocks (advisory). Exit-0 scoped to
+  `status` only; `render`/`append` fail loudly (final-review fix).
+- Reconciled a spec §6 doc-drift: shipped render groups **by state**, not by pass/source.
 
 ## User preferences expressed this session
-- Lead with a recommendation, then options (consistent with saved working-style memory).
-- Wants genuine parallel multi-series capability, not just sequential switching.
-- Beta readers are a per-series lens; keep only the persona layer swappable.
+- Detailed feedback; **discuss in prose before multiple-choice** (rejected an MC prompt, asked
+  to talk it through — respect this). Lead with a recommendation.
+- **Terminal-native** — the filesystem/`cd`/editing a file IS the interface; don't build
+  selectors/flags/pointers on top of what the shell already does (see memory).
+- Develops outlines across multiple LLMs (Hermes → ChatGPT/Claude), iteratively, steered by
+  gut-feel; wanted that consolidated into Penny (drove this feature — see memory).
+- Works ON-site this session (not offsite); phase-at-a-time on `main`; push to GitHub.
 
 ## Key files right now
-- `docs/superpowers/specs/2026-07-03-multi-series-packs-design.md` — the approved spec;
-  the source of truth for the plan. Read it first.
-- `scripts/preflight.py` — already threads `repo_root`; the model for how paths should be
-  parameterized. Lightest to adapt.
-- `scripts/readiness_check.py` — the widest path-hardcoder; biggest refactor target.
-- `scripts/penny-statusline.sh` — must show active series + read the active pack's
-  `.penny/current-stage`, honoring `PENNY_SERIES` for parallel terminals.
-- `CLAUDE.md` — the engine-vs-swappable rule this whole effort operationalizes.
+- `scripts/outline_feedback.py` — the tested deterministic core; where all correctness lives.
+- `commands/review-outline.md` — the orchestrator to exercise in the live shakedown.
+- `.superpowers/sdd/progress.md` — the SDD ledger for this build (8 tasks + 2 fix waves + final
+  review, all recorded) AND the prior Phase-3a/3b records. Recovery map.
+- Memory (`~/.claude/projects/-Users-beeko-myTools-penny/memory/`): NEW this session —
+  `anchor-design-to-working-style.md` (the abandoned series-selector lesson) and
+  `outline-review-workflow.md` (how the user reviews outlines). Index in `MEMORY.md`.
 
 ## Watch out for
-- **HARD-GATE (brainstorming skill):** do NOT start implementation until the user
-  approves the written spec. We are at the review gate, not past it. After approval the
-  ONLY next skill is `writing-plans`.
-- **Test blast radius is the real risk:** many of the ~273 tests assert literal
-  `output/book-01/…`, `config/…`, `series/…` paths. Plan mitigation is: `penny_paths` +
-  tests first in isolation, then migrate consumers one at a time. Do not do the big
-  `git mv` before the resolver + tests are green.
-- `scripts/penny_meta.py`, `penny_verdict.py`, `penny_text.py` are layout-agnostic — do
-  NOT touch them.
-- The existing `HANDOFF.md` before this save was from the book-01 authoring session; this
-  overwrite intentionally replaces it with the multi-series work state.
-- Don't add a PyYAML dependency for any of this (dependency-split rule); the pointer file
-  and config parsing use `penny_meta` / plain reads.
+- **Verify pytest counts yourself** — implementers misreported before. Current truth: **324**.
+- **Codex reachability is unproven live** — the second panel member routes through the codex
+  plugin runtime; if it's down, `/review-outline` runs Claude-only and says "independence
+  reduced" (by design). Don't mistake that for a bug until you've confirmed Codex is installed.
+- The **feedback ledger is hand-editable YAML** — a malformed edit is tolerated by `status`
+  (falls back to a nudge, still exit-0) but will make a `/review-outline append` pass fail
+  loudly (intended).
+- Engine repo is **not a series** — running a series pipeline command (incl. `/review-outline`)
+  from the engine root hard-errors (`no series root`). Use a series folder (`~/myBooks/…`) as cwd.
+- Deferred minors (in `.superpowers/sdd/progress.md`, triaged non-blocking): `VALID_STATES`
+  dead const; `status_line` path-prefix partial DRY; render-fail exit test.
