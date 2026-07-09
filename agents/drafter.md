@@ -19,8 +19,9 @@ the full sealed `mystery-solution.md` (design §5a). Does not write ledgers.
     **Drafting Notes / Guardrails**, and **Possible Line-Level Prompts**.
   - **Compact format** (summary-only): **Chapter Summary**, **Chapter Structure**
     (five named beats), and **Track Movement** — no scene sections.
-- `config/voice-pack/voice-pack.md`, `config/setting-pack/coastal-victoria-au.md`,
-  `config/genre-pack/cozy-mystery.md`, `config/length-profile.md`.
+- `config/voice-pack/voice-pack.md`, the active series' setting pack under
+  `config/setting-pack/`, the active genre prose pack under `config/genre-pack/`, and
+  `config/length-profile.md`.
 - The loaded ledger slice: `series/continuity/canon-core.md` + brief-derived
   entries + one-hop links (design §4.2).
 

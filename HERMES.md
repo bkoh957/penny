@@ -4,16 +4,18 @@ Guidance for Hermes/Booko agents working in this repository.
 
 ## Identity and purpose
 
-This repo is `penny-hermes`: a Hermes-friendly mirror of the original Penny harness. It is a separate git repository with its own remote (`bkoh957/penny-hermes`), synced from the source repo at `/Users/beeko/myTools/penny` when requested.
+This repo is `penny`: the canonical Penny engine, packaged as a Claude Code plugin
+(`.claude-plugin/plugin.json` + marketplace manifest). Commands live in top-level
+`commands/`, agents in top-level `agents/`, deterministic checkers in `scripts/`, and
+genre packs in `genres/`.
 
-Penny/Booko is a harness for producing a 13-book commercial cozy mystery series with deterministic gates and independent quality review. Treat the harness as production infrastructure, not a scratchpad.
+Penny/Booko is a harness for producing commercial fiction series with deterministic gates
+and independent quality review. Treat the harness as production infrastructure, not a
+scratchpad.
 
 ## Non-negotiable architecture rule
 
-The engine is genre- and location-agnostic. This repo is now structured as a Claude
-Code **plugin** (design: engine-plugin + series-folders): commands live in top-level
-`commands/`, agents in top-level `agents/` (no longer under `.claude/`); `.claude/`
-holds only local settings (`.claude/settings.json`).
+The engine is genre- and location-agnostic.
 
 - Fixed engine/orchestration: `scripts/`, `commands/`, `agents/`
 - Swappable project data (belongs to a **series folder**, not this repo): `config/`
@@ -21,11 +23,11 @@ holds only local settings (`.claude/settings.json`).
 - Output/runtime artifacts (also series-folder-local): `output/`, `.penny/`
 
 A series is an ordinary folder you `cd` into and run Claude Code from; the active
-series is resolved from the **current working directory** by
-`scripts/penny_paths.py` (walks up from cwd to the nearest `.penny/` marker — hard
-error if none). There is no `--series` flag, `PENNY_SERIES` env var, or
-`current-series` pointer. Config reads overlay: a series' own `config/<rel>` wins if
-present, else this repo's shipped default.
+series is resolved from the **current working directory** by `scripts/penny_paths.py`
+(walks up from cwd to the nearest `.penny/` marker — hard error if none). There is no
+`--series` flag, `PENNY_SERIES` env var, or `current-series` pointer. Config reads
+overlay: series `config/<rel>` → declared genre pack `genres/<genre>/<rel>` → engine
+`config/<rel>`.
 
 Do not hardcode Book 01, Pelican's Crook, Maggie, cozy mystery details, clues, or voice-pack details into `scripts/` or command/agent logic. Put project-specific material in the active series folder's `config/`, `input/`, or `series/`.
 
@@ -33,10 +35,10 @@ Use "the protagonist" in engine-layer files; do not hardcode the current protago
 
 ## Start-of-session checklist
 
-From repo root:
+From engine repo root:
 
 ```bash
-cd /Users/beeko/myTools/penny-hermes
+cd /Users/beeko/myTools/penny
 git status --short
 git branch --show-current
 git log -1 --oneline
@@ -51,7 +53,8 @@ CLAUDE.md      # upstream Claude-native harness conventions
 ```
 
 If drafting/reviewing, also read the relevant command and agent files under `commands/`
-and `agents/` before acting.
+and `agents/` before acting. Remember: actual book pipeline commands run from a series
+folder with a `.penny/` marker, not from this engine repo.
 
 ## Essential commands
 
@@ -125,7 +128,7 @@ ch-MM.final.md
 
 Before asking Booko/Penny to redraft a chapter, provide:
 
-1. Exact repo root: `/Users/beeko/myTools/penny-hermes`
+1. Exact active series root, not the engine root.
 2. Exact target file to overwrite.
 3. Current word count.
 4. Required range from `config/length-profile.md`.
@@ -197,46 +200,22 @@ The invariant is difference, not identity: `final_read_model` must not appear am
 
 ## Git/repo handling
 
-This repo is separate from `/Users/beeko/myTools/penny`.
+Canonical engine repo:
 
-- Source repo: `/Users/beeko/myTools/penny` → `https://github.com/bkoh957/penny.git`
-- Hermes mirror: `/Users/beeko/myTools/penny-hermes` → `git@github.com:bkoh957/penny-hermes.git`
+- `/Users/beeko/myTools/penny` → `https://github.com/bkoh957/penny.git`
 
-When syncing from source, preserve `penny-hermes` as its own repo:
-
-```bash
-rsync -a --delete \
-  --exclude='.git/' \
-  --exclude='.env' \
-  --exclude='.env.*' \
-  --exclude='*.pem' \
-  --exclude='*.key' \
-  --exclude='.DS_Store' \
-  /Users/beeko/myTools/penny/ \
-  /Users/beeko/myTools/penny-hermes/
-```
-
-Then verify:
-
-```bash
-diff -qr --exclude .git --exclude .env --exclude '.env.*' --exclude '.DS_Store' \
-  /Users/beeko/myTools/penny /Users/beeko/myTools/penny-hermes | head -80
-python3 scripts/outline_check.py input/book-01/outline.md
-python3 -m pytest tests/test_outline_check.py -q
-```
-
-Never copy secrets into git. Do not display `.env` values.
+Series folders are separate working directories. Do not copy series data into the engine
+unless explicitly moving fixture/test data. Never copy secrets into git. Do not display
+`.env` values.
 
 ## Current project notes from HANDOFF.md
 
-At the time this file was recreated after a source resync:
+Always re-check `HANDOFF.md`; it is the current engine handoff. As of the latest handoff:
 
-- Ch-01 has a gate artifact that may still say HOLD from before a fix; re-run the relevant inspector/gate rather than editing the verdict by hand.
-- Ch-02 gate says PASS and is ready for finalize.
-- The outline is the single source of truth for both solution/thread scaffolding and rich chapter briefs.
-- `input/` is the home for showrunner-authored files.
-- Cobber's dawn-sighting clue must remain dismissible local colour until later.
-- The culprit should not be named or implicated in early chapter drafts/finalize passes.
-- Calloway's bench skeleton is a series seed and should not be resolved in Book 01.
-
-Always re-check `HANDOFF.md` because it may be newer than these notes.
+- Penny is one engine plugin driving many series by cwd / `.penny/` marker.
+- The new advisory pre-draft outline review tier has shipped (`/review-outline`,
+  `scripts/outline_feedback.py`, `agents/outline-reviewer.md`, cozy outline-craft rubric).
+- The deterministic suite is currently 325 tests green after the readiness/doc drift fixes.
+- Next live UAT is `/review-outline` from a real series folder, especially Codex panel
+  reachability and the "independence reduced" fallback.
+- Thriller genre pack work remains specced but unapproved.

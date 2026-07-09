@@ -9,9 +9,8 @@ genre/series-specific data lives in `genres/<g>/` packs or the series folder, ne
 developmental review tier** (spec → plan → subagent-driven build → merged to main).
 
 ## Git state
-- Branch: `main`, **clean vs `origin/main` — pushed** (merge `f0799e6`). Suite **324 green**
-  (was 308; +16 new tests in `tests/test_outline_feedback.py`).
-- Only uncommitted change: this `HANDOFF.md` (commit it after reading).
+- Branch: `main`. Suite **325 green** after the readiness/doc drift fix
+  (+1 test in `tests/test_readiness_check.py`; outline-review build had taken suite 308 → 324).
 - Feature landed via `feat/outline-review` (now deleted) merged `--no-ff` — Phase-3a pattern
   (branch → merge), not direct-on-main.
 
@@ -79,7 +78,7 @@ a draft. Files:
   `outline-review-workflow.md` (how the user reviews outlines). Index in `MEMORY.md`.
 
 ## Watch out for
-- **Verify pytest counts yourself** — implementers misreported before. Current truth: **324**.
+- **Verify pytest counts yourself** — implementers misreported before. Current truth: **325**.
 - **Codex reachability is unproven live** — the second panel member routes through the codex
   plugin runtime; if it's down, `/review-outline` runs Claude-only and says "independence
   reduced" (by design). Don't mistake that for a bug until you've confirmed Codex is installed.

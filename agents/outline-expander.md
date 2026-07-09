@@ -16,8 +16,9 @@ does not draft chapter prose and does not write any ledger or certificate.
 **Inputs:**
 - The chapter **stub** from `input/book-NN/outline-skeleton.md`: the `## Chapter NN — Title`
   heading + a free-text blurb (1–6 sentences).
-- `config/voice-pack/voice-pack.md`, `config/setting-pack/coastal-victoria-au.md`,
-  `config/genre-pack/cozy-mystery.md`, `config/length-profile.md`.
+- `config/voice-pack/voice-pack.md`, the active series' setting pack under
+  `config/setting-pack/`, the active genre prose pack under `config/genre-pack/`, and
+  `config/length-profile.md`.
 - `series/continuity/canon-core.md` + the brief-derived ledger slice.
 - `input/series/series-bible.md`.
 - **Sealed (context-rich):** `output/book-NN/mystery-solution.md` and

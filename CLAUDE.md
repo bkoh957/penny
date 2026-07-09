@@ -45,7 +45,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (324 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (325 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -88,12 +88,12 @@ pure stdlib — see the dependency split below.
   ledgers (`series/whodunit/*.yaml`), the lexicon, and the outline-feedback ledger.
   Don't reach for PyYAML to parse config/frontmatter; use `penny_meta`.
 
-### Known engine drift (fix, don't imitate)
+### Readiness is genre/location-agnostic
 
-`scripts/readiness_check.py` hardcodes `config/setting-pack/coastal-victoria-au.md` and
-`config/genre-pack/cozy-mystery.md` by literal filename, so any other setting/genre reports
-them `missing` even when correctly authored. Nothing gates on it (readiness is a reporter),
-but it violates the agnosticism rule and will bite when the thriller pack lands.
+`scripts/readiness_check.py` accepts any authored setting-pack prose file under
+`config/setting-pack/` and resolves the genre prose pack from `series.yaml` as
+`config/genre-pack/<genre>.md`. Do not reintroduce hardcoded setting or genre filenames in
+engine code.
 
 ## The pipeline
 

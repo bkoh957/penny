@@ -24,8 +24,8 @@ Judge each against *what THIS chapter must do* per its brief (a mid-book chapter
 dinged for not re-establishing place):
 
 1. **Setting grounding.** Is the reader anchored in place/time/sensory texture? Draws on
-   `config/setting-pack/coastal-victoria-au.md`. Flag white-room scenes and inert
-   travelogue alike.
+   the active series' setting pack under `config/setting-pack/`. Flag white-room scenes
+   and inert travelogue alike.
 2. **Motivation & stakes.** Is the "why" of each beat on the page, or buried in the
    author's head? Flag actions the reader can't motivate.
 3. **Scene economy.** Inert detail, throat-clearing, scenes that don't turn. Flag passages

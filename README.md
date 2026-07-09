@@ -62,7 +62,7 @@ resolve from any directory.
 The engine's test suite runs **from this repo root** (`pytest.ini` sets `pythonpath=.`):
 
 ```bash
-python3 -m pytest -q     # 324 passing
+python3 -m pytest -q     # 325 passing
 ```
 
 Actual book work happens **from inside a series folder**, never from here.
@@ -163,11 +163,9 @@ Fastest honest start: copy a working set from `tests/fixtures/cozy/config/` or a
 series, then rewrite the contents. Copying gets the *shape* right; none of the prose will
 be yours.
 
-> **Known engine drift:** `readiness_check.py` hardcodes
-> `config/setting-pack/coastal-victoria-au.md` and `config/genre-pack/cozy-mystery.md` by
-> name. Another setting or genre reports those as `missing` even when correctly authored.
-> Cosmetic — no gate depends on it — but it violates the agnosticism rule and should be
-> fixed.
+`readiness_check.py` is genre/location-agnostic: it accepts any authored setting-pack prose
+file under `config/setting-pack/` and expects the genre prose pack to match `series.yaml`
+as `config/genre-pack/<genre>.md`.
 
 ### 4. Author the series reference files
 

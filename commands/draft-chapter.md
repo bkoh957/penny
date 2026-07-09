@@ -41,10 +41,16 @@ edit and commit with `/finalize-chapter`.
 
 3. **Assemble the chapter brief and ledger slice** (design §4.2):
    - **Chapter brief:** Read `input/book-$book/outline.md`. Extract the full
-     section for chapter $chapter: the `## Chapter $chapter — *` heading, its
-     **Chapter Summary**, **Chapter Structure** (Start/Desire, Pressure/Obstacle,
-     Turn/Change, Texture/Pleasure Layer, Hook), and **Track Movement** (M/P/R/B).
-     This is the brief passed to the drafter.
+     section for chapter $chapter, from its `## Chapter $chapter — *` heading up to
+     the next chapter heading / `---` boundary. Do not cherry-pick only old compact
+     headings: two outline formats are valid and the drafter accepts both.
+     - **Scene-breakdown format:** `### Overall Summary`, one or more
+       `### Scene N — Title` sections with Location/Purpose/Beat flow/Emotional
+       turn/Texture, then `### Chapter Structure Summary`, `### Track Movement`,
+       `### Drafting Notes / Guardrails`, and optional line prompts.
+     - **Compact format:** `### Chapter Summary`, `### Chapter Structure`, and
+       `### Track Movement`.
+     This full section is the brief passed to the drafter.
    - **Ledger slice:** Always load `series/continuity/canon-core.md`; then load the
      continuity entries named in the brief and their one-hop `links`.
 

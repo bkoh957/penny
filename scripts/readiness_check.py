@@ -31,16 +31,16 @@ from scripts.fairplay_check import check_fairplay, load_fraction
 
 REPO = Path(__file__).resolve().parents[1]
 
-# (name, relative path, kind, expected_min_files) — the genre-agnostic engine +
-# the shipped cozy/coastal packs every run reads. expected_min only for dirs.
+# (name, relative path, kind, expected_min_files) — genre-agnostic engine/config
+# files every run reads. expected_min only for dirs. Setting/genre prose packs are
+# checked dynamically because their filenames are series-authored.
 ENGINE_CHECKS = [
     ("run-config",        "config/run-config.md",                    "file", None),
     ("voice-pack",        "config/voice-pack/voice-pack.md",         "file", None),
     ("ai-tics-config",    "config/voice-pack/ai-tics-config.yaml",   "file", None),
     ("ai-tics-detection", "config/voice-pack/ai-tics-detection.md",  "file", None),
     ("lexicon",           "config/setting-pack/lexicon.yaml",        "file", None),
-    ("setting-pack",      "config/setting-pack/coastal-victoria-au.md", "file", None),
-    ("genre-pack",        "config/genre-pack/cozy-mystery.md",       "file", None),
+
     ("length-profile",    "config/length-profile.md",                "file", None),
     ("line-edit",         "config/line-edit/line-edit.md",           "file", None),
     ("copy-edit",         "config/copy-edit/copy-edit.md",           "file", None),
@@ -88,6 +88,36 @@ def _dir_check(name, rel, expected_min, repo_root) -> dict:
     return _check(name, "dir", "ready", path=rel, detail=f"{n} file(s)")
 
 
+def _setting_pack_check(repo_root) -> dict:
+    """Report the series-authored setting prose pack without hardcoded place names."""
+    rel = "config/setting-pack"
+    d = Path(repo_root) / rel
+    if not d.is_dir():
+        return _check("setting-pack", "dir", "missing", path=rel)
+    files = sorted(
+        p.name for p in d.glob("*.md")
+        if p.name not in {"lexicon.md", "ai-tics-detection.md"}
+    )
+    if not files:
+        return _check("setting-pack", "dir", "missing", path=rel,
+                      detail="no setting prose pack (*.md) found")
+    return _check("setting-pack", "dir", "ready", path=rel,
+                  detail=", ".join(files))
+
+
+def _genre_pack_check(repo_root) -> dict:
+    genre = penny_paths._declared_genre(repo_root)
+    if not genre:
+        return _check("genre-pack", "file", "missing", path="series.yaml",
+                      detail="series.yaml has no genre declaration")
+    rel = f"config/genre-pack/{genre}.md"
+    p = penny_paths.config_path(f"genre-pack/{genre}.md", root=repo_root)
+    if p.is_file():
+        return _check("genre-pack", "file", "ready", path=rel)
+    return _check("genre-pack", "file", "missing", path=rel,
+                  detail=f"expected genre-specific prose pack for '{genre}'")
+
+
 def engine_checks(repo_root=None) -> list[dict]:
     repo_root = repo_root or penny_paths.series_root()
     out = []
@@ -96,6 +126,9 @@ def engine_checks(repo_root=None) -> list[dict]:
             out.append(_dir_check(name, rel, expected_min, repo_root))
         else:
             out.append(_file_check(name, rel, repo_root))
+        if name == "lexicon":
+            out.append(_setting_pack_check(repo_root))
+            out.append(_genre_pack_check(repo_root))
     return out
 
 

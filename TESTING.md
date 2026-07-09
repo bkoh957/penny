@@ -201,10 +201,10 @@ brief is also where the **ledger slice** is named (which continuity entries to l
 
 - `config/voice-pack/` — `voice-pack.md`, `ai-tics-config.yaml`, `ai-tics-detection.md`
   (the latter two feed `voice_drift.py`).
-- `config/setting-pack/` — `coastal-victoria-au.md` (prose) + `lexicon.yaml` (the data
-  `lexicon_check.py` reads; required keys per term: `term`, `narration_ok_from_stage`,
-  `auto_detectable`).
-- `config/genre-pack/cozy-mystery.md`, `config/length-profile.md`.
+- `config/setting-pack/` — at least one setting prose pack (`*.md`) + `lexicon.yaml`
+  (the data `lexicon_check.py` reads; required keys per term: `term`,
+  `narration_ok_from_stage`, `auto_detectable`).
+- `config/genre-pack/<genre>.md` matching `series.yaml`, `config/length-profile.md`.
 - `config/review-rubrics/*.md` — one per inspector.
 - `config/beta-readers/personas/*.md` — the six blind reader lenses.
 

@@ -24,6 +24,7 @@ def _engine_ready(tmp):
     """Assemble engine neutral defaults + the fixture's overrides + canon-core."""
     shutil.copytree(readiness_check.penny_paths.plugin_root() / "config", tmp / "config")
     shutil.copytree(SRC / "config", tmp / "config", dirs_exist_ok=True)
+    shutil.copy(SRC / "series.yaml", tmp / "series.yaml")
     (tmp / "series/continuity").mkdir(parents=True, exist_ok=True)
     shutil.copy(SRC / "series/continuity/canon-core.md",
                 tmp / "series/continuity/canon-core.md")
@@ -77,6 +78,21 @@ def test_dir_with_too_few_files_blocked(tmp_path):
     entry = _by(report["engine_and_config"], "beta-personas")
     assert entry["status"] == "blocked"
     assert entry["kind"] == "dir"
+
+
+def test_setting_and_genre_pack_are_not_hardcoded_to_cozy_fixture_names(tmp_path):
+    """A non-cozy series with its own pack names should not be reported missing."""
+    _engine_ready(tmp_path)
+    (tmp_path / "series.yaml").write_text("genre: desert-noir\n", encoding="utf-8")
+    (tmp_path / "config/setting-pack/coastal-victoria-au.md").unlink()
+    (tmp_path / "config/genre-pack/cozy-mystery.md").unlink()
+    (tmp_path / "config/setting-pack/desert-nevada.md").write_text("setting\n", encoding="utf-8")
+    (tmp_path / "config/genre-pack/desert-noir.md").write_text("genre\n", encoding="utf-8")
+
+    report = readiness_check.check_readiness(repo_root=tmp_path)
+
+    assert _by(report["engine_and_config"], "setting-pack")["status"] == "ready"
+    assert _by(report["engine_and_config"], "genre-pack")["status"] == "ready"
 
 
 # --- per-book inputs ---------------------------------------------------------
