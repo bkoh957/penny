@@ -135,6 +135,9 @@ def render_view(ledger) -> str:
         for it in rows:
             lines.append(f"- **{it.get('id')}** · _{it.get('source')}_ · pass {it.get('pass')}")
             lines.append(f"  {it.get('text', '').strip()}")
+            rec = it.get("recommendation")
+            if rec:
+                lines.append(f"  **→** {rec.strip()}")
         lines.append("")
     return "\n".join(lines)
 

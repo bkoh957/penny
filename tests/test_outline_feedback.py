@@ -254,3 +254,37 @@ def test_both_panel_contracts_request_an_optional_recommendation():
 def test_collect_shape_documents_the_optional_key():
     flat = _flat(COMMANDS / "review-outline.md")
     assert "{ source, text, recommendation? }" in flat.replace('"', "")
+
+
+def _ledger(items):
+    return {"book": "01", "reviewed_outline_sha256": "sha", "items": items}
+
+
+def test_render_shows_recommendation_beneath_its_observation():
+    md = of.render_view(_ledger([
+        {"id": "OF-1", "source": "claude", "pass": 1, "state": "open",
+         "text": "romance starved after ch11", "recommendation": "plant a warm beat"},
+    ]))
+    lines = md.splitlines()
+    obs = next(i for i, l in enumerate(lines) if "romance starved after ch11" in l)
+    rec = next(i for i, l in enumerate(lines) if "plant a warm beat" in l)
+    assert rec == obs + 1, "recommendation must follow its observation, never precede it"
+    assert lines[rec].strip().startswith("**→**")
+
+
+def test_render_omits_the_arrow_when_there_is_no_recommendation():
+    md = of.render_view(_ledger([
+        {"id": "OF-1", "source": "claude", "pass": 1, "state": "open", "text": "this is strong"},
+    ]))
+    assert "**→**" not in md
+
+
+def test_render_of_a_pre_change_ledger_is_unchanged():
+    """Back-compat: OF-1..OF-22 have no recommendation key and must render as before."""
+    md = of.render_view(_ledger([
+        {"id": "OF-1", "source": "claude", "pass": 1, "state": "open", "text": "a"},
+        {"id": "OF-2", "source": "codex", "pass": 1, "state": "open", "text": "b"},
+    ]))
+    assert "- **OF-1** · _claude_ · pass 1\n  a" in md
+    assert "- **OF-2** · _codex_ · pass 1\n  b" in md
+    assert "**→**" not in md
