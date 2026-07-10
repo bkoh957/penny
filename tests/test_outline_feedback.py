@@ -288,3 +288,20 @@ def test_render_of_a_pre_change_ledger_is_unchanged():
     assert "- **OF-1** · _claude_ · pass 1\n  a" in md
     assert "- **OF-2** · _codex_ · pass 1\n  b" in md
     assert "**→**" not in md
+
+
+def test_status_line_never_prints_recommendation_text(tmp_path):
+    """The banner prints IDs, never item text — a recommendation must not leak to drafting."""
+    _write_outline(tmp_path, "01", "body")
+    sha = of.sha256_of(tmp_path / "input" / "book-01" / "outline.md")
+    _write_ledger(tmp_path, "01", {
+        "book": "01",
+        "reviewed_outline_sha256": sha,
+        "items": [{"id": "OF-1", "source": "claude", "pass": 1, "state": "open",
+                   "text": "SECRET_OBSERVATION", "recommendation": "SECRET_FIX"}],
+    })
+
+    line = of.status_line("01", repo_root=tmp_path)
+    assert "OF-1" in line
+    assert "SECRET_FIX" not in line
+    assert "SECRET_OBSERVATION" not in line
