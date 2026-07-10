@@ -30,7 +30,7 @@ evidence[], reviewed_by }`, `producer: inspector-fairplay`, `kind: inspector`.
    **present-but-unspotlighted**.
 
 Score 1-5 on planting fairness. Mark **blocking** when an obligated clue is absent or
-planted in a way that cheats the reader.
+planted unfairly, or the culprit's guilt is prematurely revealed before `reveal_chapter`.
 
 ## Thresholds (seeds, tunable during Book 1)
 
