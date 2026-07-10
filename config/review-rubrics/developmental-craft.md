@@ -6,9 +6,12 @@ craft diagnosis on the **draft**, before polish is spent. **Advisory:** it score
 writes margin notes but emits **no ^BLOCKING lines** and never blocks the gate. It is a
 hard precondition for `/finalize-chapter` only via the showrunner's out-of-band clearance.
 
-**Inputs (context-rich, NOT blind):** `{ draft text, this rubric, setting-pack,
-character-bible slice, chapter brief/intent }`. **Denied** the whodunit solution — craft
-review does not need it, so fair-play is never exposed.
+**Inputs (context-rich):** `{ draft text, this rubric, setting-pack, character-bible
+slice, chapter brief/intent, mystery-solution.md }`. The editor receives the sealed
+whodunit solution and should judge whether foreshadowing, misdirection, and character
+behaviour actually track the real answer. This rubric does not own reveal-timing —
+whether the page gives away the answer too early is `inspector-fairplay`'s call, not
+yours.
 
 **Output:** a verdict via `scripts/penny_verdict.py` into
 `ch-MM.reviews/developmental-edit.md`, `producer: developmental-editor`,
@@ -56,6 +59,6 @@ dinged for not re-establishing place):
 - **Grammar, punctuation, consistency** belong to the copy editor — not here.
 - **Sentence rhythm / word-choice polish** belong to the line editor — you diagnose craft,
   you do not rewrite prose. Revision flows back to the `drafter`.
-- **Continuity, fair-play, voice-drift, structural blocking** belong to the five blind
+- **Continuity, fair-play, voice-drift, structural blocking** belong to the five isolated
   inspectors and the deterministic checkers — you may observe but you never block.
 - **Whole-book experience** belongs to the post-assembly beta read — you are per-chapter.

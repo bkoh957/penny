@@ -56,9 +56,9 @@ def test_drafter_receives_the_solution():
 
 
 def test_drafter_no_longer_claims_blindness():
-    text = (AGENTS / "drafter.md").read_text(encoding="utf-8")
-    assert "receives ONLY this chapter's clue-planting obligations" not in text
-    assert "never\nthe full sealed" not in text
+    flat = _flat(AGENTS / "drafter.md")
+    assert "receives only this chapter's clue-planting obligations" not in flat
+    assert "never\nthe full sealed" not in flat
 
 
 def test_outline_reviewer_is_not_told_it_is_solution_blind():
@@ -68,8 +68,8 @@ def test_outline_reviewer_is_not_told_it_is_solution_blind():
 
 
 def test_review_outline_no_longer_withholds_the_solution():
-    text = (COMMANDS / "review-outline.md").read_text(encoding="utf-8")
-    assert "do NOT pass" not in text
+    flat = _flat(COMMANDS / "review-outline.md")
+    assert "do not pass" not in flat
 
 
 def test_outline_expander_drops_the_leak_guard_framing():
@@ -173,3 +173,40 @@ def test_no_agent_still_calls_itself_a_blind_inspector_or_copy_editor():
         flat = _flat(path)
         assert "blind inspector" not in flat, path
         assert "blind copy-editor" not in flat, path
+
+
+RUBRIC_PATHS = sorted(Path("config/review-rubrics").glob("*.md")) + sorted(
+    Path(".").glob("genres/*/review-rubrics/*.md")
+)
+
+
+def test_no_rubric_anywhere_still_teaches_solution_blindness():
+    """The agents stopped being solution-blind, but their rubrics — a separate input
+    an agent reads alongside its agent file — were never swept. An agent dispatched
+    cold reads both; if they disagree, the rubric wins the agent's actual behaviour.
+    This globs BOTH config/review-rubrics/ and genres/*/review-rubrics/, unlike the
+    agent-only glob above which structurally cannot see rubric files at all."""
+    banned = [
+        "solution-blind",
+        "denied the whodunit solution",
+        "denied** the whodunit",
+        "not blind",
+    ]
+    for path in RUBRIC_PATHS:
+        flat = _flat(path)
+        for phrase in banned:
+            assert phrase not in flat, (path, phrase)
+
+
+def test_developmental_craft_rubric_gets_the_solution_and_defers_reveal_timing():
+    flat = _flat(Path("config/review-rubrics/developmental-craft.md"))
+    assert "mystery-solution.md" in flat
+    assert "inspector-fairplay" in flat
+
+
+def test_no_rubric_still_calls_an_inspector_blind():
+    """Extends the agent-only 'blind inspector' check to the rubric files those same
+    inspectors read — 'isolated' is the surviving term, not 'blind'."""
+    for path in RUBRIC_PATHS:
+        flat = _flat(path)
+        assert "blind inspector" not in flat, path

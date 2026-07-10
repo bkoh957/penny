@@ -1,4 +1,4 @@
-# Rubric: Fair-Play Prose-Planting — Tier-1 Blind Inspector
+# Rubric: Fair-Play Prose-Planting — Tier-1 Isolated Inspector
 
 **Layer:** `/config/review-rubrics/` · consumed by `inspector-fairplay` (design §6).
 **Posture:** judgment of the PAGE, not the plan. `fairplay_check.py` (Tier-3) already

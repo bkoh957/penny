@@ -1,4 +1,4 @@
-# Rubric: Character Voice — Tier-1 Blind Inspector
+# Rubric: Character Voice — Tier-1 Isolated Inspector
 
 **Layer:** `/config/review-rubrics/` · consumed by `inspector-voice` (design §6, §8).
 **Posture:** judgment. You consume `voice_drift.py`'s statistical EVIDENCE (which never

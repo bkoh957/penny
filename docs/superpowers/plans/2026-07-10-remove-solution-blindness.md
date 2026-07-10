@@ -815,9 +815,13 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
       base this work starts from. Do **not** use `main~6` — a single fix commit shifts it.)
       The spec forbids script changes; this proves it.
 - [ ] `git diff --stat -- tests/test_beta_scaffold.py agents/beta-reader.md` → **empty**.
-- [ ] `grep -rn "Blind sub-agents\|solution-blind inputs\|Drafter blindness\|MUST stay blind\|ONLY protection\|no automated leak-guard\|Blind-seam\|blind-drafter seam\|dispatched blind\|blind as always" CLAUDE.md README.md agents/ commands/ config/` → no hits.
-      (The last four were missed by the original spec's verification list and found by
-      Task 2's reviewer. `penny-design-v3.md` is deliberately excluded — superseded, not edited.)
+- [ ] `grep -rn "Blind sub-agents\|solution-blind inputs\|Drafter blindness\|MUST stay blind\|ONLY protection\|no automated leak-guard\|Blind-seam\|blind-drafter seam\|dispatched blind\|blind as always\|solution-blind\|denied the whodunit" CLAUDE.md README.md agents/ commands/ config/ genres/` → no hits.
+      (The last four before `solution-blind` were missed by the original spec's verification
+      list and found by Task 2's reviewer. `penny-design-v3.md` is deliberately excluded —
+      superseded, not edited. `genres/` and the bare phrase `solution-blind` were *also*
+      missing from this list — the omission that let `genres/cozy-mystery/review-rubrics/
+      outline-craft.md` and `config/review-rubrics/developmental-craft.md` ship the deleted
+      rule; no task touched `genres/`, and this grep never searched it either.)
 - [ ] `grep -rln "blind" agents/` → `beta-reader.md` (reader simulation — correct),
       `_TEMPLATE.md`, plus any file whose new prose *denies* blindness
       (e.g. `inspector-fairplay.md`'s "Isolation (not blindness)"). Read each hit; the

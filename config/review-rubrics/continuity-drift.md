@@ -1,4 +1,4 @@
-# Rubric: Continuity Drift — Tier-1 Blind Inspector
+# Rubric: Continuity Drift — Tier-1 Isolated Inspector
 
 **Layer:** `/config/review-rubrics/` · consumed by `inspector-continuity` (design §6).
 **Posture:** judgment against the loaded ledger slice — does this chapter contradict

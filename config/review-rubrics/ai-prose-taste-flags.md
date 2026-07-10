@@ -1,6 +1,6 @@
-# Rubric: AI-Prose Taste Flags — Tier C (Blind Inspector)
+# Rubric: AI-Prose Taste Flags — Tier C (Isolated Inspector)
 
-**Layer:** `/config/review-rubrics/` · one rubric file, consumed by a blind
+**Layer:** `/config/review-rubrics/` · one rubric file, consumed by an isolated
 inspector sub-agent (design §6), cross-model where reachable.
 **Posture:** **judgment, by a reader who did not write the text.** Everything here
 requires deciding whether a line does *real work* or merely *performs depth* — the

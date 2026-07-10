@@ -1,4 +1,4 @@
-# Rubric: Structure & Tension — Tier-1 Blind Inspector
+# Rubric: Structure & Tension — Tier-1 Isolated Inspector
 
 **Layer:** `/config/review-rubrics/` · consumed by `inspector-structure` (design §6, §8).
 **Posture:** judgment of dramatic shape + a deterministic-ish thread-liveness check
