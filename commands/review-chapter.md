@@ -81,7 +81,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    | voice | inspector-voice | character-voice.md | character-voice.md |
    | ai-prose | inspector-ai-prose | ai-prose-taste-flags.md | ai-prose-taste-flags.md |
 
-   **Dispatch, blind, exactly the inspectors named in `$INSPECTORS`** — for each, the
+   **Dispatch, in isolation, exactly the inspectors named in `$INSPECTORS`** — for each, the
    `inspector-<name>` sub-agent with the chapter text, its rubric (from the table
    above), and the ledger slice (structure also gets the roster). Each writes its
    verdict into `output/book-$book/chapters/ch-$chapter.reviews/` via
