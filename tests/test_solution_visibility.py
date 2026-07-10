@@ -140,6 +140,7 @@ def test_book_scaffolder_seam_is_about_locality_not_blindness():
 def test_self_audit_says_isolated_not_blind():
     flat = _flat(Path("config/self-audit/self-audit-checklist.md"))
     assert "blind as always" not in flat
+    assert "blind inspector" not in flat
 
 
 def test_readme_dev_editor_not_denied_the_solution():

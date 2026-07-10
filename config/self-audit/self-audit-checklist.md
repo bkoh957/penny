@@ -97,4 +97,4 @@ choices, and removing them blind does more harm than leaving them:
 - Excessively complete / airless sentences (a passage-level gestalt, not a local trigger)
 - Predictable closing cadence ("for the first time in years, she allowed herself to hope")
 
-Leave these for the blind inspector / cross-model read.
+Leave these for the isolated inspector / cross-model read.
