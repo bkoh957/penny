@@ -746,7 +746,9 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 ## Final verification
 
 - [ ] `python3 -m pytest` → `345 passed`
-- [ ] `git diff --stat main~6 -- scripts/` → **empty**. The spec forbids script changes; this proves it.
+- [ ] `git diff --stat 9ed6239 -- scripts/` → **empty**. (`9ed6239` is the plan commit, i.e. the
+      base this work starts from. Do **not** use `main~6` — a single fix commit shifts it.)
+      The spec forbids script changes; this proves it.
 - [ ] `git diff --stat -- tests/test_beta_scaffold.py agents/beta-reader.md` → **empty**.
 - [ ] `grep -rn "Blind sub-agents\|solution-blind inputs\|Drafter blindness\|MUST stay blind\|ONLY protection\|no automated leak-guard" CLAUDE.md README.md agents/ commands/` → no hits.
 - [ ] `grep -rln "blind" agents/` → `beta-reader.md` (reader simulation — correct),
