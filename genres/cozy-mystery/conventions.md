@@ -9,8 +9,9 @@ planting, no on-page gore, warmth and comfort texture, a satisfying reveal.
 
 ## Dual engine
 - **A-plot:** the book's mystery (a death, solved by the end).
-- **B-plot:** the protagonist's post-divorce sea-change, threaded across all 13
-  books via the arc-ledger.
+- **B-plot:** the protagonist's ongoing personal arc, threaded across the series
+  via the arc-ledger. The arc's content and the series' book count are
+  series-specific — declare them in the series folder, not here.
 
 ## Per-book rule
 - The mystery **resolves**; a personal thread **does not** (drives the next
