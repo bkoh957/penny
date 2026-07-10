@@ -62,9 +62,9 @@ def test_drafter_no_longer_claims_blindness():
 
 
 def test_outline_reviewer_is_not_told_it_is_solution_blind():
-    text = (AGENTS / "outline-reviewer.md").read_text(encoding="utf-8")
-    assert "denied the whodunit solution" not in text
-    assert "Solution-blind" not in text
+    flat = _flat(AGENTS / "outline-reviewer.md")
+    assert "denied the whodunit solution" not in flat
+    assert "solution-blind" not in flat
 
 
 def test_review_outline_no_longer_withholds_the_solution():
