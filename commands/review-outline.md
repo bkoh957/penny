@@ -40,6 +40,12 @@ feedback as ID'd items you can disposition. Advisory — nothing here blocks dra
    - `claude` → dispatch the `outline-reviewer` sub-agent.
    - `codex` → send the SAME rubric + inputs to the Codex reviewer via the codex plugin
      runtime (independent tool; this is the "difference, not identity" second set of eyes).
+     Give it this output contract verbatim, so both members are bound by a committed
+     artifact rather than an improvised prompt:
+     > Produce your feedback as a JSON array of objects `{ "text": "<one focused prose point>" }`
+     > — one object per discrete point (quote the beat + name the gap + a concrete move).
+     > Emit `[]` if you genuinely have nothing new to add this pass. Do NOT assign IDs; do NOT
+     > add a `source` field (the command owns both).
    - If a member is unreachable, continue with the rest and note
      `independence reduced: <member> unreachable this pass` in the console output.
 

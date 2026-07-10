@@ -191,3 +191,19 @@ def test_render_groups_open_first_and_tags_source():
     assert "OF-2" in md and "codex" in md and "romance thin" in md
     # a purely-solved/rejected item still appears, just not under Open
     assert "OF-1" in md and "OF-3" in md
+
+
+COMMANDS = Path("commands")
+AGENTS = Path("agents")
+
+
+def _flat(p: Path) -> str:
+    """Collapse newlines/indent so assertions survive line-wrapping."""
+    return " ".join(p.read_text(encoding="utf-8").split()).lower()
+
+
+def test_codex_member_has_a_written_output_contract():
+    """The codex prompt must be committed, not improvised per run."""
+    flat = _flat(COMMANDS / "review-outline.md")
+    assert "one object per discrete point" in flat
+    assert "do not assign ids" in flat
