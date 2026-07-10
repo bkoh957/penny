@@ -168,7 +168,7 @@ ALLOWED_TO_KEEP_BLIND = {
 def test_no_agent_still_calls_itself_a_blind_inspector_or_copy_editor():
     """Isolation replaced blindness as the role label for Tier-1 inspectors and the
     copy-editor. Only the allowlisted files above may keep the word 'blind'."""
-    for path in sorted(AGENTS.glob("*.md")):
+    for path in sorted(AGENTS.glob("*.md")) + sorted(COMMANDS.glob("*.md")):
         if path.name in ALLOWED_TO_KEEP_BLIND:
             continue
         flat = _flat(path)

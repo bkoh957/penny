@@ -1,5 +1,5 @@
 ---
-description: Run the developmental gate on one chapter — dispatch the genre's blind inspectors + the 2a checkers, then compute PASS/HOLD.
+description: Run the developmental gate on one chapter — dispatch the genre's isolated inspectors + the 2a checkers, then compute PASS/HOLD.
 argument-hint: <book-number> <chapter-number>
 ---
 # /review-chapter
@@ -68,7 +68,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    INSPECTORS="$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/penny_genre.py" inspectors)"
    ```
 
-   `$INSPECTORS` is the active genre's blind-inspector set (for a cozy series:
+   `$INSPECTORS` is the active genre's isolated-inspector set (for a cozy series:
    `continuity fairplay structure voice ai-prose`). The genre chooses WHICH
    inspectors run; the static table below is the engine's fixed reference for each
    inspector's rubric and verdict file:
