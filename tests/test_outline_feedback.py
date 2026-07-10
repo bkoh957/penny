@@ -1,4 +1,5 @@
 import copy
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -198,8 +199,9 @@ AGENTS = Path("agents")
 
 
 def _flat(p: Path) -> str:
-    """Collapse newlines/indent so assertions survive line-wrapping."""
-    return " ".join(p.read_text(encoding="utf-8").split()).lower()
+    """Collapse newlines/indent/blockquote markers so assertions survive line-wrapping."""
+    lines = (re.sub(r"^\s*>\s?", "", ln) for ln in p.read_text(encoding="utf-8").splitlines())
+    return " ".join(" ".join(lines).split()).lower()
 
 
 def test_codex_member_has_a_written_output_contract():
