@@ -86,7 +86,11 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    above), and the ledger slice (structure also gets the roster). Each writes its
    verdict into `output/book-$book/chapters/ch-$chapter.reviews/` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py`, to the verdict file named in the
-   table above.
+   table above. `inspector-fairplay` additionally receives
+   `output/book-$book/mystery-solution.md` and the `reveal_chapter` value read from
+   `series/whodunit/book-$book.yaml`. If the book has no locked ledger, dispatch it
+   without `reveal_chapter` — the inspector will record the premature-reveal check as
+   not applicable.
 
 7b. **Cross-model guard + dispatch the developmental editor (context-rich, advisory).**
 
