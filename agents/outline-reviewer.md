@@ -34,5 +34,9 @@ genres/<g>/review-rubrics/outline-craft.md, series bible, canon-core, arc-ledger
 2. Address every coverage area in prose. If `--focus` is set, weight it heavily in addition.
 3. Produce your feedback as a JSON array of objects `{ "text": "<one focused prose point>" }`
    — one object per discrete point (quote the beat + name the gap + a concrete move).
+   Add a `recommendation` field only when you are recommending a change: `text` carries the
+   observation, `recommendation` carries the fix you propose. Omitting it is a legitimate
+   answer — if a point is praise, or names an ambiguity you cannot resolve, leave it off
+   rather than inventing an action.
    Emit `[]` if you genuinely have nothing new to add this pass. Do NOT assign IDs; do NOT
    add a `source` field (the command owns both).

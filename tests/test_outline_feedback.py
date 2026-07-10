@@ -236,3 +236,19 @@ def test_append_omits_the_key_when_reviewer_sends_blank(blank):
         reviewed_sha="newsha",
     )
     assert "recommendation" not in out["items"][-1]
+
+
+CONTRACT_SENTENCE = "add a `recommendation` field only when you are recommending a change"
+
+
+def test_both_panel_contracts_request_an_optional_recommendation():
+    """Agent file and command prompt must teach the same rule, or the panel half-follows it."""
+    for rel in (AGENTS / "outline-reviewer.md", COMMANDS / "review-outline.md"):
+        flat = _flat(rel)
+        assert CONTRACT_SENTENCE.lower() in flat, f"{rel} is missing the contract sentence"
+        assert "omitting it is a legitimate answer" in flat, f"{rel} must make omission costless"
+
+
+def test_collect_shape_documents_the_optional_key():
+    flat = _flat(COMMANDS / "review-outline.md")
+    assert "{ source, text, recommendation? }" in flat.replace('"', "")

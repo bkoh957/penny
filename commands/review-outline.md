@@ -44,15 +44,20 @@ feedback as ID'd items you can disposition. Advisory — nothing here blocks dra
      artifact rather than an improvised prompt:
      > Produce your feedback as a JSON array of objects `{ "text": "<one focused prose point>" }`
      > — one object per discrete point (quote the beat + name the gap + a concrete move).
+     > Add a `recommendation` field only when you are recommending a change: `text` carries the
+     > observation, `recommendation` carries the fix you propose. Omitting it is a legitimate answer
+     > — if a point is praise, or names an ambiguity you cannot resolve, leave it off rather than
+     > inventing an action.
      > Emit `[]` if you genuinely have nothing new to add this pass. Do NOT assign IDs; do NOT
      > add a `source` field (the command owns both).
    - If a member is unreachable, continue with the rest and note
      `independence reduced: <member> unreachable this pass` in the console output.
 
-7. **Collect points → JSON.** Each member returns a JSON array of `{ "text": ... }`. Tag
-   each point with its member as `source` and concatenate into one array
-   `[{ "source": "claude", "text": ... }, { "source": "codex", "text": ... }, ...]`. Write
-   it to a temp file, e.g. `.penny/outline-points-$1.json`.
+7. **Collect points → JSON.** Each member returns a JSON array of `{ text, recommendation? }`.
+   Tag each point with its member as `source` and concatenate into one array
+   `[{ source, text, recommendation? }, ...]`. Write it to a temp file, e.g.
+   `.penny/outline-points-$1.json`. Never merge or reconcile two members' recommendations —
+   disagreement is the signal this tier preserves.
 
 8. **Append + render** (deterministic; append-only — never disturbs your existing states):
    ```bash
