@@ -59,7 +59,7 @@ nothing detects. The benefit is a guarantee nothing verifies.
 |---|---|---|---|
 | **Independence** | the reviewing model did not draft | final-reader, beta-reader | unchanged (enforced by `preflight.py assemble`) |
 | **Isolation** | narrow inputs; no other agent's output | 5 inspectors, beta-readers | unchanged |
-| **Reader simulation** | the reader does not know the rules or the answer | beta-reader only | **kept, renamed** |
+| **Reader simulation** | the reader does not know the rules or the answer | beta-reader only | **kept** |
 
 Solution-blindness is not on this list. It is deleted.
 
@@ -68,6 +68,11 @@ Solution-blindness is not on this list. It is deleted.
 reacting." A beta reader who knows the culprit cannot report that she guessed it in
 chapter four. Its `{ text, persona_file }` input contract is a functional requirement of
 the simulation and survives verbatim.
+
+`agents/beta-reader.md` is therefore **not edited at all** — it already states this
+rationale correctly. The name "reader simulation" is adopted in `CLAUDE.md`'s taxonomy so
+that the agent's blindness is never again filed alongside the guardrails and deleted with
+them. `tests/test_beta_scaffold.py` stays untouched as the regression bar.
 
 Consequently **"sealed" is redefined**: it means *frozen against edits*, not *hidden from
 agents*. That is all `lock-mystery` ever did — an out-of-band certificate that exists
