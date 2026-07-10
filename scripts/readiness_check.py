@@ -78,10 +78,16 @@ def _file_check(name, rel, repo_root) -> dict:
 
 
 def _dir_check(name, rel, expected_min, repo_root) -> dict:
-    d = _resolve(rel, repo_root)
-    if not d.is_dir():
-        return _check(name, "dir", "missing", path=rel)
-    n = len(list(d.glob("*.md")))
+    if rel.startswith("config/"):
+        sub = rel[len("config/"):]
+        if not penny_paths.config_dirs(sub, root=repo_root):
+            return _check(name, "dir", "missing", path=rel)
+        n = len(penny_paths.config_dir_files(sub, root=repo_root))
+    else:
+        d = _resolve(rel, repo_root)
+        if not d.is_dir():
+            return _check(name, "dir", "missing", path=rel)
+        n = len(list(d.glob("*.md")))
     if expected_min is not None and n < expected_min:
         return _check(name, "dir", "blocked", path=rel,
                       detail=f"{n}/{expected_min} file(s)")

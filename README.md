@@ -90,12 +90,16 @@ Penny always resolves against **two** roots (`scripts/penny_paths.py`):
 **Data paths** — `series/`, `input/`, `output/`, `.penny/` — always resolve against the
 series root. They have no plugin-side default.
 
-**Config paths** overlay **three tiers, first hit wins**:
+**Config paths** overlay **three tiers**:
 
 ```
 series/config/<rel>          →   genres/<declared-genre>/<rel>   →   plugin config/<rel>
 (this series' override)          (its genre pack)                    (engine default)
 ```
+
+Asking for a **single file** takes the first tier that has it. Asking for a **directory**
+(e.g. the review rubrics) **unions** all three, with a higher tier shadowing only the
+same filename — so a genre pack can add a rubric without hiding the engine's.
 
 The declared genre comes from a `genre:` line in the series root's **`series.yaml`**. Miss
 that file and genre-tier lookups are skipped silently, while `/plan-book` hard-errors.

@@ -21,8 +21,12 @@ pointer: the **active series is the working directory**, resolved by
 if none found). Running a pipeline command from *this* repo fails on purpose — the engine
 is not a series.
 
-Config reads overlay **three tiers, first hit wins**: a series' `config/<rel>` → the
+Config reads overlay **three tiers**: a series' `config/<rel>` → the
 declared genre's `genres/<genre>/<rel>` → the plugin default under this repo's `config/`.
+**Single-file** reads (`config_path`) take the **first hit**. **Directory** reads
+(`config_dirs`, `config_dir_files`) **union across all three tiers**, shadowing per
+filename — a genre pack that adds one rubric must not hide the plugin's defaults. Reaching
+for `config_path` on a directory reintroduces that shadowing bug.
 The genre comes from a `genre:` line in the series root's **`series.yaml`**; absent that
 file, the genre tier is skipped silently and `/plan-book` hard-errors. Data paths
 (`series/`, `input/`, `output/`, `.penny/`) always resolve against the series root, never

@@ -33,16 +33,41 @@ def _root(root: Path | None) -> Path:
     return Path(root).resolve() if root is not None else series_root()
 
 
-def config_path(rel: str, root: Path | None = None) -> Path:
-    series_override = _root(root) / "config" / rel
-    if series_override.exists():
-        return series_override
+def _config_tiers(root: Path | None = None) -> list[Path]:
+    """The three overlay bases, highest precedence first (genre tier only if declared)."""
+    tiers = [_root(root) / "config"]
     g = _declared_genre(root)
     if g:
-        genre_override = genre_dir(g=g, root=root) / rel
-        if genre_override.exists():
-            return genre_override
+        tiers.append(genre_dir(g=g, root=root))
+    tiers.append(plugin_root() / "config")
+    return tiers
+
+
+def config_path(rel: str, root: Path | None = None) -> Path:
+    for base in _config_tiers(root):
+        candidate = base / rel
+        if candidate.exists():
+            return candidate
     return plugin_root() / "config" / rel
+
+
+def config_dirs(rel: str, root: Path | None = None) -> list[Path]:
+    """Every tier that actually has `rel` as a directory, highest precedence first."""
+    return [d for d in (base / rel for base in _config_tiers(root)) if d.is_dir()]
+
+
+def config_dir_files(rel: str, pattern: str = "*.md", root: Path | None = None) -> list[Path]:
+    """Union of `pattern` matches across the tiers of directory `rel`.
+
+    First-hit-wins is right for a single file and wrong for a directory: a genre
+    pack that adds one rubric must not hide the plugin's defaults. Shadowing is
+    per-filename — the highest tier holding a given name wins.
+    """
+    seen: dict[str, Path] = {}
+    for d in config_dirs(rel, root=root):
+        for p in sorted(d.glob(pattern)):
+            seen.setdefault(p.name, p)
+    return list(seen.values())
 
 
 def series_path(rel: str, root: Path | None = None) -> Path:

@@ -183,3 +183,18 @@ def test_main_no_book_emits_engine_config_yaml(capsys, monkeypatch):
     parsed = yaml.safe_load(out)
     assert "engine_and_config" in parsed
     assert "book_inputs" not in parsed
+
+
+def test_review_rubrics_union_across_tiers_not_shadowed_by_genre_pack(tmp_path):
+    """A genre pack that ships 2 rubrics must ADD to the plugin's 5, not hide them.
+
+    Reproduces the real series layout (which `_engine_ready` masks by copying the
+    plugin defaults into the *series* tier): no series-level review-rubrics/, so
+    the lookup lands on genres/cozy-mystery/review-rubrics/ (2 files) and used to
+    stop there, reporting `blocked: 2/5 file(s)`.
+    """
+    _engine_ready(tmp_path)
+    shutil.rmtree(tmp_path / "config" / "review-rubrics")
+
+    check = _by(readiness_check.engine_checks(repo_root=tmp_path), "review-rubrics")
+    assert check["status"] == "ready", check

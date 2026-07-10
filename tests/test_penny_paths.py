@@ -144,3 +144,53 @@ def test_config_path_falls_to_engine_default_when_no_override(tmp_path):
     s = _make_genre_series(tmp_path)  # no series override, cozy genre ships no such file yet
     got = pp.config_path("review-rubrics/character-voice.md", root=s)
     assert got == pp.plugin_root() / "config" / "review-rubrics/character-voice.md"
+
+
+# --- config_dirs / config_dir_files: DIRECTORY lookups union across tiers ---
+# First-hit-wins is right for a single file and wrong for a directory: a genre
+# pack that adds one rubric must not hide the plugin's defaults.
+
+def test_config_dirs_lists_every_existing_tier_highest_precedence_first(tmp_path, monkeypatch):
+    s = _make_genre_series(tmp_path)
+    series_ov = s / "config" / "review-rubrics"
+    series_ov.mkdir(parents=True)
+    fake_genre = tmp_path / "fake-genre"
+    (fake_genre / "review-rubrics").mkdir(parents=True)
+    monkeypatch.setattr(pp, "genre_dir", lambda g=None, root=None: fake_genre)
+
+    assert pp.config_dirs("review-rubrics", root=s) == [
+        series_ov,
+        fake_genre / "review-rubrics",
+        pp.plugin_root() / "config" / "review-rubrics",
+    ]
+
+
+def test_config_dirs_empty_when_no_tier_has_the_dir(tmp_path):
+    s = _make_genre_series(tmp_path)
+    assert pp.config_dirs("no-such-dir", root=s) == []
+
+
+def test_config_dir_files_unions_genre_tier_over_plugin_defaults(tmp_path, monkeypatch):
+    s = _make_genre_series(tmp_path)
+    fake_genre = tmp_path / "fake-genre"
+    (fake_genre / "review-rubrics").mkdir(parents=True)
+    (fake_genre / "review-rubrics" / "fairplay-planting.md").write_text("genre", encoding="utf-8")
+    monkeypatch.setattr(pp, "genre_dir", lambda g=None, root=None: fake_genre)
+
+    names = sorted(p.name for p in pp.config_dir_files("review-rubrics", root=s))
+    plugin_names = sorted(p.name for p in (pp.plugin_root() / "config" / "review-rubrics").glob("*.md"))
+    assert names == sorted(plugin_names + ["fairplay-planting.md"])
+
+
+def test_config_dir_files_higher_tier_shadows_same_filename(tmp_path, monkeypatch):
+    s = _make_genre_series(tmp_path)
+    series_ov = s / "config" / "review-rubrics"
+    series_ov.mkdir(parents=True)
+    (series_ov / "character-voice.md").write_text("series", encoding="utf-8")
+    fake_genre = tmp_path / "fake-genre"
+    (fake_genre / "review-rubrics").mkdir(parents=True)
+    (fake_genre / "review-rubrics" / "character-voice.md").write_text("genre", encoding="utf-8")
+    monkeypatch.setattr(pp, "genre_dir", lambda g=None, root=None: fake_genre)
+
+    got = [p for p in pp.config_dir_files("review-rubrics", root=s) if p.name == "character-voice.md"]
+    assert got == [series_ov / "character-voice.md"]
