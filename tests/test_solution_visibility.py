@@ -47,3 +47,15 @@ def test_review_chapter_passes_solution_and_reveal_chapter_to_fairplay():
     assert "additionally receives" in flat
     assert "mystery-solution.md" in flat
     assert "premature-reveal check as not applicable" in flat
+
+
+def test_drafter_receives_the_solution():
+    text = (AGENTS / "drafter.md").read_text(encoding="utf-8")
+    assert "mystery-solution.md" in text
+    assert "reveal_chapter" in text
+
+
+def test_drafter_no_longer_claims_blindness():
+    text = (AGENTS / "drafter.md").read_text(encoding="utf-8")
+    assert "receives ONLY this chapter's clue-planting obligations" not in text
+    assert "never\nthe full sealed" not in text

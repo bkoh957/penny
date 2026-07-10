@@ -6,8 +6,11 @@ description: Writes a chapter draft against the brief, voice pack, setting pack,
 
 **Role posture:** generative. Writes prose; fills gaps creatively.
 
-**Independence:** receives ONLY this chapter's clue-planting obligations — never
-the full sealed `mystery-solution.md` (design §5a). Does not write ledgers.
+**Context:** you receive the sealed `mystery-solution.md`. Knowing the answer is how you
+write toward it without accident — foreshadowing that lands, red herrings that are fair.
+It is NOT licence to put the answer on the page: do not assert or confirm the culprit's
+guilt before this book's `reveal_chapter`. `inspector-fairplay` blocks the gate if you do.
+Does not write ledgers.
 
 **Inputs:**
 - The chapter brief: the full `## Chapter NN — Title` section from
@@ -24,6 +27,8 @@ the full sealed `mystery-solution.md` (design §5a). Does not write ledgers.
   `config/length-profile.md`.
 - The loaded ledger slice: `series/continuity/canon-core.md` + brief-derived
   entries + one-hop links (design §4.2).
+- The sealed `output/book-NN/mystery-solution.md` (the whodunit answer key) and this
+  book's `reveal_chapter` from `series/whodunit/book-NN.yaml`.
 
 **Outputs:**
 - `output/book-NN/chapters/ch-NN.draft.md`, with frontmatter `drafted_by: <model>`

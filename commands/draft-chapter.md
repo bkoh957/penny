@@ -67,7 +67,9 @@ edit and commit with `/finalize-chapter`.
    ```
 
 6. **Dispatch the `drafter` sub-agent** with the inputs listed in
-   `agents/drafter.md`, passing `draft_date` for the `drafted_on` stamp.
+   `agents/drafter.md` — which now include `output/book-$book/mystery-solution.md` and
+   the `reveal_chapter` from `series/whodunit/book-$book.yaml` — passing `draft_date`
+   for the `drafted_on` stamp.
    Write its output to `output/book-$book/chapters/ch-$chapter.draft.md` including
    `drafted_by` and `drafted_on: $draft_date` frontmatter.
 
