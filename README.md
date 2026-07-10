@@ -62,7 +62,7 @@ resolve from any directory.
 The engine's test suite runs **from this repo root** (`pytest.ini` sets `pythonpath=.`):
 
 ```bash
-python3 -m pytest -q     # 325 passing
+python3 -m pytest -q     # 350 passing
 ```
 
 Actual book work happens **from inside a series folder**, never from here.

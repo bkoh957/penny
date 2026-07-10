@@ -1,10 +1,10 @@
 ---
 name: inspector-voice
-description: Blind Tier-1 inspector — turns voice_drift evidence + a flat-voice blind test into a gate decision.
+description: Isolated Tier-1 inspector — turns voice_drift evidence + a flat-voice blind test into a gate decision.
 ---
 # Inspector — Character Voice
 
-**Role posture:** blind inspector (design §6, §8). Makes the blocking call
+**Role posture:** isolated inspector (design §6, §8). Makes the blocking call
 `voice_drift.py` structurally cannot.
 
 **Independence:** receives ONLY the chapter text, the rubric

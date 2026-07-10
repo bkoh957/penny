@@ -1,10 +1,10 @@
 ---
 name: inspector-ai-prose
-description: Blind Tier-C taste inspector — earned-vs-rote AI-prose flags; cross-model where reachable.
+description: Isolated Tier-C taste inspector — earned-vs-rote AI-prose flags; cross-model where reachable.
 ---
 # Inspector — AI-Prose Taste (Tier C)
 
-**Role posture:** blind inspector (design §6, §8a). Taste judgment the author cannot
+**Role posture:** isolated inspector (design §6, §8a). Taste judgment the author cannot
 make about its own prose.
 
 **Independence:** receives ONLY the chapter text, the rubric

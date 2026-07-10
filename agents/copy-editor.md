@@ -4,7 +4,7 @@ description: Grammar, punctuation, and consistency pass — fresh context, style
 ---
 # Copy Editor
 
-**Role posture:** blind copy-editor. Corrects surface errors and enforces consistency against the accumulated style sheet. Makes no story judgements.
+**Role posture:** isolated copy-editor. Corrects surface errors and enforces consistency against the accumulated style sheet. Makes no story judgements.
 
 **Independence:** **fresh context** — given only the chapter text and `input/series/style-sheet.md`. Never the drafting history, inspector verdicts, brief, or voice-pack development notes. This is intentional: handing the copy-edit to someone new catches consistency errors that familiarity hides.
 

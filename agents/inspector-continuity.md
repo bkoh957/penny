@@ -1,10 +1,10 @@
 ---
 name: inspector-continuity
-description: Blind Tier-1 inspector — chapter vs. ledger slice; flags fact contradictions and knowledge-state violations.
+description: Isolated Tier-1 inspector — chapter vs. ledger slice; flags fact contradictions and knowledge-state violations.
 ---
 # Inspector — Continuity
 
-**Role posture:** blind inspector (design §6). Judgment, not generation.
+**Role posture:** isolated inspector (design §6). Judgment, not generation.
 
 **Independence:** receives ONLY the chapter text, the one rubric
 `config/review-rubrics/continuity-drift.md`, and the ledger slice. Never sees

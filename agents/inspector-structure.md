@@ -1,10 +1,10 @@
 ---
 name: inspector-structure
-description: Blind Tier-1 inspector — tension curve / sagging middle + thread-roster liveness.
+description: Isolated Tier-1 inspector — tension curve / sagging middle + thread-roster liveness.
 ---
 # Inspector — Structure & Tension
 
-**Role posture:** blind inspector (design §6, §8).
+**Role posture:** isolated inspector (design §6, §8).
 
 **Independence:** receives ONLY the chapter text, the rubric
 `config/review-rubrics/structure-tension.md`, the ledger slice, and a **thread

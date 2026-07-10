@@ -140,3 +140,36 @@ def test_book_scaffolder_seam_is_about_locality_not_blindness():
 def test_self_audit_says_isolated_not_blind():
     flat = _flat(Path("config/self-audit/self-audit-checklist.md"))
     assert "blind as always" not in flat
+
+
+def test_readme_dev_editor_not_denied_the_solution():
+    """The developmental-editor clause must say it GETS the solution, not that
+    it's withheld — this was the earlier (wrong) phrasing."""
+    flat = _flat(Path("README.md"))
+    assert "but **not** the solution" not in flat
+    assert "the chapter brief, and the solution" in flat
+
+
+def test_book_scaffolder_drops_drafter_visible_framing():
+    """'drafter-visible' named a blindness distinction the locality rule replaced."""
+    flat = _flat(AGENTS / "book-scaffolder.md")
+    assert "drafter-visible" not in flat
+
+
+ALLOWED_TO_KEEP_BLIND = {
+    "beta-reader.md",       # reader simulation — a real reader IS unknowing
+    "final-reader.md",      # correct contrast: "unlike the blind beta readers"
+    "outline-expander.md",  # deliberate denial: "not because anyone downstream is blind"
+    "_TEMPLATE.md",         # scaffold placeholder text, not a live role label
+}
+
+
+def test_no_agent_still_calls_itself_a_blind_inspector_or_copy_editor():
+    """Isolation replaced blindness as the role label for Tier-1 inspectors and the
+    copy-editor. Only the allowlisted files above may keep the word 'blind'."""
+    for path in sorted(AGENTS.glob("*.md")):
+        if path.name in ALLOWED_TO_KEEP_BLIND:
+            continue
+        flat = _flat(path)
+        assert "blind inspector" not in flat, path
+        assert "blind copy-editor" not in flat, path
