@@ -249,12 +249,11 @@ to the data the lock gates; a field would be a forgeable certificate.
 ```
 
 `/expand-outline` is the **context-rich exception** among generative roles: it reads the
-sealed solution to schedule clue beats but must withhold it from the page **by
-instruction** — there is no automated leak-guard. Drafter blindness holds until the
-in-story detective-click.
+solution to schedule clue beats; the reveal-timing rule is enforced on the page by
+`inspector-fairplay`.
 
 `/review-outline` runs an **independent Claude + Codex panel** over the whole outline
-(identical solution-blind inputs) and appends prose feedback — **no scores** — as ID'd
+(identical inputs) and appends prose feedback — **no scores** — as ID'd
 `OF-<n>` items to `output/book-01/reports/outline-feedback.yaml`. It is presented
 **side-by-side, never converged**: reviewer disagreement is the signal, so averaging would
 destroy it. Advisory; nothing here blocks drafting.
@@ -282,15 +281,15 @@ python3 $PENNY_ENGINE/scripts/preflight.py clear-dev 01 07
 **`/draft-chapter`** hard-fails first via `preflight.py draft` (lock present + ledger
 populated), shows the outline-review banner, then dispatches the `drafter` against the
 chapter brief, the packs, and a **ledger slice** — canon-core plus brief-named entries plus
-their one-hop `links`. The drafter is blind to the full solution; it gets only this
+their one-hop `links`. The drafter reads the full solution; it also gets this
 chapter's clue obligations.
 
-**`/review-chapter`** is the gate. Five **blind** inspectors (continuity, fairplay,
+**`/review-chapter`** is the gate. Five **isolated** inspectors (continuity, fairplay,
 structure, voice, AI-prose, per the genre pack's roster) plus the deterministic checkers.
 The panel **PASSes iff zero blockers**, else **HOLDs**; a HOLD surfaces to you and
 re-drafting is a manual re-run. It also dispatches the **developmental editor** — the top
 of the edit stack and the deliberate **context-rich exception**: it gets the setting pack, a
-character-bible slice and the chapter brief, but **not** the solution, because a craft read
+character-bible slice, the chapter brief, and the solution, because a craft read
 must know what the chapter is trying to do. It runs on a non-drafting model for fresh eyes;
 if none is reachable the command **halts** rather than degrade to a same-model read. Its
 verdict is `kind: developmental` — **advisory**, contributing zero blockers, never affecting
@@ -392,7 +391,7 @@ writes `ch-MM.gate.md` and prints `GATE: PASS|HOLD`. **Exit 0 means the gate *ev
 2. **Orchestration — `commands/*.md` + `agents/*.md`.** Slash commands are step-by-step
    runbooks that shell out to `scripts/` (as `${CLAUDE_PLUGIN_ROOT}/scripts/…`, so they
    resolve regardless of which series folder is cwd) and dispatch sub-agents. Agents are
-   role-scoped: drafter, five blind inspectors, context-rich developmental editor,
+   role-scoped: drafter, five isolated inspectors, context-rich developmental editor,
    outline-reviewer, book-scaffolder, line/copy editors, beta readers, cross-model final
    reader.
 
@@ -422,9 +421,9 @@ holds certificates.
   validator checks.
 - **Locks and certificates are out-of-band.** Never represent "validated" or "approved" as a
   field *inside* the data it gates.
-- **Sub-agents are dispatched blind.** Inspectors get one rubric + a ledger slice; beta
-  readers get only `{text, persona}`. The developmental editor and outline expander are the
-  deliberate, documented exceptions.
+- **Sub-agents are isolated, not ignorant.** Inspectors get one rubric + a ledger slice and
+  never another agent's output; beta readers get only `{text, persona}` because a reader who
+  knows the culprit stops reacting like a reader. Everyone else reads the solution.
 - **Cross-model independence is difference, not identity.** `final_read_model` must not
   appear among the chapters' `drafted_by` stamps.
 - **Independent panels are not averaged.** Outline review is side-by-side because

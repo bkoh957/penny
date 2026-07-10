@@ -48,7 +48,7 @@ Route each derived thing to its EXISTING home. Do not invent new formats.
 
 5. **The sealed answer key** → `output/book-NN/mystery-solution.md` (and
    `output/book-NN/mystery-solution.<label>.md` for any extra gated strand). This is
-   the ONLY place a `## Solution` lands. Nothing drafter-visible contains a solution.
+   the ONLY place a `## Solution` lands. No other artifact contains a solution.
 
 ## What you NEVER do
 
@@ -57,13 +57,17 @@ Route each derived thing to its EXISTING home. Do not invent new formats.
   The contract is explicit: you never write the lock file and you never write a
   certificate. Doing so would forge a trust signal the gate is designed to mint.
 - You never judge fairness (the lock does) or prose quality (the review does).
-- You never put a `## Solution` into a drafter-visible artifact (threads, entities,
-  canon-core, arc-ledger). The blind-drafter seam is sacred.
+- You never put a `## Solution` into a continuity artifact (threads, entities,
+  canon-core, arc-ledger). The solution lives in exactly one file.
 
-## Blind-seam rule
+## Solution-locality rule
 
-The drafter must never see a solution. This means: threads files, character/location
-files, arc-ledger rows, and canon-core entries must contain **only** what a drafter
-needs to write their chapter — no culprit identity, no revelation text, no spoiler
-from any `## Solution` block. All such content goes exclusively to
-`output/book-NN/mystery-solution.md`.
+The solution lives in exactly one file: `output/book-NN/mystery-solution.md`. Threads
+files, character/location files, arc-ledger rows, and canon-core entries must contain
+**only** what a chapter needs — no culprit identity, no revelation text, no spoiler from
+any `## Solution` block.
+
+This is no longer about hiding the answer from the drafter (the drafter reads it). It is
+about locality: `canon-core.md` is loaded on **every** chapter and must stay tiny, and the
+four inspectors other than `inspector-fairplay` remain isolated and have no use for the
+answer. One home, loaded deliberately.

@@ -96,3 +96,47 @@ def test_expand_outline_drops_the_manual_leak_review():
     text = (COMMANDS / "expand-outline.md").read_text(encoding="utf-8")
     assert "Post-expansion review" not in text
     assert "no automated leak-guard" not in text
+
+
+DOCS = [Path("CLAUDE.md"), Path("README.md")]
+
+
+def test_beta_reader_still_simulates_a_reader():
+    """Reader simulation is NOT a guardrail and must survive the removal."""
+    text = (AGENTS / "beta-reader.md").read_text(encoding="utf-8")
+    assert "no solution" in text
+    assert "{ text, persona_file }" in text
+
+
+def test_docs_no_longer_teach_solution_blindness():
+    """CLAUDE.md may still SAY 'there is no solution-blindness' — that is the point.
+
+    So assert on the phrases that TEACH the rule, not on the word itself.
+    """
+    for doc in DOCS:
+        text = doc.read_text(encoding="utf-8")
+        assert "Blind sub-agents" not in text, doc
+        assert "solution-blind inputs" not in text, doc
+        assert "Drafter blindness" not in text, doc
+        assert "blind to the full solution" not in text, doc
+
+
+def test_docs_teach_the_three_properties():
+    text = Path("CLAUDE.md").read_text(encoding="utf-8")
+    assert "reader simulation" in text.lower()
+    assert "Isolation" in text
+
+
+def test_book_scaffolder_seam_is_about_locality_not_blindness():
+    flat = _flat(AGENTS / "book-scaffolder.md")
+    assert "blind-seam rule" not in flat
+    assert "blind-drafter seam is sacred" not in flat
+    assert "the drafter must never see a solution" not in flat
+    # the substance survives:
+    assert "mystery-solution.md" in flat
+    assert "canon-core" in flat
+
+
+def test_self_audit_says_isolated_not_blind():
+    flat = _flat(Path("config/self-audit/self-audit-checklist.md"))
+    assert "blind as always" not in flat

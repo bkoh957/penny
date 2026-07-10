@@ -66,7 +66,7 @@ pure stdlib — see the dependency split below.
 2. **Orchestration — `commands/*.md` + `agents/*.md`.** Slash commands
    are step-by-step runbooks that shell out to `scripts/` (referenced from runbooks as
    `${CLAUDE_PLUGIN_ROOT}/scripts/...` so they resolve regardless of which series folder
-   is the cwd) and dispatch sub-agents. Agents are role-scoped (drafter, the 5 blind
+   is the cwd) and dispatch sub-agents. Agents are role-scoped (drafter, the 5 isolated
    inspectors, the context-rich developmental-editor, line/copy editors, beta-reader,
    etc.).
 3. **Swappable data — genre packs + the active series folder.** `genres/<g>/` holds
@@ -127,14 +127,11 @@ and **non-blocking**.
 ### Optional pre-draft passes
 
 `/expand-outline NN [MM]` expands skeletal stubs from `input/book-NN/outline-skeleton.md`
-into the scene-breakdown `outline.md`. It is the **context-rich exception** among generative
-roles — it reads the sealed solution to schedule clue beats but must **withhold it from the
-page by instruction**: there is no automated leak-guard, so the `outline-expander` agent's
-guardrails are the only protection. Drafter blindness holds until the in-story
-detective-click (~ch19).
+into the scene-breakdown `outline.md`. It reads the solution to schedule clue beats, and must
+not schedule a reveal beat before `reveal_chapter`.
 
 `/review-outline NN [--focus "…"]` runs an **independent Claude + Codex panel** over the
-whole outline (identical solution-blind inputs) and appends prose feedback — **no scores** —
+whole outline (identical inputs) and appends prose feedback — **no scores** —
 as ID'd `OF-<n>` items to `output/book-NN/reports/outline-feedback.yaml`. Presented
 **side-by-side, never converged**: reviewer disagreement is the signal, so averaging it away
 (the beta layer's K-of-M) would destroy it — this deliberately inverts that convention. The
@@ -180,25 +177,33 @@ invariant is **difference, not identity**: `final_read_model` must not appear in
 chapters' `drafted_by` frontmatter stamps. `preflight.py assemble` enforces this; agent
 outputs carry `drafted_by`/`read_by` stamps so it can.
 
-### Blind sub-agents
+### Independence, isolation, reader simulation
 
-Inspectors and beta-readers are dispatched **blind**: each gets only its narrow inputs
-(chapter text + one rubric + ledger slice for inspectors; `{text, persona_file}` only
-for beta-readers — no ledger, outline, or solution). Preserve this isolation. Personas
-are distinct lenses and are **never averaged**; models are the within-persona consensus
-axis (≥K-of-M via `beta_consensus_k`).
+One word — *blind* — used to name three unrelated things. It named them badly. There are
+three properties, each with its own justification (spec:
+`docs/superpowers/specs/2026-07-10-remove-solution-blindness-design.md`):
 
-Three agents are **deliberate, documented exceptions** — context-rich, not blind:
+- **Independence = model difference, not ignorance.** The reviewing model must not be the
+  drafting model. Enforced by `preflight.py assemble` against `drafted_by`. `final-reader`
+  sees the whole solution and is the most independent agent in the system.
+- **Isolation = narrow inputs, no cross-talk.** Each inspector gets one chapter, one
+  rubric, one ledger slice, and never another inspector's verdict. Isolation is about
+  *whose reasoning* an inspector can see, never about *what is true* — which is why
+  `inspector-fairplay` holds the solution and is still isolated.
+- **Reader simulation = the beta reader stays unknowing.** `{ text, persona_file }` only.
+  Not a guardrail: a reader who knows the culprit cannot report that she guessed her in
+  chapter four. Personas are distinct lenses and are **never averaged**; models are the
+  within-persona consensus axis (≥K-of-M via `beta_consensus_k`).
 
-- **`developmental-editor`** gets the setting pack, a character-bible slice, and the chapter
-  brief (but **not** the whodunit solution), because a craft read must know what the chapter
-  is trying to do. It runs on a non-drafting model (`/review-chapter` **halts** if none is
-  reachable rather than degrade to a same-model read), is advisory (never blocks the gate),
-  and its read is gated into finalize via a `clear-dev` certificate bound to the draft's
-  sha256.
-- **`outline-expander`** reads the sealed solution and must withhold it by instruction.
-- **`outline-reviewer`** is solution-blind but sees the whole outline; it is advisory and
-  never gates.
+**There is no solution-blindness.** The drafter, outline-expander, outline-reviewer,
+developmental-editor, and inspector-fairplay all read `mystery-solution.md`. The one thing
+drafter blindness bought — no reveal before `reveal_chapter` — is a blocking predicate on
+`inspector-fairplay`, with the rubric clause in the genre pack. It is deliberately **not**
+a script: it is an LLM judgment, and a name-grep would fire on every innocent sentence the
+culprit appears in.
+
+A **mystery lock** is still "sealed" — meaning *frozen against edits*, never *hidden from
+agents*.
 
 ## Series memory & context discipline
 

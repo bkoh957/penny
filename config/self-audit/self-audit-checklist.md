@@ -10,7 +10,7 @@ this file contains no scoring, no self-assessment, no rating scale.
 **Hard constraints (carried from the requirement so it stays safe to build):**
 - Produces a **revised draft only.** Emits **no** self-assessment, score, or note.
 - Inspectors receive **no signal** that a self-audit ran. They get text, one
-  rubric, the ledger slice — blind as always. The drafter never influences the gate.
+  rubric, the ledger slice — isolated as always. The drafter never influences the gate.
 - This is a **cost optimization, not a quality gate.** Its job is to lower the
   revision-loop count (target ≤ 2) by arriving at the gate cleaner. Quality is
   guaranteed by the independent inspectors regardless. Measure its worth by a drop
