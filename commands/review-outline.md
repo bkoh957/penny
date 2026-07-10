@@ -35,8 +35,8 @@ feedback as ID'd items you can disposition. Advisory — nothing here blocks dra
 6. **Dispatch each panel member independently, with identical inputs** (whole
    `input/book-$1/outline.md`, the genre `outline-craft.md`, `input/series/series-bible.md`,
    `series/continuity/canon-core.md`, `series/arc-ledger.md` if present, the current ledger
-   for dedup, and the `--focus` directive if given). **Solution-blind:** do NOT pass
-   `output/book-$1/mystery-solution*.md` or the whodunit answer fields.
+   for dedup, and the `--focus` directive if given). The outline includes its own
+   `## Solution` block; panel members reason about the whole book.
    - `claude` → dispatch the `outline-reviewer` sub-agent.
    - `codex` → send the SAME rubric + inputs to the Codex reviewer via the codex plugin
      runtime (independent tool; this is the "difference, not identity" second set of eyes).

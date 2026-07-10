@@ -59,3 +59,14 @@ def test_drafter_no_longer_claims_blindness():
     text = (AGENTS / "drafter.md").read_text(encoding="utf-8")
     assert "receives ONLY this chapter's clue-planting obligations" not in text
     assert "never\nthe full sealed" not in text
+
+
+def test_outline_reviewer_is_not_told_it_is_solution_blind():
+    text = (AGENTS / "outline-reviewer.md").read_text(encoding="utf-8")
+    assert "denied the whodunit solution" not in text
+    assert "Solution-blind" not in text
+
+
+def test_review_outline_no_longer_withholds_the_solution():
+    text = (COMMANDS / "review-outline.md").read_text(encoding="utf-8")
+    assert "do NOT pass" not in text
