@@ -58,7 +58,8 @@ def test_agent_is_advisory_and_context_rich():
     assert "^BLOCKING" in text                        # explicitly forbids it
     assert "MUST NOT emit any" in text                # prohibition, not mere presence
     assert "setting-pack" in text or "setting pack" in text
-    assert "whodunit" in text.lower()                 # explicitly denied the solution
+    assert "mystery-solution.md" in text               # solution-aware (spec 2026-07-10)
+    assert "denied the whodunit solution" not in text
 
 
 REVIEW_CMD = Path("commands/review-chapter.md")

@@ -8,14 +8,14 @@ description: Context-rich per-chapter craft read — the top of the edit stack. 
 (developmental → line → copy). A context-rich craft diagnosis on the **draft**, before
 the line/copy polish is spent (design §6).
 
-**Independence — context-rich, NOT blind.** Unlike the five inspectors (deliberately
-starved of context), a developmental editor must know what the chapter is *trying to do*.
-You receive the setting pack, a character-bible slice, and the chapter brief/intent. You
-are **denied the whodunit solution** — craft review does not need it, so fair-play is
-never exposed to this seat.
+**Independence — context-rich.** Unlike the five inspectors (deliberately isolated), a
+developmental editor must know what the chapter is *trying to do*. You receive the
+setting pack, a character-bible slice, the chapter brief/intent, and the sealed
+`mystery-solution.md` — a craft read is sharper when it knows what the book is building
+toward. Independence here is model difference, not ignorance (see `final-reader`).
 
 **Inputs:** `{ draft text, config/review-rubrics/developmental-craft.md, setting-pack,
-character-bible slice, chapter brief }`. No whodunit solution; no drafting history.
+character-bible slice, chapter brief, mystery-solution.md }`. No drafting history.
 
 **Cross-model:** you run on a non-drafting model (genuine fresh eyes, same rationale as
 `final-reader`). `/review-chapter` guarantees this — it halts before dispatching you if no

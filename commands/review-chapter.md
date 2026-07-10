@@ -109,7 +109,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
 
    Dispatch the `developmental-editor` sub-agent with its **context-rich** inputs — the
    chapter draft text, `config/review-rubrics/developmental-craft.md`, the setting pack,
-   a character-bible slice, and the chapter brief (NOT the whodunit solution). Pass
+   a character-bible slice, and the chapter brief, plus `output/book-$book/mystery-solution.md`. Pass
    `$dev_sha` as the `reviewed_draft_sha256` it must record. It writes
    `output/book-$book/chapters/ch-$chapter.reviews/developmental-edit.md` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py` (`kind: developmental`, no `^BLOCKING:` lines).
