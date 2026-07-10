@@ -290,6 +290,30 @@ def test_render_of_a_pre_change_ledger_is_unchanged():
     assert "**→**" not in md
 
 
+@pytest.mark.parametrize("bad_rec", [True, 42, ["not", "a", "string"]])
+def test_append_omits_the_key_when_recommendation_is_not_a_string(bad_rec):
+    """A hand-edited yaml footgun (`recommendation: yes` -> bool True, `42` -> int,
+    a flow-list -> list) must not crash append_items with AttributeError from
+    calling .strip() on a non-string. Treated as absent, not empty."""
+    out = of.append_items(
+        _seed(),
+        [{"source": "claude", "text": "obs", "recommendation": bad_rec}],
+        reviewed_sha="newsha",
+    )
+    assert "recommendation" not in out["items"][-1]
+
+
+@pytest.mark.parametrize("bad_rec", [True, 42, ["not", "a", "string"]])
+def test_render_omits_the_arrow_when_recommendation_is_not_a_string(bad_rec):
+    """Same footgun on the render side: a non-string recommendation must not crash
+    render_view via .strip(), and must not emit an arrow line."""
+    md = of.render_view(_ledger([
+        {"id": "OF-1", "source": "claude", "pass": 1, "state": "open",
+         "text": "this is strong", "recommendation": bad_rec},
+    ]))
+    assert "**→**" not in md
+
+
 def test_status_line_never_prints_recommendation_text(tmp_path):
     """The banner prints IDs, never item text — a recommendation must not leak to drafting."""
     _write_outline(tmp_path, "01", "body")

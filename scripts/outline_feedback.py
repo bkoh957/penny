@@ -94,7 +94,7 @@ def append_items(ledger, new_points, *, reviewed_sha) -> dict:
             "text": pt["text"],
         }
         rec = pt.get("recommendation")
-        if rec and rec.strip():
+        if isinstance(rec, str) and rec.strip():
             item["recommendation"] = rec
         items.append(item)
         next_id += 1
@@ -136,7 +136,7 @@ def render_view(ledger) -> str:
             lines.append(f"- **{it.get('id')}** · _{it.get('source')}_ · pass {it.get('pass')}")
             lines.append(f"  {it.get('text', '').strip()}")
             rec = it.get("recommendation")
-            if rec:
+            if isinstance(rec, str) and rec.strip():
                 lines.append(f"  **→** {rec.strip()}")
         lines.append("")
     return "\n".join(lines)
