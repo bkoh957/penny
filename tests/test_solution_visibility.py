@@ -42,6 +42,8 @@ def test_fairplay_rubric_carries_the_premature_reveal_clause():
     assert "reveal_chapter" in text
 
 
-def test_review_chapter_passes_reveal_chapter_to_fairplay():
-    text = (COMMANDS / "review-chapter.md").read_text(encoding="utf-8")
-    assert "reveal_chapter" in text
+def test_review_chapter_passes_solution_and_reveal_chapter_to_fairplay():
+    flat = _flat(COMMANDS / "review-chapter.md")
+    assert "additionally receives" in flat
+    assert "mystery-solution.md" in flat
+    assert "premature-reveal check as not applicable" in flat
