@@ -624,9 +624,21 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 **Files:**
 - Modify: `CLAUDE.md:69`, `:133`, `:137`, `:183-200`
-- Modify: `README.md:253`, `:257`, `:285`
+- Modify: `README.md:253`, `:257`, `:285`, `:288`, `:395`, `:425`
+- Modify: `agents/book-scaffolder.md:60-69` (the `## Blind-seam rule` section)
+- Modify: `config/self-audit/self-audit-checklist.md:13`
 - Modify: `tests/test_solution_visibility.py` (append)
 - **Do not touch** `agents/beta-reader.md` or `tests/test_beta_scaffold.py`.
+- **Do not touch** `penny-design-v3.md`. It is the historical design record; the spec's
+  header already declares it superseded on this point. Editing it would rewrite history.
+
+**Scope note (added during execution, after Task 2's review):** the original plan listed
+only `CLAUDE.md` and three `README.md` lines. A reviewer found four more live claims of
+drafter blindness. `agents/book-scaffolder.md` is the serious one — it carries a whole
+`## Blind-seam rule` section calling the seam "sacred", which is now false. Its *substance*
+survives, reframed: the solution must live in exactly one file. That is now justified by
+(a) `canon-core.md` is loaded every chapter and must stay tiny, and (b) the four inspectors
+other than fairplay remain isolated and have no need of the answer. Not by drafter blindness.
 
 **Interfaces:**
 - Consumes: `tests/test_solution_visibility.py` from Task 1.
@@ -664,6 +676,21 @@ def test_docs_teach_the_three_properties():
     text = Path("CLAUDE.md").read_text(encoding="utf-8")
     assert "reader simulation" in text.lower()
     assert "Isolation" in text
+
+
+def test_book_scaffolder_seam_is_about_locality_not_blindness():
+    flat = _flat(AGENTS / "book-scaffolder.md")
+    assert "blind-seam rule" not in flat
+    assert "blind-drafter seam is sacred" not in flat
+    assert "the drafter must never see a solution" not in flat
+    # the substance survives:
+    assert "mystery-solution.md" in flat
+    assert "canon-core" in flat
+
+
+def test_self_audit_says_isolated_not_blind():
+    flat = _flat(Path("config/self-audit/self-audit-checklist.md"))
+    assert "blind as always" not in flat
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -716,27 +743,65 @@ agents*.
 - Line 253: delete `— there is no automated leak-guard. Drafter blindness holds until the` and the clause continuing it; replace the sentence with: `It reads the solution to schedule clue beats; the reveal-timing rule is enforced on the page by \`inspector-fairplay\`.`
 - Line 257: `identical solution-blind inputs` → `identical inputs`
 - Line 285: `The drafter is blind to the full solution; it gets only this` → `The drafter reads the full solution; it also gets this`
+- Line 288: `Five **blind** inspectors` → `Five **isolated** inspectors`
+- Line 395: `drafter, five blind inspectors` → `drafter, five isolated inspectors`
+- Line 425: replace the `- **Sub-agents are dispatched blind.**` bullet with:
+  `- **Sub-agents are isolated, not ignorant.** Inspectors get one rubric + a ledger slice and never another agent's output; beta readers get only \`{text, persona}\` because a reader who knows the culprit stops reacting like a reader. Everyone else reads the solution.`
 
 Read each line in context before editing — the surrounding sentence must still parse.
 
-- [ ] **Step 6: Run tests to verify they pass**
+- [ ] **Step 6: Reframe the book-scaffolder's blind-seam rule**
+
+In `agents/book-scaffolder.md`, replace the bullet ending `The blind-drafter seam is sacred.` with:
+
+```markdown
+- You never put a `## Solution` into a continuity artifact (threads, entities,
+  canon-core, arc-ledger). The solution lives in exactly one file.
+```
+
+Then replace the whole `## Blind-seam rule` section heading and body with:
+
+```markdown
+## Solution-locality rule
+
+The solution lives in exactly one file: `output/book-NN/mystery-solution.md`. Threads
+files, character/location files, arc-ledger rows, and canon-core entries must contain
+**only** what a chapter needs — no culprit identity, no revelation text, no spoiler from
+any `## Solution` block.
+
+This is no longer about hiding the answer from the drafter (the drafter reads it). It is
+about locality: `canon-core.md` is loaded on **every** chapter and must stay tiny, and the
+four inspectors other than `inspector-fairplay` remain isolated and have no use for the
+answer. One home, loaded deliberately.
+```
+
+- [ ] **Step 7: Fix the self-audit checklist**
+
+In `config/self-audit/self-audit-checklist.md:13`, replace `blind as always` with
+`isolated as always`. Leave lines 92 and 100 (`removing them blind`, `the blind inspector`)
+alone — read them; if they refer to inspector isolation they are still correct.
+
+- [ ] **Step 8: Run tests to verify they pass**
 
 Run: `python3 -m pytest tests/test_solution_visibility.py -v`
-Expected: 15 passed.
+Expected: 17 passed.
 
-- [ ] **Step 7: Run the full suite**
+- [ ] **Step 9: Run the full suite**
 
 Run: `python3 -m pytest`
-Expected: `345 passed`. **`tests/test_beta_scaffold.py` must be among the passes and must be unmodified** — verify with `git diff --stat tests/test_beta_scaffold.py` (expect empty output).
+Expected: `347 passed`. **`tests/test_beta_scaffold.py` must be among the passes and must be unmodified** — verify with `git diff --stat tests/test_beta_scaffold.py` (expect empty output).
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 10: Commit**
 
 ```bash
-git add tests/test_solution_visibility.py CLAUDE.md README.md
+git add tests/test_solution_visibility.py CLAUDE.md README.md \
+  agents/book-scaffolder.md config/self-audit/self-audit-checklist.md
 git commit -m "docs: replace 'blind' with independence / isolation / reader simulation
 
 Solution-blindness is gone. The beta reader stays unknowing — not as a guardrail,
-but because a reader who knows the culprit cannot report guessing her.
+but because a reader who knows the culprit cannot report guessing her. The
+book-scaffolder's blind-seam rule becomes a solution-locality rule: canon-core is
+loaded every chapter and must stay tiny.
 
 Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 ```
@@ -745,12 +810,14 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 ## Final verification
 
-- [ ] `python3 -m pytest` → `345 passed`
+- [ ] `python3 -m pytest` → `347 passed`
 - [ ] `git diff --stat 9ed6239 -- scripts/` → **empty**. (`9ed6239` is the plan commit, i.e. the
       base this work starts from. Do **not** use `main~6` — a single fix commit shifts it.)
       The spec forbids script changes; this proves it.
 - [ ] `git diff --stat -- tests/test_beta_scaffold.py agents/beta-reader.md` → **empty**.
-- [ ] `grep -rn "Blind sub-agents\|solution-blind inputs\|Drafter blindness\|MUST stay blind\|ONLY protection\|no automated leak-guard" CLAUDE.md README.md agents/ commands/` → no hits.
+- [ ] `grep -rn "Blind sub-agents\|solution-blind inputs\|Drafter blindness\|MUST stay blind\|ONLY protection\|no automated leak-guard\|Blind-seam\|blind-drafter seam\|dispatched blind\|blind as always" CLAUDE.md README.md agents/ commands/ config/` → no hits.
+      (The last four were missed by the original spec's verification list and found by
+      Task 2's reviewer. `penny-design-v3.md` is deliberately excluded — superseded, not edited.)
 - [ ] `grep -rln "blind" agents/` → `beta-reader.md` (reader simulation — correct),
       `_TEMPLATE.md`, plus any file whose new prose *denies* blindness
       (e.g. `inspector-fairplay.md`'s "Isolation (not blindness)"). Read each hit; the
