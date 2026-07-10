@@ -41,9 +41,13 @@ missing craft, and suggests a concrete move. Write a note ONLY for a low-scoring
 **Instructions:**
 producer: developmental-editor
 
-1. Read the brief, setting pack, and character-bible slice to learn the chapter's
-   obligations. Read `config/review-rubrics/developmental-craft.md` for the eight
-   dimensions and thresholds.
+1. Read the brief, setting pack, character-bible slice, and sealed mystery-solution.md
+   to learn the chapter's obligations and the book's real answer. Read
+   `config/review-rubrics/developmental-craft.md` for the eight dimensions and thresholds.
+   Whilst scoring, judge whether the chapter's foreshadowing, misdirection, and character
+   behaviour actually track the book's real answer. Knowing the answer does not make you a
+   fair-play inspector — `inspector-fairplay` owns whether the page reveals too early. You
+   judge whether the chapter is *building* toward the answer well.
 2. Read the draft. Score each of the eight dimensions 1-5 against *this chapter's*
    obligations. Set the overall `score` to your holistic craft judgement.
 3. For every LOW-scoring dimension, write a margin note that quotes the passage, names the
