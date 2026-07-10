@@ -207,3 +207,32 @@ def test_codex_member_has_a_written_output_contract():
     flat = _flat(COMMANDS / "review-outline.md")
     assert "one object per discrete point" in flat
     assert "do not assign ids" in flat
+
+
+def test_append_carries_recommendation_when_present():
+    out = of.append_items(
+        _seed(),
+        [{"source": "claude", "text": "obs", "recommendation": "plant a warm beat"}],
+        reviewed_sha="newsha",
+    )
+    assert out["items"][-1]["recommendation"] == "plant a warm beat"
+
+
+def test_append_omits_the_key_entirely_when_absent():
+    """Absent, not empty: 'no fix' must be a costless answer."""
+    out = of.append_items(
+        _seed(),
+        [{"source": "claude", "text": "this section is strong"}],
+        reviewed_sha="newsha",
+    )
+    assert "recommendation" not in out["items"][-1]
+
+
+@pytest.mark.parametrize("blank", ["", "   ", "\n"])
+def test_append_omits_the_key_when_reviewer_sends_blank(blank):
+    out = of.append_items(
+        _seed(),
+        [{"source": "codex", "text": "obs", "recommendation": blank}],
+        reviewed_sha="newsha",
+    )
+    assert "recommendation" not in out["items"][-1]

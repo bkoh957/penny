@@ -86,13 +86,17 @@ def append_items(ledger, new_points, *, reviewed_sha) -> dict:
     next_id = max_id_num(items) + 1
     next_pass = max_pass(items) + 1
     for pt in new_points:
-        items.append({
+        item = {
             "id": f"OF-{next_id}",
             "source": pt["source"],
             "pass": next_pass,
             "state": "open",
             "text": pt["text"],
-        })
+        }
+        rec = pt.get("recommendation")
+        if rec and rec.strip():
+            item["recommendation"] = rec
+        items.append(item)
         next_id += 1
     out["reviewed_outline_sha256"] = reviewed_sha
     return out
@@ -165,7 +169,7 @@ def main(argv=None) -> int:
     ap.add_argument("cmd", choices=["status", "render", "append"])
     ap.add_argument("book")
     ap.add_argument("--root", default=None, help="repo/series root override (tests)")
-    ap.add_argument("--points", help="append: path to a JSON array of {source,text}")
+    ap.add_argument("--points", help="append: path to a JSON array of {source,text,recommendation?}")
     # NOTE: argparse usage errors (missing `book`, `cmd` outside choices) still exit 2
     # here via parse_args — that's a mis-written invocation, not a showrunner runtime
     # state, so it is deliberately NOT suppressed. The exit-0 guarantee below covers
