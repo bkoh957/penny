@@ -39,14 +39,7 @@ the sealed solution, so the mystery must already be planned.
    section** (from its `## Chapter NN` heading to the next chapter heading or EOF),
    preserving chapter order.
 
-6. **Post-expansion review (no automated leak-guard).** After all target chapters are
-   written, the showrunner reviews `input/book-$book/outline.md`: confirm no chapter
-   before the in-story detective-click (~ch19) names the culprit as the culprit or states
-   the motive/solution. If any chapter leaks, discard that chapter's section and re-run
-   `/expand-outline $book MM` for it with a tightened guardrail. Only commit the outline
-   once this review passes.
-
-7. **Advance the marker:**
+6. **Advance the marker:**
 
    ```bash
    echo "book=$book chapter=${chapter:-all} stage=EXPANDED" > .penny/current-stage
