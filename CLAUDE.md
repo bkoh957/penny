@@ -119,7 +119,10 @@ engine code.
 **Per chapter:** `/draft-chapter NN MM` → `/review-chapter NN MM` (the gate; also dispatches
 the context-rich `developmental-editor` advisory) → `preflight clear-dev NN MM` →
 `/finalize-chapter NN MM [--commit]` (requires `gate: PASS` **and** a clear-dev cert bound
-to the draft's sha256).
+to the draft's sha256). For local LM Studio models that output reliable short scenes but
+not whole chapters, `/draft-chapter-lmstudio NN MM [model-id]` is an alternate first step:
+same preflight/artifact, scene-shard orchestration, stitch pass, and length repair before
+the normal `/review-chapter` gate.
 
 **Per book, at the end:** `/assemble-book NN [--approve]`. `/beta-read <path>` is book-level
 and **non-blocking**.

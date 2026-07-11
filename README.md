@@ -278,11 +278,27 @@ python3 $PENNY_ENGINE/scripts/preflight.py clear-dev 01 07
 /finalize-chapter 01 07 [--commit]
 ```
 
+For local LM Studio models that write strong short scenes but tend not to complete whole
+chapters in one pass, use the alternate scene-shard route in the first slot:
+
+```bash
+/draft-chapter-lmstudio 01 07 [model-id]
+```
+
+It runs the same draft preflight and writes the same `ch-07.draft.md` artifact, but
+orchestrates generation as scene shards, a stitch pass, and length repair before the normal
+`/review-chapter` gate.
+
 **`/draft-chapter`** hard-fails first via `preflight.py draft` (lock present + ledger
 populated), shows the outline-review banner, then dispatches the `drafter` against the
 chapter brief, the packs, and a **ledger slice** — canon-core plus brief-named entries plus
 their one-hop `links`. The drafter reads the full solution; it also gets this
 chapter's clue obligations.
+
+**`/draft-chapter-lmstudio`** uses `scripts/lmstudio_draft_chapter.py` against LM Studio's
+OpenAI-compatible server (default `http://localhost:1234/v1`). It stamps drafts as
+`drafted_by: lmstudio/<model-id>`, so the normal assemble-time cross-model independence gate
+still applies.
 
 **`/review-chapter`** is the gate. Five **isolated** inspectors (continuity, fairplay,
 structure, voice, AI-prose, per the genre pack's roster) plus the deterministic checkers.
@@ -361,6 +377,7 @@ consensus axis (≥K-of-M via `beta_consensus_k`).
 | `/expand-outline <NN> [MM]` | book | requires sealed solution |
 | `/review-outline <NN> [--focus "…"]` | book | **advisory** |
 | `/draft-chapter <NN> <MM>` | chapter | requires the lock |
+| `/draft-chapter-lmstudio <NN> <MM> [model-id]` | chapter | requires the lock; LM Studio scene-shard route |
 | `/review-chapter <NN> <MM>` | chapter | **the gate** — PASS/HOLD |
 | `/finalize-chapter <NN> <MM> [--commit]` | chapter | requires PASS + clear-dev |
 | `/assemble-book <NN> [--approve]` | book | requires cross-model independence |
