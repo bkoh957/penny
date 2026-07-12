@@ -184,3 +184,25 @@ def test_cli_planning_lock(tmp_path):
     out = subprocess.run([sys.executable, "-m", "scripts.penny_genre", "planning-lock"],
                          cwd=s, capture_output=True, text=True, env=env)
     assert out.stdout.strip() == "mystery"
+
+
+def test_cozy_manifest_declares_beat_sheet_and_fan_persona():
+    m = pg.load_manifest("cozy-mystery")
+    assert m["beat_sheet"] == "beat-sheet.yaml"
+    assert m["fan_persona"] == "personas/genre-fan.md"
+
+
+def test_optional_file_keys_must_exist_when_present(tmp_path):
+    gdir = tmp_path / "genres" / "test-genre"
+    gdir.mkdir(parents=True)
+    (gdir / "conventions.md").write_text("x", encoding="utf-8")
+    manifest = {
+        "genre": "test-genre", "conventions": "conventions.md",
+        "planning": {"command": "plan-mystery", "artifact": "series/whodunit/book-{NN}.yaml",
+                      "validator": "fairplay", "lock": "mystery"},
+        "inspectors": [], "gates": [], "rubrics": [], "tracks": [],
+        "beat_sheet": "beat-sheet.yaml",
+    }
+    from scripts import penny_paths
+    errs = pg.validate_manifest(manifest, gdir, plugin_root=penny_paths.plugin_root())
+    assert any("beat_sheet" in e for e in errs)

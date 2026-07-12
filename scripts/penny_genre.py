@@ -18,6 +18,7 @@ import yaml
 
 MANIFEST_KEYS = ("genre", "conventions", "planning", "inspectors", "gates", "rubrics", "tracks")
 _PLANNING_KEYS = ("command", "artifact", "validator", "lock")
+_OPTIONAL_FILE_KEYS = ("beat_sheet", "fan_persona")
 
 
 def validate_manifest(manifest: dict, genre_dir: Path, *, plugin_root: Path) -> list[str]:
@@ -59,6 +60,11 @@ def validate_manifest(manifest: dict, genre_dir: Path, *, plugin_root: Path) -> 
     for rel in manifest.get("rubrics", []):
         if not ((genre_dir / rel).is_file() or (plugin_root / "config" / rel).is_file()):
             errs.append(f"rubric '{rel}' not found in genre pack or engine defaults")
+
+    for key in _OPTIONAL_FILE_KEYS:
+        val = manifest.get(key)
+        if val is not None and not (genre_dir / str(val)).is_file():
+            errs.append(f"{key} '{val}' not found in {genre_dir}")
 
     for key in ("inspectors", "gates", "rubrics", "tracks"):
         if not isinstance(manifest.get(key), list):

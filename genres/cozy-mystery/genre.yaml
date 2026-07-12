@@ -21,3 +21,5 @@ tracks:
   - P
   - R
   - B
+beat_sheet: beat-sheet.yaml
+fan_persona: personas/genre-fan.md
