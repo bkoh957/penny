@@ -44,11 +44,41 @@ state; this command never asks you anything a file already answers.
    the genre archetype document (`genres/<genre>/archetype.md`), the beat sheet
    (overlay-resolved `beat-sheet.yaml`), and every earlier save point. Relay its
    options to the showrunner; when they choose, the proposer writes the one save
-   point, then stamp it:
+   point, then stamp it. The general rule, every stage, every run: `--from` gets
+   EXACTLY the upstream save-point files that currently exist (per `_UPSTREAM` in
+   `scripts/plot_stage.py`) — never invent an entry, and if none exist, **skip
+   the stamp command entirely** rather than calling `stamp` with an empty
+   `--from` (it is `nargs="+", required=True` — an empty list is a hard
+   argparse error, not a no-op).
+
+   **Premise** is the one stage where this actually happens: its only upstream,
+   `material.md`, is the novelist's OPTIONAL pasted brainstorm. A brand-new book
+   with no pre-authored material has zero upstream files. Guard the stamp:
+
+   ```bash
+   if [ -f input/book-$book/plot/material.md ]; then
+     python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
+       input/book-$book/plot/premise.md --from input/book-$book/plot/material.md
+   fi
+   # else: no material.md — do NOT run `stamp` at all. A blank start is
+   # legitimate; plot_stage.py's stage_status() special-cases absent material
+   # and will still report stage "premise" as done, with zero stamps recorded.
+   ```
+
+   **Ending**'s only upstream, `premise.md`, always exists by the time this
+   stage runs (premise stamps unconditionally above), so stamp unconditionally:
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
-     input/book-$book/plot/<file>.md --from <each upstream save point that exists>
+     input/book-$book/plot/ending.md --from input/book-$book/plot/premise.md
+   ```
+
+   **Turning-points**'s two upstreams likewise always exist by this point:
+
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
+     input/book-$book/plot/turning-points.md \
+     --from input/book-$book/plot/premise.md input/book-$book/plot/ending.md
    ```
 
    End the run after the stamp — one taste decision per sitting.
@@ -57,10 +87,17 @@ state; this command never asks you anything a file already answers.
    read from `ending.md` + the spine from `turning-points.md` (do NOT re-ask the
    showrunner for the core — it is on disk). It proposes
    `series/whodunit/book-$book.yaml`; the showrunner edits until right; write the
-   sealed solution to `output/book-$book/mystery-solution.md`, then stamp the
-   solution file `--from` ending.md and turning-points.md. **No lock here** —
-   the lock is stage readback's last act (validate once, then freeze). Do not
-   run `lock-mystery` at this stage; it runs exactly once, at the end of step 8.
+   sealed solution to `output/book-$book/mystery-solution.md`, then stamp it:
+
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
+     output/book-$book/mystery-solution.md \
+     --from input/book-$book/plot/ending.md input/book-$book/plot/turning-points.md
+   ```
+
+   **No lock here** — the lock is stage readback's last act (validate once,
+   then freeze). Do not run `lock-mystery` at this stage; it runs exactly
+   once, at the end of step 8.
 
 6. **Stage chapters:** for each gap between consecutive turning points, dispatch
    `chapter-weaver` (fill pass) with both endpoints fixed and the clue schedule
@@ -68,15 +105,32 @@ state; this command never asks you anything a file already answers.
    already exist, `chapter-weaver` clears any stale `woven: true` from the
    skeleton's frontmatter as part of that write (its contract, not a step here
    — do not re-set `woven: true` yourself) — otherwise the weave stage would
-   read as `done` over chapters that were never rewoven. Then stamp the skeleton
-   `--from` turning-points.md and the solution file. Continue directly to weave.
+   read as `done` over chapters that were never rewoven. Then stamp the
+   skeleton:
 
-7. **Stage weave:** dispatch `chapter-weaver` (weave pass) over the filled
-   skeleton. It sets `woven: true` and re-stamps.
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
+     input/book-$book/outline-skeleton.md \
+     --from input/book-$book/plot/turning-points.md output/book-$book/mystery-solution.md
+   ```
+
+   Continue directly to weave.
+
+7. **Stage weave:**
+
+   ```bash
+   echo "book=$book stage=PLOT-WEAVE" > .penny/current-stage
+   ```
+
+   Dispatch `chapter-weaver` (weave pass) over the filled skeleton. It sets
+   `woven: true` and re-stamps. (The weave stage has no `_UPSTREAM` of its own
+   — `plot_stage.py` judges it done purely by the `woven` flag, so there is no
+   separate `stamp` call here.)
 
 8. **Stage readback:**
 
    ```bash
+   echo "book=$book stage=PLOT-READBACK" > .penny/current-stage
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" readers-copy $book
    ```
 
@@ -102,9 +156,16 @@ state; this command never asks you anything a file already answers.
 
    Present the fan's report and the findings side by side. The showrunner either
    revises (edit any file — staleness re-opens the right stages on the next run)
-   or signs off. On sign-off, stamp the fan report `--from` the skeleton, then
-   mint the lock (the ONE time it is minted this workshop) — with any per-check
-   waivers the showrunner dictates, each with a reason:
+   or signs off. On sign-off, stamp the fan report:
+
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
+     output/book-$book/reports/outline-fan.md \
+     --from input/book-$book/outline-skeleton.md
+   ```
+
+   Then mint the lock (the ONE time it is minted this workshop) — with any
+   per-check waivers the showrunner dictates, each with a reason:
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" lock-mystery $book \
