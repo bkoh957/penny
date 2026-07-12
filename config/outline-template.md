@@ -32,9 +32,14 @@ total_chapters: 2
 ### Chapter Structure
 - **Start / Desire:** <What the protagonist wants at the chapter's opening.>
 - **Pressure / Obstacle:** <What blocks or complicates that want.>
-- **Turn / Change:** <What is materially different by the end.>
+- **Turn / Change:** <What is materially different by the end — what is worse now, and for whom.>
 - **Texture / Pleasure Layer:** <Humour, setting, food, animals, community rituals.>
-- **Hook:** <The unresolved question that earns the next chapter.>
+- **Hook:** <q-slug — the unresolved question that earns the next chapter. On a wired book the id comes first.>
+
+<!-- Wiring (optional; all-or-nothing per book — see tension_check.py). -->
+- **Because:** <ch NN — which earlier turn forced this chapter; chapter 1 writes: opening>
+- **Opens:** <q-slug — the question this chapter plants>
+- **Closes:** <q-slug>
 
 ### Track Movement
 - **M:** <Mystery thread advancement — or "None" if a rest chapter.>
@@ -50,9 +55,14 @@ total_chapters: 2
 ### Chapter Structure
 - **Start / Desire:** <>
 - **Pressure / Obstacle:** <>
-- **Turn / Change:** <>
+- **Turn / Change:** <What is materially different by the end — what is worse now, and for whom.>
 - **Texture / Pleasure Layer:** <>
-- **Hook:** <>
+- **Hook:** <q-slug — the unresolved question that earns the next chapter. On a wired book the id comes first.>
+
+<!-- Wiring (optional; all-or-nothing per book — see tension_check.py). -->
+- **Because:** <ch NN — which earlier turn forced this chapter; chapter 1 writes: opening>
+- **Opens:** <q-slug — the question this chapter plants>
+- **Closes:** <q-slug>
 
 ### Track Movement
 - **M:** <>

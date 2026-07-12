@@ -1,5 +1,11 @@
 # Cozy ideation portaprompt
 
+> **Brainstorm salvage now has a first-class home.** Save your chat transcript as
+> `input/book-NN/plot/material.md` and run `/plot-book NN` — its premise stage runs
+> this same salvage discipline (surface every rival, choose nothing silently) as part
+> of the staged, resumable plotting workshop. This portaprompt remains the manual path:
+> useful outside Penny, or when you want the salvage-and-skeleton pass on its own.
+>
 > **How to use this file.** Nothing in Penny reads it. Open it, copy everything below the
 > horizontal rule, and paste it into whatever model you are ideating with — then paste
 > `genres/cozy-mystery/archetype.md` as a second block, and your chat transcript as a

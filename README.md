@@ -112,7 +112,8 @@ Only these. Everything else on the required list is **yours to author**:
 config/outline-template.md          config/review-rubrics/        (5 rubrics)
 config/line-edit/line-edit.md       config/copy-edit/copy-edit.md
 config/self-audit/…                 config/beta-readers/beta-protocol.md
-genres/cozy-mystery/                genre.yaml, conventions.md, 2 rubrics
+genres/cozy-mystery/                genre.yaml, conventions.md, 2 rubrics,
+                                     beat-sheet.yaml, personas/genre-fan.md
 ```
 
 ---
@@ -413,9 +414,12 @@ writes `ch-MM.gate.md` and prints `GATE: PASS|HOLD`. **Exit 0 means the gate *ev
    reader.
 
 3. **Swappable data — genre packs and the series folder.** `genres/<g>/` holds `genre.yaml`
-   (inspector roster, gates, planning command, tracks), conventions, and genre rubrics. The
-   series folder holds `config/` overrides, `series/` continuity, `input/`, `output/`.
-   Swap either and you change genre or location without touching the engine.
+   (inspector roster, gates, planning command, tracks, plus the optional `beat_sheet:` and
+   `fan_persona:` keys `/plot-book` reads — cozy's `beat-sheet.yaml` and
+   `personas/genre-fan.md` are the worked example a thriller pack will follow),
+   conventions, and genre rubrics. The series folder holds `config/` overrides, `series/`
+   continuity, `input/`, `output/`. Swap either and you change genre or location without
+   touching the engine.
 
 ### Series memory & context discipline
 

@@ -89,8 +89,9 @@ pure stdlib — see the dependency split below.
   Penny uses (frontmatter, fenced ```yaml blocks, and `<!-- canon-meta: {...} -->`
   headers). The deterministic layer uses it to avoid a PyYAML dependency.
 - **PyYAML is used only for genuinely nested human-edited data** — the whodunit
-  ledgers (`series/whodunit/*.yaml`), the lexicon, and the outline-feedback ledger.
-  Don't reach for PyYAML to parse config/frontmatter; use `penny_meta`.
+  ledgers (`series/whodunit/*.yaml`), the lexicon, the outline-feedback ledger, and
+  the genre beat sheet (`beat-sheet.yaml`). Don't reach for PyYAML to parse
+  config/frontmatter; use `penny_meta`.
 
 ### Readiness is genre/location-agnostic
 
@@ -104,17 +105,31 @@ engine code.
 **Series setup:** `/new-series <name> [root]` writes the directory contract only — no
 `series.yaml`, no config packs, no story content. See the shipped-defaults note above.
 
-**Per book (two front doors, both earning the same lock):**
-- `/scaffold-book NN <outline-path> [--approve]` — **the recommended, outline-first door.**
-  `outline_check.py` gates the outline's *shape* (four named predicates: integer
-  `book`/`total_chapters` frontmatter, a `## Solution` block, contiguous non-empty
-  `## Chapter NN` headings). The `book-scaffolder` then derives structure **unlocked** into
-  its real homes and emits `output/book-NN/scaffold-review.md` with a **dry run of what the
-  lock will say**. `--approve` calls the shipped, unchanged `preflight lock-mystery`.
-  Generated ≠ trusted: the scaffolder never writes a certificate.
+**Per book (three front doors, all earning the same lock):**
+- `/plot-book NN` — **the recommended door for a new book.** A resumable, staged
+  plotting workshop: save points under `input/book-NN/plot/` (`material.md` optional,
+  then `premise.md`, `ending.md`, `turning-points.md`) hold the showrunner's own taste
+  calls; `plot_stage.py status` names the next stage and what went stale (sha256
+  `built_from_*` fingerprints on each save point). The machine fills the chapter
+  skeleton and weaves it (wired `Because`/`Opens`/`Closes`/`Carries`/`Hook` fields —
+  see the outline template); the counterplot stage dispatches the existing
+  `mystery-planner` rather than duplicating it. It ends with a blind genre-fan
+  read-back (`plot_stage.py readers-copy` strips solution/wiring before the reveal
+  chapter) presented beside `tension_check.py`'s findings, then mints the lock —
+  the workshop's only lock mint — with any per-check `--waive check-id:"reason"`
+  recorded in the certificate.
+- `/scaffold-book NN <outline-path> [--approve]` — the outline-first door for an
+  outline authored elsewhere. `outline_check.py` gates the outline's *shape* (four
+  named predicates: integer `book`/`total_chapters` frontmatter, a `## Solution`
+  block, contiguous non-empty `## Chapter NN` headings). The `book-scaffolder` then
+  derives structure **unlocked** into its real homes and emits
+  `output/book-NN/scaffold-review.md` with a **dry run of what the lock will say**.
+  `--approve` calls the shipped, unchanged `preflight lock-mystery`. Generated ≠
+  trusted: the scaffolder never writes a certificate.
 - `/plan-book NN` resolves `series.yaml`'s genre and delegates; `/plan-mystery NN` is
-  cozy-mystery's interactive planner (showrunner core → `mystery-planner` proposal →
-  approve + lock).
+  cozy-mystery's interactive planner, standalone (showrunner core → `mystery-planner`
+  proposal → approve + lock) — for the puzzle alone, when the dramatic outline is
+  already settled some other way.
 
 **Per chapter:** `/draft-chapter NN MM` → `/review-chapter NN MM` (the gate; also dispatches
 the context-rich `developmental-editor` advisory) → `preflight clear-dev NN MM` →
@@ -151,9 +166,15 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
 ### Gates and the verdict convention
 
 - **`scripts/preflight.py`** is the one deterministic-gate tool, six subcommands:
-  `lock-mystery N` (validate fairplay+lexicon, then mint the lock — the *only* lock
-  writer), `draft N CH` (lock present + ledger populated), `assemble N` (cross-model
-  routing guard), `finalize N CH` (chapter must have `gate: PASS` + a fresh clear-dev cert),
+  `lock-mystery N` (validate fairplay+lexicon+tension, then mint the lock — the
+  *only* lock writer; `tension_check.py` is the dramatic-wiring checker beside
+  `fairplay_check.py`, seven named checks — `orphan-chapter`, `dropped-question`,
+  `phantom-answer`, `dead-stretch`, `broken-hook`, `starved-thread`, `off-mark-beat`
+  — each waivable with `--waive check-id:"reason"`, recorded in the lock
+  certificate; an outline with no wiring is SKIPPED entirely, so book 1 and any
+  hand-authored/scaffolded outline still lock exactly as before), `draft N CH`
+  (lock present + ledger populated), `assemble N` (cross-model routing guard),
+  `finalize N CH` (chapter must have `gate: PASS` + a fresh clear-dev cert),
   `clear-dev N CH` (showrunner approves developmental report), `approve-book N`
   (precondition gate + mints the `.approved` cert — its last write).
 - **Verdict files** (`ch-MM.reviews/*.md`) share one envelope — see the docstring of
@@ -228,7 +249,10 @@ the engine ships no default — holds model-per-role routing, run-mode flags (`p
 fenced ```yaml blocks. `ledger_approval: review` makes `/finalize-chapter` pause for a
 diff review (resume with `--commit`); `auto` commits end-to-end. Likewise `book_approval`
 for `/assemble-book`. Note `panel_size: 1` (fast mode) means a put-down can never reach
-`beta_consensus_k: 2` consensus — expected, not a bug.
+`beta_consensus_k: 2` consensus — expected, not a bug. Optional `plot_model:` routes
+`/plot-book`'s `plot-proposer` and `chapter-weaver` (defaults to `drafting_model`); the
+`outline-fan` prefers any reachable model other than `plot_model`, degrading to
+"independence reduced" rather than halting.
 
 ## Conventions
 
