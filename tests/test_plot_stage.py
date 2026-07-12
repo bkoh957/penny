@@ -1,3 +1,4 @@
+import glob
 from pathlib import Path
 
 from scripts.plot_stage import (STAGE_ORDER, next_stage, readers_copy, readers_copy_text,
@@ -115,3 +116,203 @@ def test_readers_copy_writes_report_file(tmp_path):
     p = readers_copy("01", repo_root=tmp_path)
     assert p == tmp_path / "output/book-01/reports/outline-readers-copy.md"
     assert p.is_file() and "q-" not in p.read_text(encoding="utf-8")
+
+
+# --- FINDING 1: the H3 subsection strip must not fail open ------------------
+
+def test_track_rows_dropped_under_lowercase_track_movement_heading():
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Track movement
+- **M:** Mary moves the body.
+"""
+    out = readers_copy_text(text)
+    assert "**M:**" not in out and "Mary moves the body" not in out
+
+
+def test_track_rows_dropped_under_bare_tracks_heading():
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Tracks
+- **M:** Mary moves the body.
+"""
+    out = readers_copy_text(text)
+    assert "**M:**" not in out and "Mary moves the body" not in out
+
+
+def test_track_rows_dropped_under_h4_track_movement_heading():
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+#### Track Movement
+- **M:** Mary moves the body.
+"""
+    out = readers_copy_text(text)
+    assert "**M:**" not in out and "Mary moves the body" not in out
+
+
+def test_track_rows_dropped_with_no_heading_at_all():
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Chapter Structure
+- **Turn / Change:** Something happens.
+- **M:** Mary moves the body.
+"""
+    out = readers_copy_text(text)
+    assert "**M:**" not in out and "Mary moves the body" not in out
+    assert "Something happens" in out  # unrelated line under the same heading survives
+
+
+def test_chapter_internal_solution_heading_dropped():
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Solution
+Mary did it, for the letter.
+
+### Chapter Structure
+- **Turn / Change:** Something happens.
+"""
+    out = readers_copy_text(text)
+    assert "Mary did it" not in out
+    assert "Something happens" in out
+
+
+# --- FINDING 2: non-canonical wiring bullets must not leak question ids -----
+
+def test_asterisk_bullet_closes_field_dropped():
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Chapter Structure
+* **Closes:** q-who-killed-neil
+"""
+    out = readers_copy_text(text)
+    assert "q-" not in out
+
+
+def test_dash_no_space_carries_field_dropped():
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Chapter Structure
+-**Carries:** q-elspeth-vale
+"""
+    out = readers_copy_text(text)
+    assert "q-" not in out
+
+
+def test_colon_outside_bold_opens_field_dropped():
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Chapter Structure
+- **Opens**: q-sneaky — colon outside the bold
+"""
+    out = readers_copy_text(text)
+    assert "q-" not in out
+
+
+def test_no_bullet_at_all_opens_field_dropped():
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Chapter Structure
+**Opens:** q-x — who killed the GP?
+"""
+    out = readers_copy_text(text)
+    assert "q-" not in out
+
+
+# --- FINDING 3: truncate before the reveal chapter --------------------------
+
+def test_reveal_chapter_truncates_and_notes_it():
+    out = readers_copy_text(WIRED_CLEAN.read_text(encoding="utf-8"), reveal_chapter=5)
+    assert "## Chapter 04" in out
+    assert "## Chapter 05" not in out and "## Chapter 06" not in out
+    assert "Chapters 1–4" in out
+    assert "deliberately withheld" in out
+
+
+def test_no_reveal_chapter_emits_everything_and_no_note():
+    out = readers_copy_text(WIRED_CLEAN.read_text(encoding="utf-8"), reveal_chapter=None)
+    assert "## Chapter 06" in out
+    assert "deliberately withheld" not in out
+    assert "Chapters 1" not in out.splitlines()[1]  # no truncation line at all
+
+
+def test_readers_copy_reads_reveal_chapter_from_whodunit_ledger(tmp_path):
+    (tmp_path / ".penny").mkdir()
+    d = tmp_path / "input/book-01"
+    d.mkdir(parents=True)
+    (d / "outline-skeleton.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    wd = tmp_path / "series/whodunit"
+    wd.mkdir(parents=True)
+    (wd / "book-01.yaml").write_text("reveal_chapter: 5\nculprit: Mary\n", encoding="utf-8")
+    p = readers_copy("01", repo_root=tmp_path)
+    out = p.read_text(encoding="utf-8")
+    assert "## Chapter 04" in out
+    assert "## Chapter 05" not in out
+    assert "deliberately withheld" in out
+
+
+def test_readers_copy_with_no_ledger_emits_all_chapters(tmp_path):
+    (tmp_path / ".penny").mkdir()
+    d = tmp_path / "input/book-01"
+    d.mkdir(parents=True)
+    (d / "outline-skeleton.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    p = readers_copy("01", repo_root=tmp_path)
+    out = p.read_text(encoding="utf-8")
+    assert "## Chapter 06" in out
+    assert "deliberately withheld" not in out
+
+
+# --- Re-verify the blind guarantee over every wired-* fixture ---------------
+
+def test_no_leaks_survive_in_any_wired_fixture():
+    for path in sorted(glob.glob("tests/fixtures/outlines/wired-*.md")):
+        out = readers_copy_text(Path(path).read_text(encoding="utf-8"))
+        assert "q-" not in out, f"question id leaked in {path}"
+        for field in ("**Because:**", "**Opens:**", "**Closes:**", "**Carries:**"):
+            assert field not in out, f"{field} leaked in {path}"
+        assert "Solution" not in out, f"Solution leaked in {path}"
+        assert "**M:**" not in out, f"track row leaked in {path}"

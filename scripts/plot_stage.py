@@ -21,15 +21,31 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts import penny_paths
 from scripts.penny_meta import parse_frontmatter, strip_frontmatter, write_frontmatter_field
-from scripts.penny_wiring import CHAPTER_RE, FIELD_RE, HEADING_RE, QID_RE, split_id
+from scripts.penny_wiring import CHAPTER_RE, FIELD_RE, HEADING_RE, QID_RE, TRACK_RE, split_id
 
 STAGE_ORDER = ["premise", "ending", "turning-points", "counterplot",
                "chapters", "weave", "readback"]
 
 _DROP_FIELDS = {"Because", "Opens", "Closes", "Carries"}
-_DROP_SUBSECTIONS = ("Track Movement", "Drafting Notes", "Possible Line-Level Prompts")
-_H3_RE = re.compile(r"^###\s+(.*)$")
+# Case-insensitive substring match; heading text is lower()'d before testing.
+# "solution" catches a hand-added ### Solution inside a chapter block.
+_DROP_SUBSECTIONS = ("track movement", "tracks", "drafting notes",
+                     "possible line-level prompts", "solution")
+# Any heading of level 3 OR DEEPER (###, ####, ...) — a casing/level drift in a
+# hand-edited heading must not silently defeat the subsection strip.
+_H3_RE = re.compile(r"^#{3,}\s+(.*)$")
 _QID_TOKEN_RE = re.compile(r"\bq-[a-z0-9][a-z0-9-]*\b")
+# Defence in depth for FINDING 2: a permissive, DROP-ONLY pattern for the
+# reader's-copy strip alone (never used to loosen the shared, precise
+# FIELD_RE that tension_check.py depends on). Matches a Because/Opens/
+# Closes/Carries field bullet in any of: "-"/"*"/"+" bullet or none, no
+# space after the bullet, and the colon either inside or outside the bold
+# markers. The reader's copy may be over-aggressive about dropping wiring
+# lines; it must never be under-aggressive.
+_WIRING_DROP_RE = re.compile(
+    r"^\s*(?:[-*+]\s*)?\*\*\s*(?:Because|Opens|Closes|Carries)\s*:?\s*\*\*\s*:?",
+    re.IGNORECASE,
+)
 
 _UPSTREAM = {
     "premise": ["material"],           # material is optional (spec §4)
@@ -107,26 +123,52 @@ def stamp(book: str, target, upstreams, *, repo_root=None) -> None:
     p.write_text(text, encoding="utf-8")
 
 
-def readers_copy_text(text: str) -> str:
+def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None) -> str:
     """The blind reader's copy (spec §5): chapters only, in story order, with the
     Solution/Threads sections, wiring lines, question ids, and drafting machinery
-    stripped BY CONSTRUCTION — blindness is not an instruction to an agent."""
+    stripped BY CONSTRUCTION — blindness is not an instruction to an agent.
+
+    When reveal_chapter is given, only chapters with num < reveal_chapter are
+    emitted (FINDING 3): the reveal chapter's own summary names the culprit, so
+    truncating before it mirrors the real reading experience — a reader guesses
+    before the reveal — while keeping the whole sagging-middle span the
+    put-down signal needs. When None, all chapters are emitted (current/legacy
+    behaviour)."""
     body = strip_frontmatter(text)
     sections = list(HEADING_RE.finditer(body))
-    out_lines = ["# Outline — reader's copy", ""]
+    chapters = []
     for i, m in enumerate(sections):
-        if not CHAPTER_RE.match(m.group(1)):
+        cm = CHAPTER_RE.match(m.group(1))
+        if not cm:
             continue
         start = m.start()
         end = sections[i + 1].start() if i + 1 < len(sections) else len(body)
+        chapters.append((int(cm.group(1)), start, end))
+
+    emitted = [c for c in chapters
+               if reveal_chapter is None or c[0] < reveal_chapter]
+    truncated = reveal_chapter is not None and len(emitted) < len(chapters)
+
+    out_lines = ["# Outline — reader's copy"]
+    if truncated:
+        last_num = max(n for n, _, _ in emitted) if emitted else 0
+        out_lines.append(
+            f"> Chapters 1–{last_num}. The book continues past this point; "
+            "the ending is deliberately withheld.")
+    out_lines.append("")
+    for _num, start, end in emitted:
         skipping = False
         for line in body[start:end].splitlines():
             h3 = _H3_RE.match(line)
             if h3:
-                skipping = any(s in h3.group(1) for s in _DROP_SUBSECTIONS)
+                skipping = any(s in h3.group(1).lower() for s in _DROP_SUBSECTIONS)
                 if skipping:
                     continue
             elif skipping:
+                continue
+            # FINDING 1(b): drop any track row wherever it falls, independent
+            # of heading spelling/level or whether there is a heading at all.
+            if TRACK_RE.match(line):
                 continue
             fm = FIELD_RE.match(line)
             if fm:
@@ -144,9 +186,35 @@ def readers_copy_text(text: str) -> str:
                         rest = _QID_TOKEN_RE.sub("", value).strip()
                     line = line[:line.index("**Hook:**") + len("**Hook:**")] + (
                         f" {rest}" if rest else "")
+            elif _WIRING_DROP_RE.match(line):
+                # FINDING 2: non-canonical wiring bullets (asterisk bullet, no
+                # space after the dash, colon outside the bold, no bullet at
+                # all) that FIELD_RE's exact shape misses.
+                continue
             out_lines.append(line)
         out_lines.append("")
     return "\n".join(out_lines).rstrip() + "\n"
+
+
+def _reveal_chapter(book: str, root: Path) -> "int | None":
+    """Read reveal_chapter from series/whodunit/book-NN.yaml (FINDING 3). That
+    ledger is genuinely nested human-edited data, so PyYAML is permitted here
+    — imported inside this function-scoped helper only, the same pattern
+    tension_check.py's _load_yaml uses. The outline itself stays penny_meta/
+    penny_wiring only. Absent ledger or missing key -> None (emit all chapters)."""
+    path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
+    if not path.is_file():
+        return None
+    import yaml  # PyYAML: the whodunit ledger is genuinely nested human data
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    rc = data.get("reveal_chapter")
+    if isinstance(rc, bool):
+        return None
+    if isinstance(rc, int):
+        return rc
+    if isinstance(rc, str) and rc.strip().isdigit():
+        return int(rc.strip())
+    return None
 
 
 def readers_copy(book: str, *, repo_root=None) -> Path:
@@ -154,9 +222,12 @@ def readers_copy(book: str, *, repo_root=None) -> Path:
     skel = stage_paths(book, root)["chapters"]
     if not skel.is_file():
         sys.exit(f"plot_stage: no outline-skeleton for book {book} ({skel})")
+    reveal_ch = _reveal_chapter(book, root)
     dest = root / "output" / f"book-{book}" / "reports" / "outline-readers-copy.md"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(readers_copy_text(skel.read_text(encoding="utf-8")), encoding="utf-8")
+    dest.write_text(
+        readers_copy_text(skel.read_text(encoding="utf-8"), reveal_chapter=reveal_ch),
+        encoding="utf-8")
     return dest
 
 
