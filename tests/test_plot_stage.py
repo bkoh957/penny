@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from scripts.plot_stage import (STAGE_ORDER, next_stage, stage_paths, stage_status, stamp)
+from scripts.plot_stage import (STAGE_ORDER, next_stage, readers_copy, readers_copy_text,
+                                 stage_paths, stage_status, stamp)
 
 
 def _series(tmp_path, book="01"):
@@ -65,3 +66,52 @@ def test_stamp_creates_frontmatter_if_absent(tmp_path):
     end = _write(root, "input/book-01/plot/ending.md", "also bare\n")
     stamp("01", end, [prem], repo_root=root)
     assert "built_from_premise:" in end.read_text(encoding="utf-8")
+
+
+WIRED_CLEAN = Path("tests/fixtures/outlines/wired-clean.md")
+
+
+def test_readers_copy_keeps_story_drops_wiring_and_solution():
+    out = readers_copy_text(WIRED_CLEAN.read_text(encoding="utf-8"))
+    assert "## Chapter 01" in out and "Maggie arrives" in out
+    assert "Solution" not in out and "Mary" not in out.split("Chapter 01")[0]
+    assert "q-" not in out                      # no question ids anywhere
+    assert "**Because:**" not in out and "**Opens:**" not in out
+    assert "Track Movement" not in out and "**M:**" not in out
+
+
+def test_readers_copy_keeps_hook_prose_without_id():
+    out = readers_copy_text(WIRED_CLEAN.read_text(encoding="utf-8"))
+    assert "the doctor is dead on his own kitchen floor." in out
+
+
+def test_readers_copy_scrubs_malformed_hook_missing_separator():
+    # A Hook line that doesn't follow the canonical "id — prose" shape (no
+    # em-dash/hyphen separator between the question id and the prose) must
+    # still lose its question id: the blind guarantee is enforced at the
+    # strip itself, not by trusting that tension_check's broken-hook rule
+    # already rejected malformed wiring before this ever runs.
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Chapter Structure
+- **Hook:** q-a the doctor is dead on his own kitchen floor
+- **Because:** opening
+"""
+    out = readers_copy_text(text)
+    assert "q-" not in out
+    assert "the doctor is dead on his own kitchen floor" in out
+
+
+def test_readers_copy_writes_report_file(tmp_path):
+    (tmp_path / ".penny").mkdir()
+    d = tmp_path / "input/book-01"
+    d.mkdir(parents=True)
+    (d / "outline-skeleton.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    p = readers_copy("01", repo_root=tmp_path)
+    assert p == tmp_path / "output/book-01/reports/outline-readers-copy.md"
+    assert p.is_file() and "q-" not in p.read_text(encoding="utf-8")
