@@ -1,9 +1,15 @@
 # Penny
 
 A Claude-Code-native harness for producing commercial fiction series with **independent
-quality review**. Penny turns an author's prose outline into finished,
+quality review**. Penny plots a book with you, then turns that plot into finished,
 cross-model-reviewed manuscript prose, one chapter at a time, behind a wall of
 deterministic gates.
+
+Two things are gated deterministically, and they are the two things that make a genre novel
+work: **is the puzzle fair** (`fairplay_check.py`) and **does the story pull**
+(`tension_check.py` — causality, open questions, escalation, hooks). Prose craft is judged
+by isolated LLM inspectors; the *structure* underneath it is judged by scripts that cannot
+be sweet-talked.
 
 This repo **is the engine, packaged as a Claude Code plugin** (`.claude-plugin/plugin.json`
 + marketplace manifest). Commands live in `commands/`, agents in `agents/`, deterministic
@@ -33,7 +39,7 @@ for the plugin/series-folder topology. Sections are cited in code as `design §N
 - [Install](#install)
 - [The two roots, and the config overlay](#the-two-roots-and-the-config-overlay)
 - [End to end, part 1 — create a runnable series](#end-to-end-part-1--create-a-runnable-series)
-- [End to end, part 2 — plan and lock a book](#end-to-end-part-2--plan-and-lock-a-book)
+- [End to end, part 2 — plot and lock a book](#end-to-end-part-2--plot-and-lock-a-book)
 - [End to end, part 3 — the per-chapter loop](#end-to-end-part-3--the-per-chapter-loop)
 - [End to end, part 4 — assemble, read, approve](#end-to-end-part-4--assemble-read-approve)
 - [Command reference](#command-reference)
@@ -62,7 +68,7 @@ resolve from any directory.
 The engine's test suite runs **from this repo root** (`pytest.ini` sets `pythonpath=.`):
 
 ```bash
-python3 -m pytest -q     # 350 passing
+python3 -m pytest -q     # 484 passing
 ```
 
 Actual book work happens **from inside a series folder**, never from here.
@@ -191,10 +197,48 @@ validation).
 
 ---
 
-## End to end, part 2 — plan and lock a book
+## End to end, part 2 — plot and lock a book
 
-Two front doors. **Outline-first (`/scaffold-book`) is the recommended one** — you write
-story, the engine derives structure.
+Three front doors, all earning the same lock. **`/plot-book` is the recommended one for a
+new book** — you and the engine build the plot together. Use `/scaffold-book` when you
+already have an outline written elsewhere, and `/plan-mystery` when only the puzzle needs
+planning.
+
+### The workshop front door — `/plot-book NN`
+
+A **resumable, staged** plotting workshop. Plotting a novel takes days, so every stage
+saves its answer to a file under `input/book-NN/plot/` and you can stop after any of them:
+the files are the state, never the conversation. Ask it where you left off and it tells
+you — including what your last hand-edit invalidated:
+
+```bash
+/plot-book 02                                   # runs the next unfinished stage
+python3 $PENNY_ENGINE/scripts/plot_stage.py status 02   # or just ask
+```
+
+| Stage | Who decides | What it writes |
+|---|---|---|
+| premise | **you** | `plot/premise.md` — the dramatic engine + the rejected shortlist |
+| ending | **you** | `plot/ending.md` — who did it, the worst moment, the cost (= the mystery core) |
+| turning-points | **you** | `plot/turning-points.md` — the 6–9 tentpole scenes, placed against the genre beat sheet |
+| counterplot | machine → **you approve** | the whodunit ledger + sealed solution, via the existing `mystery-planner` |
+| chapters | machine | the wired chapter skeleton, interpolated between fixed turning points |
+| weave | machine | the secondary tracks braided through |
+| readback | **you** | the blind fan's report + the proofreader's findings, then the lock |
+
+Three ideas do the work. **The ending is decided before the middle exists** — chapters are
+then *interpolated* between fixed points rather than extrapolated left-to-right, which is
+what makes middles sag. **Your taste decides the big three** (premise, ending, turning
+points); the machine proposes rivals for each and never chooses the core for you. And the
+workshop **absorbs mystery planning** rather than running beside it, so the ending is
+written down once and both the drama plan and the puzzle plan are built from it.
+
+Optional: drop a brainstorm transcript at `plot/material.md` first and every stage will
+read it — laying out your own rival versions for you to choose between, never quietly
+inventing around them.
+
+**Staleness is fingerprinted.** Each generated file records the sha256 of what it was built
+from. Hand-edit the ending, rerun, and everything downstream is redone. Nothing drifts.
 
 ### The outline-first front door
 
@@ -235,6 +279,55 @@ trusted: the scaffolder never writes a certificate.
 `/plan-mystery` separates three roles: the **showrunner** sets the irreducible core (who,
 why, the central deception), the `mystery-planner` agent proposes the clue schedule / red
 herrings / alibi grid, the showrunner approves and locks.
+
+### The wired outline, and the proofreader that reads it
+
+A chapter can carry four extra lines that state its **drama**, not just its events:
+
+```markdown
+- **Because:** ch 03 — the key theft turns Mary's kindness into surveillance.
+- **Opens:** q-what-mary-hides — why does Mary guard the workshop papers?
+- **Closes:** q-key-theft
+- **Hook:** q-what-mary-hides — the tin comes back, the papers do not.
+```
+
+`Because` is the "therefore/but" test as data — a chapter that can't name the earlier turn
+that *forced* it is an "and then" chapter, and the machine can see that. `Opens`/`Closes`
+name the questions the reader is carrying; `Carries` marks one deliberately left open past
+this book (a series seed, not a dropped stitch). `Hook` must lead with a question still
+open, so a hook stops being a mood and becomes a promise on record.
+
+`scripts/tension_check.py` then reads the whole outline and fails loud on **eight named
+checks**:
+
+| Check | Fires when |
+|---|---|
+| `orphan-chapter` | nothing caused this chapter |
+| `dropped-question` | a question is opened and never answered or carried |
+| `phantom-answer` | a chapter answers a question nobody asked |
+| `dead-stretch` | **the reader has no open question pulling them forward** — the sagging middle, as arithmetic |
+| `broken-hook` | a chapter ends on a question already answered |
+| `starved-thread` | a subplot goes dark longer than the genre allows |
+| `off-mark-beat` | a tentpole scene sits outside its beat-sheet window |
+| `chapter-coverage` | the chapter set has gaps, dupes, or extras |
+
+Every threshold comes from the genre's `beat-sheet.yaml` — never from a constant in the
+engine. **Wiring is optional per book:** an outline without it is skipped entirely, so
+outlines written before this existed stay valid and still lock.
+
+### The lock, and your override
+
+`preflight.py lock-mystery NN` now validates **fairplay + lexicon + tension** and mints the
+certificate only if all three pass. You can always overrule the proofreader — but the
+override goes on the record:
+
+```bash
+preflight.py lock-mystery 02 --waive dead-stretch:"ch 14 is the designed breath before the second body"
+```
+
+Findings are printed whether waived or not, and the waiver is written **into the lock
+certificate**, so a locked book with a waived finding says so on its face. The machine never
+overrules you, and never lets an override pass silently.
 
 ### Re-planning
 
@@ -372,6 +465,7 @@ consensus axis (≥K-of-M via `beta_consensus_k`).
 | Command | Scope | Blocking? |
 |---|---|---|
 | `/new-series <name> [root]` | anywhere | — creates dir contract only |
+| `/plot-book <NN>` | book | **the workshop** — resumable; mints the lock at the end |
 | `/plan-book <NN>` | series | delegates by genre |
 | `/plan-mystery <NN>` | book | mints the lock |
 | `/scaffold-book <NN> <outline> [--approve]` | book | mints the lock |
@@ -385,8 +479,13 @@ consensus axis (≥K-of-M via `beta_consensus_k`).
 | `/beta-read <path> [--out <dir>]` | book | **non-blocking** |
 
 `scripts/preflight.py` is the one deterministic-gate tool — six subcommands:
-`lock-mystery NN` (validate, then mint — the *only* lock writer), `draft NN MM`,
-`finalize NN MM`, `clear-dev NN MM`, `assemble NN`, `approve-book NN`.
+`lock-mystery NN [--waive check-id:"reason"]` (validate fairplay + lexicon + tension, then
+mint — the *only* lock writer), `draft NN MM`, `finalize NN MM`, `clear-dev NN MM`,
+`assemble NN`, `approve-book NN`.
+
+`scripts/plot_stage.py` runs the workshop's save points: `status NN` (which stage is next,
+what your last edit invalidated), `stamp NN …` (the fingerprints), and `readers-copy NN`
+(the blind fan's copy).
 
 `scripts/review_gate.py` owns the panel DECISION: `PASS` iff zero blockers, else `HOLD`. It
 writes `ch-MM.gate.md` and prints `GATE: PASS|HOLD`. **Exit 0 means the gate *evaluated***
@@ -403,15 +502,17 @@ writes `ch-MM.gate.md` and prints `GATE: PASS|HOLD`. **Exit 0 means the gate *ev
    *Dependency-split rule (load-bearing):* `penny_meta.py` is a **dependency-free** parser
    for the small YAML subset Penny uses — frontmatter, fenced ```yaml blocks, and
    `<!-- canon-meta: {...} -->` headers. **PyYAML is reserved for genuinely nested
-   human-edited data** — the whodunit ledgers, the lexicon, the outline-feedback ledger.
-   Don't reach for PyYAML to parse config or frontmatter.
+   human-edited data** — the whodunit ledgers, the lexicon, the outline-feedback ledger, and
+   the genre beat sheet. Don't reach for PyYAML to parse config or frontmatter.
 
 2. **Orchestration — `commands/*.md` + `agents/*.md`.** Slash commands are step-by-step
    runbooks that shell out to `scripts/` (as `${CLAUDE_PLUGIN_ROOT}/scripts/…`, so they
    resolve regardless of which series folder is cwd) and dispatch sub-agents. Agents are
    role-scoped: drafter, five isolated inspectors, context-rich developmental editor,
    outline-reviewer, book-scaffolder, line/copy editors, beta readers, cross-model final
-   reader.
+   reader — plus the workshop's three: `plot-proposer` (surfaces your material and proposes
+   rivals, never chooses the core), `chapter-weaver` (interpolates and braids, never drafts
+   prose), and `outline-fan` (the blind genre-fan reader).
 
 3. **Swappable data — genre packs and the series folder.** `genres/<g>/` holds `genre.yaml`
    (inspector roster, gates, planning command, tracks, plus the optional `beat_sheet:` and
@@ -445,6 +546,12 @@ holds certificates.
 - **Sub-agents are isolated, not ignorant.** Inspectors get one rubric + a ledger slice and
   never another agent's output; beta readers get only `{text, persona}` because a reader who
   knows the culprit stops reacting like a reader. Everyone else reads the solution.
+- **Blindness is enforced by construction, never by instruction.** We never hand a reader the
+  whole outline and ask it not to peek. `plot_stage.py readers-copy` *mechanically* removes
+  the solution, the wiring, the question ids and the track rows, and truncates before the
+  reveal chapter — because the reveal chapter's own summary names the culprit, so no amount
+  of stripping could hide the answer. The fan reads chapters 1..reveal−1, which is exactly
+  what reading is: you guess **before** the ending.
 - **Cross-model independence is difference, not identity.** `final_read_model` must not
   appear among the chapters' `drafted_by` stamps.
 - **Independent panels are not averaged.** Outline review is side-by-side because
@@ -453,7 +560,8 @@ holds certificates.
 
 Run configuration (model routing, run-mode flags, escalation thresholds) lives in the
 series' `config/run-config.md`. See `CLAUDE.md` for working conventions, `TESTING.md` to
-verify the harness end to end, and `HANDOFF.md` for current session state.
+verify the harness end to end, and `HANDOFF*.md` for current session state (one file per
+parallel workstream).
 
 ---
 
