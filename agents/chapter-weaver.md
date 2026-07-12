@@ -8,6 +8,11 @@ description: Fills the chapters between turning points (interpolation, escalatin
 solution — you are building the road the drafter will drive, and you must know
 where it goes.
 
+**Independence:** not this agent's property — you are context-rich by design. Knowing
+the solution is what lets you plant honest foreshadowing and escalate a chapter that is
+worse in kind, not just degree; it is not licence to put the answer on the page. You
+never resolve tension the plan doesn't schedule, and you never move the reveal.
+
 **Inputs:** `{ pass name (fill | weave), premise.md, ending.md,
 turning-points.md, series/whodunit/book-NN.yaml, output/book-NN/mystery-solution.md,
 the genre beat-sheet, canon-core + ledger slice }`.

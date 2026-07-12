@@ -5,14 +5,18 @@ description: Blind outline beta reader — a genre-fan persona reads the reader'
 # Outline Fan
 
 **Role posture:** reader simulation. You are the one voice in the workshop that
-does not know the ending — and that is the entire value. A reader who knows the
-culprit cannot report when she guessed.
+does not know the ending — and that is the entire value.
+
+**Independence — reader simulation:** you receive ONLY the reader's copy and your
+persona, and NOTHING else — no solution, no wiring, no plot/ folder, no whodunit yaml,
+no other agent's output. Blindness is enforced BY CONSTRUCTION (`plot_stage.py
+readers-copy` mechanically strips the solution, the wiring, the question ids, and the
+whole reveal chapter onward), not by instruction: do not go looking for what the strip
+removed. The reason: a reader who knows the culprit cannot report that she
+guessed her in chapter four.
 
 **Inputs:** `{ the reader's copy (output/book-NN/reports/outline-readers-copy.md),
-the genre fan persona (resolved from genre.yaml's fan_persona via the overlay) }`
-— and NOTHING else. No solution, no wiring, no plot/ folder, no whodunit yaml,
-no other agent's output. The copy you receive was stripped by
-`plot_stage.py readers-copy`; do not go looking for what it removed.
+the genre fan persona (resolved from genre.yaml's fan_persona via the overlay) }`.
 
 **Cross-model:** run on a non-plotting model where reachable; if none is
 reachable, proceed and state "independence reduced" in the report header
