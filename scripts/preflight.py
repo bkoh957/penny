@@ -32,6 +32,24 @@ def _fail(predicate: str):
     sys.exit(f"preflight: {predicate}")
 
 
+def _parse_waivers(raw) -> dict:
+    """['check-id:reason', ...] -> {check-id: reason}. Both halves required."""
+    out: dict[str, str] = {}
+    for item in raw or []:
+        check, _, reason = str(item).partition(":")
+        if not check.strip() or not reason.strip():
+            _fail(f'bad --waive {item!r}; expected check-id:"reason"')
+        out[check.strip()] = reason.strip()
+    return out
+
+
+def _first_file(*paths):
+    for p in paths:
+        if p is not None and Path(p).is_file():
+            return p
+    return None
+
+
 def ledger_path(book: str, repo_root) -> Path:
     return penny_paths.series_path(f"whodunit/book-{book}.yaml", root=repo_root)
 
@@ -202,7 +220,7 @@ def cmd_approve_book(book: str, *, repo_root=None) -> int:
     return 0
 
 
-def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None) -> int:
+def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None) -> int:
     repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
     run_config = run_config or penny_paths.config_path("run-config.md", root=repo_root)
     led = ledger_path(book, repo_root)
@@ -223,12 +241,48 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None) -> int:
         errors.append(drift)
     if errors:
         _fail("lexicon --validate failed; lock NOT written:\n  - " + "\n  - ".join(errors))
-    # 3. both passed — mint the certificate (the LAST write).
+    # 3. tension gate (plot-book workshop spec §6): only when the outline has wiring.
+    from scripts.tension_check import check_tension
+    waiver_map = _parse_waivers(waivers)
+    outline = _first_file(
+        repo_root / "input" / f"book-{book}" / "outline-skeleton.md",
+        repo_root / "input" / f"book-{book}" / "outline.md")
+    # penny_paths.config_path() never raises/exits on a missing file across all
+    # three tiers — it falls back to the plugin default path unconditionally
+    # (see scripts/penny_paths.py). _first_file()'s is_file() check then simply
+    # filters that (possibly nonexistent) fallback out, yielding None. So no
+    # beat sheet in any tier -> beat_sheet_path=None -> check_tension runs only
+    # the graph checks, exactly as intended; no try/except needed here.
+    validated = "fairplay+lexicon"
+    waived_lines: list[str] = []
+    if outline is not None:
+        tres = check_tension(
+            outline,
+            beat_sheet_path=_first_file(penny_paths.config_path("beat-sheet.yaml", root=repo_root)),
+            turning_points_path=_first_file(
+                repo_root / "input" / f"book-{book}" / "plot" / "turning-points.md"),
+            whodunit_path=led)
+        if tres["wired"]:
+            validated = "fairplay+lexicon+tension"
+            for f in tres["blocking"]:
+                print(f"tension_check: {f}")
+            unwaived = [f for f in tres["blocking"]
+                        if f.split(":", 1)[0] not in waiver_map]
+            if unwaived:
+                _fail("tension failed; lock NOT written:\n  - " + "\n  - ".join(unwaived))
+            fired = {f.split(":", 1)[0] for f in tres["blocking"]}
+            for check, reason in sorted(waiver_map.items()):
+                if check in fired:
+                    waived_lines.append(f"waived: {check} — {reason}")
+                else:
+                    print(f"lock-mystery: note — waiver for '{check}' matched no finding; not recorded")
+    # 4. all passed — mint the certificate (the LAST write).
     lp = lock_path(book, repo_root)
     lp.parent.mkdir(parents=True, exist_ok=True)
     lp.write_text(
-        f"book: {book}\nvalidated: fairplay+lexicon\n"
-        f"locked_at: {datetime.now(timezone.utc).isoformat()}\n",
+        f"book: {book}\nvalidated: {validated}\n"
+        f"locked_at: {datetime.now(timezone.utc).isoformat()}\n"
+        + "".join(line + "\n" for line in waived_lines),
         encoding="utf-8",
     )
     return 0
@@ -246,6 +300,7 @@ def main(argv=None) -> int:
     p_app.add_argument("book")
     p_lock = sub.add_parser("lock-mystery", help="validate + write the lock (last)")
     p_lock.add_argument("book")
+    p_lock.add_argument("--waive", action="append", default=[], metavar='CHECK:"REASON"')
     p_fin = sub.add_parser("finalize", help="post-gate guard: chapter must have PASSed")
     p_fin.add_argument("book")
     p_fin.add_argument("chapter")
@@ -260,7 +315,7 @@ def main(argv=None) -> int:
     if args.cmd == "approve-book":
         return cmd_approve_book(args.book)
     if args.cmd == "lock-mystery":
-        return cmd_lock_mystery(args.book)
+        return cmd_lock_mystery(args.book, waivers=args.waive)
     if args.cmd == "finalize":
         return cmd_finalize(args.book, args.chapter)
     if args.cmd == "clear-dev":

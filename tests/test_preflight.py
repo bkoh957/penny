@@ -398,3 +398,44 @@ def test_clear_dev_fails_when_report_missing_sha256_key(tmp_path):
         preflight.cmd_clear_dev("01", "07", repo_root=tmp_path)
     assert "missing reviewed_draft_sha256" in str(e.value)
     assert not preflight.dev_clear_path("01", "07", tmp_path).exists()
+
+
+WIRED_BAD = SRC / "tests/fixtures/outlines/wired-orphan.md"
+
+
+def _add_wired_skeleton(tmp_path, fixture):
+    d = tmp_path / "input/book-01"
+    d.mkdir(parents=True, exist_ok=True)
+    shutil.copy(fixture, d / "outline-skeleton.md")
+
+
+def test_lock_refused_on_unwaived_tension_finding(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    _add_wired_skeleton(tmp_path, WIRED_BAD)
+    with pytest.raises(SystemExit):
+        preflight.cmd_lock_mystery("01", repo_root=tmp_path)
+    assert not preflight.lock_path("01", tmp_path).is_file()
+
+
+def test_waived_finding_locks_and_records_reason(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    _add_wired_skeleton(tmp_path, WIRED_BAD)
+    assert preflight.cmd_lock_mystery(
+        "01", repo_root=tmp_path,
+        waivers=['orphan-chapter:ch2 gap is the designed time-skip']) == 0
+    body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
+    assert "validated: fairplay+lexicon+tension" in body
+    assert "waived: orphan-chapter — ch2 gap is the designed time-skip" in body
+
+
+def test_unwired_book_locks_exactly_as_before(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
+    body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
+    assert "validated: fairplay+lexicon\n" in body
+
+
+def test_malformed_waiver_fails_loud(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    with pytest.raises(SystemExit):
+        preflight.cmd_lock_mystery("01", repo_root=tmp_path, waivers=["no-reason"])
