@@ -83,6 +83,32 @@ into a separate beat of action.
 two into different sentences/beats so the antithesis isn't pre-packaged for the
 reader.
 
+## 6. Repeated "not this, but that" machinery
+
+**Trigger:** clusters of `not X but Y`, `not just X`, `didn't X; Y`, `not brighter,
+not louder — just`, `rather than`, or similar contrast formulations.
+
+**Fix:** keep at most the one contrast that genuinely clarifies a necessary
+distinction. Rewrite the rest as plain action, dialogue, or concrete observation.
+Do not replace one antithesis with another.
+
+## 7. Dialogue explaining the design brief
+
+**Trigger:** a character in stress, embarrassment, or ordinary conversation states
+the chapter's thematic/clinical meaning with essay-like precision.
+
+**Fix:** make the line more provisional and human. Let the character describe one
+specific symptom, observation, or question; move clean labels into later medical
+follow-up only when earned.
+
+## 8. Exit, return, exit
+
+**Trigger:** a scene reaches an exit or emotional landing, then restarts for a
+second symbolic object beat or another explanatory speech before ending again.
+
+**Fix:** choose the real ending. Fold late business before the first exit, or cut
+the extra exit/re-entry so the scene has one clean shape.
+
 ---
 
 ## What this pass must NOT touch

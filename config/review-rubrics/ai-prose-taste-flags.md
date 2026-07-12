@@ -76,7 +76,57 @@ If nothing is ever left implicit, if no sentence is allowed to just *do one thin
 flag the passage and name 2–3 representative lines. This is the flag the drafter
 most cannot self-detect.
 
-## 5. Predictable closing cadence
+## 5. Repeated explanation after action
+
+> "He wasn't being unkind; he was being exact."
+> "A kindness, perhaps. A very strange, very brusque one."
+
+**Earned:** occasional interpretation can sharpen a genuinely ambiguous beat.
+**Rote:** the prose performs an action, then immediately supplies its emotional,
+clinical, or symbolic meaning again and again. Flag clusters where the reader is
+not trusted to infer what a gesture, silence, purchase, or look means.
+
+## 6. Rhetorical contrast machinery
+
+Examples include `not X but Y`, `not just X`, `didn't X; Y`, `rather than`, and
+`not brighter/louder — just ...`.
+
+**Earned:** one or two contrasts can define a precise distinction.
+**Rote:** the chapter repeatedly uses the same antithesis engine to create nuance.
+Individually the lines may be effective; collectively they become a recognizable
+AI fingerprint.
+
+## 7. Over-precise explanatory dialogue
+
+> "My brain loses the ability to rank what matters."
+> "You're describing a collapse of sensory hierarchy."
+
+**Earned:** experts can name things; characters can sometimes find one clean line.
+**Rote:** frightened, busy, or socially constrained characters articulate the theme
+or diagnosis with author-like precision. A real expert often asks more questions
+or offers provisional language before naming the condition cleanly.
+
+## 8. Manufactured background planting
+
+> "He used to be lovely, once. Before things got... well, you know."
+> "He's very thorough. He's the best we have."
+
+**Earned:** background chatter arises from the scene's real social business.
+**Rote:** bystanders appear at exactly the right moment to deliver deliberately
+vague mystery pressure, reputation, or backstory. Flag fragments that feel inserted
+to announce a secret rather than overheard from life.
+
+## 9. Multiple endings / block assembly
+
+A passage-level structural flag: the scene appears to end, restarts for another
+symbolic or instructional beat, then ends again.
+
+**Earned:** interruptions can change the direction of the scene.
+**Rote:** the chapter feels assembled from useful blocks — incident, explanation,
+background reaction, symbolic object, second explanation — rather than one cleanly
+escalating scene. Flag when exit/return/exit repetition creates AI-assembled feel.
+
+## 10. Predictable closing cadence
 
 > "And for the first time in years, she allowed herself to hope."
 
@@ -92,9 +142,10 @@ ask for a closing image specific to the scene instead.
 - **Score 3:** several rote instances; prose noticeably generic but readable.
 - **Score 1:** pervasive; the chapter reads as AI-default throughout.
 - **Blocking:** mark blocking when rote figuration is dense enough to break
-  immersion — as a seed, **3+ rote instances across flags 1–3 or 5 in a single
-  chapter, or any airless-passage flag (flag 4) spanning a full scene.** Calibrate
-  once real verdict distributions are visible.
+  immersion — as a seed, **3+ rote instances across flags 1–3, 5–8, or 10 in a
+  single chapter; any airless-passage flag (flag 4) spanning a full scene; or a
+  multiple-ending/block-assembly flag (flag 9) that materially weakens the chapter
+  shape.** Calibrate once real verdict distributions are visible.
 
 ---
 
