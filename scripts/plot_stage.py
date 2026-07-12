@@ -65,7 +65,7 @@ _WIRING_DROP_RE = re.compile(
 # so its bullet class must be at least as permissive. The {1,2} letter bound
 # plus requiring "**" immediately after the key is what keeps this DROP-ONLY
 # pattern from also eating "- **Turn / Change:**" (multi-word key) or
-# "- **Hook:**" (4-letter key) or plain bolded prose like "- **Maggie** …"
+# "- **Hook:**" (4-letter key) or plain bolded prose like "- **Character** …"
 # (no colon, key too long to leave "**" immediately adjacent).
 _TRACK_DROP_RE = re.compile(
     r"^\s*(?:[-*+—–]\s*)?\*\*\s*([A-Za-z]{1,2})\s*:?\s*\*\*\s*:?"
