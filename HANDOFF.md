@@ -1,162 +1,104 @@
-# Handoff — Penny (fiction-series engine) / main
-Saved: 2026-07-10 | Type: build (+ a short debug detour)
+# Handoff — Penny / LM Studio drafting + digest prompt surfaces
+Saved: 2026-07-12 12:38 AEST | Type: build
 
-## What we're building
-Penny = ONE engine (a Claude Code plugin) driving MANY series (active series = cwd via a
-`.penny/` marker), with a swappable genre-pack layer. Priority: **no engine drift**.
-This session ran the long-deferred **`/review-outline` live shakedown** (it passed), shipped the
-**`recommendation` field** the shakedown showed a need for, and then stopped at an open decision
-about whether to re-run the panel.
+## What we're doing
+Penny now has a local LM Studio chapter-drafting route for smaller local models that struggle with whole-chapter prompts. This session reduced LM Studio prompt payloads by adding deterministic scene-level compaction, chapter-scoped whodunit excerpts, and curated `lmstudio-digest.md` prompt surfaces for the Pelican series. All current engine and series work was committed and pushed.
 
-## Git state
-- **Engine** (`~/myTools/penny`, github `bkoh957/penny`): `main` **clean and pushed** through `a94b8da`.
-  Suite **371 green** (353 at session start). Nothing in flight.
-  - `5b9bef9` spec · `8d1bd58` plan · `3ed18e2..efe92b6` 5 TDD tasks + 2 fix waves · `a94b8da` handoff
-- **Series** (`~/myBooks/series-pelicanscrook`, **PRIVATE**): `main` level with origin, but
-  **14 files are uncommitted — see the WARNING below. They are the showrunner's own edits, not the
-  engine's.** `.penny/current-stage` = `book=01 stage=OUTLINE-REVIEWED`.
-
-## 🔴 WARNING — READ BEFORE TOUCHING THE SERIES
-
-**The solution prose has diverged from its own lock.** These are *not* engine bugs; they are the
-state the working tree was left in.
-
-1. `output/book-01/mystery-solution.md` was edited to move `clue-car-on-street` to
-   **plant ch 9 / pay off ch 20**.
-   `series/whodunit/book-01.yaml:16` — **unmodified** — still reads
-   `{ id: clue-car-on-street, plant_chapter: 11, pays_off_chapter: 23 }`.
-   The lock (`.penny/locks/book-01.mystery.lock`, minted **8 Jul**) certifies **the yaml**, not the prose.
-   A lock is an out-of-band certificate: it exists only because validation passed *on the yaml*.
-   **Fix per CLAUDE.md: delete the lock, edit the yaml to match, re-run `preflight.py lock-mystery 01`.**
-   Until then `inspector-fairplay` schedules that clue against a chapter the solution no longer uses.
-
-2. `series/continuity/canon-core.md` still says *"Culprit identity SEALED — **do not write it into any
-   drafter-visible artifact**"*. Post-solution-blindness-removal the drafter **reads**
-   `mystery-solution.md`. "Sealed" now means *frozen against edits*, never *hidden from agents*.
-   That clause is stale — same doc-drift class as `HERMES.md:192` below, but in **series data**.
-
-**Provenance:** at session start the series showed only ` M input/book-01/outline.md`. The other 13
-files appeared at 17:04–17:06 while I worked in the engine repo. `canon-core.md` now reads
-*"Structure: 27 chapters; reveal/arrest ch 25, public aftermath ch 26, private coda ch 27"* — i.e. the
-`OF-7`/`OF-13` chapter-count fix. **I did not make these edits and did not review them.** Assumed to
-be the showrunner acting on the panel's feedback mid-session (consistent with prior handoffs).
-`output/book-01/reports/` is still untracked.
-
-## What happened this session
-
-### 1. THE SHAKEDOWN PASSED — all four questions
-Command is **`/penny-engine:review-outline 01`** (see trap #2 below).
-- **Plumbing:** ledger `OF-1..OF-22`, contiguous, all `state: open`, `pass: 1`,
-  `reviewed_outline_sha256` matched the outline actually read. `status` exits **0**, prints IDs only.
-  Staging file at `.penny/outline-points-01.json`, exactly as the runbook says.
-- **Independence:** **Codex answered.** 10 claude / 12 codex, concurrent. No "independence reduced".
-- **Quality:** they **genuinely disagree**. Claude = cozy-craft lens (`OF-1` romance starved after ch11;
-  `OF-4` gift-as-vice averted). Codex = mystery-logic lens (`OF-11` what did Mary actually *find*;
-  `OF-12` how does Pruitt lawfully obtain the letter). Averaging would destroy the signal.
-- **Solution-awareness paid off and did NOT corrupt them.** Neither ran a fairness audit (the feared
-  failure mode — that's `fairplay_check.py`'s job). `OF-11` is a gap **between** solution and outline;
-  `OF-3` sees the keystone clue demoted in the actual solve. A blind reviewer cannot reach either.
-- **It found a real bug in the book:** `OF-7` (claude) + `OF-13` (codex) **independently** flagged
-  27 chapters vs ch24's "ch 28" vs canon-core's "25 of 29". Independent agreement on a *checkable fact*
-  is the strongest signal this design produces. (Now partly addressed by the uncommitted edits above.)
-
-### 2. The `recommendation` field — SHIPPED (7 commits, 353 → 371 green)
-Spec: `docs/superpowers/specs/2026-07-10-outline-recommendation-field-design.md`
-Plan: `docs/superpowers/plans/2026-07-10-outline-recommendation-field.md`
-Ledger: `.superpowers/sdd/progress.md` (final section — **recovery map, trust it over memory**)
-
-Items gain an **optional** `recommendation:` key — the reviewer's fix, split from the observation.
-Reviewer-authored at generation time. **Absent, not empty**: omitting it is explicitly legitimate.
-**Per-source, never merged.** `scripts/` changed in one file only (`outline_feedback.py`, +10/−3).
-
-**`OF-1..OF-22` will never carry the field** — `append_items` only appends. Hand-edit or don't.
-
-**The prerequisite was the more valuable half:** codex had **no written output contract anywhere in the
-repo**; the orchestrator improvised its prompt each run, so "identical inputs" bound the *files* but not
-the *instructions*. Now committed, in lockstep with `agents/outline-reviewer.md`.
+## Current state
+- Engine working directory: `/Users/beeko/myTools/penny`
+- Engine branch: `main`
+- Engine last commit at save time: `8c52791 plan(plot-book): 12-task TDD implementation plan for the plotting workshop`
+- Engine uncommitted changes after writing this handoff:
+  - `M HANDOFF.md` — this handoff update.
+  - `?? scripts/penny_wiring.py`, `?? tests/fixtures/outlines/wired-clean.md`, and `?? tests/test_penny_wiring.py` — appeared after the earlier clean/pushed check; inspect provenance before committing.
+- Engine remote: `origin https://github.com/bkoh957/penny.git`
+- Series working directory: `/Users/beeko/myBooks/series-pelicanscrook`
+- Series branch: `main`
+- Series last commit at save time: `8cfd35e chore: checkpoint book 01 drafting state`
+- Series uncommitted changes after writing this handoff:
+  - `M HANDOFF.md` — this handoff update.
+- Series remote: `origin https://github.com/bkoh957/series-pelicanscrook.git`
+- Tests/checks:
+  - `python3 -m pytest tests/test_lmstudio_draft_chapter.py -q` passed before commit.
+  - `python3 -m pytest -q` passed before commit.
+  - After creating Pelican digest files, `collect_context('01', '01', /Users/beeko/myBooks/series-pelicanscrook)` loaded all three digests successfully.
 
 ## Next actions
+1. If continuing LM Studio drafting, run from the active series root:
+   ```bash
+   cd /Users/beeko/myBooks/series-pelicanscrook
+   python3 /Users/beeko/myTools/penny/scripts/lmstudio_draft_chapter.py 01 <chapter> --model <model-id>
+   ```
+   Watch the printed prompt character counts; they should now be much smaller because the script uses digest files and compressed chapter context.
+2. For Chapter 3 specifically, proceed to the normal Penny cloud/independent review path rather than re-running local drafting unless the draft is intentionally being replaced.
+3. If prompt size is still too high, inspect the printed per-call prompt char counts first, then consider more aggressive chapter-context pruning or scene-windowed stitch/repair rather than raising timeouts.
+4. If working on the newer plotting workshop plan from engine commit `8c52791`, first read the committed plan/docs and avoid mixing that stream with the LM Studio drafting stream.
 
-1. **Resolve the lock divergence (WARNING #1).** Highest consequence, smallest effort. Decide whether
-   the yaml or the prose is right, make them agree, re-lock.
+## Decisions made
+- **Use curated digest surfaces, not just caps.** LM Studio now prefers `lmstudio-digest.md` files for voice, genre, and setting context when present, falling back to full packs only when absent.
+- **Keep digest files series-authored.** The engine supports the mechanism generically; Pelican-specific prose lives under `/Users/beeko/myBooks/series-pelicanscrook/config/...`, not in engine code.
+- **Do deterministic compaction, not LLM summarization.** Chapter-level context keeps headings/scene map/post-scene guardrails and sends only the current scene body. Whodunit context keeps chapter-relevant rows and withholds culprit/central deception until reveal chapter.
+- **Commit all outstanding work.** User asked to commit and push all; both engine and series repos were pushed to origin/main and verified clean afterward.
 
-2. **The open question I stopped on: how to re-run the panel.** The outline sha still matches the
-   ledger, so a plain re-run risks appending ~20 near-duplicates to an **append-only** ledger with 22
-   untriaged items. The options I was about to put to you:
-   - *(my recommendation)* fix the chapter-count/lock issues first — that changes the outline's sha, so
-     `status` correctly reports **stale** and pass 2 is the **designed** trigger. `OF-23`+ then arrive
-     carrying `recommendation:` and the field gets its real live test.
-   - or `--focus "…"` to give both members a genuinely new lens on an unchanged outline;
-   - or re-run plain and treat the result as a finding about whether reviewers honour
-     *"Emit `[]` if you genuinely have nothing new to add"*;
-   - or verify `append`/`render` against a scratch ledger and leave book-01's alone.
+## User preferences / corrections this session
+- Local models are struggling with large token payloads; prioritize lean prompt surfaces over simply extending timeouts.
+- User asked for succinct curated LM Studio digest files rather than only truncation caps.
+- User asked to commit and push all outstanding engine/series work.
 
-3. **`HERMES.md:192`** still says *"Do not give blind reviewers the full solution, full outline, or
-   other reviewers' opinions."* Residue of the **prior, merged** solution-blindness branch, surfaced by
-   this session's final whole-branch review. Engine-side. Cheap.
+## Key files and artifacts
+- `/Users/beeko/myTools/penny/scripts/lmstudio_draft_chapter.py` — LM Studio scene-shard drafter; now supports digest preference, compressed chapter context, whodunit excerpts, and prompt-size logging.
+- `/Users/beeko/myTools/penny/commands/draft-chapter-lmstudio.md` — command/runbook documenting digest files and fallback behavior.
+- `/Users/beeko/myTools/penny/tests/test_lmstudio_draft_chapter.py` — tests for scene splitting, compaction, whodunit excerpting, and digest precedence.
+- `/Users/beeko/myBooks/series-pelicanscrook/config/voice-pack/lmstudio-digest.md` — compact voice prompt surface for local drafting/review.
+- `/Users/beeko/myBooks/series-pelicanscrook/config/genre-pack/lmstudio-digest.md` — compact cozy genre prompt surface.
+- `/Users/beeko/myBooks/series-pelicanscrook/config/setting-pack/lmstudio-digest.md` — compact coastal Victoria/Wreckers Bluff setting prompt surface.
+- Hermes skills updated:
+  - `penny-book-generation` — now instructs use of LM Studio digest files.
+  - `lmstudio-penny-local-review` — now prefers digest files for local review context.
 
-4. **THE DOCS TEACH AN INVOCATION THAT DOES NOT WORK.** `/review-outline 01` → `Unknown command`.
-   Plugin skills are **namespaced**: `/penny-engine:review-outline 01`. `CLAUDE.md` documents all
-   eleven commands **bare**. Verify against `claude plugin details penny-engine` before mass-editing.
+## Commands already run
+```bash
+# Engine tests
+cd /Users/beeko/myTools/penny
+python3 -m pytest tests/test_lmstudio_draft_chapter.py -q
+python3 -m pytest -q
 
-5. **Phase 4 (thriller genre pack)** — specced-but-unapproved, untouched for four sessions. 5
-   `[DECISION]` flags in `docs/superpowers/specs/2026-07-08-thriller-genre-pack-design.md`. It can do an
-   **inverted mystery (howcatchem)** with no engine change: omit the premature-reveal rubric clause,
-   drop `fairplay` from its `gates:`.
+# Verify Pelican digests are loaded by collect_context
+python3 - <<'PY'
+from pathlib import Path
+from scripts import lmstudio_draft_chapter as lm
+root = Path('/Users/beeko/myBooks/series-pelicanscrook')
+ctx = lm.collect_context('01', '01', root)
+print(ctx['voice_pack'].splitlines()[0])
+print(ctx['genre_pack'].splitlines()[0])
+print(ctx['setting_pack'].splitlines()[0])
+print(len(ctx['voice_pack']), len(ctx['genre_pack']), len(ctx['setting_pack']))
+PY
 
-6. **`commands/scaffold-book.md:72`** — "Per-chapter blind brief derivation" in the *"Deferred"* list.
-   **Delete the line, don't rename it.** Carried from last session.
+# Commit/push engine
+cd /Users/beeko/myTools/penny
+git add -A && git commit -m "feat: add LM Studio chapter drafting route" && git push origin main
 
-## Decisions made this session
-- **`recommendation` is reviewer-authored at generation time, not a later synthesis pass.** A second
-  pass would be a *different read producing a different fix*. The append-only invariant makes
-  tool-driven retro-fill impossible anyway.
-- **Absent, not empty.** `OF-10` says *"two areas are genuinely strong and need no intervention"*; a
-  required field would force it to invent an action. Costless omission is what stops the field from
-  manufacturing advice.
-- **Rejected: a heuristic that extracts the fix from the prose.** It would have retro-filled all 22
-  items free — but deciding which sentence is a recommendation is an LLM judgment. It fires on `OF-22`'s
-  *"The main caution is to avoid…"* and misses `OF-20`'s *"mark the few that genuinely matter."* Same
-  trap as the premature-reveal predicate that is deliberately not a script.
-- **`isinstance(rec, str)` is a type check, not prose judgment.** The deterministic layer may ask *is
-  this a string*; never *is this prose a recommendation*. Matches `max_pass`'s existing precedent.
+# Commit/push series
+cd /Users/beeko/myBooks/series-pelicanscrook
+git add -A && git commit -m "chore: checkpoint book 01 drafting state" && git push origin main
 
-## User preferences expressed this session
-- Detailed feedback; **discuss in prose before multiple-choice**. Lead with a recommendation.
-- **Terminal-native**; runs live work in **cmux panes** and wants them monitored.
-- Work phase-at-a-time on `main`; push at phase end.
-- **Lands his own fixes mid-session, in another window — re-read files before editing.** Bit us today:
-  13 series files changed underneath us.
-
-## Key files right now
-- `.superpowers/sdd/progress.md` — the SDD ledger. **Recovery map after any compaction.**
-- `scripts/outline_feedback.py` — `append_items` (transport + isinstance guard), `render_view`
-  (`**→**` beneath the observation), `status_line` (**IDs only — never item text**).
-- `agents/outline-reviewer.md:35-39` + `commands/review-outline.md:45-51` — the two panel contracts.
-  **These must always agree**; verified byte-identical.
-- `~/myBooks/series-pelicanscrook/series/whodunit/book-01.yaml:16` — the diverged clue row.
-- `~/myBooks/series-pelicanscrook/output/book-01/reports/outline-feedback.yaml` — 22 live items, untracked.
+# Final save-time checks
+cd /Users/beeko/myTools/penny
+git status --short
+git log -1 --oneline
+git -C /Users/beeko/myBooks/series-pelicanscrook status --short
+git -C /Users/beeko/myBooks/series-pelicanscrook log -1 --oneline
+```
 
 ## Watch out for
-- **Verify pytest counts yourself.** Current truth: **371**.
-- **`/exit` typed into a running Claude session is treated as a PROMPT, not a command.** It answers you
-  conversationally and stays alive; the next line you send (`claude "…"`) then lands as prompt text too.
-  A cmux pane may look relaunched when it is the same session with a growing context. Check the
-  `Session:` id and `Ctx:` in the statusline.
-- **The plugin cache snapshot is a decoy.** `~/.claude/plugins/cache/penny-engine-marketplace/penny-engine/0.1.0`
-  is a frozen non-git copy pinned at `c2fd2e4`, 61+ commits stale, and its `commands/` really does lack
-  `review-outline.md` and `plan-book.md`. **It is not loaded** — `known_marketplaces.json` says
-  `installLocation: /Users/beeko/myTools/penny`, and `claude plugin details penny-engine` lists all 11
-  skills. Deleting it "fixes" bugs by coincidence. Prune on hygiene grounds only.
-- **`_flat()` in `tests/test_outline_feedback.py` strips `>` markers now.** Before that fix the contract
-  test passed only because of where line breaks fell. If you re-wrap a contract and it goes red, check
-  whether the *words* changed before believing it.
-- **The ledger is hand-edited, so YAML footguns are live.** `recommendation: yes` parses as bool `True`.
-  Guarded (`isinstance`) — that's why the guard exists.
-- **The engine repo is NOT a series.** Pipeline commands from `~/myTools/penny` hard-error
-  `penny-paths: no series root`. Correct. `cd` to the series folder.
-- **A fresh clone of the series is not a recognized series** — `.penny/` is gitignored. Recover with
-  `mkdir -p .penny/locks` then `preflight.py lock-mystery 01`.
-- **Your `git commit` → `git push` hook did not fire this session** (global `settings.json`,
-  `PostToolUse` on `Bash(git commit*)`, `git push 2>&1 || true` — the `|| true` swallows failures).
-  Pushed by hand. The matcher may miss heredoc-form commits.
+- Save-time engine last commit is `8c52791`, not the LM Studio route commit `49dfed8`. That indicates additional engine work landed after the LM Studio commit; inspect before assuming LM Studio is HEAD's only change.
+- The series commit `8cfd35e` intentionally included all outstanding series artifacts, including drafts/local-review reports and outline-feedback reports, because the user said commit and push all.
+- The digest files are compact but not authoritative replacements for the full packs. Full packs remain authoritative for cloud/human review and broader series calibration.
+- Keep engine genre/location agnostic: never move Pelican/Maggie/Wreckers Bluff-specific digest prose into `/Users/beeko/myTools/penny/scripts`, `commands`, or `agents`.
+- If LM Studio output remains weak, diagnose actual prompt char counts and model selection first; do not assume a larger timeout or larger `max_tokens` will fix reasoning/context overload.
+- Engine now has untracked wiring files (`scripts/penny_wiring.py`, `tests/fixtures/outlines/wired-clean.md`, `tests/test_penny_wiring.py`) that were not part of the LM Studio commit. Read them before deciding whether to commit, delete, or fold into the plotting-workshop stream.
+
+## Open questions
+- Should Chapter 3 now go to normal `/review-chapter 01 03` / cloud review?
+- Should the newly committed plotting-workshop plan (`8c52791`) be the next engine stream, or should work stay focused on LM Studio drafting/review hardening?
