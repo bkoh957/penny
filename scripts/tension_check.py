@@ -11,6 +11,7 @@ An outline without wiring is SKIPPED (wired: False, exit 0) — book 1 stays val
 from __future__ import annotations
 
 import argparse
+import math
 import sys
 from pathlib import Path
 
@@ -111,6 +112,38 @@ def _curve_checks(chapters, beat_sheet, reveal_ch, blocking):
     return counts
 
 
+def _beat_window(beat: dict, total: int):
+    if "by_fraction" in beat:
+        return 1, math.ceil(float(beat["by_fraction"]) * total)
+    if "at_fraction" in beat:
+        f, tol = float(beat["at_fraction"]), float(beat.get("tolerance", 0.05))
+        return max(1, math.floor((f - tol) * total)), math.ceil((f + tol) * total)
+    if "window" in beat:
+        a, b = beat["window"]
+        return max(1, math.floor(float(a) * total)), math.ceil(float(b) * total)
+    return None
+
+
+def _beat_checks(points, beat_sheet, total, reveal_ch, blocking):
+    defs = {b["id"]: b for b in (beat_sheet.get("beats") or []) if isinstance(b, dict) and "id" in b}
+    for p in points:
+        bid, ch = p.get("beat"), p.get("chapter")
+        if not bid or ch is None:
+            continue
+        beat = defs.get(bid)
+        if beat is None:
+            blocking.append(f"off-mark-beat: turning point tags unknown beat id {bid!r}")
+        elif beat.get("from") == "whodunit":
+            if reveal_ch is not None and ch != reveal_ch:
+                blocking.append(
+                    f"off-mark-beat: {bid} at ch {ch:02d} but whodunit reveal_chapter is {reveal_ch}")
+        else:
+            w = _beat_window(beat, total)
+            if w and not (w[0] <= ch <= w[1]):
+                blocking.append(
+                    f"off-mark-beat: {bid} at ch {ch:02d} outside window ch {w[0]:02d}–{w[1]:02d}")
+
+
 def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=None,
                   whodunit_path=None) -> dict:
     path = Path(outline_path)
@@ -135,5 +168,30 @@ def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=Non
     if beat_sheet_path is not None and Path(beat_sheet_path).is_file():
         beat_sheet = _load_yaml(beat_sheet_path)
         metrics["open_counts"] = _curve_checks(chapters, beat_sheet, reveal_ch, blocking)
-        # off-mark-beat (Task 6) hooks in here with the same beat_sheet/reveal_ch.
+        if turning_points_path is not None and Path(turning_points_path).is_file():
+            from scripts.penny_wiring import parse_turning_points
+            tp = parse_turning_points(Path(turning_points_path).read_text(encoding="utf-8"))
+            _beat_checks(tp["points"], beat_sheet, total, reveal_ch, blocking)
     return {"wired": True, "blocking": blocking, "metrics": metrics}
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description="Penny dramatic-wiring checker.")
+    ap.add_argument("outline")
+    ap.add_argument("--beat-sheet", dest="beat_sheet")
+    ap.add_argument("--turning-points", dest="turning_points")
+    ap.add_argument("--whodunit", dest="whodunit")
+    args = ap.parse_args(argv)
+    result = check_tension(args.outline, beat_sheet_path=args.beat_sheet,
+                           turning_points_path=args.turning_points,
+                           whodunit_path=args.whodunit)
+    if not result["wired"] and not result["blocking"]:
+        print("tension_check: no wiring detected — skipped (book is un-wired; see spec §5)")
+        return 0
+    for line in result["blocking"]:
+        print(f"tension_check: {line}")
+    return 1 if result["blocking"] else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -75,3 +75,46 @@ def test_carried_question_stays_open_for_dead_stretch_count():
     r = check_tension(FIX / "wired-carry-midbook.md", beat_sheet_path=BEATS, whodunit_path=WHOD)
     assert r["blocking"] == []
     assert r["metrics"]["open_counts"][2] == 1
+
+
+from scripts.tension_check import main as tension_main
+
+TP_GOOD = Path("tests/fixtures/plot/turning-points-good.md")
+TP_BAD = Path("tests/fixtures/plot/turning-points-offmark.md")
+
+
+def test_off_mark_beat_fires():
+    r = check_tension(FIX / "wired-clean.md", beat_sheet_path=BEATS,
+                      turning_points_path=TP_BAD, whodunit_path=WHOD)
+    assert "off-mark-beat" in _predicates(r)
+
+
+def test_on_mark_beats_pass():
+    r = check_tension(FIX / "wired-clean.md", beat_sheet_path=BEATS,
+                      turning_points_path=TP_GOOD, whodunit_path=WHOD)
+    assert r["blocking"] == []
+
+
+def test_reveal_beat_checked_against_whodunit(tmp_path):
+    bad_whod = Path("tests/fixtures/plot/whodunit-mini.yaml")  # reveal 5
+    # TP_GOOD places reveal at 5 → clean; re-point at ch 4 via off-mark fixture logic:
+    text = TP_GOOD.read_text(encoding="utf-8").replace(
+        "## TP-4 — The kitchen truth\n- **Beat:** reveal\n- **Chapter:** 5",
+        "## TP-4 — The kitchen truth\n- **Beat:** reveal\n- **Chapter:** 4")
+    tp_path = tmp_path / "turning-points-reveal-mismatch.md"
+    tp_path.write_text(text, encoding="utf-8")
+    r = check_tension(FIX / "wired-clean.md", beat_sheet_path=BEATS,
+                      turning_points_path=tp_path, whodunit_path=bad_whod)
+    assert "off-mark-beat" in _predicates(r)
+
+
+def test_cli_exit_codes(capsys):
+    assert tension_main([str(FIX / "wired-clean.md"), "--beat-sheet", str(BEATS),
+                         "--whodunit", str(WHOD)]) == 0
+    assert tension_main([str(FIX / "wired-orphan.md")]) == 1
+    assert "orphan-chapter" in capsys.readouterr().out
+
+
+def test_cli_unwired_skips_exit_zero(capsys):
+    assert tension_main([str(FIX / "well-formed.md")]) == 0
+    assert "no wiring" in capsys.readouterr().out
