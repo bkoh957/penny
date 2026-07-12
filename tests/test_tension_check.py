@@ -39,3 +39,27 @@ def test_carried_question_stays_hookable():
     # wired-clean ch 06 carries q-elspeth-vale and hooks it: must NOT be broken-hook.
     r = check_tension(FIX / "wired-clean.md")
     assert not any(b.startswith("broken-hook") for b in r["blocking"])
+
+
+BEATS = Path("tests/fixtures/plot/beat-sheet.yaml")
+WHOD = Path("tests/fixtures/plot/whodunit-mini.yaml")
+
+
+def test_dead_stretch_fires_before_reveal_proxy():
+    r = check_tension(FIX / "wired-dead-stretch.md", beat_sheet_path=BEATS)
+    assert "dead-stretch" in _predicates(r)
+
+
+def test_starved_thread_fires_past_max_dark_gap():
+    r = check_tension(FIX / "wired-starved-thread.md", beat_sheet_path=BEATS)
+    assert "starved-thread" in _predicates(r)
+
+
+def test_clean_outline_survives_curve_checks_with_real_reveal():
+    r = check_tension(FIX / "wired-clean.md", beat_sheet_path=BEATS, whodunit_path=WHOD)
+    assert r["blocking"] == []
+
+
+def test_curve_checks_skipped_without_beat_sheet():
+    r = check_tension(FIX / "wired-starved-thread.md")
+    assert "starved-thread" not in _predicates(r)
