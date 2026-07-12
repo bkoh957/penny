@@ -63,3 +63,15 @@ def test_clean_outline_survives_curve_checks_with_real_reveal():
 def test_curve_checks_skipped_without_beat_sheet():
     r = check_tension(FIX / "wired-starved-thread.md")
     assert "starved-thread" not in _predicates(r)
+
+
+def test_carried_question_stays_open_for_dead_stretch_count():
+    # wired-carry-midbook: ch 02 carries q-a (opened ch 01) and opens nothing
+    # new. If carries were wrongly subtracted from the open-question count
+    # (like closes), ch 02's open count would drop to 0 — below
+    # min_open_before_reveal (1) and before the reveal (ch 05) — and
+    # dead-stretch would fire. A carried question must stay OPEN, so the
+    # clean outline must survive with zero blocking findings.
+    r = check_tension(FIX / "wired-carry-midbook.md", beat_sheet_path=BEATS, whodunit_path=WHOD)
+    assert r["blocking"] == []
+    assert r["metrics"]["open_counts"][2] == 1
