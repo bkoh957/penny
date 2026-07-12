@@ -1,6 +1,8 @@
 import glob
 from pathlib import Path
 
+import pytest
+
 from scripts.plot_stage import (STAGE_ORDER, next_stage, readers_copy, readers_copy_text,
                                  stage_paths, stage_status, stamp)
 
@@ -182,6 +184,80 @@ total_chapters: 1
     assert "Something happens" in out  # unrelated line under the same heading survives
 
 
+def _track_row_text(row: str) -> str:
+    return f"""---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Chapter Structure
+{row}
+"""
+
+
+def test_track_row_asterisk_bullet_dropped():
+    out = readers_copy_text(_track_row_text("* **M:** Mary poisons the tea."))
+    assert "Mary poisons the tea" not in out and "**M:**" not in out
+
+
+def test_track_row_no_space_after_dash_dropped():
+    out = readers_copy_text(_track_row_text("-**M:** Mary poisons the tea."))
+    assert "Mary poisons the tea" not in out and "**M:**" not in out
+
+
+def test_track_row_no_bullet_at_all_dropped():
+    out = readers_copy_text(_track_row_text("**M:** Mary poisons the tea."))
+    assert "Mary poisons the tea" not in out and "**M:**" not in out
+
+
+def test_track_row_colon_outside_bold_dropped():
+    out = readers_copy_text(_track_row_text("- **M**: Mary poisons the tea."))
+    assert "Mary poisons the tea" not in out
+
+
+def test_track_row_lowercase_letter_dropped():
+    out = readers_copy_text(_track_row_text("- **m:** Mary poisons the tea."))
+    assert "Mary poisons the tea" not in out and "**m:**" not in out
+
+
+def test_track_row_multiletter_key_dropped():
+    out = readers_copy_text(_track_row_text("- **MC:** Mary poisons the tea."))
+    assert "Mary poisons the tea" not in out and "**MC:**" not in out
+
+
+def test_track_row_canonical_still_dropped():
+    out = readers_copy_text(_track_row_text("- **M:** x."))
+    assert "**M:**" not in out and " x." not in out
+
+
+def test_track_row_em_dash_bullet_dropped():
+    # Found by the adversarial sweep: an em-dash bullet ("—", distinct from
+    # "-*+") escaped the original permissive pattern because a track row's
+    # prose has no content-level backstop (unlike a wiring field's q- id,
+    # which the unconditional _QID_TOKEN_RE scrub catches regardless of
+    # bullet shape). This codebase already treats em-dash and hyphen as
+    # interchangeable elsewhere (CHAPTER_RE's "[—-]" separator).
+    out = readers_copy_text(_track_row_text("— **M:** Mary poisons the tea."))
+    assert "Mary poisons the tea" not in out and "**M:**" not in out
+
+
+def test_track_drop_does_not_eat_turn_change_row():
+    out = readers_copy_text(_track_row_text("- **Turn / Change:** Something happens."))
+    assert "Something happens" in out
+
+
+def test_track_drop_does_not_eat_hook_row():
+    out = readers_copy_text(_track_row_text("- **Hook:** q-a — the doctor is dead."))
+    assert "the doctor is dead" in out
+
+
+def test_track_drop_does_not_eat_bolded_prose_without_colon():
+    out = readers_copy_text(_track_row_text("- **Maggie** went to the shop."))
+    assert "Maggie" in out and "went to the shop" in out
+
+
 def test_chapter_internal_solution_heading_dropped():
     text = """---
 book: 01
@@ -263,6 +339,42 @@ total_chapters: 1
     assert "q-" not in out
 
 
+def test_case_drifted_hook_still_scrubs_question_id():
+    # "hook" (lowercase) misses FIELD_RE's exact case, and Hook is
+    # deliberately excluded from _WIRING_DROP_RE so its prose can survive —
+    # so this line only loses its id via the unconditional belt-and-braces
+    # scrub (FINDING 2), not via either field-shape pattern.
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Chapter Structure
+- **hook:** q-who-killed-neil — the doctor is dead.
+"""
+    out = readers_copy_text(text)
+    assert "q-" not in out
+    assert "the doctor is dead" in out
+
+
+def test_question_id_in_bare_prose_is_scrubbed_anywhere():
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Chapter Summary
+Maggie mutters q-who-killed-neil under her breath, unprompted.
+"""
+    out = readers_copy_text(text)
+    assert "q-" not in out
+    assert "Maggie mutters" in out and "under her breath" in out
+
+
 # --- FINDING 3: truncate before the reveal chapter --------------------------
 
 def test_reveal_chapter_truncates_and_notes_it():
@@ -304,6 +416,60 @@ def test_readers_copy_with_no_ledger_emits_all_chapters(tmp_path):
     out = p.read_text(encoding="utf-8")
     assert "## Chapter 06" in out
     assert "deliberately withheld" not in out
+
+
+def _ledger_series(tmp_path, ledger_text):
+    (tmp_path / ".penny").mkdir()
+    d = tmp_path / "input/book-01"
+    d.mkdir(parents=True)
+    (d / "outline-skeleton.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    wd = tmp_path / "series/whodunit"
+    wd.mkdir(parents=True)
+    (wd / "book-01.yaml").write_text(ledger_text, encoding="utf-8")
+    return tmp_path
+
+
+@pytest.mark.parametrize("ledger_text", [
+    "reveal_chapter: five\nculprit: Mary\n",     # not an integer
+    "reveal_chapter:\nculprit: Mary\n",          # null
+    "reveal_chapter: true\nculprit: Mary\n",     # boolean
+    "culprit: Mary\n",                           # key missing entirely
+])
+def test_present_ledger_with_invalid_reveal_chapter_exits_loud(tmp_path, ledger_text):
+    root = _ledger_series(tmp_path, ledger_text)
+    with pytest.raises(SystemExit) as e:
+        readers_copy("01", repo_root=root)
+    assert "plot_stage:" in str(e.value)
+    assert "reveal_chapter" in str(e.value)
+
+
+def test_malformed_yaml_ledger_exits_with_named_error_not_traceback(tmp_path):
+    root = _ledger_series(tmp_path, "reveal_chapter: [unterminated\n")
+    with pytest.raises(SystemExit) as e:
+        readers_copy("01", repo_root=root)
+    assert "plot_stage:" in str(e.value)
+
+
+def test_list_shaped_ledger_exits_with_named_error_not_traceback(tmp_path):
+    root = _ledger_series(tmp_path, "- reveal_chapter: 5\n- culprit: Mary\n")
+    with pytest.raises(SystemExit) as e:
+        readers_copy("01", repo_root=root)
+    assert "plot_stage:" in str(e.value)
+
+
+def test_resolution_heading_survives_the_solution_drop():
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Resolution
+Everything wraps up nicely for the town.
+"""
+    out = readers_copy_text(text)
+    assert "Everything wraps up nicely" in out
 
 
 # --- Re-verify the blind guarantee over every wired-* fixture ---------------

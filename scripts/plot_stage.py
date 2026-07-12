@@ -21,16 +21,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts import penny_paths
 from scripts.penny_meta import parse_frontmatter, strip_frontmatter, write_frontmatter_field
-from scripts.penny_wiring import CHAPTER_RE, FIELD_RE, HEADING_RE, QID_RE, TRACK_RE, split_id
+from scripts.penny_wiring import CHAPTER_RE, FIELD_RE, HEADING_RE, QID_RE, split_id
 
 STAGE_ORDER = ["premise", "ending", "turning-points", "counterplot",
                "chapters", "weave", "readback"]
 
 _DROP_FIELDS = {"Because", "Opens", "Closes", "Carries"}
-# Case-insensitive substring match; heading text is lower()'d before testing.
-# "solution" catches a hand-added ### Solution inside a chapter block.
+# Case-insensitive WORD-BOUNDARY match; heading text is lower()'d before
+# testing. Word-boundary (not substring) so "solution" doesn't also eat a
+# legitimate "### Resolution" subsection — "re" + "solution" shares no word
+# boundary at the point where "solution" would start.
 _DROP_SUBSECTIONS = ("track movement", "tracks", "drafting notes",
                      "possible line-level prompts", "solution")
+_DROP_SUBSECTION_RES = [re.compile(r"\b" + re.escape(s) + r"\b") for s in _DROP_SUBSECTIONS]
 # Any heading of level 3 OR DEEPER (###, ####, ...) — a casing/level drift in a
 # hand-edited heading must not silently defeat the subsection strip.
 _H3_RE = re.compile(r"^#{3,}\s+(.*)$")
@@ -45,6 +48,27 @@ _QID_TOKEN_RE = re.compile(r"\bq-[a-z0-9][a-z0-9-]*\b")
 _WIRING_DROP_RE = re.compile(
     r"^\s*(?:[-*+]\s*)?\*\*\s*(?:Because|Opens|Closes|Carries)\s*:?\s*\*\*\s*:?",
     re.IGNORECASE,
+)
+# FINDING 1: the shared, strict penny_wiring.TRACK_RE (dash-space bullet,
+# colon inside the bold, single uppercase letter) is exactly right for
+# tension_check.py's starved-thread check but WRONG as a reader's-copy
+# backstop — it is under-aggressive, the one failure mode this strip can
+# never afford, on the single most sensitive row in the file (states what
+# the culprit does). Mirror _WIRING_DROP_RE's permissiveness: any of
+# "-"/"*"/"+"/em-dash/en-dash bullet or none, no space after the bullet, the
+# colon inside or outside the bold, and a 1-2 letter (any case) track key.
+# Em/en dash join the bullet class because this codebase already treats them
+# as interchangeable with "-" elsewhere (see CHAPTER_RE's [—-] separator) and
+# unlike a wiring field's question-id (caught by the unconditional
+# _QID_TOKEN_RE scrub below regardless of bullet shape), a track row's prose
+# has no content-level backstop — only this line-level pattern protects it,
+# so its bullet class must be at least as permissive. The {1,2} letter bound
+# plus requiring "**" immediately after the key is what keeps this DROP-ONLY
+# pattern from also eating "- **Turn / Change:**" (multi-word key) or
+# "- **Hook:**" (4-letter key) or plain bolded prose like "- **Maggie** …"
+# (no colon, key too long to leave "**" immediately adjacent).
+_TRACK_DROP_RE = re.compile(
+    r"^\s*(?:[-*+—–]\s*)?\*\*\s*([A-Za-z]{1,2})\s*:?\s*\*\*\s*:?"
 )
 
 _UPSTREAM = {
@@ -161,14 +185,15 @@ def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None) -> str:
         for line in body[start:end].splitlines():
             h3 = _H3_RE.match(line)
             if h3:
-                skipping = any(s in h3.group(1).lower() for s in _DROP_SUBSECTIONS)
+                skipping = any(pat.search(h3.group(1).lower()) for pat in _DROP_SUBSECTION_RES)
                 if skipping:
                     continue
             elif skipping:
                 continue
-            # FINDING 1(b): drop any track row wherever it falls, independent
-            # of heading spelling/level or whether there is a heading at all.
-            if TRACK_RE.match(line):
+            # FINDING 1: drop any track row wherever it falls, independent of
+            # heading spelling/level, bullet style, spacing, or case, or
+            # whether there is a heading at all — see _TRACK_DROP_RE above.
+            if _TRACK_DROP_RE.match(line):
                 continue
             fm = FIELD_RE.match(line)
             if fm:
@@ -191,30 +216,64 @@ def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None) -> str:
                 # space after the dash, colon outside the bold, no bullet at
                 # all) that FIELD_RE's exact shape misses.
                 continue
+            # FINDING 2, belt-and-braces: scrub any surviving question-id
+            # token from EVERY line that reaches the reader, not just the
+            # malformed-Hook branch above. This closes case-drift gaps (e.g.
+            # a lowercase "**hook:**" field, which misses FIELD_RE's exact
+            # case and is deliberately absent from _WIRING_DROP_RE so Hook
+            # prose can survive) by construction rather than by enumerating
+            # every field shape that might carry an id.
+            line = _QID_TOKEN_RE.sub("", line)
+            line = re.sub(r"(?<=\S)[ \t]{2,}", " ", line).rstrip()
             out_lines.append(line)
         out_lines.append("")
     return "\n".join(out_lines).rstrip() + "\n"
 
 
 def _reveal_chapter(book: str, root: Path) -> "int | None":
-    """Read reveal_chapter from series/whodunit/book-NN.yaml (FINDING 3). That
-    ledger is genuinely nested human-edited data, so PyYAML is permitted here
-    — imported inside this function-scoped helper only, the same pattern
+    """Read reveal_chapter from series/whodunit/book-NN.yaml. That ledger is
+    genuinely nested human-edited data, so PyYAML is permitted here —
+    imported inside this function-scoped helper only, the same pattern
     tension_check.py's _load_yaml uses. The outline itself stays penny_meta/
-    penny_wiring only. Absent ledger or missing key -> None (emit all chapters)."""
+    penny_wiring only.
+
+    FINDING 3 — fail LOUD, not open: "no ledger at all" (the file doesn't
+    exist) is the legitimate pre-planning-stage case and returns None, which
+    means "emit every chapter, untruncated" — correct, because a book that
+    hasn't reached the mystery-planner stage yet has nothing to truncate
+    before. But once a ledger EXISTS, a missing/blank/non-integer/boolean
+    reveal_chapter is a mistake, not a legitimate state — a book plotted far
+    enough to have a whodunit ledger always has a reveal_chapter by the time
+    readers-copy runs. Silently returning None there would fail open and
+    leak the reveal chapter, so it exits loud instead.
+
+    FINDING 4 — malformed YAML or a non-mapping ledger (e.g. a bare list)
+    also exits with a named error instead of a raw traceback; it already
+    failed closed (nothing written), this only makes the failure legible."""
     path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
     if not path.is_file():
         return None
     import yaml  # PyYAML: the whodunit ledger is genuinely nested human data
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        sys.exit(f"plot_stage: malformed whodunit ledger {path}: {exc}")
+    if not isinstance(data, dict):
+        sys.exit(
+            f"plot_stage: whodunit ledger {path} must be a YAML mapping, "
+            f"got {type(data).__name__}")
     rc = data.get("reveal_chapter")
-    if isinstance(rc, bool):
-        return None
-    if isinstance(rc, int):
-        return rc
-    if isinstance(rc, str) and rc.strip().isdigit():
-        return int(rc.strip())
-    return None
+    rc_int = None
+    if isinstance(rc, int) and not isinstance(rc, bool):
+        rc_int = rc
+    elif isinstance(rc, str) and rc.strip().isdigit():
+        rc_int = int(rc.strip())
+    if rc_int is None or rc_int <= 0:
+        sys.exit(
+            f"plot_stage: whodunit ledger {path} has no valid reveal_chapter "
+            f"(got {rc!r}); the reader's copy cannot be rendered blind "
+            "without a valid reveal_chapter")
+    return rc_int
 
 
 def readers_copy(book: str, *, repo_root=None) -> Path:
