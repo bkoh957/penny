@@ -1,8 +1,9 @@
 from pathlib import Path
 
-from scripts.penny_wiring import parse_wired_chapters, has_wiring, split_id
+from scripts.penny_wiring import parse_wired_chapters, has_wiring, split_id, parse_turning_points
 
 FIX = Path("tests/fixtures/outlines")
+PLOT = Path("tests/fixtures/plot")
 
 
 def _clean():
@@ -51,3 +52,16 @@ def test_bad_question_id_lands_in_errors():
 def test_split_id():
     assert split_id("q-x — why?") == ("q-x", "why?")
     assert split_id("q-x") == ("q-x", "")
+
+
+def test_turning_points_parsed():
+    tp = parse_turning_points((PLOT / "turning-points-good.md").read_text(encoding="utf-8"))
+    assert tp["total_chapters"] == 6
+    assert tp["points"][0] == {"title": "TP-1 — The body in the kitchen",
+                               "beat": "inciting-death", "chapter": 2}
+    assert len(tp["points"]) == 4
+
+
+def test_turning_points_tolerates_missing_fields():
+    tp = parse_turning_points("---\ntotal_chapters: 4\n---\n\n## TP-1 — Untagged\n- **Breaks:** x\n")
+    assert tp["points"][0]["beat"] is None and tp["points"][0]["chapter"] is None

@@ -84,3 +84,28 @@ def parse_wired_chapters(text: str) -> list[dict]:
 def has_wiring(chapters: list[dict]) -> bool:
     """Spec §5: an outline has wiring iff any chapter carries Because or Opens."""
     return any(c["because"] is not None or c["opens"] for c in chapters)
+
+
+def parse_turning_points(text: str) -> dict:
+    """Parse plot/turning-points.md: frontmatter total_chapters + one ## section
+    per turning point carrying **Beat:** / **Chapter:** bold list fields."""
+    fm = parse_frontmatter(text)
+    total_raw = fm.get("total_chapters")
+    total = int(total_raw) if isinstance(total_raw, str) and total_raw.strip().isdigit() else None
+    points: list[dict] = []
+    matches = list(HEADING_RE.finditer(text))
+    for i, m in enumerate(matches):
+        start = m.end()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        point = {"title": m.group(1), "beat": None, "chapter": None}
+        for line in text[start:end].splitlines():
+            tm = TP_FIELD_RE.match(line)
+            if not tm:
+                continue
+            field, value = tm.group(1), tm.group(2).strip()
+            if field == "Beat":
+                point["beat"] = value or None
+            elif field == "Chapter" and value.isdigit():
+                point["chapter"] = int(value)
+        points.append(point)
+    return {"total_chapters": total, "points": points}
