@@ -140,9 +140,16 @@ unchanged. Retrofitting an old book is a hand-edit, not a migration.
 
 **The reader's copy** strips the Solution block, all wiring lines, question ids inside
 Hook lines, Track Movement, and any drafting notes — leaving title, summary, and the
-structure prose in story order. Produced deterministically (see §7, `plot_stage.py
-readers-copy`), so "blind" is enforced by construction, not by asking an agent to look
-away.
+structure prose in story order. **It is also TRUNCATED before the reveal chapter**
+(chapters `1..reveal_chapter−1` only; `reveal_chapter` comes from
+`series/whodunit/book-NN.yaml`) — a deliberate, accepted change made after a shakedown
+review found the reveal chapter's own summary prose names the culprit outright (e.g. "The
+reveal: Mary, the letter, the mercy mistaken for murder."). Stripping wiring *fields* alone
+left the blind fan reading a sham: the un-blinding text lives in ordinary chapter-summary
+prose, which no field-level strip can target. Truncating before the reveal chapter is what
+makes "blind" actually true — a real reader guesses the culprit before the reveal, never
+after reading it. Produced deterministically (see §7, `plot_stage.py readers-copy`), so
+"blind" is enforced by construction, not by asking an agent to look away.
 
 ## 6. `tension_check.py` (the proofreader)
 
@@ -223,7 +230,9 @@ improvisation:
 - `plot_stage.py stamp NN <file> --from <upstream>...` — writes the `built_from:`
   fingerprints (single writer for the mechanism).
 - `plot_stage.py readers-copy NN` — renders the blind reader's copy from the skeleton
-  (deterministic strip per §5) to `output/book-NN/reports/outline-readers-copy.md`.
+  (deterministic strip per §5, **truncated to chapters `1..reveal_chapter−1`** so the fan
+  never reads past where a real reader would have guessed) to
+  `output/book-NN/reports/outline-readers-copy.md`.
 
 ### The stages
 

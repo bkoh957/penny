@@ -40,9 +40,12 @@ state; this command never asks you anything a file already answers.
    | readback | PLOT-READBACK | yes — showrunner signs off → lock |
 
 4. **Stages premise / ending / turning-points:** dispatch the `plot-proposer`
-   sub-agent with the stage name, `input/book-$book/plot/material.md` if present,
-   the genre archetype document (`genres/<genre>/archetype.md`), the beat sheet
-   (overlay-resolved `beat-sheet.yaml`), and every earlier save point. Relay its
+   sub-agent (pass `model:` = `plot_model` from `config/run-config.md`, defaulting to
+   `drafting_model` when unset — the agent def has no `model` frontmatter, so without
+   an override it inherits the parent) with the stage name,
+   `input/book-$book/plot/material.md` if present, the genre archetype document
+   (`genres/<genre>/archetype.md`), the beat sheet (resolved via
+   `penny_genre.py beat-sheet`), and every earlier save point. Relay its
    options to the showrunner; when they choose, the proposer writes the one save
    point, then stamp it. The general rule, every stage, every run: `--from` gets
    EXACTLY the upstream save-point files that currently exist (per `_UPSTREAM` in
@@ -100,18 +103,22 @@ state; this command never asks you anything a file already answers.
    once, at the end of step 8.
 
 6. **Stage chapters:** for each gap between consecutive turning points, dispatch
-   `chapter-weaver` (fill pass) with both endpoints fixed and the clue schedule
-   from the whodunit yaml. When this is a re-plot regenerating chapters that
-   already exist, `chapter-weaver` clears any stale `woven: true` from the
-   skeleton's frontmatter as part of that write (its contract, not a step here
-   — do not re-set `woven: true` yourself) — otherwise the weave stage would
-   read as `done` over chapters that were never rewoven. Then stamp the
-   skeleton:
+   `chapter-weaver` (fill pass; pass `model:` = `plot_model` from
+   `config/run-config.md`, defaulting to `drafting_model` when unset) with both
+   endpoints fixed and the clue schedule from the whodunit yaml. When this is a
+   re-plot regenerating chapters that already exist, `chapter-weaver` clears any
+   stale `woven: true` from the skeleton's frontmatter as part of that write (its
+   contract, not a step here — do not re-set `woven: true` yourself) — otherwise
+   the weave stage would read as `done` over chapters that were never rewoven.
+   Then stamp the skeleton, including the whodunit ledger it drew the clue
+   schedule from (a real upstream — editing the ledger after this point must make
+   the chapters stage go stale again):
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
      input/book-$book/outline-skeleton.md \
-     --from input/book-$book/plot/turning-points.md output/book-$book/mystery-solution.md
+     --from input/book-$book/plot/turning-points.md output/book-$book/mystery-solution.md \
+     series/whodunit/book-$book.yaml
    ```
 
    Continue directly to weave.
@@ -122,10 +129,11 @@ state; this command never asks you anything a file already answers.
    echo "book=$book stage=PLOT-WEAVE" > .penny/current-stage
    ```
 
-   Dispatch `chapter-weaver` (weave pass) over the filled skeleton. It sets
-   `woven: true` and re-stamps. (The weave stage has no `_UPSTREAM` of its own
-   — `plot_stage.py` judges it done purely by the `woven` flag, so there is no
-   separate `stamp` call here.)
+   Dispatch `chapter-weaver` (weave pass; pass `model:` = `plot_model` from
+   `config/run-config.md`, defaulting to `drafting_model` when unset) over the
+   filled skeleton. It sets `woven: true` and re-stamps. (The weave stage has no
+   `_UPSTREAM` of its own — `plot_stage.py` judges it done purely by the `woven`
+   flag, so there is no separate `stamp` call here.)
 
 8. **Stage readback:**
 
@@ -134,25 +142,38 @@ state; this command never asks you anything a file already answers.
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" readers-copy $book
    ```
 
-   Dispatch `outline-fan` on the reader's copy with the genre's `fan_persona`
-   (cross-model where reachable; degrade with "independence reduced", never halt).
+   The reader's copy is not just stripped of solution/wiring — it is **truncated**:
+   it contains only chapters `1..reveal_chapter−1` (`reveal_chapter` read from
+   `series/whodunit/book-$book.yaml`). This is deliberate, not incidental: the reveal
+   chapter's own summary prose names the culprit, so a merely-stripped copy that still
+   included it would leave the "blind" fan reading a sham. A real reader guesses the
+   culprit before the reveal, never after reading it — the truncation is what makes
+   the read genuinely blind.
+
+   Dispatch `outline-fan` on the reader's copy with the genre's `fan_persona`. Prefer
+   a model other than `plot_model` (resolved below) — this is the workshop's
+   independence claim: the fan should not share a model with the agents that built the
+   plan. If no other reachable model exists, degrade to `plot_model` itself and print
+   "independence reduced: no non-plot_model model reachable for the fan read" rather
+   than halting (same convention as `/review-outline`'s panel degradation).
+
    Then run the proofreader:
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/tension_check.py" \
      input/book-$book/outline-skeleton.md \
-     --beat-sheet "$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/penny_paths.py" resolve config beat-sheet.yaml)" \
+     --beat-sheet "$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/penny_genre.py" beat-sheet)" \
      --turning-points input/book-$book/plot/turning-points.md \
      --whodunit series/whodunit/book-$book.yaml
    ```
 
-   `penny_paths.py resolve config <rel>` is the CLI already shipped for
-   overlay-resolved config reads — cleaner than reimplementing the overlay
-   inline, and it always prints a path even if `beat-sheet.yaml` doesn't exist
-   anywhere in the overlay (falling back to the plugin default location). A
-   genre with no beat sheet at all is fine: `tension_check.py` simply skips the
-   curve/beat checks and runs only the graph checks (causality, open-question
-   ledger, hook chain).
+   `penny_genre.py beat-sheet` resolves THROUGH the active genre's `genre.yaml`
+   `beat_sheet:` key (overlay-resolved, so a series can still override its genre's
+   numbers) — never a hardcoded filename, so a genre pack naming its file something
+   other than `beat-sheet.yaml` still gets its curve/beat checks run. It prints an
+   empty string when the genre declares no `beat_sheet:` key at all; `tension_check.py`
+   then simply skips the curve/beat checks and runs only the graph checks (causality,
+   open-question ledger, hook chain, chapter coverage).
 
    Present the fan's report and the findings side by side. The showrunner either
    revises (edit any file — staleness re-opens the right stages on the next run)

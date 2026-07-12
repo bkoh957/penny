@@ -114,8 +114,10 @@ engine code.
   skeleton and weaves it (wired `Because`/`Opens`/`Closes`/`Carries`/`Hook` fields —
   see the outline template); the counterplot stage dispatches the existing
   `mystery-planner` rather than duplicating it. It ends with a blind genre-fan
-  read-back (`plot_stage.py readers-copy` strips solution/wiring before the reveal
-  chapter) presented beside `tension_check.py`'s findings, then mints the lock —
+  read-back (`plot_stage.py readers-copy` strips solution/wiring throughout, and
+  **truncates** the copy to chapters `1..reveal_chapter−1` — not merely a strip,
+  because the reveal chapter's own summary prose names the culprit) presented
+  beside `tension_check.py`'s findings, then mints the lock —
   the workshop's only lock mint — with any per-check `--waive check-id:"reason"`
   recorded in the certificate.
 - `/scaffold-book NN <outline-path> [--approve]` — the outline-first door for an
@@ -168,11 +170,14 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
 - **`scripts/preflight.py`** is the one deterministic-gate tool, six subcommands:
   `lock-mystery N` (validate fairplay+lexicon+tension, then mint the lock — the
   *only* lock writer; `tension_check.py` is the dramatic-wiring checker beside
-  `fairplay_check.py`, seven named checks — `orphan-chapter`, `dropped-question`,
-  `phantom-answer`, `dead-stretch`, `broken-hook`, `starved-thread`, `off-mark-beat`
-  — each waivable with `--waive check-id:"reason"`, recorded in the lock
-  certificate; an outline with no wiring is SKIPPED entirely, so book 1 and any
-  hand-authored/scaffolded outline still lock exactly as before), `draft N CH`
+  `fairplay_check.py`, eight named checks — `orphan-chapter`, `dropped-question`,
+  `phantom-answer`, `broken-hook`, `chapter-coverage`, `dead-stretch`,
+  `starved-thread`, `off-mark-beat` — each waivable with `--waive check-id:"reason"`,
+  recorded in the lock certificate; the beat sheet driving the last three is
+  resolved through the active genre's `genre.yaml` `beat_sheet:` key
+  (`penny_genre.py beat-sheet`), never a hardcoded filename; an outline with no
+  wiring is SKIPPED entirely, so book 1 and any hand-authored/scaffolded outline
+  still lock exactly as before), `draft N CH`
   (lock present + ledger populated), `assemble N` (cross-model routing guard),
   `finalize N CH` (chapter must have `gate: PASS` + a fresh clear-dev cert),
   `clear-dev N CH` (showrunner approves developmental report), `approve-book N`

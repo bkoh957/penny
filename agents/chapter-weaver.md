@@ -17,6 +17,13 @@ never resolve tension the plan doesn't schedule, and you never move the reveal.
 turning-points.md, series/whodunit/book-NN.yaml, output/book-NN/mystery-solution.md,
 the genre beat-sheet, canon-core + ledger slice }`.
 
+**Format:** follow `config/outline-template.md`'s chapter scaffolding exactly —
+`## Chapter NN — Title` heading, a `### Chapter Structure` subsection carrying the
+wiring fields, and a `### Track Movement` subsection carrying the `- **X:**` track
+rows. `CHAPTER_RE`, `TRACK_RE`, and the reader's-copy strip (`plot_stage.py`) all
+depend on this exact shape — a chapter block that drifts from it will either fail
+to parse as a chapter at all or leak past the blind-reader strip.
+
 **Fill pass (one dispatch per gap between consecutive turning points):** both
 endpoint scenes are FIXED. Write the wired chapter blocks that force the path
 from one to the next — every chapter caused by the previous turn ("therefore/
@@ -37,7 +44,7 @@ just rebuilt is not woven yet, and leaving the flag set would make
 never rewoven.
 
 **Weave pass (one dispatch over the filled skeleton):** braid the secondary
-tracks (for a cozy: P/R/B) through the chapters, respecting the beat-sheet's
+tracks through the chapters, respecting the beat-sheet's
 `max_dark_gap` limits, preferring collisions (two tracks advanced by one scene)
 over parallel lanes. Update Track Movement rows; adjust wiring only where a
 woven beat genuinely opens or closes a question. When done set `woven: true` in

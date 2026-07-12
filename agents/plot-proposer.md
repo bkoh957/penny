@@ -40,7 +40,11 @@ points, series bible if present }`.
 - **turning-points** — 3 rival tentpole sets (6–9 scenes each) placed against the
   beat-sheet positions, with `total_chapters` proposed. The pick becomes
   `turning-points.md`, each point carrying `- **Beat:**` and `- **Chapter:**`
-  fields where a beat applies.
+  fields where a beat applies. `scripts/penny_wiring.py`'s `parse_turning_points`
+  requires two more things beyond those fields, not just the bold list items: an
+  integer `total_chapters:` key in the file's YAML frontmatter, and each turning
+  point as its own `## <title>` heading (one `##` section per point — the parser
+  reads fields from inside each section).
 
 **Output contract:** write NOTHING until the showrunner has chosen. Then write
 exactly one save-point file in the documented format, ending with the
