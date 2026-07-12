@@ -99,9 +99,33 @@ def planning(root: Path | None = None) -> dict:
     return load_manifest(root=root)["planning"]
 
 
+def beat_sheet(root: Path | None = None) -> Path | None:
+    """Resolve the active genre's beat sheet THROUGH genre.yaml's `beat_sheet:`
+    key (never a hardcoded filename — FINAL REVIEW FINDING 5), overlay-resolved
+    via penny_paths.config_path so a series can still override its genre's
+    numbers.
+
+    Unlike inspectors()/gates()/planning() — book-scoped accessors where a
+    declared genre is mandatory — this one tolerates an UNDECLARED genre by
+    returning None rather than hard-failing: tension_check.py runs for any
+    wired outline, including ones with no series.yaml/genre context (a
+    hand-wired outline, a book that hasn't reached /plot-book's genre-required
+    door). A DECLARED-but-invalid genre still hard-fails via load_manifest,
+    same as the other accessors — the leniency covers only "no genre", never
+    "bad genre".
+    """
+    from scripts import penny_paths
+    if penny_paths._declared_genre(root=root) is None:
+        return None
+    val = load_manifest(root=root).get("beat_sheet")
+    if val is None:
+        return None
+    return penny_paths.config_path(val, root=root)
+
+
 def _main(argv: list[str]) -> int:
     if not argv:
-        print("usage: penny_genre <inspectors|gates|planning-command|planning-artifact|planning-lock|planning-validator>",
+        print("usage: penny_genre <inspectors|gates|beat-sheet|planning-command|planning-artifact|planning-lock|planning-validator>",
               file=sys.stderr)
         return 2
     cmd = argv[0]
@@ -110,6 +134,10 @@ def _main(argv: list[str]) -> int:
         return 0
     if cmd == "gates":
         print("\n".join(gates()))
+        return 0
+    if cmd == "beat-sheet":
+        p = beat_sheet()
+        print("" if p is None else p)
         return 0
     if cmd.startswith("planning-"):
         key = cmd[len("planning-"):]

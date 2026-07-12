@@ -63,6 +63,37 @@ def test_weave_needs_woven_flag(tmp_path):
     assert rows["weave"] == "done"
 
 
+# --- FINAL REVIEW FINDING 3: the whodunit ledger is a real upstream of
+# "chapters" but was absent from the fingerprint graph --------------------
+
+def test_stage_paths_includes_whodunit_ledger(tmp_path):
+    root = _series(tmp_path)
+    paths = stage_paths("01", root)
+    assert paths["whodunit"] == root / "series" / "whodunit" / "book-01.yaml"
+
+
+def test_chapters_stage_goes_stale_when_whodunit_ledger_edited(tmp_path):
+    root = _series(tmp_path)
+    tp = _write(root, "input/book-01/plot/turning-points.md")
+    sol = _write(root, "output/book-01/mystery-solution.md")
+    wd = _write(root, "series/whodunit/book-01.yaml", "reveal_chapter: 5\n")
+    skel = _write(root, "input/book-01/outline-skeleton.md")
+    stamp("01", skel, [tp, sol, wd], repo_root=root)
+    rows = dict((n, s) for n, s, _ in stage_status("01", repo_root=root))
+    assert rows["chapters"] == "done"
+    wd.write_text(wd.read_text(encoding="utf-8") + "\nedited\n", encoding="utf-8")
+    rows = dict((n, s) for n, s, _ in stage_status("01", repo_root=root))
+    assert rows["chapters"] == "stale"
+
+
+def test_stage_order_unaffected_by_whodunit_upstream_addition():
+    # STAGE_ORDER must stay the 7 real stages — whodunit is a fingerprint
+    # upstream, never a stage of its own.
+    assert STAGE_ORDER == ["premise", "ending", "turning-points", "counterplot",
+                           "chapters", "weave", "readback"]
+    assert "whodunit" not in STAGE_ORDER
+
+
 def test_stamp_creates_frontmatter_if_absent(tmp_path):
     root = _series(tmp_path)
     prem = _write(root, "input/book-01/plot/premise.md", "no frontmatter here\n")
@@ -441,6 +472,31 @@ def test_present_ledger_with_invalid_reveal_chapter_exits_loud(tmp_path, ledger_
         readers_copy("01", repo_root=root)
     assert "plot_stage:" in str(e.value)
     assert "reveal_chapter" in str(e.value)
+
+
+# --- FINAL REVIEW FINDING 1: an out-of-range reveal_chapter must not un-blind
+# the fan by falling through to "emit everything, no truncation" -------------
+
+def test_reveal_chapter_beyond_last_chapter_exits_loud(tmp_path):
+    # WIRED_CLEAN has 6 chapters; reveal_chapter: 9 has nothing to truncate
+    # before, so readers_copy_text would silently emit every chapter —
+    # including the reveal chapter's own culprit-naming summary — unless
+    # readers_copy() catches the out-of-range value first.
+    root = _ledger_series(tmp_path, "reveal_chapter: 9\nculprit: Mary\n")
+    with pytest.raises(SystemExit) as e:
+        readers_copy("01", repo_root=root)
+    assert "plot_stage:" in str(e.value)
+    assert "reveal_chapter" in str(e.value)
+
+
+def test_reveal_chapter_equal_to_last_chapter_is_not_out_of_range(tmp_path):
+    # reveal_chapter == the last chapter is the normal case (truncate before
+    # it) — must NOT be treated as out-of-range.
+    root = _ledger_series(tmp_path, "reveal_chapter: 6\nculprit: Mary\n")
+    p = readers_copy("01", repo_root=root)
+    out = p.read_text(encoding="utf-8")
+    assert "## Chapter 05" in out
+    assert "## Chapter 06" not in out
 
 
 def test_malformed_yaml_ledger_exits_with_named_error_not_traceback(tmp_path):

@@ -242,28 +242,43 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
     if errors:
         _fail("lexicon --validate failed; lock NOT written:\n  - " + "\n  - ".join(errors))
     # 3. tension gate (plot-book workshop spec §6): only when the outline has wiring.
+    from scripts import penny_genre
     from scripts.tension_check import check_tension
     waiver_map = _parse_waivers(waivers)
     outline = _first_file(
         repo_root / "input" / f"book-{book}" / "outline-skeleton.md",
         repo_root / "input" / f"book-{book}" / "outline.md")
-    # penny_paths.config_path() never raises/exits on a missing file across all
-    # three tiers — it falls back to the plugin default path unconditionally
-    # (see scripts/penny_paths.py). _first_file()'s is_file() check then simply
-    # filters that (possibly nonexistent) fallback out, yielding None. So no
-    # beat sheet in any tier -> beat_sheet_path=None -> check_tension runs only
-    # the graph checks, exactly as intended; no try/except needed here.
+    # FINAL REVIEW FINDING 5: resolve THROUGH genre.yaml's `beat_sheet:` key
+    # (penny_genre.beat_sheet(), which is itself overlay-resolved and tolerant
+    # of an undeclared genre) rather than a hardcoded "beat-sheet.yaml" — a
+    # future genre pack naming its file differently must not silently lose
+    # the curve/beat checks while still minting a lock that claims full
+    # tension coverage.
+    beat_sheet_path = penny_genre.beat_sheet(root=repo_root)
+    if beat_sheet_path is not None and not beat_sheet_path.is_file():
+        # config_path() always returns SOME path (falling back to the plugin
+        # default location even when nothing exists there) — normalize the
+        # nonexistent case to None so the note below fires correctly instead
+        # of silently passing a dead path through to check_tension.
+        beat_sheet_path = None
     validated = "fairplay+lexicon"
     waived_lines: list[str] = []
+    fired: set[str] = set()
     if outline is not None:
         tres = check_tension(
             outline,
-            beat_sheet_path=_first_file(penny_paths.config_path("beat-sheet.yaml", root=repo_root)),
+            beat_sheet_path=beat_sheet_path,
             turning_points_path=_first_file(
                 repo_root / "input" / f"book-{book}" / "plot" / "turning-points.md"),
             whodunit_path=led)
         if tres["wired"]:
             validated = "fairplay+lexicon+tension"
+            if beat_sheet_path is None:
+                # The `validated:` stamp must not claim more than actually
+                # ran (FINDING 5): say so visibly when curve/beat checks were
+                # skipped for lack of a resolvable beat sheet.
+                print("lock-mystery: note — no beat sheet resolved; curve/beat "
+                      "checks (dead-stretch, starved-thread, off-mark-beat) skipped")
             for f in tres["blocking"]:
                 print(f"tension_check: {f}")
             unwaived = [f for f in tres["blocking"]
@@ -271,11 +286,17 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
             if unwaived:
                 _fail("tension failed; lock NOT written:\n  - " + "\n  - ".join(unwaived))
             fired = {f.split(":", 1)[0] for f in tres["blocking"]}
-            for check, reason in sorted(waiver_map.items()):
-                if check in fired:
-                    waived_lines.append(f"waived: {check} — {reason}")
-                else:
-                    print(f"lock-mystery: note — waiver for '{check}' matched no finding; not recorded")
+    # FINAL REVIEW FINDING 9: hoisted out of `if tres["wired"]` (and out of
+    # `if outline is not None`, which has the same hole) — a waiver dictated
+    # for a book that never reached wiring, or has no outline at all, must
+    # still be reported as unrecorded rather than silently swallowed. `fired`
+    # is simply empty in those cases, so every waiver correctly reports
+    # "not recorded" without any wired-outline-specific branching here.
+    for check, reason in sorted(waiver_map.items()):
+        if check in fired:
+            waived_lines.append(f"waived: {check} — {reason}")
+        else:
+            print(f"lock-mystery: note — waiver for '{check}' matched no finding; not recorded")
     # 4. all passed — mint the certificate (the LAST write).
     lp = lock_path(book, repo_root)
     lp.parent.mkdir(parents=True, exist_ok=True)

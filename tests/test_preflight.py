@@ -428,6 +428,21 @@ def test_waived_finding_locks_and_records_reason(tmp_path):
     assert "waived: orphan-chapter — ch2 gap is the designed time-skip" in body
 
 
+# --- FINAL REVIEW FINDING 5: with a declared genre, lock-mystery now
+# resolves the beat sheet THROUGH genre.yaml and actually runs the
+# curve/beat checks (dead-stretch, starved-thread, off-mark-beat), not just
+# the graph checks. -----------------------------------------------------
+
+def test_lock_refused_on_unwaived_curve_finding_when_genre_declared(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    shutil.copy(FIXTURE / "series.yaml", tmp_path / "series.yaml")
+    _add_wired_skeleton(tmp_path, SRC / "tests/fixtures/outlines/wired-starved-thread.md")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_lock_mystery("01", repo_root=tmp_path)
+    assert "starved-thread" in str(e.value)
+    assert not preflight.lock_path("01", tmp_path).is_file()
+
+
 def test_unwired_book_locks_exactly_as_before(tmp_path):
     _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
     assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
@@ -439,3 +454,31 @@ def test_malformed_waiver_fails_loud(tmp_path):
     _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
     with pytest.raises(SystemExit):
         preflight.cmd_lock_mystery("01", repo_root=tmp_path, waivers=["no-reason"])
+
+
+# --- FINAL REVIEW FINDING 9: the phantom-waiver note must print regardless
+# of whether the outline is wired or even present — the cert never lies, but
+# this is the one place an override currently passes silently. ------------
+
+def test_phantom_waiver_note_prints_with_no_outline_at_all(tmp_path, capsys):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    # no outline-skeleton.md / outline.md at all -> outline is None
+    assert preflight.cmd_lock_mystery(
+        "01", repo_root=tmp_path,
+        waivers=["dead-stretch:never fires, no outline exists"]) == 0
+    out = capsys.readouterr().out
+    assert "waiver for 'dead-stretch' matched no finding; not recorded" in out
+
+
+def test_phantom_waiver_note_prints_when_outline_present_but_unwired(tmp_path, capsys):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    d = tmp_path / "input/book-01"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "outline-skeleton.md").write_text(
+        "---\nbook: 01\ntotal_chapters: 1\n---\n\n## Chapter 01\nNo wiring here.\n",
+        encoding="utf-8")
+    assert preflight.cmd_lock_mystery(
+        "01", repo_root=tmp_path,
+        waivers=["dead-stretch:never fires, book is unwired"]) == 0
+    out = capsys.readouterr().out
+    assert "waiver for 'dead-stretch' matched no finding; not recorded" in out

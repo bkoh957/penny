@@ -118,3 +118,84 @@ def test_cli_exit_codes(capsys):
 def test_cli_unwired_skips_exit_zero(capsys):
     assert tension_main([str(FIX / "well-formed.md")]) == 0
     assert "no wiring" in capsys.readouterr().out
+
+
+# --- FINAL REVIEW FINDING 2: chapter-coverage — the chapters-stage failure
+# mode (N separate chapter-weaver dispatches, one per turning-point gap) is
+# gaps/dupes at the seams; nothing compared the chapter set to total_chapters.
+
+def test_chapter_coverage_fires_on_gap():
+    r = check_tension(FIX / "wired-chapter-gap.md")
+    assert _predicates(r) == {"chapter-coverage"}
+
+
+def test_chapter_coverage_fires_on_total_chapters_mismatch(tmp_path):
+    # The finding's own reproduction: total_chapters declares more than the
+    # skeleton actually has (chapters 1-22 of a declared 24).
+    text = (FIX / "wired-clean.md").read_text(encoding="utf-8").replace(
+        "total_chapters: 6", "total_chapters: 8")
+    p = tmp_path / "outline.md"
+    p.write_text(text, encoding="utf-8")
+    assert "chapter-coverage" in _predicates(check_tension(p))
+
+
+def test_chapter_coverage_quiet_on_clean_outline():
+    r = check_tension(FIX / "wired-clean.md")
+    assert "chapter-coverage" not in _predicates(r)
+
+
+def test_chapter_coverage_waivable_like_every_other_check(tmp_path):
+    # Waivability is automatic via the check-id prefix convention
+    # (preflight._parse_waivers / cmd_lock_mystery splits on the first ":").
+    r = check_tension(FIX / "wired-chapter-gap.md")
+    assert all(f.split(":", 1)[0] == "chapter-coverage" for f in r["blocking"])
+
+
+# --- FINAL REVIEW FINDING 4: starved-thread must fail CLOSED on a MISSING
+# Track Movement row, not silently count it as advancing. -------------------
+
+def test_starved_thread_fires_on_missing_track_rows():
+    r = check_tension(FIX / "wired-starved-thread-missing-rows.md", beat_sheet_path=BEATS)
+    assert "starved-thread" in _predicates(r)
+
+
+def test_starved_thread_fires_when_track_movement_section_entirely_absent(tmp_path):
+    # A chapter with NO track rows at all (not even the ones that DO advance)
+    # must still be caught — the original bug was `dark` only True when the
+    # row exists AND starts with "none", so an absent row read as advancing.
+    text = """---
+book: 01
+total_chapters: 3
+---
+
+## Chapter 01 — One
+
+### Chapter Structure
+- **Hook:** q-a — first?
+- **Because:** opening
+- **Opens:** q-a — first?
+
+## Chapter 02 — Two
+
+### Chapter Structure
+- **Hook:** q-a — still?
+- **Because:** ch 01 — follows.
+
+## Chapter 03 — Three
+
+### Chapter Structure
+- **Hook:** q-a — still?
+- **Because:** ch 02 — follows.
+- **Closes:** q-a
+"""
+    p = tmp_path / "outline.md"
+    p.write_text(text, encoding="utf-8")
+    r = check_tension(p, beat_sheet_path=BEATS)
+    assert "starved-thread" in _predicates(r)
+
+
+def test_starved_thread_still_quiet_when_rows_present_and_advancing():
+    # Regression guard: the fix must not make every track look starved —
+    # wired-clean's chapters all carry real Track Movement rows.
+    r = check_tension(FIX / "wired-clean.md", beat_sheet_path=BEATS)
+    assert "starved-thread" not in _predicates(r)

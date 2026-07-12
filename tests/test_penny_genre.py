@@ -192,6 +192,35 @@ def test_cozy_manifest_declares_beat_sheet_and_fan_persona():
     assert m["fan_persona"] == "personas/genre-fan.md"
 
 
+# --- FINAL REVIEW FINDING 5: genre.yaml's beat_sheet: key was validated but
+# never actually RESOLVED anywhere — every reader hardcoded "beat-sheet.yaml". --
+
+def test_beat_sheet_accessor_resolves_through_manifest_key(tmp_path):
+    s = _cozy_series(tmp_path)
+    p = pg.beat_sheet(root=s)
+    assert p == pp.plugin_root() / "genres" / "cozy-mystery" / "beat-sheet.yaml"
+    assert p.is_file()
+
+
+def test_beat_sheet_accessor_returns_none_without_declared_genre(tmp_path):
+    # Unlike inspectors()/gates()/planning() (book-scoped, genre mandatory),
+    # beat_sheet() is consulted by the tension checker for outlines that may
+    # have no genre context at all (a hand-wired outline, or a book that
+    # hasn't reached /plot-book's genre-required door) — an undeclared genre
+    # must not hard-fail lock-mystery for those.
+    (tmp_path / ".penny").mkdir()
+    assert pg.beat_sheet(root=tmp_path) is None
+
+
+def test_cli_beat_sheet(tmp_path):
+    s = _cozy_series(tmp_path)
+    env = {**os.environ, "PYTHONPATH": str(pp.plugin_root())}
+    out = subprocess.run([sys.executable, "-m", "scripts.penny_genre", "beat-sheet"],
+                         cwd=s, capture_output=True, text=True, env=env)
+    assert out.returncode == 0
+    assert out.stdout.strip() == str(pp.plugin_root() / "genres" / "cozy-mystery" / "beat-sheet.yaml")
+
+
 def test_optional_file_keys_must_exist_when_present(tmp_path):
     gdir = tmp_path / "genres" / "test-genre"
     gdir.mkdir(parents=True)

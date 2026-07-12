@@ -76,7 +76,11 @@ _UPSTREAM = {
     "ending": ["premise"],
     "turning-points": ["premise", "ending"],
     "counterplot": ["ending", "turning-points"],
-    "chapters": ["turning-points", "counterplot"],
+    # FINAL REVIEW FINDING 3: chapter-weaver also consumes the whodunit
+    # ledger (clue schedule), and readers_copy/tension_check both read
+    # reveal_chapter from it — a real upstream that must go stale on edit,
+    # same as counterplot's mystery-solution.md.
+    "chapters": ["turning-points", "counterplot", "whodunit"],
     "weave": [],                       # done-ness is the skeleton's woven flag
     "readback": ["chapters"],
 }
@@ -94,10 +98,15 @@ def stage_paths(book: str, root: Path) -> dict:
     plot = root / "input" / f"book-{book}" / "plot"
     out = root / "output" / f"book-{book}"
     skel = root / "input" / f"book-{book}" / "outline-skeleton.md"
+    # "whodunit" is a fingerprint upstream (FINDING 3), not a STAGE_ORDER
+    # stage — stage_status() only ever indexes this dict with STAGE_ORDER
+    # names for the row loop; "whodunit" is reached solely via _UPSTREAM
+    # lookups, the same pattern "material" already uses for "premise".
     return {"material": plot / "material.md", "premise": plot / "premise.md",
             "ending": plot / "ending.md", "turning-points": plot / "turning-points.md",
             "counterplot": out / "mystery-solution.md", "chapters": skel,
-            "weave": skel, "readback": out / "reports" / "outline-fan.md"}
+            "weave": skel, "readback": out / "reports" / "outline-fan.md",
+            "whodunit": root / "series" / "whodunit" / f"book-{book}.yaml"}
 
 
 def stage_status(book: str, *, repo_root=None) -> list:
@@ -276,16 +285,39 @@ def _reveal_chapter(book: str, root: Path) -> "int | None":
     return rc_int
 
 
+def _chapter_numbers(text: str) -> list[int]:
+    body = strip_frontmatter(text)
+    return [int(cm.group(1)) for m in HEADING_RE.finditer(body)
+            for cm in [CHAPTER_RE.match(m.group(1))] if cm]
+
+
 def readers_copy(book: str, *, repo_root=None) -> Path:
     root = _root(repo_root)
     skel = stage_paths(book, root)["chapters"]
     if not skel.is_file():
         sys.exit(f"plot_stage: no outline-skeleton for book {book} ({skel})")
+    skel_text = skel.read_text(encoding="utf-8")
     reveal_ch = _reveal_chapter(book, root)
+    # FINAL REVIEW FINDING 1: a reveal_chapter LARGER than the last chapter in
+    # the skeleton has nothing to truncate before — readers_copy_text would
+    # silently emit every chapter, including the reveal chapter's own
+    # culprit-naming summary, straight to the blind fan. The module docstring
+    # promises "fail LOUD, not open"; a value in range but simply absent
+    # coverage is caught elsewhere (readback/tension_check), but an
+    # out-of-range value here specifically defeats the blind guarantee, so it
+    # fails loud at the one place both the skeleton and the ledger are in hand.
+    if reveal_ch is not None:
+        nums = _chapter_numbers(skel_text)
+        if nums and reveal_ch > max(nums):
+            sys.exit(
+                f"plot_stage: whodunit ledger reveal_chapter ({reveal_ch}) is "
+                f"beyond the last chapter in the skeleton ({max(nums)}) for "
+                f"book {book} — the reader's copy would have nothing to "
+                "truncate and would leak the reveal chapter's own summary")
     dest = root / "output" / f"book-{book}" / "reports" / "outline-readers-copy.md"
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(
-        readers_copy_text(skel.read_text(encoding="utf-8"), reveal_chapter=reveal_ch),
+        readers_copy_text(skel_text, reveal_chapter=reveal_ch),
         encoding="utf-8")
     return dest
 

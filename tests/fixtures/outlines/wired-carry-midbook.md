@@ -14,6 +14,12 @@ A question opens the book.
 - **Because:** opening
 - **Opens:** q-a — who is behind this?
 
+### Track Movement
+- **M:** The question lands.
+- **P:** Introduced.
+- **R:** Introduced.
+- **B:** Introduced.
+
 ## Chapter 02 — A Deliberate Seed
 
 ### Chapter Summary
@@ -27,6 +33,12 @@ as closed, this chapter's open-question count would drop to zero.
 - **Because:** ch 01 — the question from ch 01 is still live.
 - **Carries:** q-a
 
+### Track Movement
+- **M:** Shelved for now.
+- **P:** Moves forward.
+- **R:** Moves forward.
+- **B:** Moves forward.
+
 ## Chapter 03 — A New Thread
 
 ### Chapter Summary
@@ -37,6 +49,12 @@ A fresh, book-local question opens.
 - **Hook:** q-a — the carried question, still open.
 - **Because:** ch 02 — the shelved question leaves room for a new one.
 - **Opens:** q-b — what is the second mystery?
+
+### Track Movement
+- **M:** The second mystery surfaces.
+- **P:** Moves forward.
+- **R:** Moves forward.
+- **B:** Moves forward.
 
 ## Chapter 04 — Closing the Local Thread
 
@@ -49,6 +67,12 @@ The book-local question is answered; the carried one is not.
 - **Because:** ch 03 — the new thread comes to a head.
 - **Closes:** q-b
 
+### Track Movement
+- **M:** The second mystery resolves.
+- **P:** Moves forward.
+- **R:** Moves forward.
+- **B:** Moves forward.
+
 ## Chapter 05 — The Reveal
 
 ### Chapter Summary
@@ -59,6 +83,12 @@ The reveal chapter, per the whodunit fixture.
 - **Hook:** q-a — the carried question, still open.
 - **Because:** ch 04 — the local thread is settled before the reveal.
 
+### Track Movement
+- **M:** The book's own mystery comes to light.
+- **P:** Moves forward.
+- **R:** Moves forward.
+- **B:** Moves forward.
+
 ## Chapter 06 — After
 
 ### Chapter Summary
@@ -68,3 +98,9 @@ The book ends; the carried question is left for the next one.
 - **Turn / Change:** The book closes on its own terms, seed intact.
 - **Hook:** q-a — carried past the end, on purpose.
 - **Because:** ch 05 — the reveal leaves the seed untouched.
+
+### Track Movement
+- **M:** The book closes.
+- **P:** Moves forward.
+- **R:** Moves forward.
+- **B:** Moves forward.

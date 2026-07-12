@@ -1,9 +1,29 @@
 """Dramatic-wiring checker (deterministic; plot-book workshop spec §6).
 
 Named checks over the wired outline format — causality graph, open-question
-ledger, hook chain (this task), plus curve/beat checks against the genre beat
-sheet (Tasks 5–6). No LLM judgment: every check is arithmetic over the wiring.
-An outline without wiring is SKIPPED (wired: False, exit 0) — book 1 stays valid.
+ledger, hook chain, chapter coverage (this task), plus curve/beat checks
+against the genre beat sheet (Tasks 5–6). No LLM judgment: every check is
+arithmetic over the wiring. An outline without wiring is SKIPPED (wired:
+False, exit 0) — book 1 stays valid.
+
+Checks (ids are the waiver handles):
+  orphan-chapter    a chapter's Because is missing, names a nonexistent
+                     chapter, or points forward/self
+  dropped-question  a question is opened and never closed or carried
+  phantom-answer    a chapter closes/carries a question no earlier chapter opened
+  broken-hook       a chapter's hook names an already-closed or unknown question
+  chapter-coverage  the chapter numbers present are not exactly contiguous
+                     1..total_chapters (gaps, dupes, or extras) — the seam
+                     failure mode of the chapters stage's per-gap dispatches
+  dead-stretch      open-question count drops below the beat sheet's
+                     min_open_before_reveal before the reveal chapter
+  starved-thread    a genre-declared track (from the beat sheet's
+                     tracks.max_dark_gap keys) is dark — including chapters
+                     with no Track Movement row for it at all — for more than
+                     its max_dark_gap
+  off-mark-beat     a turning point's beat sits outside the beat sheet's
+                     position window (or, for the reveal beat, off the
+                     whodunit ledger's reveal_chapter)
 
   python3 scripts/tension_check.py input/book-NN/outline-skeleton.md \
       [--beat-sheet P] [--turning-points P] [--whodunit P]
@@ -99,7 +119,13 @@ def _curve_checks(chapters, beat_sheet, reveal_ch, blocking):
         run, run_start = 0, None
         for c in chapters:
             val = c["tracks"].get(track)
-            dark = isinstance(val, str) and val.strip().lower().startswith("none")
+            # FINAL REVIEW FINDING 4: a chapter with no Track Movement row at
+            # all for this track must count as DARK, not as advancing. Only
+            # the weave pass is required to emit Track Movement rows (the fill
+            # pass isn't), so a weave pass that quietly drops a track across
+            # half the book must not read as zero findings — the exact
+            # failure mode this deterministic check exists to catch.
+            dark = val is None or (isinstance(val, str) and val.strip().lower().startswith("none"))
             if dark:
                 run += 1
                 run_start = run_start if run_start is not None else c["num"]
@@ -161,6 +187,18 @@ def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=Non
     total = int(total_raw) if isinstance(total_raw, str) and total_raw.strip().isdigit() else len(chapters)
     metrics = {"chapters": len(chapters), "total_chapters": total,
                "questions": sorted(qmaps["open_ch"])}
+    # FINAL REVIEW FINDING 2: the chapters stage is N separate chapter-weaver
+    # dispatches (one per turning-point gap) — gaps and duplicated boundary
+    # chapters at the seams are THE failure mode of that design, and nothing
+    # before this compared the chapter set to total_chapters (outline_check.py
+    # does this for the shape-only door, but /plot-book's machine-written
+    # skeleton only ever runs through tension_check.py). Model on
+    # outline_check.py's outline-chapters-contiguous.
+    nums = sorted(c["num"] for c in chapters)
+    if nums != list(range(1, total + 1)):
+        blocking.append(
+            f"chapter-coverage: chapter headings {nums} are not a contiguous "
+            f"1..{total} (gaps/dupes/extras)")
     reveal_ch = None
     if whodunit_path is not None and Path(whodunit_path).is_file():
         rc = _load_yaml(whodunit_path).get("reveal_chapter")
