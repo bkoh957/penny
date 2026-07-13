@@ -82,8 +82,11 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    | ai-prose | inspector-ai-prose | ai-prose-taste-flags.md | ai-prose-taste-flags.md |
 
    **Dispatch, in isolation, exactly the inspectors named in `$INSPECTORS`** — for each, the
-   `inspector-<name>` sub-agent with the chapter text, its rubric (from the table
-   above), and the ledger slice (structure also gets the roster). Each writes its
+   `inspector-<name>` sub-agent (pass `model:` = `inspector_model` from
+   `config/run-config.md`; the agent defs have no `model` frontmatter, so without an
+   override they inherit the parent — the drafting session, grading its own prose) with
+   the chapter text, its rubric (from the table above), and the ledger slice (structure
+   also gets the roster). Each writes its
    verdict into `output/book-$book/chapters/ch-$chapter.reviews/` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py`, to the verdict file named in the
    table above. `inspector-fairplay` additionally receives
@@ -107,7 +110,10 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
      from scripts.preflight import draft_sha256; print(draft_sha256('$book', '$chapter'))")"
    ```
 
-   Dispatch the `developmental-editor` sub-agent with its **context-rich** inputs — the
+   Dispatch the `developmental-editor` sub-agent (pass `model:` = the non-drafting model
+   resolved above; the same frontmatter gap applies — without an explicit override the
+   guard above is inert, because the agent silently inherits the drafting session) with
+   its **context-rich** inputs — the
    chapter draft text, `config/review-rubrics/developmental-craft.md`, the setting pack,
    a character-bible slice, and the chapter brief, plus `output/book-$book/mystery-solution.md`. Pass
    `$dev_sha` as the `reviewed_draft_sha256` it must record. It writes
