@@ -70,6 +70,35 @@ def test_missing_engine_file_flagged(tmp_path):
     assert report["summary"]["missing"] >= 1
 
 
+def _reroute_inspector(tmp, value):
+    cfg = tmp / "config/run-config.md"
+    cfg.write_text(
+        cfg.read_text(encoding="utf-8").replace("inspector_model:  claude-sonnet", value),
+        encoding="utf-8")
+
+
+def test_review_panel_routing_ready_when_inspector_differs_from_drafter(tmp_path):
+    _engine_ready(tmp_path)
+    entry = _by(readiness_check.engine_checks(tmp_path), "review-panel-routing")
+    assert entry["status"] == "ready"
+
+
+def test_review_panel_routing_blocked_when_inspector_is_the_drafter(tmp_path):
+    _engine_ready(tmp_path)
+    _reroute_inspector(tmp_path, "inspector_model:  claude-opus")
+    entry = _by(readiness_check.engine_checks(tmp_path), "review-panel-routing")
+    assert entry["status"] == "blocked"
+    assert "drafting_model" in entry["detail"]
+
+
+def test_review_panel_routing_blocked_when_inspector_model_absent(tmp_path):
+    _engine_ready(tmp_path)
+    _reroute_inspector(tmp_path, "")
+    entry = _by(readiness_check.engine_checks(tmp_path), "review-panel-routing")
+    assert entry["status"] == "blocked"
+    assert "inspector_model" in entry["detail"]
+
+
 def test_dir_with_too_few_files_blocked(tmp_path):
     _engine_ready(tmp_path)
     personas = sorted((tmp_path / "config/beta-readers/personas").glob("*.md"))

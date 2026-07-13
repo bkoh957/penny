@@ -178,7 +178,10 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
   (`penny_genre.py beat-sheet`), never a hardcoded filename; an outline with no
   wiring is SKIPPED entirely, so book 1 and any hand-authored/scaffolded outline
   still lock exactly as before), `draft N CH`
-  (lock present + ledger populated), `assemble N` (cross-model routing guard),
+  (lock present + ledger populated + the review panel is routed off the drafting
+  model — `inspector_model` must exist and differ from `drafting_model`, since the
+  inspector agents carry no `model:` frontmatter and would otherwise inherit the
+  drafting session and grade their own prose), `assemble N` (cross-model routing guard),
   `finalize N CH` (chapter must have `gate: PASS` + a fresh clear-dev cert),
   `clear-dev N CH` (showrunner approves developmental report), `approve-book N`
   (precondition gate + mints the `.approved` cert — its last write).

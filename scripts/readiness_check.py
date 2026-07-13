@@ -28,6 +28,7 @@ import yaml
 
 from scripts import penny_paths
 from scripts.fairplay_check import check_fairplay, load_fraction
+from scripts.penny_meta import load, parse_yaml_blocks
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -94,6 +95,33 @@ def _dir_check(name, rel, expected_min, repo_root) -> dict:
     return _check(name, "dir", "ready", path=rel, detail=f"{n} file(s)")
 
 
+def _review_panel_routing_check(repo_root) -> dict:
+    """The review panel must not be the model that wrote the prose.
+
+    The inspector agents carry no `model:` frontmatter, so a run-config that omits
+    `inspector_model` — or points it at the drafter — yields a panel grading its own
+    work. Same invariant `preflight draft` enforces; reported here so it surfaces
+    before the run, not at the gate.
+    """
+    rel = "config/run-config.md"
+    cfg = penny_paths.config_path("run-config.md", root=repo_root)
+    if not cfg.is_file():
+        return _check("review-panel-routing", "check", "missing", path=rel)
+    data = parse_yaml_blocks(load(cfg))
+    drafting = data.get("drafting_model")
+    inspector = data.get("inspector_model")
+    if not drafting or not inspector:
+        return _check("review-panel-routing", "check", "blocked", path=rel,
+                      detail="run-config missing drafting_model or inspector_model — "
+                             "the panel would inherit the drafting model")
+    if inspector == drafting:
+        return _check("review-panel-routing", "check", "blocked", path=rel,
+                      detail=f"inspector_model '{inspector}' equals drafting_model — "
+                             "the panel would grade its own prose")
+    return _check("review-panel-routing", "check", "ready", path=rel,
+                  detail=f"inspectors on '{inspector}', drafter on '{drafting}'")
+
+
 def _setting_pack_check(repo_root) -> dict:
     """Report the series-authored setting prose pack without hardcoded place names."""
     rel = "config/setting-pack"
@@ -132,6 +160,8 @@ def engine_checks(repo_root=None) -> list[dict]:
             out.append(_dir_check(name, rel, expected_min, repo_root))
         else:
             out.append(_file_check(name, rel, repo_root))
+        if name == "run-config":
+            out.append(_review_panel_routing_check(repo_root))
         if name == "lexicon":
             out.append(_setting_pack_check(repo_root))
             out.append(_genre_pack_check(repo_root))

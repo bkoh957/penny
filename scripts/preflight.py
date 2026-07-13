@@ -137,7 +137,7 @@ def cmd_clear_dev(book: str, chapter: str, *, repo_root=None) -> int:
     return 0
 
 
-def cmd_draft(book: str, chapter: str, *, repo_root=None) -> int:
+def cmd_draft(book: str, chapter: str, *, repo_root=None, run_config=None) -> int:
     repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
     led = ledger_path(book, repo_root)
     if not led.is_file():
@@ -147,6 +147,21 @@ def cmd_draft(book: str, chapter: str, *, repo_root=None) -> int:
         _fail(f"ledger unpopulated for book {book} ({led})")
     if not lock_path(book, repo_root).is_file():
         _fail(f"no lock for book {book} — run /plan-mystery {book} to validate and lock")
+    # The review panel must not be the drafter. The inspector agents declare no
+    # `model:`, so an unrouted panel inherits the drafting session and grades its
+    # own prose — a PASS that means nothing. Refuse before a word is written.
+    run_config = run_config or penny_paths.config_path("run-config.md", root=repo_root)
+    if not Path(run_config).is_file():
+        _fail(f"no run-config ({run_config}) — the review panel cannot be routed")
+    cfg = parse_yaml_blocks(load(run_config))
+    drafting = cfg.get("drafting_model")
+    inspector = cfg.get("inspector_model")
+    if not drafting or not inspector:
+        _fail("run-config missing drafting_model or inspector_model — the review "
+              "panel would inherit the drafting model and grade its own prose")
+    if inspector == drafting:
+        _fail(f"inspector_model equals drafting_model ({inspector}) — the review "
+              "panel would grade its own prose")
     return 0
 
 

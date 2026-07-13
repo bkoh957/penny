@@ -89,7 +89,7 @@ def test_lock_mystery_no_lock_when_culprit_unresolvable(tmp_path):
     assert not preflight.lock_path("01", tmp_path).is_file()
 
 
-def _make_book(root, book="01", *, populated=True, locked=True):
+def _make_book(root, book="01", *, populated=True, locked=True, run_config=True):
     wd = root / "series/whodunit"
     wd.mkdir(parents=True, exist_ok=True)
     led = wd / f"book-{book}.yaml"
@@ -98,6 +98,8 @@ def _make_book(root, book="01", *, populated=True, locked=True):
         ld = root / ".penny/locks"
         ld.mkdir(parents=True, exist_ok=True)
         (ld / f"book-{book}.mystery.lock").write_text("ok\n", encoding="utf-8")
+    if run_config:
+        _make_run_config(root, drafting="claude-opus", final_read="codex")
     return led
 
 
@@ -127,12 +129,45 @@ def test_draft_fails_when_ledger_unpopulated(tmp_path):
     assert "unpopulated" in str(e.value)
 
 
-def _make_run_config(root, *, drafting, final_read):
+# The review panel is only worth running on a model that did not write the prose.
+# The inspector agents carry no `model:` frontmatter, so an unrouted panel silently
+# inherits the drafting session and grades its own work — a PASS that means nothing.
+# Caught here, before a word is drafted, rather than at the gate.
+
+def test_draft_fails_when_inspector_model_equals_drafting_model(tmp_path):
+    _make_book(tmp_path, populated=True, locked=True, run_config=False)
+    _make_run_config(tmp_path, drafting="claude-opus", final_read="codex",
+                     inspector="claude-opus")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_draft("01", "01", repo_root=tmp_path)
+    assert "inspector_model equals drafting_model" in str(e.value)
+
+
+def test_draft_fails_when_inspector_model_absent(tmp_path):
+    _make_book(tmp_path, populated=True, locked=True, run_config=False)
+    (tmp_path / "config").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "config/run-config.md").write_text(
+        "```yaml\ndrafting_model: claude-opus\nfinal_read_model: codex\n```\n",
+        encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_draft("01", "01", repo_root=tmp_path)
+    assert "inspector_model" in str(e.value)
+
+
+def test_draft_fails_without_run_config(tmp_path):
+    _make_book(tmp_path, populated=True, locked=True, run_config=False)
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_draft("01", "01", repo_root=tmp_path)
+    assert "run-config" in str(e.value)
+
+
+def _make_run_config(root, *, drafting, final_read, inspector="claude-sonnet"):
     cfg = root / "config"
     cfg.mkdir(parents=True, exist_ok=True)
     (cfg / "run-config.md").write_text(
         "# fixture run-config\n\n```yaml\n"
         f"drafting_model:   {drafting}\n"
+        f"inspector_model:  {inspector}\n"
         f"final_read_model: {final_read}\n"
         "```\n",
         encoding="utf-8",
