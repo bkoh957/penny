@@ -538,3 +538,25 @@ def test_no_leaks_survive_in_any_wired_fixture():
             assert field not in out, f"{field} leaked in {path}"
         assert "Solution" not in out, f"Solution leaked in {path}"
         assert "**M:**" not in out, f"track row leaked in {path}"
+
+
+# --- Chapter-title flags ([type: ...] / [long: ...]) are a spoiler --------
+# A flagged heading like "## Chapter 14 — The Reveal [type: major-reveal]"
+# tells the blind reader exactly which chapter is the reveal. The strip must
+# be by construction, so it reuses penny_wiring's own TYPE_FLAG_RE/LONG_FLAG_RE
+# — never a second, forkable pattern.
+
+WEIGHTED = Path("tests/fixtures/outlines/weighted-clean.md")
+
+
+def test_readers_copy_strips_title_flags_from_flagged_heading():
+    out = readers_copy_text(WEIGHTED.read_text(encoding="utf-8"))
+    assert "## Chapter 02 — The Reveal" in out
+    assert "[type:" not in out and "[long:" not in out
+    assert "major-reveal" not in out
+    assert "the confession runs its full course" not in out
+
+
+def test_readers_copy_unflagged_heading_round_trips_unchanged():
+    out = readers_copy_text(WEIGHTED.read_text(encoding="utf-8"))
+    assert "## Chapter 01 — The Wheelhouse" in out

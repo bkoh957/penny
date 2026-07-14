@@ -21,7 +21,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts import penny_paths
 from scripts.penny_meta import parse_frontmatter, strip_frontmatter, write_frontmatter_field
-from scripts.penny_wiring import CHAPTER_RE, FIELD_RE, HEADING_RE, QID_RE, split_id
+from scripts.penny_wiring import (CHAPTER_RE, FIELD_RE, HEADING_RE, LONG_FLAG_RE,
+                                   QID_RE, TYPE_FLAG_RE, split_id)
 
 STAGE_ORDER = ["premise", "ending", "turning-points", "counterplot",
                "chapters", "weave", "readback"]
@@ -199,6 +200,15 @@ def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None) -> str:
                     continue
             elif skipping:
                 continue
+            if HEADING_RE.match(line):
+                # A chapter-title flag ("## Chapter 14 — The Reveal
+                # [type: major-reveal] [long: reason]") is a spoiler — it
+                # names the reveal chapter to the blind reader as surely as
+                # the raw heading text would. Strip it here, by construction,
+                # reusing penny_wiring's own TYPE_FLAG_RE/LONG_FLAG_RE (one
+                # parser, one set of patterns) rather than a second regex.
+                line = TYPE_FLAG_RE.sub("", line)
+                line = LONG_FLAG_RE.sub("", line)
             # FINDING 1: drop any track row wherever it falls, independent of
             # heading spelling/level, bullet style, spacing, or case, or
             # whether there is a heading at all — see _TRACK_DROP_RE above.
