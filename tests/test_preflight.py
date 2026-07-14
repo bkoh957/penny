@@ -601,3 +601,76 @@ def test_waived_overloaded_chapter_locks_and_records_reason(tmp_path):
     assert "validated: fairplay+lexicon+tension" in body
     assert ("waived: overloaded-chapter — ch 1 is deliberately dense; showrunner "
             "accepts the length risk") in body
+
+
+# --- FINAL REVIEW C1 + I4: the lock and the length profile ------------------
+#
+# C1: the live series' length-profile.md is the LEGACY format (a prose table +
+# book_target_words — no band_*/weight_* keys). check_tension parsed it
+# unconditionally, so /plot-book 02 -> lock-mystery raised a raw ValueError:
+# a regression that made the live series unable to lock its next book.
+#
+# I4: weights are authored into the EXPANDED outline (input/book-NN/outline.md),
+# which is where overloaded-chapter must therefore look — lock-mystery reads
+# outline-skeleton.md for the wiring, and the skeleton has no scenes at all, so
+# the ninth check was unreachable on the only path that produces weights.
+
+LEGACY_PROFILE = SRC / "tests/fixtures/length-profile-legacy.md"
+NEW_PROFILE = SRC / "tests/fixtures/length-profile.md"
+WEIGHTED_OVERLOADED = SRC / "tests/fixtures/outlines/weighted-overloaded.md"
+WIRED_CLEAN = SRC / "tests/fixtures/outlines/wired-clean.md"
+
+
+def _add_profile(tmp_path, fixture):
+    (tmp_path / "config").mkdir(parents=True, exist_ok=True)
+    shutil.copy(fixture, tmp_path / "config/length-profile.md")
+
+
+def _add_expanded_outline(tmp_path, fixture):
+    d = tmp_path / "input/book-01"
+    d.mkdir(parents=True, exist_ok=True)
+    shutil.copy(fixture, d / "outline.md")
+
+
+def test_legacy_length_profile_still_locks_a_wired_book(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    _add_wired_skeleton(tmp_path, WIRED_CLEAN)
+    _add_profile(tmp_path, LEGACY_PROFILE)
+    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
+    assert preflight.lock_path("01", tmp_path).is_file()
+
+
+def test_legacy_length_profile_records_the_skipped_overload_check(tmp_path, capsys):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    _add_wired_skeleton(tmp_path, WIRED_CLEAN)
+    _add_expanded_outline(tmp_path, WEIGHTED_OVERLOADED)
+    _add_profile(tmp_path, LEGACY_PROFILE)
+    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
+    body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
+    assert "skipped: overloaded-chapter" in body, (
+        "a certificate that stamps validated:...+tension while the overload check "
+        "never ran is a certificate that lies")
+    assert "band_default" in body
+
+
+def test_overloaded_chapter_fires_at_the_lock_on_the_weighted_expanded_outline(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    _add_wired_skeleton(tmp_path, WIRED_CLEAN)
+    _add_expanded_outline(tmp_path, WEIGHTED_OVERLOADED)
+    _add_profile(tmp_path, NEW_PROFILE)
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_lock_mystery("01", repo_root=tmp_path)
+    assert "overloaded-chapter" in str(e.value)
+    assert not preflight.lock_path("01", tmp_path).is_file()
+
+
+def test_overloaded_chapter_is_waivable_at_the_lock(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    _add_wired_skeleton(tmp_path, WIRED_CLEAN)
+    _add_expanded_outline(tmp_path, WEIGHTED_OVERLOADED)
+    _add_profile(tmp_path, NEW_PROFILE)
+    assert preflight.cmd_lock_mystery(
+        "01", repo_root=tmp_path,
+        waivers=['overloaded-chapter:the day is meant to be relentless']) == 0
+    body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
+    assert "waived: overloaded-chapter — the day is meant to be relentless" in body

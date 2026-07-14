@@ -304,7 +304,10 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
         profile_path = None
     validated = "fairplay+lexicon"
     waived_lines: list[str] = []
+    skipped_lines: list[str] = []
     fired: set[str] = set()
+    findings: list[str] = []
+    notes: list[str] = []
     if outline is not None:
         tres = check_tension(
             outline,
@@ -313,6 +316,8 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
                 repo_root / "input" / f"book-{book}" / "plot" / "turning-points.md"),
             whodunit_path=led,
             profile_path=profile_path)
+        findings += tres["blocking"]
+        notes += tres["notes"]
         if tres["wired"]:
             validated = "fairplay+lexicon+tension"
             if beat_sheet_path is None:
@@ -321,13 +326,35 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
                 # skipped for lack of a resolvable beat sheet.
                 print("lock-mystery: note — no beat sheet resolved; curve/beat "
                       "checks (dead-stretch, starved-thread, off-mark-beat) skipped")
-            for f in tres["blocking"]:
-                print(f"tension_check: {f}")
-            unwaived = [f for f in tres["blocking"]
-                        if f.split(":", 1)[0] not in waiver_map]
-            if unwaived:
-                _fail("tension failed; lock NOT written:\n  - " + "\n  - ".join(unwaived))
-            fired = {f.split(":", 1)[0] for f in tres["blocking"]}
+    # The WEIGHTS live in the expanded outline (input/book-NN/outline.md), which
+    # /expand-outline writes and /build-briefs weighs; the WIRING lives in the
+    # skeleton the workshop writes, and `outline` above resolves to the skeleton
+    # first. The skeleton has no `### Scene` blocks at all, so overloaded-chapter —
+    # the ninth check, its --waive handle, and its certificate line — was
+    # unreachable on the only path that produces weights (final review I4). Run it
+    # over the scene-level outline whenever that is a different file.
+    expanded = repo_root / "input" / f"book-{book}" / "outline.md"
+    if expanded.is_file() and (outline is None or expanded != Path(outline)):
+        from scripts.penny_wiring import parse_wired_chapters
+        from scripts.tension_check import check_overload
+        ores = check_overload(
+            parse_wired_chapters(expanded.read_text(encoding="utf-8")),
+            profile_path=profile_path, beat_sheet_path=beat_sheet_path, whodunit_path=led)
+        findings += ores["blocking"]
+        notes += ores["notes"]
+    for n in notes:
+        # A check that COULD NOT RUN is never silent, and never a crash: it is
+        # named here and recorded on the certificate below, so the lock cannot
+        # claim coverage it does not have.
+        print(f"lock-mystery: note — {n}")
+        skipped_lines.append(f"skipped: {n}")
+    if findings:
+        for f in findings:
+            print(f"tension_check: {f}")
+        unwaived = [f for f in findings if f.split(":", 1)[0] not in waiver_map]
+        if unwaived:
+            _fail("tension failed; lock NOT written:\n  - " + "\n  - ".join(unwaived))
+        fired = {f.split(":", 1)[0] for f in findings}
     # FINAL REVIEW FINDING 9: hoisted out of `if tres["wired"]` (and out of
     # `if outline is not None`, which has the same hole) — a waiver dictated
     # for a book that never reached wiring, or has no outline at all, must
@@ -345,7 +372,8 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
     lp.write_text(
         f"book: {book}\nvalidated: {validated}\n"
         f"locked_at: {datetime.now(timezone.utc).isoformat()}\n"
-        + "".join(line + "\n" for line in waived_lines),
+        + "".join(line + "\n" for line in waived_lines)
+        + "".join(line + "\n" for line in skipped_lines),
         encoding="utf-8",
     )
     return 0
