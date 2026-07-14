@@ -13,8 +13,14 @@ guilt before this book's `reveal_chapter`. `inspector-fairplay` blocks the gate 
 Does not write ledgers.
 
 **Inputs:**
-- The chapter brief: the full `## Chapter NN — Title` section from
-  `input/book-NN/outline.md`. Two formats exist — honour whichever the chapter uses:
+- **The compiled brief** — `input/book-NN/briefs/ch-MM.md`, when it exists. This is a
+  prompt, not an outline: the anchor scene is the root and every other scene is subordinate
+  to it. When there is no brief, you receive the raw `## Chapter NN` outline section
+  instead (the legacy path) — in that case treat the beats as **unweighted**, and read the
+  chapter summary to decide which scene is the chapter's one dramatic experience.
+- The chapter brief (legacy path, no compiled brief): the full `## Chapter NN — Title`
+  section from `input/book-NN/outline.md`. Two formats exist — honour whichever the
+  chapter uses:
   - **Scene-breakdown format** (detailed): one or more `### Scene N — Title` sections,
     each containing **Location**, **Purpose**, **Beat flow** (numbered list),
     **Emotional turn**, and optionally **Texture to include**. Followed by a
@@ -58,6 +64,29 @@ Does not write ledgers.
    visibly advance.
 2. Honour the fluency stage from canon-core (Book 1 = OUTSIDER: no local idiom in
    narration).
-3. **Classify the chapter type from the brief** (opening / standard investigation / quick confrontation / major reveal / final confrontation) and write to the matching word-count range in `config/length-profile.md`. Before finishing, check your word count. If you are under the range minimum, continue writing — extend a scene, deepen interiority, slow a beat, add sensory texture — until you clear the minimum. Do not stop early. Plant exactly the clues the brief names.
+3. **Write to the brief's budget.** If `input/book-NN/briefs/ch-MM.md` exists it is your
+   prompt: the anchor scene is the chapter's reason to exist and carries the largest word
+   budget; support beats are subordinate; connective beats are a paragraph, a transition, a
+   phone call, or a line of dialogue — **in summary, not scene.** Honour the per-scene
+   budgets. The obligations list names what must be TRUE OF THE PAGE; discharge them inside
+   the scenes you are already writing. **Do not give an obligation its own scene.**
+
+   **Do not pad.** If the chapter runs short, that is a **scene-count** problem and it
+   belongs to the outline, not to your prose — report it rather than inflating what is
+   there. Never lengthen a scene, drag out a beat, or decorate for volume to reach a
+   number: dilution is the opposite of a page-turner, and a chapter is not improved by
+   being longer. If there is no brief (the legacy path), classify the chapter type from
+   the outline (opening / standard investigation / quick confrontation / major reveal /
+   final confrontation) and write to the matching range in `config/length-profile.md`; if
+   you land short there too, report it the same way rather than inflating the prose.
+
+   **When you land short, say so in the draft itself:** end your output with a one-line
+   `<!-- drafter-note: ... -->` HTML comment naming the shortfall (e.g. "landed at 1,540
+   words against a 1,800 minimum — the outline gives this chapter three beats where a
+   chapter this size needs four; needs another scene, not more prose") so the showrunner
+   sees it at `/review-chapter` time without a second pass. Never invent a scene yourself to
+   close the gap — that is the outline's call, not yours.
+
+   Plant exactly the clues the brief names.
 4. End on a hook. Write `drafted_by` and `drafted_on` frontmatter (use the draft
    date passed to you by `/draft-chapter`). Do NOT update any ledger.

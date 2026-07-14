@@ -40,10 +40,15 @@ edit and commit with `/finalize-chapter`.
    ```
 
 3. **Assemble the chapter brief and ledger slice** (design §4.2):
-   - **Chapter brief:** Read `input/book-$book/outline.md`. Extract the full
-     section for chapter $chapter, from its `## Chapter $chapter — *` heading up to
-     the next chapter heading / `---` boundary. Do not cherry-pick only old compact
-     headings: two outline formats are valid and the drafter accepts both.
+   - **Chapter brief:** if `input/book-$book/briefs/ch-$chapter.md` exists, that file **is**
+     the brief — pass it verbatim. It is a compiled prompt: an emphasis hierarchy with word
+     budgets, an obligations checklist, a commissioned first line, a graded hook, declared
+     negative space, and the raw outline section demoted to reference.
+
+     If it does not exist, **fall back** to the legacy path: read
+     `input/book-$book/outline.md` and extract the full `## Chapter $chapter` section. Warn
+     that the chapter is drafting from an uncompiled outline, and that a flat beat list
+     will be read by the model as a promise of parity — run `/build-briefs $book` to fix it.
      - **Scene-breakdown format:** `### Overall Summary`, one or more
        `### Scene N — Title` sections with Location/Purpose/Beat flow/Emotional
        turn/Texture, then `### Chapter Structure Summary`, `### Track Movement`,
@@ -51,6 +56,10 @@ edit and commit with `/finalize-chapter`.
      - **Compact format:** `### Chapter Summary`, `### Chapter Structure`, and
        `### Track Movement`.
      This full section is the brief passed to the drafter.
+
+     (`preflight draft` above already refuses a **stale** brief — one built from an
+     outline or whodunit ledger that has since changed — before this step runs; if it
+     refused, the cure is the same: re-run `/build-briefs $book`.)
    - **Ledger slice:** Always load `series/continuity/canon-core.md`; then load the
      continuity entries named in the brief and their one-hop `links`.
 
