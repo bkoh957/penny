@@ -517,3 +517,21 @@ def test_phantom_waiver_note_prints_when_outline_present_but_unwired(tmp_path, c
         waivers=["dead-stretch:never fires, book is unwired"]) == 0
     out = capsys.readouterr().out
     assert "waiver for 'dead-stretch' matched no finding; not recorded" in out
+
+
+def test_draft_fails_on_a_stale_brief(tmp_path):
+    _make_book(tmp_path, populated=True, locked=True)
+    briefs = tmp_path / "input/book-01/briefs"
+    briefs.mkdir(parents=True, exist_ok=True)
+    (tmp_path / "input/book-01/outline.md").write_text("## Chapter 01 — X\n", encoding="utf-8")
+    (briefs / "ch-01.md").write_text(
+        "---\nbuilt_from_outline: deadbeef\n---\n# brief\n", encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_draft("01", "01", repo_root=tmp_path)
+    assert "stale brief" in str(e.value)
+
+
+def test_draft_passes_when_no_briefs_exist_at_all(tmp_path):
+    # Book 1 has no briefs and must keep drafting exactly as before.
+    _make_book(tmp_path, populated=True, locked=True)
+    assert preflight.cmd_draft("01", "01", repo_root=tmp_path) == 0

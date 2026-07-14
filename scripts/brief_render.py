@@ -20,14 +20,18 @@ brief. The weights themselves are the showrunner's, declared in the outline.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml  # beat-sheet only — nested, human-edited (CLAUDE.md dependency split)
+# The whodunit ledger read in _obligations is legitimately PyYAML too (nested,
+# human-edited data — CLAUDE.md dependency split), not config/frontmatter.
 
 from scripts import penny_length, penny_paths
+from scripts.penny_meta import parse_frontmatter, write_frontmatter_field
 from scripts.penny_wiring import has_weights, parse_wired_chapters
 
 _FORM = {
@@ -305,6 +309,97 @@ def _chapter_block(outline_text: str, num: int) -> str:
             end = marks[i + 1].start() if i + 1 < len(marks) else len(outline_text)
             return outline_text[start:end].strip()
     return ""
+
+
+def brief_path(book: str, chapter: str, repo_root) -> Path:
+    return penny_paths.input_path(f"book-{book}/briefs/ch-{chapter}.md", root=repo_root)
+
+
+def _sha(path) -> str:
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def _obligations(book: str, chapter: dict, repo_root) -> dict:
+    """What must be TRUE OF THE PAGE — derived from the locked ledger and the wiring,
+    never re-authored. This is why the stage runs after the lock."""
+    led = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=repo_root)
+    clues: list[str] = []
+    if led.is_file():
+        data = yaml.safe_load(led.read_text(encoding="utf-8")) or {}
+        for entry in (data.get("clue_schedule") or []):
+            if int(entry.get("plant_chapter", 0)) == chapter["num"]:
+                clues.append(str(entry["id"]))
+        for entry in (data.get("red_herrings") or []):
+            if int(entry.get("plant_chapter", 0)) == chapter["num"]:
+                clues.append(str(entry["id"]))
+    return {"clues": clues,
+            "opens": [q for q, _ in chapter["opens"]],
+            "closes": list(chapter["closes"]),
+            "tracks": dict(chapter["tracks"])}
+
+
+def build(book: str, *, chapter=None, repo_root=None) -> int:
+    """Compile the locked outline into input/book-NN/briefs/ch-MM.md, one file per
+    chapter, each stamped with the outline's sha256 (built_from_outline).
+
+    A chapter render_brief refuses (no anchor, two anchors, an undeclared scene
+    weight) does not abort the whole book: it is reported by name and reason,
+    skipped, and the run's exit status reflects that not everything compiled —
+    the caller (a human, or /build-briefs) must not mistake a partial write for
+    a clean one.
+    """
+    root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
+    outline = penny_paths.input_path(f"book-{book}/outline.md", root=root)
+    profile_path = penny_paths.config_path("length-profile.md", root=root)
+    text = outline.read_text(encoding="utf-8")
+    chapters = parse_wired_chapters(text)
+    if not has_weights(chapters):
+        print("no scene weights detected — no briefs written "
+              "(the drafter will receive the raw outline section, as today)")
+        return 0
+    profile = penny_length.parse_profile(profile_path.read_text(encoding="utf-8"))
+    sha = _sha(outline)
+    written = 0
+    failed: list[str] = []
+    for ch in chapters:
+        num = f"{ch['num']:02d}"
+        if chapter is not None and num != str(chapter).zfill(2):
+            continue
+        try:
+            body = render_brief(ch, profile=profile,
+                                obligations=_obligations(book, ch, root),
+                                outline_text=text)
+        except ValueError as e:
+            print(f"FAILED: ch {num} did not compile — {e}")
+            failed.append(num)
+            continue
+        stamped = write_frontmatter_field("---\n---\n\n" + body,
+                                          "built_from_outline", sha)
+        p = brief_path(book, num, root)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(stamped, encoding="utf-8")
+        written += 1
+    print(f"briefs: wrote {written} chapter brief(s) to input/book-{book}/briefs/"
+          + (f" ({len(failed)} failed: {', '.join(failed)})" if failed else ""))
+    return 1 if failed else 0
+
+
+def stale_briefs(book: str, repo_root) -> list[str]:
+    """Chapter numbers whose brief was built from a different outline than the one on
+    disk. Editing the outline invalidates every brief built from it — nothing drifts
+    silently (the workshop's own contract)."""
+    root = Path(repo_root)
+    outline = penny_paths.input_path(f"book-{book}/outline.md", root=root)
+    briefs_dir = penny_paths.input_path(f"book-{book}/briefs", root=root)
+    if not briefs_dir.is_dir() or not outline.is_file():
+        return []
+    sha = _sha(outline)
+    stale = []
+    for p in sorted(briefs_dir.glob("ch-*.md")):
+        fm = parse_frontmatter(p.read_text(encoding="utf-8"))
+        if fm.get("built_from_outline") != sha:
+            stale.append(p.stem.replace("ch-", ""))
+    return stale
 
 
 def main(argv=None) -> int:

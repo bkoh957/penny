@@ -162,6 +162,13 @@ def cmd_draft(book: str, chapter: str, *, repo_root=None, run_config=None) -> in
     if inspector == drafting:
         _fail(f"inspector_model equals drafting_model ({inspector}) — the review "
               "panel would grade its own prose")
+    # A brief built from a different outline is a lie about what this chapter owes.
+    # No briefs at all is fine — that is book 1, and it drafts from the raw section.
+    from scripts.brief_render import stale_briefs
+    stale = stale_briefs(book, repo_root)
+    if chapter.zfill(2) in stale:
+        _fail(f"stale brief for ch {chapter} — the outline changed since it was built; "
+              f"re-run /build-briefs {book}")
     return 0
 
 

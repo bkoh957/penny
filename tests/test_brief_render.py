@@ -300,3 +300,48 @@ def test_render_brief_raises_a_named_error_for_a_weight_class_form_has_no_prose_
             ch, profile=profile,
             obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
             outline_text=WEIGHTED.read_text(encoding="utf-8"))
+
+
+import shutil
+
+
+def _series(tmp_path):
+    (tmp_path / ".penny").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "config").mkdir(parents=True, exist_ok=True)
+    shutil.copy(PROFILE, tmp_path / "config/length-profile.md")
+    inp = tmp_path / "input/book-01"
+    inp.mkdir(parents=True, exist_ok=True)
+    shutil.copy(WEIGHTED, inp / "outline.md")
+    (tmp_path / "series/whodunit").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "series/whodunit/book-01.yaml").write_text(
+        "book: '01'\nreveal_chapter: 2\nclue_schedule:\n"
+        "  - { id: clue-tide-table, plant_chapter: 1, pays_off_chapter: 2, necessary: true }\n",
+        encoding="utf-8")
+    return tmp_path
+
+
+def test_build_writes_one_brief_per_chapter_stamped_with_the_outline_sha(tmp_path):
+    root = _series(tmp_path)
+    assert brief_render.build("01", repo_root=root) == 0
+    b1 = root / "input/book-01/briefs/ch-01.md"
+    assert b1.is_file()
+    from scripts.penny_meta import parse_frontmatter
+    fm = parse_frontmatter(b1.read_text(encoding="utf-8"))
+    assert fm["built_from_outline"]
+
+
+def test_build_pulls_the_clue_obligation_from_the_locked_ledger(tmp_path):
+    root = _series(tmp_path)
+    brief_render.build("01", repo_root=root)
+    text = (root / "input/book-01/briefs/ch-01.md").read_text(encoding="utf-8")
+    assert "clue-tide-table" in text
+
+
+def test_editing_the_outline_makes_the_brief_stale(tmp_path):
+    root = _series(tmp_path)
+    brief_render.build("01", repo_root=root)
+    assert brief_render.stale_briefs("01", root) == []
+    outline = root / "input/book-01/outline.md"
+    outline.write_text(outline.read_text(encoding="utf-8") + "\n<!-- edited -->\n",
+                       encoding="utf-8")
+    assert brief_render.stale_briefs("01", root) == ["01", "02"]
