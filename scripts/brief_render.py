@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import re
 import sys
 from pathlib import Path
 
@@ -329,11 +330,21 @@ NO_WHODUNIT = "none"  # sentinel for built_from_whodunit when no ledger existed 
 def load_ledger(path) -> dict:
     """Read + parse the whodunit ledger at `path` — the ONE guarded entry point
     every caller uses (build()'s _obligations, preflight.cmd_draft). A ledger
-    that cannot be read, is not valid YAML, or whose top level is not a
-    mapping produces a NAMED ValueError identifying the path and the problem
-    — never a raw ParserError/AttributeError/OSError traceback. Callers turn
-    this into their own convention (a per-chapter FAILED line here, a
-    `preflight: <predicate>` exit there)."""
+    that cannot be read, is not valid YAML, whose top level is not a mapping,
+    or whose `clue_schedule`/`red_herrings` are not lists of mappings produces
+    a NAMED ValueError identifying the path and the problem — never a raw
+    ParserError/AttributeError/OSError traceback. Callers turn this into their
+    own convention (a per-chapter FAILED line here, a `preflight: <predicate>`
+    exit there).
+
+    The guard must reach the data its callers actually use, not just the
+    ledger's top level: `_obligations` iterates `clue_schedule`/`red_herrings`
+    and calls `.get(...)` on each entry, so a top-level-mapping check alone
+    left a `clue_schedule: 'not a list'` (iterates the string's characters,
+    then `.get()` on a one-character string) or a
+    `clue_schedule: [just-a-string, 42]` (`.get()` on a non-dict entry) free
+    to raise a bare AttributeError that escapes build()'s `except ValueError`
+    and aborts the whole book mid-loop with a raw traceback."""
     path = Path(path)
     try:
         raw = path.read_text(encoding="utf-8")
@@ -349,7 +360,31 @@ def load_ledger(path) -> dict:
         raise ValueError(
             f"malformed-ledger: {path} top level is a {type(data).__name__}, "
             "not a mapping — cannot read clue_schedule/red_herrings from it")
+    for key in ("clue_schedule", "red_herrings"):
+        _validate_entry_list(data, key, path)
     return data
+
+
+def _validate_entry_list(data: dict, key: str, path: Path) -> None:
+    """`data[key]`, if present, must be a list of mappings — the shape every
+    caller (`_obligations`, `_plant_chapter`) relies on when it calls `.get()`
+    or subscripts an entry. Absent is fine (nothing to validate); present but
+    wrong-shaped is a named malformed-ledger error naming the offending key
+    and, for a bad entry, its index."""
+    entries = data.get(key)
+    if entries is None:
+        return
+    if not isinstance(entries, list):
+        raise ValueError(
+            f"malformed-ledger: {path} key {key!r} is a "
+            f"{type(entries).__name__}, not a list — cannot read scheduled "
+            "clues from it")
+    for i, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            raise ValueError(
+                f"malformed-ledger: {path} key {key!r}[{i}] is a "
+                f"{type(entry).__name__} ({entry!r}), not a mapping — cannot "
+                "read its id/plant_chapter")
 
 
 def _ledger_identity(path) -> str:
@@ -473,6 +508,22 @@ def build(book: str, *, chapter=None, repo_root=None) -> int:
     return 1 if failed else 0
 
 
+_CHAPTER_BRIEF_RE = re.compile(r"^ch-(\d+)\.md$")
+
+
+def _chapter_briefs(briefs_dir: Path) -> list[tuple[Path, str]]:
+    """The (path, chapter-number) pairs for genuine numbered chapter briefs
+    under `briefs_dir` — ch-01.md, ch-12.md. A stray file that merely starts
+    with the same glob, like briefs/ch-README.md, is not a chapter brief and
+    must not be reported as a stale chapter named "README"."""
+    out = []
+    for p in sorted(briefs_dir.glob("ch-*.md")):
+        m = _CHAPTER_BRIEF_RE.match(p.name)
+        if m:
+            out.append((p, m.group(1)))
+    return out
+
+
 def stale_briefs(book: str, repo_root) -> list[str]:
     """Chapter numbers whose brief was built from a different outline OR a different
     whodunit ledger than the ones now on disk. The ledger is a real upstream: a
@@ -492,19 +543,32 @@ def stale_briefs(book: str, repo_root) -> list[str]:
     record is not a clean bill of health; re-running /build-briefs is how it
     earns one.
 
+    No briefs directory at all is the genuine backward-compat case (book 1,
+    before /build-briefs has ever run) and returns []: there is nothing built
+    to compare, so the book drafts from the raw outline section as always.
+    But briefs directory PRESENT while the outline it was built from is GONE
+    is not that case — it is the source an existing artifact claims descent
+    from having vanished out from under it, precisely the silent drift this
+    whole contract exists to prevent. Every brief is stale in that case; the
+    caller's message ("stale brief ... re-run /build-briefs") is exactly
+    right for a missing outline too.
+
     Raises ValueError (unreadable-ledger) if the ledger exists on disk but
     cannot be read — a real failure, not silent absence.
     """
     root = Path(repo_root)
     outline = penny_paths.input_path(f"book-{book}/outline.md", root=root)
     briefs_dir = penny_paths.input_path(f"book-{book}/briefs", root=root)
-    if not briefs_dir.is_dir() or not outline.is_file():
+    if not briefs_dir.is_dir():
         return []
+    briefs = _chapter_briefs(briefs_dir)
+    if not outline.is_file():
+        return [num for _, num in briefs]
     sha = _sha(outline)
     ledger = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
     ledger_stamp = _ledger_identity(ledger)
     stale = []
-    for p in sorted(briefs_dir.glob("ch-*.md")):
+    for p, num in briefs:
         fm = parse_frontmatter(p.read_text(encoding="utf-8"))
         is_stale = fm.get("built_from_outline") != sha
         # ledger_stamp is never None (NO_WHODUNIT or a sha), so a brief with
@@ -514,7 +578,7 @@ def stale_briefs(book: str, repo_root) -> list[str]:
         if fm.get("built_from_whodunit") != ledger_stamp:
             is_stale = True
         if is_stale:
-            stale.append(p.stem.replace("ch-", ""))
+            stale.append(num)
     return stale
 
 

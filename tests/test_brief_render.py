@@ -604,3 +604,105 @@ def test_preflight_draft_fails_named_predicate_on_malformed_ledger(tmp_path):
         preflight.cmd_draft("01", "01", repo_root=root, run_config=run_config)
     assert "preflight:" in str(e.value)
     assert "malformed-ledger" in str(e.value)
+
+
+# ---- THIRD FIX WAVE, FIX 1: the guarded loader's guarantee must reach the
+# shape of clue_schedule/red_herrings, not just the ledger's top level.
+# clue_schedule as a bare string, or a list holding non-mapping entries, must
+# raise the same named ValueError as every other malformed-ledger case —
+# never an AttributeError from `.get()` on a string character or an int. ----
+
+def test_load_ledger_raises_named_error_when_clue_schedule_is_not_a_list(tmp_path):
+    ledger = tmp_path / "book-01.yaml"
+    ledger.write_text("book: '01'\nclue_schedule: 'not a list'\n", encoding="utf-8")
+    with pytest.raises(ValueError, match=r"malformed-ledger"):
+        brief_render.load_ledger(ledger)
+
+
+def test_load_ledger_raises_named_error_when_clue_schedule_entry_is_not_a_mapping(tmp_path):
+    ledger = tmp_path / "book-01.yaml"
+    ledger.write_text(
+        "book: '01'\nclue_schedule:\n  - just-a-string\n  - 42\n", encoding="utf-8")
+    with pytest.raises(ValueError, match=r"malformed-ledger"):
+        brief_render.load_ledger(ledger)
+
+
+def test_load_ledger_raises_named_error_when_red_herrings_is_not_a_list(tmp_path):
+    ledger = tmp_path / "book-01.yaml"
+    ledger.write_text("book: '01'\nred_herrings: 'not a list'\n", encoding="utf-8")
+    with pytest.raises(ValueError, match=r"malformed-ledger"):
+        brief_render.load_ledger(ledger)
+
+
+def test_load_ledger_raises_named_error_when_red_herrings_entry_is_not_a_mapping(tmp_path):
+    ledger = tmp_path / "book-01.yaml"
+    ledger.write_text(
+        "book: '01'\nred_herrings:\n  - just-a-string\n", encoding="utf-8")
+    with pytest.raises(ValueError, match=r"malformed-ledger"):
+        brief_render.load_ledger(ledger)
+
+
+def test_build_fails_loud_not_a_crash_when_clue_schedule_is_a_string(tmp_path, capsys):
+    """Reviewer repro #1: clue_schedule: 'not a list' used to iterate the
+    string's CHARACTERS, then call `.get()` on each one-character string —
+    an AttributeError that escapes build()'s `except ValueError` and aborts
+    the whole book mid-loop with a raw traceback."""
+    root = _series(tmp_path)
+    ledger = root / "series/whodunit/book-01.yaml"
+    ledger.write_text("book: '01'\nclue_schedule: 'not a list'\n", encoding="utf-8")
+    rc = brief_render.build("01", repo_root=root)
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "FAILED" in out
+    assert "malformed-ledger" in out
+    assert "book-01.yaml" in out
+    assert not (root / "input/book-01/briefs/ch-01.md").is_file()
+
+
+def test_build_fails_loud_not_a_crash_when_clue_schedule_has_a_non_mapping_entry(tmp_path, capsys):
+    """Reviewer repro #2: clue_schedule: [just-a-string, 42] — AttributeError
+    on the first non-dict entry's `.get(...)` call."""
+    root = _series(tmp_path)
+    ledger = root / "series/whodunit/book-01.yaml"
+    ledger.write_text(
+        "book: '01'\nclue_schedule:\n  - just-a-string\n  - 42\n", encoding="utf-8")
+    rc = brief_render.build("01", repo_root=root)
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "FAILED" in out
+    assert "malformed-ledger" in out
+    assert not (root / "input/book-01/briefs/ch-01.md").is_file()
+
+
+# ---- THIRD FIX WAVE, FIX 2: a deleted outline must not make every brief
+# report "fresh" — briefs are drift-detectable artifacts of a real outline
+# file, and a vanished source is the maximal case of drift, not an
+# exemption. The genuine backward-compat case (no briefs directory at all —
+# book 1, before /build-briefs has ever run) must still return []. ----------
+
+def test_deleted_outline_makes_every_brief_stale(tmp_path):
+    root = _series(tmp_path)
+    brief_render.build("01", repo_root=root)
+    assert brief_render.stale_briefs("01", root) == []
+    (root / "input/book-01/outline.md").unlink()
+    assert brief_render.stale_briefs("01", root) == ["01", "02"]
+
+
+def test_no_briefs_directory_at_all_still_returns_empty_list(tmp_path):
+    """The genuine backward-compat case stays intact: book 1, no briefs ever
+    built, no outline needed to draft from the raw section."""
+    root = tmp_path
+    (root / ".penny").mkdir(parents=True, exist_ok=True)
+    assert brief_render.stale_briefs("01", root) == []
+
+
+# ---- THIRD FIX WAVE, FIX 3: only files named ch-<digits>.md are chapter
+# briefs — a stray file like briefs/ch-README.md must not be reported as a
+# stale chapter named "README". -----------------------------------------
+
+def test_stray_non_numbered_brief_file_is_not_reported_as_stale(tmp_path):
+    root = _series(tmp_path)
+    brief_render.build("01", repo_root=root)
+    (root / "input/book-01/briefs/ch-README.md").write_text(
+        "# not a chapter brief\n", encoding="utf-8")
+    assert brief_render.stale_briefs("01", root) == []
