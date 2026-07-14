@@ -142,15 +142,25 @@ def test_brief_leads_with_the_one_thing_then_the_anchor():
 
 
 def test_anchor_carries_the_largest_budget_and_the_budgets_sum_to_the_band():
+    """FIX 1: the old version of this test asserted "~2000 words" and "~250
+    words" as independent substrings anywhere in the brief — a monkeypatch
+    that reversed scene_budgets' return (anchor gets 250, connective gets
+    2000: precisely the failure this compiler exists to prevent) still
+    passed both assertions, because neither one was pinned to a scene. This
+    version parses the rendered brief and checks the budget attached to
+    EACH scene's own line, so a swap fails it."""
     brief = brief_render.render_brief(
         _ch(1), profile=_profile(),
         obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
         outline_text=WEIGHTED.read_text(encoding="utf-8"))
+    lines = brief.splitlines()
+    anchor_line = next(l for l in lines if l.startswith("### ANCHOR"))
+    connective_line = next(l for l in lines if "CONNECTIVE" in l)
     # ch 1 has no [type:] flag, so the default band 2000-2500 → midpoint 2250,
     # shares connective 1 + anchor 8 = 9 → 250 and 2000.
-    assert "~2000 words" in brief   # the anchor
-    assert "~250 words" in brief    # the connective drive
-    assert "Cal and the Mug" in brief
+    assert "~2000 words" in anchor_line       # the anchor's OWN line
+    assert "~250 words" in connective_line    # the connective's OWN line
+    assert "Cal and the Mug" in anchor_line
 
 
 def test_connective_scene_names_its_form_not_a_number_alone():
@@ -198,3 +208,95 @@ def test_long_waiver_is_carried_into_the_brief():
     # ch 2 declares [type: major-reveal] → band 2500-3200, midpoint 2850
     assert "~2850 words" in brief
     assert "the confession runs its full course" in brief
+
+
+# ---- FIX 2: an undeclared scene weight must not silently default to "support" ----
+
+def test_undeclared_scene_weight_is_flagged_when_some_scenes_declare_and_one_doesnt(tmp_path):
+    """ch 1 of WEIGHTED has scene 1 (connective) and scene 2 (anchor). Strip
+    scene 1's Weight line only — the anchor is still declared, so this is
+    NOT the all-or-nothing unweighted-chapter case; it's a partial
+    declaration, which must earn its own finding naming the chapter and the
+    untagged scene."""
+    text = WEIGHTED.read_text(encoding="utf-8").replace(
+        "**Weight:** connective\n\n", "")
+    p = tmp_path / "outline.md"
+    p.write_text(text, encoding="utf-8")
+    r = brief_render.check_briefs(p)
+    assert "undeclared-scene-weight" in _ids(r["findings"])
+    finding = next(f for f in r["findings"] if f.startswith("undeclared-scene-weight"))
+    assert "ch 1" in finding
+    assert "The Drive" in finding
+
+
+def test_render_brief_raises_when_a_scene_weight_is_undeclared():
+    """FIX 2b: render_brief must not do `s["weight"] or "support"` — an
+    undeclared weight alongside a declared anchor is an authoring omission,
+    not a default the compiler is entitled to guess at."""
+    ch = _ch(1)
+    ch["scenes"][0]["weight"] = None  # scene 1 ("The Drive") left undeclared
+    with pytest.raises(ValueError, match=r"(?i)ch(?:apter)?.?\s*1\b.*(?:Drive|scene 1|weight)"):
+        brief_render.render_brief(
+            ch, profile=_profile(),
+            obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
+            outline_text=WEIGHTED.read_text(encoding="utf-8"))
+
+
+# ---- FIX 3: a chapter with no anchor has no correct brief ----
+
+def test_render_brief_raises_when_chapter_has_no_anchor_scene():
+    ch = _ch(1)
+    for s in ch["scenes"]:
+        s["weight"] = "support"  # both declared, neither an anchor
+    with pytest.raises(ValueError, match=r"(?i)ch(?:apter)?.?\s*1\b.*anchor"):
+        brief_render.render_brief(
+            ch, profile=_profile(),
+            obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
+            outline_text=WEIGHTED.read_text(encoding="utf-8"))
+
+
+# ---- FIX 4: two anchors contradict each other on the page ----
+
+def test_multi_anchor_chapter_is_flagged(tmp_path):
+    """Tag ch 1 scene 1 (originally connective) as a SECOND anchor. Own
+    finding id chosen: multi-anchor-chapter (kept separate from
+    unweighted-chapter, since this chapter is fully weighted — it declares
+    too MANY reasons to exist, not too few)."""
+    text = WEIGHTED.read_text(encoding="utf-8").replace(
+        "**Weight:** connective", "**Weight:** anchor", 1)
+    p = tmp_path / "outline.md"
+    p.write_text(text, encoding="utf-8")
+    r = brief_render.check_briefs(p)
+    assert "multi-anchor-chapter" in _ids(r["findings"])
+    finding = next(f for f in r["findings"] if f.startswith("multi-anchor-chapter"))
+    assert "ch 1" in finding
+
+
+def test_render_brief_raises_when_chapter_has_two_anchor_scenes():
+    ch = _ch(1)
+    for s in ch["scenes"]:
+        s["weight"] = "anchor"
+    with pytest.raises(ValueError, match=r"(?i)ch(?:apter)?.?\s*1\b.*anchor"):
+        brief_render.render_brief(
+            ch, profile=_profile(),
+            obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
+            outline_text=WEIGHTED.read_text(encoding="utf-8"))
+
+
+# ---- FIX 5: an unrecognised weight class must not raise a bare KeyError ----
+
+def test_render_brief_raises_a_named_error_for_a_weight_class_form_has_no_prose_for():
+    """penny_length.scene_budgets is generic over any weight_* class a series
+    declares in length-profile.md — a 4th class ("urgent") is a legal,
+    reachable declaration. _FORM in brief_render.py only knows
+    anchor/support/connective, so this must raise a clear, named error
+    (naming the class and the file to fix) rather than a bare KeyError."""
+    profile = _profile()
+    profile["weights"]["urgent"] = 5
+    ch = _ch(1)
+    ch["scenes"][0]["weight"] = "urgent"  # scene 1: declared, but no _FORM entry
+    with pytest.raises(ValueError, match=r"(?i)urgent"):
+        brief_render.render_brief(
+            ch, profile=profile,
+            obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
+            outline_text=WEIGHTED.read_text(encoding="utf-8"))

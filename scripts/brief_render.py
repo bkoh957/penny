@@ -75,16 +75,37 @@ def check_briefs(outline_path, *, beat_sheet_path=None) -> dict:
             # is a false positive that fires on every healthy unexpanded
             # chapter, every run — a check that cries wolf gets ignored.
             continue
-        if not any(s["weight"] for s in scenes):
+        weighted_scenes = [s for s in scenes if s["weight"]]
+        if not weighted_scenes:
             findings.append(
                 f"unweighted-chapter: ch {ch['num']} declares no scene weights in a "
                 f"weighted book — the drafter will treat all {len(scenes)} scenes as equal")
+            continue
+        if len(weighted_scenes) < len(scenes):
+            # Some scenes in this chapter declare a weight and at least one
+            # doesn't — a partial declaration, distinct from the
+            # all-or-nothing unweighted-chapter case above. Left alone,
+            # render_brief used to default the untagged scene to "support"
+            # silently; the showrunner never asked for that, so it earns its
+            # own finding rather than passing the checks clean.
+            undeclared = [s for s in scenes if not s["weight"]]
+            names = ", ".join(f"scene {s['num']} '{s['title']}'" for s in undeclared)
+            findings.append(
+                f"undeclared-scene-weight: ch {ch['num']} declares a weight for some "
+                f"scenes but not {names} — an undeclared scene weight would silently "
+                f"default to 'support', which nobody asked for")
             continue
         anchors = [s for s in scenes if s["weight"] == "anchor"]
         if not anchors:
             findings.append(
                 f"unweighted-chapter: ch {ch['num']} has no anchor scene — every chapter "
                 f"needs one central dramatic experience")
+            continue
+        if len(anchors) > 1:
+            names = ", ".join(f"scene {s['num']} '{s['title']}'" for s in anchors)
+            findings.append(
+                f"multi-anchor-chapter: ch {ch['num']} tags {len(anchors)} scenes as "
+                f"anchor ({names}) — a chapter has one reason to exist, not two")
             continue
         heaviest_anchor = max(s["instruction_words"] for s in anchors)
         for s in scenes:
@@ -128,12 +149,41 @@ def render_brief(chapter: dict, *, profile: dict, obligations: dict,
     never stops; reference material is demoted out of instruction voice.
     """
     scenes = chapter["scenes"]
+
+    # A chapter with no anchor has no central dramatic experience, and one
+    # with two contradicts itself on the page (both, still labelled ANCHOR,
+    # both told "this is the chapter's reason to exist") — there is no
+    # correct brief for either, so the compiler refuses rather than degrade
+    # into the flat, equal-scene prompt it exists to eliminate.
+    anchors = [s for s in scenes if s["weight"] == "anchor"]
+    if len(anchors) > 1:
+        names = ", ".join(f"scene {s['num']} ('{s['title']}')" for s in anchors)
+        raise ValueError(
+            f"chapter {chapter['num']}: {len(anchors)} scenes tagged anchor "
+            f"({names}) — a chapter has at most one anchor; render_brief refuses "
+            "to render two scenes each claiming to be the chapter's reason to exist")
+    if not anchors:
+        raise ValueError(
+            f"chapter {chapter['num']}: no anchor scene — a chapter with no anchor "
+            "has no central dramatic experience, and there is no correct brief for it")
+
+    # A silent `s["weight"] or "support"` default would contradict this
+    # module's own promise ("given a weighted outline there is exactly one
+    # correct brief") — an undeclared scene weight is an authoring omission,
+    # not a default the compiler is entitled to guess at.
+    undeclared = [s for s in scenes if not s["weight"]]
+    if undeclared:
+        names = ", ".join(f"scene {s['num']} ('{s['title']}')" for s in undeclared)
+        raise ValueError(
+            f"chapter {chapter['num']}: {names} declare no weight — render_brief "
+            "refuses to silently default an undeclared scene weight to 'support'")
+
     band = penny_length.band_for(profile, chapter["chapter_type"])
     budgets = penny_length.scene_budgets(
-        profile, band, [s["weight"] or "support" for s in scenes])
+        profile, band, [s["weight"] for s in scenes])
     target = sum(budgets)
 
-    anchor = next((s for s in scenes if s["weight"] == "anchor"), None)
+    anchor = anchors[0]
     out: list[str] = []
     out.append(f"# Chapter {chapter['num']:02d} — {chapter['title']}")
     out.append("")
@@ -166,7 +216,18 @@ def render_brief(chapter: dict, *, profile: dict, obligations: dict,
     for i, s in enumerate(scenes):
         if s is anchor:
             continue
-        weight = s["weight"] or "support"
+        weight = s["weight"]
+        if weight not in _FORM:
+            # penny_length.scene_budgets is generic over any weight_* class a
+            # series declares in length-profile.md, so a 4th class is legal
+            # and reachable — but _FORM only carries drafting prose for the
+            # three the engine ships. A bare KeyError here would name
+            # neither the class nor where to fix it.
+            raise ValueError(
+                f"chapter {chapter['num']} scene {s['num']}: unknown scene weight "
+                f"class {weight!r} — length-profile.md declares weight_{weight}, "
+                f"but _FORM in scripts/brief_render.py has no drafting instruction "
+                "for it yet; add one there")
         out.append(f"  - **{weight.upper()} — Scene {s['num']}: {s['title']}** "
                    f"(~{budgets[i]} words). {_FORM[weight]}")
     out.append("")
