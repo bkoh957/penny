@@ -57,3 +57,35 @@ def test_readme_and_claude_md_roster_every_derived_check_id():
         text = path.read_text(encoding="utf-8")
         for check_id in ids:
             assert f"`{check_id}`" in text, f"{path}: missing `{check_id}`"
+
+
+# --- FINAL REVIEW C1(b): the length-profile schema changed under series authors
+# with nothing shipped and nothing documented, so the live series' profile — a
+# prose table with no band_*/weight_* keys — crashed the lock. The engine
+# deliberately ships no default profile (CLAUDE.md), so the schema must be
+# DISCOVERABLE instead: pinned here so it cannot silently drift again.
+
+SCHEMA_KEYS = ("band_default", "weight_anchor", "weight_support", "weight_connective",
+               "min_connective_words", "min_support_words")
+
+
+def test_readme_documents_the_length_profile_schema():
+    text = README.read_text(encoding="utf-8")
+    assert "### The length profile" in text
+    for key in SCHEMA_KEYS:
+        assert key in text, f"README must document {key}"
+
+
+def test_claude_md_documents_the_length_profile_schema():
+    text = CLAUDE_MD.read_text(encoding="utf-8")
+    for key in ("band_default", "weight_<class>", "min_<class>_words"):
+        assert key in text, f"CLAUDE.md must document {key}"
+
+
+def test_parse_profile_error_teaches_the_documented_schema():
+    # The named error a legacy profile produces must point at the same keys the
+    # docs teach — one schema, three voices (error, README, CLAUDE.md).
+    from scripts import penny_length
+    hint = penny_length.SCHEMA_HINT
+    for key in ("band_default", "weight_anchor", "min_connective_words"):
+        assert key in hint

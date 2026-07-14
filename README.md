@@ -309,11 +309,38 @@ open, so a hook stops being a mood and becomes a promise on record.
 | `starved-thread` | a subplot goes dark longer than the genre allows |
 | `off-mark-beat` | a tentpole scene sits outside its beat-sheet window |
 | `chapter-coverage` | the chapter set has gaps, dupes, or extras |
-| `overloaded-chapter` | a chapter's connective scenes can't each be paid at least the floor out of its word band — too many stops for the length, a plotting problem caught before the lock rather than in the prose |
+| `overloaded-chapter` | a chapter's scenes can't each be paid their floor out of its word band, **or** its obligation load (clues planted + questions opened/closed + tracks advanced) exceeds the genre's cap — too many stops for the length, a plotting problem caught before the lock rather than in the prose |
 
-Every threshold comes from the genre's `beat-sheet.yaml` — never from a constant in the
-engine. **Wiring is optional per book:** an outline without it is skipped entirely, so
-outlines written before this existed stay valid and still lock.
+Every threshold comes from the genre's `beat-sheet.yaml` or your `config/length-profile.md`
+— never from a constant in the engine. **Wiring is optional per book:** an outline without
+it is skipped entirely, so outlines written before this existed stay valid and still lock.
+`overloaded-chapter` is the exception that reads **scene weights**, not wiring, so it runs
+over the expanded `input/book-NN/outline.md` — the file the weights live in. An outline with
+no weights is never overload-checked. And a check that *cannot* run (no length profile, one
+the engine can't parse, no floors, no obligation cap) never crashes the lock and is never
+silently dropped: it prints a note, the book still locks, and the certificate records
+`skipped: overloaded-chapter — <why>`.
+
+### The length profile
+
+`config/length-profile.md` is **series-authored — the engine ships no default**, so here is
+the schema it must carry, in a fenced ```yaml block:
+
+```yaml
+band_opening:      [1800, 2400]   # band_<type>, selected by a chapter title's [type: …] flag
+band_default:      [2000, 2500]   # REQUIRED — the band for a chapter that declares no type
+weight_anchor:      8             # a scene's share of the band's midpoint …
+weight_support:     3             # … an anchor is worth eight connective beats
+weight_connective:  1             #     because that is what YOUR series says it is worth
+min_connective_words: 100         # min_<class>_words: below this, the scene is starved …
+min_support_words:    250         # … and the chapter is doing more than its band can pay for
+```
+
+`anchor | support | connective` are the engine's vocabulary (the outline parser reads exactly
+those three, and the brief compiler carries drafting prose for them); the **numbers** are
+yours. A profile missing `band_default` fails by name and tells you which keys to add — an
+older profile written before this schema keeps every command working, and simply means
+`overloaded-chapter` records itself as skipped on the lock certificate until you add them.
 
 ### The lock, and your override
 
@@ -361,11 +388,19 @@ If the Codex runtime is unreachable the panel degrades to Claude-only and says s
 
 ### Build the chapter briefs — `/build-briefs NN`
 
-The step between the lock and the first draft:
+The step between the outline and the first draft:
 
 ```bash
 /build-briefs 02
 ```
+
+It has two halves with two different preconditions. **Weighing the scenes is an outline
+act** — it needs only the outline and the length profile, so do it **before the lock**, and
+the lock's `overloaded-chapter` check will then see the weights it exists to check.
+**Compiling the briefs needs the locked ledger's obligations**, so that half runs after.
+If you weigh a book that is already locked, the certificate no longer covers what you
+changed: delete the lock and re-run `preflight lock-mystery NN` — the same re-planning flow
+as any other edit to a sealed plot.
 
 The raw outline hands the drafter a flat numbered list of beats written with equal
 lavishness — a promise of parity the model reads literally, which is how a chapter meant

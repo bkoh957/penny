@@ -77,7 +77,15 @@ total_chapters: 2
      of dialogue — write it THINLY, because the prompt's own density is a word
      budget the model obeys. One scene per chapter should be tagged anchor.
      Keep the bare word on its own line with nothing else after it — that is
-     what the parser reads. -->
+     what the parser reads.
+
+     The word budgets come from config/length-profile.md, which is YOURS to author
+     (the engine ships no default). It needs a flat yaml block:
+       band_default: [2000, 2500]   (+ band_<type> for each [type: ...] flag)
+       weight_anchor / weight_support / weight_connective
+       min_connective_words / min_support_words
+     See README.md, "The length profile". Without those keys the briefs cannot be
+     priced and the lock's overloaded-chapter check records itself as skipped. -->
 - **Weight:** anchor
 
 **Beat flow:**

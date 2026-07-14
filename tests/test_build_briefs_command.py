@@ -58,3 +58,39 @@ total_chapters: 1
         "the syntax build-briefs.md teaches must be syntax penny_wiring.parse_wired_chapters "
         "accepts — it silently produced weight=None instead"
     )
+
+
+# --- FINAL REVIEW I4: the runbook's stated order must be TRUE. Weights are
+# authored only here, `overloaded-chapter` only runs inside `lock-mystery`, and
+# the old runbook hard-refused an unlocked book — so the check could never see a
+# weight, and the runbook was telling the showrunner to edit a SEALED outline
+# (CLAUDE.md: a lock is "frozen against edits") while the certificate went on
+# claiming tension validation the weighted outline never received.
+
+def test_runbook_weighs_before_the_lock_and_compiles_after():
+    text = CMD.read_text(encoding="utf-8")
+    assert "before the lock" in text
+    assert "after the lock" in text
+    # weigh comes before compile, and the compile step is the one that needs the lock
+    assert text.index("3. **Weigh the scenes") < text.index("5. **Compile**")
+
+
+def test_runbook_tells_the_showrunner_to_re_mint_a_lock_that_predates_the_weights():
+    text = CMD.read_text(encoding="utf-8")
+    assert "lock-mystery" in text
+    assert 'rm ".penny/locks/book-$book.mystery.lock"' in text, (
+        "adding weights to an already-locked book must re-mint the certificate — "
+        "delete + re-run, the documented re-planning flow")
+
+
+def test_runbook_no_longer_hard_refuses_an_unlocked_book():
+    text = CMD.read_text(encoding="utf-8")
+    assert "is not locked — the obligations are not settled yet" not in text, (
+        "weighing needs only the outline and the length profile; refusing an "
+        "unlocked book is what made overloaded-chapter unreachable")
+
+
+def test_runbook_says_a_compact_chapter_is_skipped_not_failed():
+    text = CMD.read_text(encoding="utf-8").lower()
+    assert "compact" in text
+    assert "skips it by name" in text or "skipped" in text

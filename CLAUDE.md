@@ -133,7 +133,7 @@ engine code.
   proposal → approve + lock) — for the puzzle alone, when the dramatic outline is
   already settled some other way.
 
-**Per book, after the lock:** `/build-briefs NN` compiles the locked outline into one
+**Per book, around the lock:** `/build-briefs NN` compiles the outline into one
 prompt-shaped brief per chapter (`input/book-NN/briefs/ch-MM.md`) — an emphasis hierarchy
 (anchor/support/connective) with per-scene word budgets from `config/length-profile.md`,
 obligations as a checklist rather than stops, a commissioned first line, a graded hook
@@ -148,6 +148,26 @@ The weights are declared by the showrunner in the outline;
 `brief-weigher` proposes, it never decides. `scripts/penny_length.py` is the one place
 chapter bands and per-scene word budgets are computed; `scripts/brief_render.py`,
 dispatched by `/build-briefs`, is the stage between the lock and the first draft.
+
+**Weighing is an OUTLINE act; compiling is a POST-LOCK act.** The two halves of
+`/build-briefs` have different preconditions, and conflating them made the ninth tension
+check unreachable. *Weigh + check* needs only the outline and the length profile, so it
+runs **before** the lock — which is the only way `overloaded-chapter` (a plot property,
+spec §6) can see the weights it exists to check. *Compile* needs the locked ledger's
+obligations, so it runs **after**. Weights added to an already-locked book mean the
+certificate no longer covers them: delete the lock and re-run `preflight lock-mystery`
+(the documented re-planning flow) rather than editing a sealed outline and pretending
+otherwise.
+
+**The length profile is series-authored and the engine ships none** — so its schema is
+documented, not defaulted (README, "The length profile"). It carries flat yaml:
+`band_default: [min, max]` (plus `band_<type>` overrides selected by a chapter title's
+`[type: …]` flag), a `weight_<class>` for each of anchor/support/connective, and a
+`min_<class>_words` floor per class (`min_connective_words`, `min_support_words`). The
+three emphasis classes are the **engine's** vocabulary (`penny_wiring.WEIGHT_RE`,
+`brief_render._FORM`); the **numbers** are the series'. A profile the engine cannot parse
+never crashes a command: `lock-mystery` records `skipped: overloaded-chapter — …` on the
+certificate and locks; `/build-briefs build` fails by name and says which keys are missing.
 
 **Per chapter:** `/draft-chapter NN MM` → `/review-chapter NN MM` (the gate; also dispatches
 the context-rich `developmental-editor` advisory) → `preflight clear-dev NN MM` →
@@ -194,7 +214,17 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
   resolved through the active genre's `genre.yaml` `beat_sheet:` key
   (`penny_genre.py beat-sheet`), never a hardcoded filename; an outline with no
   wiring is SKIPPED entirely, so book 1 and any hand-authored/scaffolded outline
-  still lock exactly as before), `draft N CH`
+  still lock exactly as before. `overloaded-chapter` is the one check that reads
+  **scene weights rather than wiring** — it runs over the expanded
+  `input/book-NN/outline.md` (where the weights are) even when the wiring checks
+  read `outline-skeleton.md`, prices every scene against its class's
+  `min_<class>_words` floor, and counts the chapter's **obligation load** (clues
+  planted + questions opened/closed + tracks advanced) against the genre beat
+  sheet's `obligations.max_per_chapter`. A check that **cannot run** — no length
+  profile, an unparseable one, no floors, no cap — is never silent and never a
+  traceback: it prints a named note and the lock certificate records it as
+  `skipped: <check-id> — <why>`, so the certificate cannot claim coverage it
+  does not have), `draft N CH`
   (lock present + ledger populated + the review panel is routed off the drafting
   model — `inspector_model` must exist and differ from `drafting_model`, since the
   inspector agents carry no `model:` frontmatter and would otherwise inherit the
