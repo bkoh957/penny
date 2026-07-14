@@ -31,6 +31,11 @@ TP_FIELD_RE = re.compile(r"^\s*-\s+\*\*(Beat|Chapter|Breaks):\*\*\s*(.*)$")
 _BECAUSE_CH_RE = re.compile(r"^ch\s*(\d+)\b")
 
 SCENE_RE = re.compile(r"^###\s+Scene\s+(\d+)(?:\s*[—-]\s*(.*))?$", re.MULTILINE)
+# Any level-3 (or deeper level, but "###" is what the template uses) heading —
+# used only to bound a scene's body; the last scene must stop before whatever
+# trailing subsection follows it ("### Track Movement", "### Drafting Notes",
+# "### Possible Line-Level Prompts", ...), not sweep it in as scene content.
+ANY_H3_RE = re.compile(r"^###\s+.*$", re.MULTILINE)
 WEIGHT_RE = re.compile(r"^\s*\*\*Weight:\*\*\s*(anchor|support|connective)\s*$",
                        re.MULTILINE | re.IGNORECASE)
 BEAT_RE = re.compile(r"^\s*(\d+)\.\s+(.*)$")
@@ -56,9 +61,19 @@ def parse_scenes(block: str) -> list[dict]:
     """
     scenes: list[dict] = []
     marks = list(SCENE_RE.finditer(block))
+    # Bound every scene at the next "###"-level heading of ANY name, not
+    # merely the next "### Scene N" — otherwise the last scene's body runs to
+    # the end of the whole chapter block and sweeps in trailing sections like
+    # "### Drafting Notes", inflating beats/instruction_words with whatever
+    # numbered list lives there.
+    heading_starts = sorted(hm.start() for hm in ANY_H3_RE.finditer(block))
     for i, m in enumerate(marks):
         start = m.end()
-        end = marks[i + 1].start() if i + 1 < len(marks) else len(block)
+        end = len(block)
+        for hs in heading_starts:
+            if hs >= start:
+                end = hs
+                break
         body = block[start:end]
         wm = WEIGHT_RE.search(body)
         beats = [BEAT_RE.match(line) for line in body.splitlines()]

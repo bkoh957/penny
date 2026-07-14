@@ -106,3 +106,35 @@ def test_has_weights_true_for_weighted_outline_false_for_the_wired_one():
     assert penny_wiring.has_weights(weighted) is True
     wired = penny_wiring.parse_wired_chapters((FIX / "wired-clean.md").read_text(encoding="utf-8"))
     assert penny_wiring.has_weights(wired) is False
+
+
+def test_parse_scenes_bounds_last_scene_at_next_h3_heading_of_any_name():
+    # A trailing "### Drafting Notes" (or "### Track Movement", etc.) after the
+    # last scene must not be swept into that scene's body — its own numbered
+    # list is drafting guidance, not beats, and must not inflate beats/
+    # instruction_words (the overloaded-chapter check reads these numbers).
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Scene 1 — Only Scene
+
+**Weight:** anchor
+
+**Beat flow:**
+
+1. First beat.
+2. Second beat.
+
+### Drafting Notes / Guardrails
+
+1. Not a beat, this is drafting guidance for the model.
+2. Neither is this one.
+"""
+    chapters = penny_wiring.parse_wired_chapters(text)
+    scene = chapters[0]["scenes"][0]
+    assert scene["beats"] == 2
+    assert scene["instruction_words"] == len("First beat.".split()) + len("Second beat.".split())
