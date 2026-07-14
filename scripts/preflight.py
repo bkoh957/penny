@@ -293,6 +293,15 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
         # nonexistent case to None so the note below fires correctly instead
         # of silently passing a dead path through to check_tension.
         beat_sheet_path = None
+    # The engine ships no length-profile.md (series-authored) — same guard as
+    # beat_sheet_path: config_path() always returns SOME path (falling back
+    # to the plugin default location), so normalize a nonexistent one to
+    # None. check_tension() itself no-ops the overloaded-chapter check when
+    # profile_path is None or the file is absent — a series without one must
+    # still lock.
+    profile_path = penny_paths.config_path("length-profile.md", root=repo_root)
+    if not profile_path.is_file():
+        profile_path = None
     validated = "fairplay+lexicon"
     waived_lines: list[str] = []
     fired: set[str] = set()
@@ -302,7 +311,8 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
             beat_sheet_path=beat_sheet_path,
             turning_points_path=_first_file(
                 repo_root / "input" / f"book-{book}" / "plot" / "turning-points.md"),
-            whodunit_path=led)
+            whodunit_path=led,
+            profile_path=profile_path)
         if tres["wired"]:
             validated = "fairplay+lexicon+tension"
             if beat_sheet_path is None:

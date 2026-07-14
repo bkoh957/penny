@@ -24,9 +24,15 @@ Checks (ids are the waiver handles):
   off-mark-beat     a turning point's beat sits outside the beat sheet's
                      position window (or, for the reveal beat, off the
                      whodunit ledger's reveal_chapter)
+  overloaded-chapter a chapter's connective scenes cannot each be paid at
+                     least the series' min_connective_words out of its band
+                     — a PLOT property (too many stops for the length),
+                     caught before a word is drafted (Task 6). Only runs
+                     when a --profile is given and the outline is weighted;
+                     an unweighted outline (book 1's shape) is never checked.
 
   python3 scripts/tension_check.py input/book-NN/outline-skeleton.md \
-      [--beat-sheet P] [--turning-points P] [--whodunit P]
+      [--beat-sheet P] [--turning-points P] [--whodunit P] [--profile P]
 """
 from __future__ import annotations
 
@@ -170,8 +176,40 @@ def _beat_checks(points, beat_sheet, total, reveal_ch, blocking):
                     f"off-mark-beat: {bid} at ch {ch:02d} outside window ch {w[0]:02d}–{w[1]:02d}")
 
 
+def _overload_check(chapters, profile, blocking):
+    """A chapter doing too much IN CONTENT — a plot property, visible before a word
+    is drafted. If the band cannot pay each connective scene its floor, the outline
+    gave this chapter more stops than it can hold, and it will run long no matter how
+    well it is written.
+    """
+    from scripts import penny_length
+    floor = profile.get("min_connective_words", 0)
+    if not floor:
+        return
+    for ch in chapters:
+        scenes = ch["scenes"]
+        if not scenes or not any(s["weight"] for s in scenes):
+            continue
+        band = penny_length.band_for(profile, ch["chapter_type"])
+        weights = [s["weight"] or "support" for s in scenes]
+        try:
+            budgets = penny_length.scene_budgets(profile, band, weights)
+        except ValueError:
+            # A weird/unresolvable weight table must not blow up the lock —
+            # this check is a bonus arithmetic check, not the shape validator.
+            continue
+        for s, b in zip(scenes, budgets):
+            if s["weight"] == "connective" and b < floor:
+                blocking.append(
+                    f"overloaded-chapter: ch {ch['num']} has {len(scenes)} scenes; at band "
+                    f"{band[0]}–{band[1]} scene {s['num']} '{s['title']}' can only be paid "
+                    f"{b} words against a {floor}-word floor — the chapter is doing too "
+                    f"much to fit its length")
+                break
+
+
 def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=None,
-                  whodunit_path=None) -> dict:
+                  whodunit_path=None, profile_path=None) -> dict:
     path = Path(outline_path)
     if not path.is_file():
         return {"wired": False,
@@ -210,6 +248,11 @@ def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=Non
             from scripts.penny_wiring import parse_turning_points
             tp = parse_turning_points(Path(turning_points_path).read_text(encoding="utf-8"))
             _beat_checks(tp["points"], beat_sheet, total, reveal_ch, blocking)
+    if profile_path is not None and Path(profile_path).is_file():
+        from scripts import penny_length
+        profile = penny_length.parse_profile(
+            Path(profile_path).read_text(encoding="utf-8"))
+        _overload_check(chapters, profile, blocking)
     return {"wired": True, "blocking": blocking, "metrics": metrics}
 
 
@@ -219,10 +262,12 @@ def main(argv=None) -> int:
     ap.add_argument("--beat-sheet", dest="beat_sheet")
     ap.add_argument("--turning-points", dest="turning_points")
     ap.add_argument("--whodunit", dest="whodunit")
+    ap.add_argument("--profile", dest="profile")
     args = ap.parse_args(argv)
     result = check_tension(args.outline, beat_sheet_path=args.beat_sheet,
                            turning_points_path=args.turning_points,
-                           whodunit_path=args.whodunit)
+                           whodunit_path=args.whodunit,
+                           profile_path=args.profile)
     if not result["wired"] and not result["blocking"]:
         print("tension_check: no wiring detected — skipped (book is un-wired; see spec §5)")
         return 0

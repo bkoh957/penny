@@ -199,3 +199,51 @@ def test_starved_thread_still_quiet_when_rows_present_and_advancing():
     # wired-clean's chapters all carry real Track Movement rows.
     r = check_tension(FIX / "wired-clean.md", beat_sheet_path=BEATS)
     assert "starved-thread" not in _predicates(r)
+
+
+# --- Task 6: overloaded-chapter — the plot-level check ---------------------
+
+PROFILE = Path(__file__).resolve().parent / "fixtures" / "length-profile.md"
+
+
+def test_overloaded_chapter_flagged_when_a_connective_scene_cannot_be_paid_for(tmp_path):
+    # 1 anchor + 8 connective in the default band (midpoint 2250): shares 8 + 8 = 16,
+    # so each connective gets 2250/16 = 140 words... still above the 100 floor.
+    # Push it to 20 connective scenes: 2250 * 1 / 28 = 80 < 100 → overloaded.
+    scenes = "\n".join(
+        f"### Scene {i} — Stop {i}\n\n**Weight:** connective\n\n**Beat flow:**\n\n1. A stop.\n"
+        for i in range(2, 22))
+    outline = tmp_path / "outline.md"
+    outline.write_text(
+        "---\nbook: 01\ntotal_chapters: 1\n---\n\n"
+        "## Chapter 01 — Too Much\n\n"
+        "- **Because:** opening\n"
+        "- **Opens:** q-a — a question.\n"
+        "- **Hook:** q-a — a hook.\n\n"
+        "### Scene 1 — The Anchor\n\n**Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
+        + scenes, encoding="utf-8")
+    result = check_tension(outline, profile_path=PROFILE)
+    assert any(b.startswith("overloaded-chapter") for b in result["blocking"])
+    finding = next(b for b in result["blocking"] if b.startswith("overloaded-chapter"))
+    assert "ch 1" in finding
+
+
+def test_no_overload_when_the_scene_count_fits_the_band(tmp_path):
+    outline = tmp_path / "outline.md"
+    outline.write_text(
+        "---\nbook: 01\ntotal_chapters: 1\n---\n\n"
+        "## Chapter 01 — Just Right\n\n"
+        "- **Because:** opening\n"
+        "- **Opens:** q-a — a question.\n"
+        "- **Hook:** q-a — a hook.\n\n"
+        "### Scene 1 — The Anchor\n\n**Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
+        "### Scene 2 — A Stop\n\n**Weight:** connective\n\n**Beat flow:**\n\n1. A stop.\n",
+        encoding="utf-8")
+    result = check_tension(outline, profile_path=PROFILE)
+    assert not any(b.startswith("overloaded-chapter") for b in result["blocking"])
+
+
+def test_unweighted_outline_is_never_overload_checked():
+    # An un-weighted outline (book 1's shape) must never trip the check.
+    result = check_tension(FIX / "wired-clean.md", profile_path=PROFILE)
+    assert not any(b.startswith("overloaded-chapter") for b in result["blocking"])
