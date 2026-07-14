@@ -18,8 +18,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import yaml
-
 from scripts import assemble_book, penny_paths, revision_priority
 from scripts.fairplay_check import check_fairplay, load_fraction
 from scripts.lexicon_check import load_lexicon, stage_drift, validate_lexicon
@@ -139,11 +137,18 @@ def cmd_clear_dev(book: str, chapter: str, *, repo_root=None) -> int:
 
 def cmd_draft(book: str, chapter: str, *, repo_root=None, run_config=None) -> int:
     repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
+    # Ledger reads go through brief_render.load_ledger — the one guarded entry
+    # point every caller uses, so a malformed or unreadable ledger fails with
+    # this module's own `preflight: <predicate>` form, never a raw traceback.
+    from scripts.brief_render import load_ledger, stale_briefs
     led = ledger_path(book, repo_root)
     if not led.is_file():
         _fail(f"no ledger for book {book} ({led}) — run /plan-mystery {book}")
-    data = yaml.safe_load(led.read_text(encoding="utf-8"))
-    if not isinstance(data, dict) or not data:
+    try:
+        data = load_ledger(led)
+    except ValueError as e:
+        _fail(str(e))
+    if not data:
         _fail(f"ledger unpopulated for book {book} ({led})")
     if not lock_path(book, repo_root).is_file():
         _fail(f"no lock for book {book} — run /plan-mystery {book} to validate and lock")
@@ -162,13 +167,18 @@ def cmd_draft(book: str, chapter: str, *, repo_root=None, run_config=None) -> in
     if inspector == drafting:
         _fail(f"inspector_model equals drafting_model ({inspector}) — the review "
               "panel would grade its own prose")
-    # A brief built from a different outline is a lie about what this chapter owes.
-    # No briefs at all is fine — that is book 1, and it drafts from the raw section.
-    from scripts.brief_render import stale_briefs
-    stale = stale_briefs(book, repo_root)
+    # A brief built from a different outline (or whodunit ledger) is a lie
+    # about what this chapter owes. No briefs at all is fine — that is book 1,
+    # and it drafts from the raw section. An unreadable ledger, though, is a
+    # real failure — caught here and reported through the same named-predicate
+    # convention as every other preflight miss, never a raw traceback.
+    try:
+        stale = stale_briefs(book, repo_root)
+    except ValueError as e:
+        _fail(str(e))
     if chapter.zfill(2) in stale:
-        _fail(f"stale brief for ch {chapter} — the outline changed since it was built; "
-              f"re-run /build-briefs {book}")
+        _fail(f"stale brief for ch {chapter} — the outline or whodunit ledger changed "
+              f"since it was built; re-run /build-briefs {book}")
     return 0
 
 

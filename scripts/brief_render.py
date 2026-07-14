@@ -319,6 +319,56 @@ def _sha(path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+NO_WHODUNIT = "none"  # sentinel for built_from_whodunit when no ledger existed at
+# build time. A real sha256 digest is 64 lowercase hex characters, so this
+# string can never collide with one. ALWAYS written (never omitted) — an
+# absent ledger is a fact this build saw, not an exemption from staleness
+# (CLAUDE.md: nothing drifts silently).
+
+
+def load_ledger(path) -> dict:
+    """Read + parse the whodunit ledger at `path` — the ONE guarded entry point
+    every caller uses (build()'s _obligations, preflight.cmd_draft). A ledger
+    that cannot be read, is not valid YAML, or whose top level is not a
+    mapping produces a NAMED ValueError identifying the path and the problem
+    — never a raw ParserError/AttributeError/OSError traceback. Callers turn
+    this into their own convention (a per-chapter FAILED line here, a
+    `preflight: <predicate>` exit there)."""
+    path = Path(path)
+    try:
+        raw = path.read_text(encoding="utf-8")
+    except OSError as e:
+        raise ValueError(f"unreadable-ledger: cannot read {path} — {e}") from e
+    try:
+        data = yaml.safe_load(raw)
+    except yaml.YAMLError as e:
+        raise ValueError(f"malformed-ledger: {path} is not valid YAML — {e}") from e
+    if data is None:
+        data = {}
+    if not isinstance(data, dict):
+        raise ValueError(
+            f"malformed-ledger: {path} top level is a {type(data).__name__}, "
+            "not a mapping — cannot read clue_schedule/red_herrings from it")
+    return data
+
+
+def _ledger_identity(path) -> str:
+    """The ledger's identity, used for BOTH stamping (build) and comparison
+    (stale_briefs): its sha256 if the file exists and is readable, or
+    NO_WHODUNIT if none exists yet. A ledger that EXISTS but cannot be read
+    (permission denied) is a real failure, not silent absence — those two
+    must not be conflated, so this raises the same named ValueError as
+    load_ledger rather than letting a bare PermissionError escape."""
+    path = Path(path)
+    if not path.is_file():
+        return NO_WHODUNIT
+    try:
+        raw = path.read_bytes()
+    except OSError as e:
+        raise ValueError(f"unreadable-ledger: cannot read {path} — {e}") from e
+    return hashlib.sha256(raw).hexdigest()
+
+
 def _plant_chapter(entry: dict, led: Path) -> int:
     """The clue's scheduled chapter, validated. `.get(key, default)` only
     substitutes when the key is ABSENT — a hand-edited `plant_chapter: null`
@@ -346,7 +396,7 @@ def _obligations(book: str, chapter: dict, repo_root) -> dict:
     led = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=repo_root)
     clues: list[str] = []
     if led.is_file():
-        data = yaml.safe_load(led.read_text(encoding="utf-8")) or {}
+        data = load_ledger(led)
         for entry in (data.get("clue_schedule") or []):
             if _plant_chapter(entry, led) == chapter["num"]:
                 clues.append(str(entry["id"]))
@@ -381,13 +431,22 @@ def build(book: str, *, chapter=None, repo_root=None) -> int:
     profile = penny_length.parse_profile(profile_path.read_text(encoding="utf-8"))
     sha = _sha(outline)
     # The whodunit ledger is a real upstream of every brief — obligations
-    # (_obligations) come from it, not just the outline. Absent ledger means
-    # no whodunit stamp is written (a book with no whodunit isn't penalised
-    # for lacking one); present ledger means the brief is pinned to it, and
-    # stale_briefs() below must catch a ledger edit exactly as it catches an
-    # outline edit — nothing drifts silently.
+    # (_obligations) come from it, not just the outline. ALWAYS stamp
+    # built_from_whodunit, using the NO_WHODUNIT sentinel when no ledger
+    # exists: an absent ledger is a fact this build saw, not an exemption
+    # from staleness. stale_briefs() below then catches a mismatch in EITHER
+    # direction — ledger edited, ledger deleted, or a ledger arriving where
+    # none existed before — exactly as it catches an outline edit; nothing
+    # drifts silently. A ledger that EXISTS but can't be read (permission
+    # denied) is a real failure: every chapter's stamp would be unreliable,
+    # so the whole book build is reported by name and aborted here, rather
+    # than letting a raw exception escape.
     ledger_path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
-    whodunit_sha = _sha(ledger_path) if ledger_path.is_file() else None
+    try:
+        whodunit_stamp = _ledger_identity(ledger_path)
+    except ValueError as e:
+        print(f"FAILED: {e}")
+        return 1
     written = 0
     failed: list[str] = []
     for ch in chapters:
@@ -404,8 +463,7 @@ def build(book: str, *, chapter=None, repo_root=None) -> int:
             continue
         stamped = write_frontmatter_field("---\n---\n\n" + body,
                                           "built_from_outline", sha)
-        if whodunit_sha is not None:
-            stamped = write_frontmatter_field(stamped, "built_from_whodunit", whodunit_sha)
+        stamped = write_frontmatter_field(stamped, "built_from_whodunit", whodunit_stamp)
         p = brief_path(book, num, root)
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(stamped, encoding="utf-8")
@@ -423,10 +481,19 @@ def stale_briefs(book: str, repo_root) -> list[str]:
     exactly as an outline edit does — nothing drifts silently (the workshop's own
     contract).
 
-    A brief carrying no `built_from_whodunit` stamp (built when no ledger existed)
-    is not stale on that account — a book with no whodunit isn't penalised for
-    lacking one. But a brief stamped from a ledger that has since CHANGED or been
-    DELETED is stale.
+    build() ALWAYS stamps `built_from_whodunit` — a sha256, or the NO_WHODUNIT
+    sentinel when no ledger existed at build time — so a mismatch in EITHER
+    direction is stale: a sha that no longer matches, a sha where the ledger
+    has since been deleted, and a sentinel where a ledger has since ARRIVED
+    (the hole this fix closes: a book built before any ledger existed must not
+    stay "fresh" forever once one is created). A brief carrying no
+    `built_from_whodunit` key at all (built before this field existed) is
+    likewise stale — it recorded nothing about the ledger, and an absent
+    record is not a clean bill of health; re-running /build-briefs is how it
+    earns one.
+
+    Raises ValueError (unreadable-ledger) if the ledger exists on disk but
+    cannot be read — a real failure, not silent absence.
     """
     root = Path(repo_root)
     outline = penny_paths.input_path(f"book-{book}/outline.md", root=root)
@@ -435,13 +502,16 @@ def stale_briefs(book: str, repo_root) -> list[str]:
         return []
     sha = _sha(outline)
     ledger = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
-    ledger_sha = _sha(ledger) if ledger.is_file() else None
+    ledger_stamp = _ledger_identity(ledger)
     stale = []
     for p in sorted(briefs_dir.glob("ch-*.md")):
         fm = parse_frontmatter(p.read_text(encoding="utf-8"))
         is_stale = fm.get("built_from_outline") != sha
-        stamped_whodunit = fm.get("built_from_whodunit")
-        if stamped_whodunit is not None and stamped_whodunit != ledger_sha:
+        # ledger_stamp is never None (NO_WHODUNIT or a sha), so a brief with
+        # no built_from_whodunit key at all (fm.get(...) -> None) always
+        # compares unequal too — the "no stamp ever written" case falls out
+        # of the same comparison, no special-casing needed.
+        if fm.get("built_from_whodunit") != ledger_stamp:
             is_stale = True
         if is_stale:
             stale.append(p.stem.replace("ch-", ""))

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pytest
@@ -384,10 +385,13 @@ def test_deleting_the_ledger_after_a_stamped_build_makes_briefs_stale(tmp_path):
     assert brief_render.stale_briefs("01", root) == ["01", "02"]
 
 
-def test_a_book_with_no_whodunit_ledger_at_all_is_not_stale_on_that_account(tmp_path):
-    """Absent ledger at build time means no whodunit stamp is written, and a
-    brief carrying no whodunit stamp is not stale on that account (chosen
-    behaviour: a book with no whodunit is not penalised for lacking one)."""
+def test_a_book_with_no_whodunit_ledger_at_all_stamps_the_sentinel(tmp_path):
+    """SECOND FIX WAVE (FIX 1): the previous instruction — 'no ledger means no
+    stamp, and no stamp is not stale on that account' — left a hole: a ledger
+    created AFTER an unstamped build would never be noticed. build() must
+    ALWAYS write built_from_whodunit, using an explicit sentinel
+    (NO_WHODUNIT) when no ledger exists, so 'saw nothing' is itself a
+    recorded, comparable fact."""
     root = tmp_path
     (root / ".penny").mkdir(parents=True, exist_ok=True)
     (root / "config").mkdir(parents=True, exist_ok=True)
@@ -399,8 +403,48 @@ def test_a_book_with_no_whodunit_ledger_at_all_is_not_stale_on_that_account(tmp_
     assert brief_render.build("01", repo_root=root) == 0
     from scripts.penny_meta import parse_frontmatter
     fm = parse_frontmatter((root / "input/book-01/briefs/ch-01.md").read_text(encoding="utf-8"))
-    assert "built_from_whodunit" not in fm
+    assert fm.get("built_from_whodunit") == brief_render.NO_WHODUNIT
+    # still fresh: nothing has changed since the build that stamped it.
     assert brief_render.stale_briefs("01", root) == []
+
+
+def test_ledger_arriving_after_a_none_stamped_build_makes_briefs_stale(tmp_path):
+    """THE HOLE ITSELF, reproduced: build with no ledger (stamped
+    NO_WHODUNIT), then CREATE the ledger assigning a clue to chapter 1.
+    stale_briefs() must catch this — a mismatch in the OTHER direction
+    (none -> a real sha) is just as much drift as sha -> sha or sha -> none."""
+    root = tmp_path
+    (root / ".penny").mkdir(parents=True, exist_ok=True)
+    (root / "config").mkdir(parents=True, exist_ok=True)
+    shutil.copy(PROFILE, root / "config/length-profile.md")
+    inp = root / "input/book-01"
+    inp.mkdir(parents=True, exist_ok=True)
+    shutil.copy(WEIGHTED, inp / "outline.md")
+    assert brief_render.build("01", repo_root=root) == 0
+    assert brief_render.stale_briefs("01", root) == []
+    wd = root / "series/whodunit"
+    wd.mkdir(parents=True, exist_ok=True)
+    (wd / "book-01.yaml").write_text(
+        "book: '01'\nreveal_chapter: 2\nclue_schedule:\n"
+        "  - { id: clue-tide-table, plant_chapter: 1, pays_off_chapter: 2, necessary: true }\n",
+        encoding="utf-8")
+    assert brief_render.stale_briefs("01", root) == ["01", "02"]
+
+
+def test_brief_with_no_whodunit_stamp_at_all_is_treated_as_stale(tmp_path):
+    """A brief predating the built_from_whodunit field entirely (an older
+    brief, before this fix shipped) carries no stamp — not the sentinel, no
+    key at all. It must be treated as stale: it recorded nothing about the
+    ledger, and an absent record is not a clean bill of health."""
+    root = _series(tmp_path)
+    outline = root / "input/book-01/outline.md"
+    sha = brief_render._sha(outline)
+    (root / "input/book-01/briefs").mkdir(parents=True, exist_ok=True)
+    (root / "input/book-01/briefs/ch-01.md").write_text(
+        f"---\nbuilt_from_outline: {sha}\n---\n# brief\n", encoding="utf-8")
+    (root / "input/book-01/briefs/ch-02.md").write_text(
+        f"---\nbuilt_from_outline: {sha}\n---\n# brief\n", encoding="utf-8")
+    assert brief_render.stale_briefs("01", root) == ["01", "02"]
 
 
 def test_preflight_draft_refuses_a_brief_stale_only_on_the_ledger(tmp_path):
@@ -458,3 +502,105 @@ def test_missing_plant_chapter_key_fails_loud_naming_the_clue(tmp_path, capsys):
     assert rc == 1
     out = capsys.readouterr().out
     assert "herring-fake-alibi" in out
+
+
+# ---- SECOND FIX WAVE, FIX 2: the ledger's own load must be guarded too — a
+# malformed ledger (bad YAML, or a top-level list) must never crash build()
+# with a raw ParserError/AttributeError, and an unreadable ledger must never
+# crash build() OR stale_briefs() (and therefore preflight.cmd_draft). One
+# guarded helper (brief_render.load_ledger) is used by every caller. --------
+
+def test_malformed_yaml_ledger_fails_loud_not_a_raw_traceback(tmp_path, capsys):
+    root = _series(tmp_path)
+    ledger = root / "series/whodunit/book-01.yaml"
+    ledger.write_text("book: '01'\nclue_schedule: [ { unterminated\n", encoding="utf-8")
+    rc = brief_render.build("01", repo_root=root)
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "FAILED" in out
+    assert "malformed-ledger" in out
+    assert "book-01.yaml" in out
+    assert not (root / "input/book-01/briefs/ch-01.md").is_file()
+
+
+def test_top_level_list_ledger_fails_loud_not_an_attributeerror(tmp_path, capsys):
+    root = _series(tmp_path)
+    ledger = root / "series/whodunit/book-01.yaml"
+    ledger.write_text("- clue-tide-table\n- herring-fake-alibi\n", encoding="utf-8")
+    rc = brief_render.build("01", repo_root=root)
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "FAILED" in out
+    assert "malformed-ledger" in out
+    assert not (root / "input/book-01/briefs/ch-01.md").is_file()
+
+
+def test_load_ledger_raises_named_error_for_malformed_yaml(tmp_path):
+    ledger = tmp_path / "book-01.yaml"
+    ledger.write_text("book: '01'\nclue_schedule: [ { unterminated\n", encoding="utf-8")
+    with pytest.raises(ValueError, match=r"malformed-ledger"):
+        brief_render.load_ledger(ledger)
+
+
+def test_load_ledger_raises_named_error_for_top_level_list(tmp_path):
+    ledger = tmp_path / "book-01.yaml"
+    ledger.write_text("- a\n- b\n", encoding="utf-8")
+    with pytest.raises(ValueError, match=r"malformed-ledger"):
+        brief_render.load_ledger(ledger)
+
+
+def test_unreadable_ledger_fails_loud_on_build_not_a_crash(tmp_path, capsys):
+    """Permission-denied ledger: build() must report a named error and return
+    nonzero, never let a raw PermissionError escape. Skipped when running
+    with elevated privileges (e.g. root in a container), where chmod 0o000
+    does not actually block reads — flaky there, not on a normal dev machine."""
+    root = _series(tmp_path)
+    ledger = root / "series/whodunit/book-01.yaml"
+    ledger.chmod(0o000)
+    try:
+        if os.access(ledger, os.R_OK):
+            pytest.skip("running with elevated privileges; chmod 0o000 doesn't block reads")
+        rc = brief_render.build("01", repo_root=root)
+        assert rc == 1
+        out = capsys.readouterr().out
+        assert "FAILED" in out
+        assert "unreadable-ledger" in out
+        assert not (root / "input/book-01/briefs/ch-01.md").is_file()
+    finally:
+        ledger.chmod(0o644)
+
+
+def test_unreadable_ledger_raises_from_stale_briefs_not_a_crash(tmp_path):
+    """stale_briefs() must not let a raw PermissionError escape either — it
+    raises the same named ValueError, which preflight.cmd_draft catches and
+    turns into its `preflight: <predicate>` form. Skipped under elevated
+    privileges, same reasoning as above."""
+    root = _series(tmp_path)
+    brief_render.build("01", repo_root=root)
+    ledger = root / "series/whodunit/book-01.yaml"
+    ledger.chmod(0o000)
+    try:
+        if os.access(ledger, os.R_OK):
+            pytest.skip("running with elevated privileges; chmod 0o000 doesn't block reads")
+        with pytest.raises(ValueError, match=r"unreadable-ledger"):
+            brief_render.stale_briefs("01", root)
+    finally:
+        ledger.chmod(0o644)
+
+
+def test_preflight_draft_fails_named_predicate_on_malformed_ledger(tmp_path):
+    from scripts import preflight
+    root = _series(tmp_path)
+    lock_dir = root / ".penny/locks"
+    lock_dir.mkdir(parents=True, exist_ok=True)
+    (lock_dir / "book-01.mystery.lock").write_text("locked\n", encoding="utf-8")
+    run_config = root / "config/run-config.md"
+    run_config.write_text(
+        "```yaml\ndrafting_model: model-a\ninspector_model: model-b\n```\n",
+        encoding="utf-8")
+    ledger = root / "series/whodunit/book-01.yaml"
+    ledger.write_text("book: '01'\nclue_schedule: [ { unterminated\n", encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_draft("01", "01", repo_root=root, run_config=run_config)
+    assert "preflight:" in str(e.value)
+    assert "malformed-ledger" in str(e.value)
