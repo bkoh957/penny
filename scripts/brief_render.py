@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml  # beat-sheet only — nested, human-edited (CLAUDE.md dependency split)
 
-from scripts import penny_length, penny_paths
+from scripts import penny_paths
 from scripts.penny_wiring import has_weights, parse_wired_chapters
 
 
@@ -38,18 +38,25 @@ def _load_sheet(path) -> dict:
     return data if isinstance(data, dict) else {}
 
 
-def check_briefs(outline_path, *, profile_path, beat_sheet_path=None) -> dict:
+def check_briefs(outline_path, *, beat_sheet_path=None) -> dict:
     text = Path(outline_path).read_text(encoding="utf-8")
     chapters = parse_wired_chapters(text)
     if not has_weights(chapters):
         return {"weighted": False, "findings": [], "metrics": {"chapters": len(chapters)}}
 
-    profile = penny_length.parse_profile(Path(profile_path).read_text(encoding="utf-8"))
     findings: list[str] = []
 
     for ch in chapters:
         scenes = ch["scenes"]
-        if scenes and not any(s["weight"] for s in scenes):
+        if not scenes:
+            # A chapter with zero ### Scene blocks (compact-format, or a stub
+            # /expand-outline hasn't reached yet — it expands one chapter at
+            # a time, so a half-expanded outline is ordinary) has nothing to
+            # say about weights or anchors. Flagging it as "no anchor scene"
+            # is a false positive that fires on every healthy unexpanded
+            # chapter, every run — a check that cries wolf gets ignored.
+            continue
+        if not any(s["weight"] for s in scenes):
             findings.append(
                 f"unweighted-chapter: ch {ch['num']} declares no scene weights in a "
                 f"weighted book — the drafter will treat all {len(scenes)} scenes as equal")
@@ -77,7 +84,8 @@ def check_briefs(outline_path, *, profile_path, beat_sheet_path=None) -> dict:
             f"hook-grade-distribution: chapters {ungraded} declare no hook grade "
             f"(cliffhanger | promise) — a chapter that ends on neither ends on nothing")
     sheet = _load_sheet(beat_sheet_path)
-    cap = (sheet.get("hooks") or {}).get("max_cliffhanger_fraction")
+    hooks_cfg = sheet.get("hooks")
+    cap = hooks_cfg.get("max_cliffhanger_fraction") if isinstance(hooks_cfg, dict) else None
     if cap is not None and graded:
         cliffs = [c["num"] for c in graded if c["hook_grade"] == "cliffhanger"]
         fraction = len(cliffs) / len(graded)
@@ -101,15 +109,11 @@ def main(argv=None) -> int:
 
     root = penny_paths.series_root()
     outline = penny_paths.input_path(f"book-{args.book}/outline.md", root=root)
-    profile = penny_paths.config_path("length-profile.md", root=root)
     if not outline.is_file():
         sys.exit(f"brief: no outline at {outline}")
-    if not profile.is_file():
-        sys.exit(f"brief: no length profile at {profile}")
 
     if args.command == "check":
-        result = check_briefs(outline, profile_path=profile,
-                              beat_sheet_path=_beat_sheet_path(root))
+        result = check_briefs(outline, beat_sheet_path=_beat_sheet_path(root))
         if not result["weighted"]:
             print("no scene weights detected — skipped "
                   "(the drafter will receive the raw outline section)")
@@ -120,6 +124,12 @@ def main(argv=None) -> int:
               f"{result['metrics']['scenes']} scene(s), "
               f"{len(result['findings'])} finding(s)")
         return 1 if result["findings"] else 0
+
+    # build (a later task): genuinely needs band/weight data, so its
+    # length-profile requirement stays here rather than in check_briefs.
+    profile = penny_paths.config_path("length-profile.md", root=root)
+    if not profile.is_file():
+        sys.exit(f"brief: no length profile at {profile}")
 
     return build(args.book, chapter=args.chapter, repo_root=root)
 
