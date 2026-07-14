@@ -319,6 +319,27 @@ def _sha(path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def _plant_chapter(entry: dict, led: Path) -> int:
+    """The clue's scheduled chapter, validated. `.get(key, default)` only
+    substitutes when the key is ABSENT — a hand-edited `plant_chapter: null`
+    leaves the key present with value None, so a bare `int(entry.get(...))`
+    raises a bare TypeError that crashes the whole book build. Both a missing
+    key and an explicit null are equally "we don't know which chapter this
+    clue belongs to" — neither is safe to silently coerce to 0."""
+    raw = entry.get("plant_chapter")
+    cid = entry.get("id", "<no id>")
+    if raw is None:
+        raise ValueError(
+            f"malformed-plant-chapter: clue {cid!r} in {led} has no "
+            "plant_chapter (missing or null) — cannot schedule its obligation")
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        raise ValueError(
+            f"malformed-plant-chapter: clue {cid!r} in {led} has a "
+            f"non-integer plant_chapter {raw!r} — cannot schedule its obligation")
+
+
 def _obligations(book: str, chapter: dict, repo_root) -> dict:
     """What must be TRUE OF THE PAGE — derived from the locked ledger and the wiring,
     never re-authored. This is why the stage runs after the lock."""
@@ -327,10 +348,10 @@ def _obligations(book: str, chapter: dict, repo_root) -> dict:
     if led.is_file():
         data = yaml.safe_load(led.read_text(encoding="utf-8")) or {}
         for entry in (data.get("clue_schedule") or []):
-            if int(entry.get("plant_chapter", 0)) == chapter["num"]:
+            if _plant_chapter(entry, led) == chapter["num"]:
                 clues.append(str(entry["id"]))
         for entry in (data.get("red_herrings") or []):
-            if int(entry.get("plant_chapter", 0)) == chapter["num"]:
+            if _plant_chapter(entry, led) == chapter["num"]:
                 clues.append(str(entry["id"]))
     return {"clues": clues,
             "opens": [q for q, _ in chapter["opens"]],
@@ -359,6 +380,14 @@ def build(book: str, *, chapter=None, repo_root=None) -> int:
         return 0
     profile = penny_length.parse_profile(profile_path.read_text(encoding="utf-8"))
     sha = _sha(outline)
+    # The whodunit ledger is a real upstream of every brief — obligations
+    # (_obligations) come from it, not just the outline. Absent ledger means
+    # no whodunit stamp is written (a book with no whodunit isn't penalised
+    # for lacking one); present ledger means the brief is pinned to it, and
+    # stale_briefs() below must catch a ledger edit exactly as it catches an
+    # outline edit — nothing drifts silently.
+    ledger_path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
+    whodunit_sha = _sha(ledger_path) if ledger_path.is_file() else None
     written = 0
     failed: list[str] = []
     for ch in chapters:
@@ -375,6 +404,8 @@ def build(book: str, *, chapter=None, repo_root=None) -> int:
             continue
         stamped = write_frontmatter_field("---\n---\n\n" + body,
                                           "built_from_outline", sha)
+        if whodunit_sha is not None:
+            stamped = write_frontmatter_field(stamped, "built_from_whodunit", whodunit_sha)
         p = brief_path(book, num, root)
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(stamped, encoding="utf-8")
@@ -385,19 +416,34 @@ def build(book: str, *, chapter=None, repo_root=None) -> int:
 
 
 def stale_briefs(book: str, repo_root) -> list[str]:
-    """Chapter numbers whose brief was built from a different outline than the one on
-    disk. Editing the outline invalidates every brief built from it — nothing drifts
-    silently (the workshop's own contract)."""
+    """Chapter numbers whose brief was built from a different outline OR a different
+    whodunit ledger than the ones now on disk. The ledger is a real upstream: a
+    brief's OBLIGATIONS (_obligations) come from clue_schedule/red_herrings'
+    plant_chapter, so moving a clue between chapters must invalidate the briefs
+    exactly as an outline edit does — nothing drifts silently (the workshop's own
+    contract).
+
+    A brief carrying no `built_from_whodunit` stamp (built when no ledger existed)
+    is not stale on that account — a book with no whodunit isn't penalised for
+    lacking one. But a brief stamped from a ledger that has since CHANGED or been
+    DELETED is stale.
+    """
     root = Path(repo_root)
     outline = penny_paths.input_path(f"book-{book}/outline.md", root=root)
     briefs_dir = penny_paths.input_path(f"book-{book}/briefs", root=root)
     if not briefs_dir.is_dir() or not outline.is_file():
         return []
     sha = _sha(outline)
+    ledger = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
+    ledger_sha = _sha(ledger) if ledger.is_file() else None
     stale = []
     for p in sorted(briefs_dir.glob("ch-*.md")):
         fm = parse_frontmatter(p.read_text(encoding="utf-8"))
-        if fm.get("built_from_outline") != sha:
+        is_stale = fm.get("built_from_outline") != sha
+        stamped_whodunit = fm.get("built_from_whodunit")
+        if stamped_whodunit is not None and stamped_whodunit != ledger_sha:
+            is_stale = True
+        if is_stale:
             stale.append(p.stem.replace("ch-", ""))
     return stale
 

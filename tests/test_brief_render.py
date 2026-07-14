@@ -345,3 +345,116 @@ def test_editing_the_outline_makes_the_brief_stale(tmp_path):
     outline.write_text(outline.read_text(encoding="utf-8") + "\n<!-- edited -->\n",
                        encoding="utf-8")
     assert brief_render.stale_briefs("01", root) == ["01", "02"]
+
+
+# ---- REVIEW FIX 1: the whodunit ledger is an upstream too — editing ONLY the
+# ledger (moving a clue's plant_chapter) must make the briefs stale, exactly
+# as the reviewer reproduced it live. ----------------------------------------
+
+def test_build_stamps_built_from_whodunit_when_a_ledger_exists(tmp_path):
+    root = _series(tmp_path)
+    brief_render.build("01", repo_root=root)
+    from scripts.penny_meta import parse_frontmatter
+    fm = parse_frontmatter((root / "input/book-01/briefs/ch-01.md").read_text(encoding="utf-8"))
+    assert fm["built_from_whodunit"]
+
+
+def test_editing_only_the_ledger_makes_the_briefs_stale():
+    """The reviewer's exact repro: build the briefs, then edit ONLY the
+    ledger (move clue-tide-table's plant_chapter from 1 to 2) — the
+    staleness check must catch this, not just outline edits."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        root = _series(Path(d))
+        brief_render.build("01", repo_root=root)
+        assert brief_render.stale_briefs("01", root) == []
+        ledger = root / "series/whodunit/book-01.yaml"
+        ledger.write_text(
+            "book: '01'\nreveal_chapter: 2\nclue_schedule:\n"
+            "  - { id: clue-tide-table, plant_chapter: 2, pays_off_chapter: 2, necessary: true }\n",
+            encoding="utf-8")
+        assert brief_render.stale_briefs("01", root) == ["01", "02"]
+
+
+def test_deleting_the_ledger_after_a_stamped_build_makes_briefs_stale(tmp_path):
+    root = _series(tmp_path)
+    brief_render.build("01", repo_root=root)
+    assert brief_render.stale_briefs("01", root) == []
+    (root / "series/whodunit/book-01.yaml").unlink()
+    assert brief_render.stale_briefs("01", root) == ["01", "02"]
+
+
+def test_a_book_with_no_whodunit_ledger_at_all_is_not_stale_on_that_account(tmp_path):
+    """Absent ledger at build time means no whodunit stamp is written, and a
+    brief carrying no whodunit stamp is not stale on that account (chosen
+    behaviour: a book with no whodunit is not penalised for lacking one)."""
+    root = tmp_path
+    (root / ".penny").mkdir(parents=True, exist_ok=True)
+    (root / "config").mkdir(parents=True, exist_ok=True)
+    shutil.copy(PROFILE, root / "config/length-profile.md")
+    inp = root / "input/book-01"
+    inp.mkdir(parents=True, exist_ok=True)
+    shutil.copy(WEIGHTED, inp / "outline.md")
+    # no series/whodunit/book-01.yaml at all
+    assert brief_render.build("01", repo_root=root) == 0
+    from scripts.penny_meta import parse_frontmatter
+    fm = parse_frontmatter((root / "input/book-01/briefs/ch-01.md").read_text(encoding="utf-8"))
+    assert "built_from_whodunit" not in fm
+    assert brief_render.stale_briefs("01", root) == []
+
+
+def test_preflight_draft_refuses_a_brief_stale_only_on_the_ledger(tmp_path):
+    """The reviewer's exact repro, through the actual gate:
+    preflight.cmd_draft must refuse to draft a chapter whose brief drifted
+    from a ledger edit alone, no outline edit involved."""
+    from scripts import preflight
+    root = _series(tmp_path)
+    brief_render.build("01", repo_root=root)
+    lock_dir = root / ".penny/locks"
+    lock_dir.mkdir(parents=True, exist_ok=True)
+    (lock_dir / "book-01.mystery.lock").write_text("locked\n", encoding="utf-8")
+    run_config = root / "config/run-config.md"
+    run_config.write_text(
+        "```yaml\ndrafting_model: model-a\ninspector_model: model-b\n```\n",
+        encoding="utf-8")
+    ledger = root / "series/whodunit/book-01.yaml"
+    ledger.write_text(
+        "book: '01'\nreveal_chapter: 2\nclue_schedule:\n"
+        "  - { id: clue-tide-table, plant_chapter: 2, pays_off_chapter: 2, necessary: true }\n",
+        encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_draft("01", "01", repo_root=root, run_config=run_config)
+    assert "stale brief" in str(e.value)
+
+
+# ---- REVIEW FIX 2: a malformed plant_chapter must fail loud and per-chapter,
+# never crash the whole book build with a raw traceback. ---------------------
+
+def test_null_plant_chapter_fails_loud_and_per_chapter_not_a_crash(tmp_path, capsys):
+    root = _series(tmp_path)
+    ledger = root / "series/whodunit/book-01.yaml"
+    ledger.write_text(
+        "book: '01'\nreveal_chapter: 2\nclue_schedule:\n"
+        "  - { id: clue-tide-table, plant_chapter: null, pays_off_chapter: 2, necessary: true }\n",
+        encoding="utf-8")
+    rc = brief_render.build("01", repo_root=root)
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "FAILED" in out
+    assert "clue-tide-table" in out
+    assert "book-01.yaml" in out
+    # no briefs written for a chapter whose obligations couldn't be computed
+    assert not (root / "input/book-01/briefs/ch-01.md").is_file()
+
+
+def test_missing_plant_chapter_key_fails_loud_naming_the_clue(tmp_path, capsys):
+    root = _series(tmp_path)
+    ledger = root / "series/whodunit/book-01.yaml"
+    ledger.write_text(
+        "book: '01'\nreveal_chapter: 2\nred_herrings:\n"
+        "  - { id: herring-fake-alibi, pays_off_chapter: 2, necessary: false }\n",
+        encoding="utf-8")
+    rc = brief_render.build("01", repo_root=root)
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "herring-fake-alibi" in out
