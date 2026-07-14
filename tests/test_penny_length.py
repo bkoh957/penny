@@ -68,3 +68,40 @@ def test_scene_budgets_rejects_all_zero_weights_instead_of_silently_zeroing():
 def test_scene_budgets_empty_scene_list_returns_empty():
     p = _profile()
     assert penny_length.scene_budgets(p, (1800, 2400), []) == []
+
+
+# --- FINAL REVIEW C1: the LEGACY length-profile (the live series' real file:
+# a prose table + a book_target_words block, no band_*/weight_* keys at all)
+# must fail with a NAMED, actionable error naming the keys it needs — never a
+# bare "no band_default" that tells a series author nothing about a schema
+# that changed under them. --------------------------------------------------
+
+LEGACY = Path(__file__).resolve().parent / "fixtures" / "length-profile-legacy.md"
+
+
+def test_legacy_profile_error_names_every_key_the_schema_needs():
+    with pytest.raises(ValueError) as e:
+        penny_length.parse_profile(LEGACY.read_text(encoding="utf-8"))
+    message = str(e.value)
+    for key in ("band_default", "weight_anchor", "min_connective_words"):
+        assert key in message, f"the error must name {key}: {message}"
+
+
+# --- FINAL REVIEW I5: the per-scene floors are generic over the profile's
+# declared weight classes (min_<class>_words), so a starved SUPPORT scene is
+# catchable with no constant in the engine. ---------------------------------
+
+def test_parse_profile_reads_every_min_class_words_floor():
+    text = ("```yaml\nband_default: [2000, 2500]\nweight_anchor: 8\n"
+            "weight_support: 3\nweight_connective: 1\n"
+            "min_connective_words: 100\nmin_support_words: 250\n```\n")
+    p = penny_length.parse_profile(text)
+    assert p["floors"] == {"connective": 100, "support": 250}
+    assert p["min_connective_words"] == 100  # the old key still resolves
+
+
+def test_profile_with_no_floors_declares_none_rather_than_guessing():
+    text = "```yaml\nband_default: [2000, 2500]\nweight_anchor: 8\n```\n"
+    p = penny_length.parse_profile(text)
+    assert p["floors"] == {}
+    assert p["min_connective_words"] == 0

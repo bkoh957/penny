@@ -11,4 +11,5 @@ weight_anchor:      8
 weight_support:     3
 weight_connective:  1
 min_connective_words: 100
+min_support_words:    250
 ```

@@ -4,7 +4,9 @@ The ONE place chapter bands and per-scene word budgets are computed. Reads
 `config/length-profile.md` — a series-authored file — through penny_meta, never
 PyYAML (see CLAUDE.md's dependency-split rule).
 
-The profile carries a flat yaml block:
+The profile carries a flat yaml block (the schema is documented for series
+authors in README.md, "The length profile"; the engine ships no default, so a
+series that predates this schema must add these keys by hand):
 
     band_opening:      [1800, 2400]
     band_default:      [2000, 2500]
@@ -12,19 +14,37 @@ The profile carries a flat yaml block:
     weight_support:     3
     weight_connective:  1
     min_connective_words: 100
+    min_support_words:    250
 
 A scene's budget is its share of the band's midpoint, weighted by its emphasis
 class. An anchor is worth eight connective beats because that is what the series
 says it is worth — the engine ships no numbers of its own.
+
+The three emphasis classes are the ENGINE's vocabulary, not the series' — the
+outline parser (`penny_wiring.WEIGHT_RE`) reads exactly anchor|support|connective
+and `brief_render._FORM` carries the drafting prose for exactly those three. What
+a series owns is the NUMBERS: each class's relative weight, and each class's
+`min_<class>_words` floor (below which a scene is starved and the chapter is
+doing more than its band can pay for). A profile may declare a floor for every
+class, some, or none.
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from scripts.penny_meta import load, parse_yaml_blocks
 
 _BAND_PREFIX = "band_"
 _WEIGHT_PREFIX = "weight_"
+_FLOOR_RE = re.compile(r"^min_(.+)_words$")
+
+SCHEMA_HINT = (
+    "a length-profile needs band_default: [min, max] (plus any band_<type> "
+    "overrides), a weight_<class> for each of weight_anchor / weight_support / "
+    "weight_connective, and a min_<class>_words floor (min_connective_words, "
+    "min_support_words) — see README.md, 'The length profile'"
+)
 
 
 def _ints(value) -> list[int]:
@@ -34,20 +54,30 @@ def _ints(value) -> list[int]:
 
 
 def parse_profile(text: str) -> dict:
+    """Parse a length profile, or raise a NAMED, actionable ValueError.
+
+    The error names every key the schema needs, because the caller that hits it
+    is a series author whose hand-written profile predates the schema — "no
+    band_default" told them nothing about what changed or what to write.
+    """
     cfg = parse_yaml_blocks(text)
     bands: dict[str, tuple[int, int]] = {}
     weights: dict[str, int] = {}
+    floors: dict[str, int] = {}
     for key, value in cfg.items():
         if key.startswith(_BAND_PREFIX):
             lo, hi = _ints(value)
             bands[key[len(_BAND_PREFIX):].replace("_", "-")] = (lo, hi)
         elif key.startswith(_WEIGHT_PREFIX):
             weights[key[len(_WEIGHT_PREFIX):].replace("_", "-")] = int(str(value).strip())
+        else:
+            m = _FLOOR_RE.match(key)
+            if m:
+                floors[m.group(1).replace("_", "-")] = int(str(value).strip())
     if "default" not in bands:
-        raise ValueError("length-profile: no band_default")
-    floor = cfg.get("min_connective_words")
-    return {"bands": bands, "weights": weights,
-            "min_connective_words": int(str(floor).strip()) if floor else 0}
+        raise ValueError(f"length-profile: no band_default — {SCHEMA_HINT}")
+    return {"bands": bands, "weights": weights, "floors": floors,
+            "min_connective_words": floors.get("connective", 0)}
 
 
 def load_profile(path) -> dict:
