@@ -284,35 +284,43 @@ def test_render_brief_raises_when_chapter_has_two_anchor_scenes():
             outline_text=WEIGHTED.read_text(encoding="utf-8"))
 
 
-# ---- FIX 5: an unrecognised weight class must not raise a bare KeyError ----
+# ---- FINAL REVIEW cleanup: anchor|support|connective is the ENGINE's vocabulary
+# ----
+# The old test here asserted render_brief raised a named error for a 4th weight
+# class ("urgent"), on the premise that penny_length.scene_budgets is generic over
+# any weight_* class a series declares. It is not reachable: penny_wiring.WEIGHT_RE
+# matches exactly anchor|support|connective, so a 4th class never parses as a weight
+# at all. We settled that contradiction in favour of the parser — the CLASSES are the
+# engine's (they need drafting prose in _FORM), the NUMBERS are the series' — and
+# deleted the unreachable raise. This test pins the decision.
 
-def test_render_brief_raises_a_named_error_for_a_weight_class_form_has_no_prose_for():
-    """penny_length.scene_budgets is generic over any weight_* class a series
-    declares in length-profile.md — a 4th class ("urgent") is a legal,
-    reachable declaration. _FORM in brief_render.py only knows
-    anchor/support/connective, so this must raise a clear, named error
-    (naming the class and the file to fix) rather than a bare KeyError."""
-    profile = _profile()
-    profile["weights"]["urgent"] = 5
-    ch = _ch(1)
-    ch["scenes"][0]["weight"] = "urgent"  # scene 1: declared, but no _FORM entry
-    with pytest.raises(ValueError, match=r"(?i)urgent"):
-        brief_render.render_brief(
-            ch, profile=profile,
-            obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
-            outline_text=WEIGHTED.read_text(encoding="utf-8"))
+def test_a_fourth_weight_class_is_not_a_weight_at_all():
+    from scripts.penny_wiring import parse_wired_chapters
+    text = WEIGHTED.read_text(encoding="utf-8").replace(
+        "- **Weight:** anchor", "- **Weight:** urgent", 1)
+    chapters = parse_wired_chapters(text)
+    weights = [s["weight"] for s in chapters[0]["scenes"]]
+    assert "urgent" not in weights, (
+        "the engine reads exactly anchor|support|connective — a class it has no "
+        "drafting instruction for must not parse as a weight")
+
+
+def test_penny_length_docstring_does_not_claim_genericity_over_weight_classes():
+    from scripts import penny_length
+    doc = penny_length.__doc__
+    assert "ENGINE's vocabulary" in doc
 
 
 import shutil
 
 
-def _series(tmp_path):
+def _series(tmp_path, outline=WEIGHTED):
     (tmp_path / ".penny").mkdir(parents=True, exist_ok=True)
     (tmp_path / "config").mkdir(parents=True, exist_ok=True)
     shutil.copy(PROFILE, tmp_path / "config/length-profile.md")
     inp = tmp_path / "input/book-01"
     inp.mkdir(parents=True, exist_ok=True)
-    shutil.copy(WEIGHTED, inp / "outline.md")
+    shutil.copy(outline, inp / "outline.md")
     (tmp_path / "series/whodunit").mkdir(parents=True, exist_ok=True)
     (tmp_path / "series/whodunit/book-01.yaml").write_text(
         "book: '01'\nreveal_chapter: 2\nclue_schedule:\n"
@@ -706,3 +714,61 @@ def test_stray_non_numbered_brief_file_is_not_reported_as_stale(tmp_path):
     (root / "input/book-01/briefs/ch-README.md").write_text(
         "# not a chapter brief\n", encoding="utf-8")
     assert brief_render.stale_briefs("01", root) == []
+
+
+# ====================================================================
+# FINAL REVIEW FIXES
+# ====================================================================
+
+MIXED = FIX / "outlines" / "weighted-mixed.md"
+INVERTED_SUPPORT = FIX / "outlines" / "weighted-inverted-support.md"
+LEGACY_PROFILE = FIX / "length-profile-legacy.md"
+
+
+# --- I2: check and build must AGREE about a compact-format chapter. `check`
+# skipped it (0 findings, exit 0) and `build` then FAILED it ("no anchor
+# scene", exit 1) — on a mixed-format book, build could never be made clean.
+
+def test_mixed_book_checks_clean(tmp_path):
+    r = brief_render.check_briefs(MIXED)
+    assert r["weighted"] is True
+    assert r["findings"] == []
+
+
+def test_mixed_book_builds_clean_and_skips_the_compact_chapter(tmp_path, capsys):
+    root = _series(tmp_path, outline=MIXED)
+    rc = brief_render.build("01", repo_root=root)
+    out = capsys.readouterr().out
+    assert rc == 0, f"a compact-format chapter is not a compile FAILURE: {out}"
+    assert (root / "input/book-01/briefs/ch-01.md").is_file()
+    assert not (root / "input/book-01/briefs/ch-02.md").exists(), (
+        "a compact chapter has no scenes to weigh — the drafter gets the raw "
+        "outline section for it, exactly as an unweighted book does")
+    assert "compact" in out and "ch 02" in out
+    assert "FAILED" not in out
+
+
+# --- C1(b): brief_render.build parsed the length profile unguarded too, so a
+# legacy-format profile tracebacked instead of naming a predicate.
+
+def test_legacy_profile_fails_by_name_not_by_traceback(tmp_path, capsys):
+    root = _series(tmp_path)
+    shutil.copy(LEGACY_PROFILE, root / "config/length-profile.md")
+    rc = brief_render.build("01", repo_root=root)
+    out = capsys.readouterr().out
+    assert rc == 1
+    assert "length-profile" in out
+    assert "band_default" in out, "the failure must name the keys the profile needs"
+
+
+# --- I6: a SUPPORT scene out-massing the anchor is the same lie as a
+# connective one doing it.
+
+def test_prompt_mass_inversion_catches_a_support_scene_out_massing_the_anchor():
+    r = brief_render.check_briefs(INVERTED_SUPPORT)
+    finding = next((f for f in r["findings"] if f.startswith("prompt-mass-inversion")), None)
+    assert finding is not None, (
+        "any non-anchor scene carrying more instruction mass than the anchor is "
+        "an inversion — the drafter believes the prompt, not the label")
+    assert "The Drive" in finding
+    assert "support" in finding

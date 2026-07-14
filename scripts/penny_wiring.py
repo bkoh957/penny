@@ -97,6 +97,20 @@ def parse_scenes(block: str) -> list[dict]:
     return scenes
 
 
+def undeclared_scene_weight(chapter_num: int, scenes: list[dict]) -> str:
+    """THE message for a partially-weighted chapter — one string, two callers.
+
+    brief_render.check_briefs and tension_check._overload_check raise the identical
+    finding for the identical defect (some scenes declare a weight, others don't, and
+    the compiler is NOT entitled to guess 'support' for the rest). It used to be typed
+    out verbatim in both files, which is how two copies of one predicate drift apart.
+    """
+    names = ", ".join(f"scene {s['num']} '{s['title']}'" for s in scenes)
+    return (f"undeclared-scene-weight: ch {chapter_num} declares a weight for some "
+            f"scenes but not {names} — an undeclared scene weight would silently "
+            f"default to 'support', which nobody asked for")
+
+
 def has_weights(chapters: list[dict]) -> bool:
     """An outline is weighted iff any scene declares a Weight. All-or-nothing per
     book, exactly like the wiring: an unweighted outline is passed through untouched.

@@ -33,7 +33,8 @@ import yaml  # beat-sheet only — nested, human-edited (CLAUDE.md dependency sp
 
 from scripts import penny_length, penny_paths
 from scripts.penny_meta import parse_frontmatter, write_frontmatter_field
-from scripts.penny_wiring import has_weights, parse_wired_chapters
+from scripts.penny_wiring import (has_weights, parse_wired_chapters,
+                                 undeclared_scene_weight)
 
 _FORM = {
     "anchor": "Dramatise fully. This is the chapter's reason to exist.",
@@ -51,7 +52,8 @@ _NO_BUTTON = ("End on that line. Do not add a closing paragraph of reflection, a
 _GRADE = {
     "cliffhanger": "a turn, threat, or revelation that makes the next page involuntary",
     "promise": "a promise of the next action — an intention, an appointment, a decision "
-               "taken (the lesser hook, and the right one for a connective chapter)",
+               "taken (the lesser hook, and the right one for a quieter chapter that "
+               "turns nothing over)",
 }
 
 
@@ -92,13 +94,11 @@ def check_briefs(outline_path, *, beat_sheet_path=None) -> dict:
             # all-or-nothing unweighted-chapter case above. Left alone,
             # render_brief used to default the untagged scene to "support"
             # silently; the showrunner never asked for that, so it earns its
-            # own finding rather than passing the checks clean.
-            undeclared = [s for s in scenes if not s["weight"]]
-            names = ", ".join(f"scene {s['num']} '{s['title']}'" for s in undeclared)
-            findings.append(
-                f"undeclared-scene-weight: ch {ch['num']} declares a weight for some "
-                f"scenes but not {names} — an undeclared scene weight would silently "
-                f"default to 'support', which nobody asked for")
+            # own finding rather than passing the checks clean. The message is
+            # penny_wiring's, shared verbatim with tension_check — one
+            # predicate, one wording, no drift.
+            findings.append(undeclared_scene_weight(
+                ch["num"], [s for s in scenes if not s["weight"]]))
             continue
         anchors = [s for s in scenes if s["weight"] == "anchor"]
         if not anchors:
@@ -114,10 +114,16 @@ def check_briefs(outline_path, *, beat_sheet_path=None) -> dict:
             continue
         heaviest_anchor = max(s["instruction_words"] for s in anchors)
         for s in scenes:
-            if s["weight"] == "connective" and s["instruction_words"] > heaviest_anchor:
+            # ANY non-anchor scene out-massing the anchor is the inversion — a
+            # support scene lavished with twelve beats tells the drafter it is
+            # the chapter's centre exactly as loudly as a connective one does.
+            # Restricting this to connective scenes let the real book-1 ch1
+            # through: its scenes 3 and 4 are support, carrying 12 and 11
+            # beats against the anchor's few.
+            if s["weight"] != "anchor" and s["instruction_words"] > heaviest_anchor:
                 findings.append(
                     f"prompt-mass-inversion: ch {ch['num']} scene {s['num']} "
-                    f"'{s['title']}' is marked connective but carries "
+                    f"'{s['title']}' is marked {s['weight']} but carries "
                     f"{s['instruction_words']} words of instruction against the anchor's "
                     f"{heaviest_anchor} — the prompt says it matters more than the anchor, "
                     f"and the drafter will believe the prompt")
@@ -197,7 +203,7 @@ def render_brief(chapter: dict, *, profile: dict, obligations: dict,
     out.append("The reader should finish this chapter remembering **one** central "
                "dramatic experience, not a list of technically correct stops:")
     out.append("")
-    out.append(f"> {anchor['title'] if anchor else chapter['title']}")
+    out.append(f"> {anchor['title']}")
     out.append("")
     out.append(f"Total budget: **~{target} words** (band {band[0]}–{band[1]}).")
     if chapter["long_waiver"]:
@@ -208,31 +214,24 @@ def render_brief(chapter: dict, *, profile: dict, obligations: dict,
 
     out.append("## The shape")
     out.append("")
-    if anchor:
-        i = scenes.index(anchor)
-        out.append(f"### ANCHOR — Scene {anchor['num']}: {anchor['title']} "
-                   f"(~{budgets[i]} words)")
-        out.append("")
-        out.append(_FORM["anchor"])
-        out.append("")
-        out.append("Everything below is **subordinate to this scene**. It is material in "
-                   "service of it, not a peer of it.")
-        out.append("")
+    i = scenes.index(anchor)
+    out.append(f"### ANCHOR — Scene {anchor['num']}: {anchor['title']} "
+               f"(~{budgets[i]} words)")
+    out.append("")
+    out.append(_FORM["anchor"])
+    out.append("")
+    out.append("Everything below is **subordinate to this scene**. It is material in "
+               "service of it, not a peer of it.")
+    out.append("")
     for i, s in enumerate(scenes):
         if s is anchor:
             continue
+        # anchor|support|connective is the ENGINE's vocabulary, fixed in
+        # penny_wiring.WEIGHT_RE and given drafting prose here in _FORM — a
+        # series owns the NUMBERS (weight_*, min_*_words), not the class list.
+        # So a weight outside _FORM is unparseable upstream and cannot arrive
+        # here; there is no fourth class to guard against.
         weight = s["weight"]
-        if weight not in _FORM:
-            # penny_length.scene_budgets is generic over any weight_* class a
-            # series declares in length-profile.md, so a 4th class is legal
-            # and reachable — but _FORM only carries drafting prose for the
-            # three the engine ships. A bare KeyError here would name
-            # neither the class nor where to fix it.
-            raise ValueError(
-                f"chapter {chapter['num']} scene {s['num']}: unknown scene weight "
-                f"class {weight!r} — length-profile.md declares weight_{weight}, "
-                f"but _FORM in scripts/brief_render.py has no drafting instruction "
-                "for it yet; add one there")
         out.append(f"  - **{weight.upper()} — Scene {s['num']}: {s['title']}** "
                    f"(~{budgets[i]} words). {_FORM[weight]}")
     out.append("")
@@ -425,19 +424,26 @@ def _plant_chapter(entry: dict, led: Path) -> int:
             f"non-integer plant_chapter {raw!r} — cannot schedule its obligation")
 
 
+def clues_by_chapter(path) -> dict:
+    """{chapter number: [clue ids]} from the locked ledger — the clue half of a
+    chapter's obligation load. Shared with tension_check's overloaded-chapter, which
+    needs the same schedule to know what the chapter's word band must pay for.
+    Raises the same named ValueErrors load_ledger/_plant_chapter do."""
+    led = Path(path)
+    data = load_ledger(led)
+    out: dict[int, list[str]] = {}
+    for key in ("clue_schedule", "red_herrings"):
+        for entry in (data.get(key) or []):
+            out.setdefault(_plant_chapter(entry, led), []).append(
+                str(entry.get("id", "<no id>")))
+    return out
+
+
 def _obligations(book: str, chapter: dict, repo_root) -> dict:
     """What must be TRUE OF THE PAGE — derived from the locked ledger and the wiring,
-    never re-authored. This is why the stage runs after the lock."""
+    never re-authored. This is why the COMPILE step runs after the lock."""
     led = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=repo_root)
-    clues: list[str] = []
-    if led.is_file():
-        data = load_ledger(led)
-        for entry in (data.get("clue_schedule") or []):
-            if _plant_chapter(entry, led) == chapter["num"]:
-                clues.append(str(entry["id"]))
-        for entry in (data.get("red_herrings") or []):
-            if _plant_chapter(entry, led) == chapter["num"]:
-                clues.append(str(entry["id"]))
+    clues: list[str] = clues_by_chapter(led).get(chapter["num"], []) if led.is_file() else []
     return {"clues": clues,
             "opens": [q for q, _ in chapter["opens"]],
             "closes": list(chapter["closes"]),
@@ -453,6 +459,13 @@ def build(book: str, *, chapter=None, repo_root=None) -> int:
     skipped, and the run's exit status reflects that not everything compiled —
     the caller (a human, or /build-briefs) must not mistake a partial write for
     a clean one.
+
+    A COMPACT-format chapter — no `### Scene N` blocks at all, which is what a
+    half-expanded outline has by construction — is not a failure: there is
+    nothing to weigh, so it falls back to the raw outline section exactly as an
+    unweighted book does, and is reported as skipped rather than FAILED. `check`
+    and `build` agree about it, which they did not before: `check` passed it and
+    `build` then refused it, so a mixed-format book could never be made clean.
     """
     root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
     outline = penny_paths.input_path(f"book-{book}/outline.md", root=root)
@@ -463,7 +476,14 @@ def build(book: str, *, chapter=None, repo_root=None) -> int:
         print("no scene weights detected — no briefs written "
               "(the drafter will receive the raw outline section, as today)")
         return 0
-    profile = penny_length.parse_profile(profile_path.read_text(encoding="utf-8"))
+    try:
+        profile = penny_length.parse_profile(profile_path.read_text(encoding="utf-8"))
+    except ValueError as e:
+        # A profile the engine cannot parse (the legacy format: a prose table,
+        # no band_*/weight_* keys) is a NAMED failure naming the keys it needs
+        # — never a raw ValueError traceback out of /build-briefs.
+        print(f"FAILED: no brief can be priced — {e}")
+        return 1
     sha = _sha(outline)
     # The whodunit ledger is a real upstream of every brief — obligations
     # (_obligations) come from it, not just the outline. ALWAYS stamp
@@ -484,9 +504,15 @@ def build(book: str, *, chapter=None, repo_root=None) -> int:
         return 1
     written = 0
     failed: list[str] = []
+    skipped: list[str] = []
     for ch in chapters:
         num = f"{ch['num']:02d}"
         if chapter is not None and num != str(chapter).zfill(2):
+            continue
+        if not ch["scenes"]:
+            print(f"skipped: ch {num} is compact-format — no scenes to weigh; the "
+                  f"drafter will receive the raw outline section for this chapter")
+            skipped.append(num)
             continue
         try:
             body = render_brief(ch, profile=profile,
@@ -504,6 +530,7 @@ def build(book: str, *, chapter=None, repo_root=None) -> int:
         p.write_text(stamped, encoding="utf-8")
         written += 1
     print(f"briefs: wrote {written} chapter brief(s) to input/book-{book}/briefs/"
+          + (f" ({len(skipped)} compact, skipped: {', '.join(skipped)})" if skipped else "")
           + (f" ({len(failed)} failed: {', '.join(failed)})" if failed else ""))
     return 1 if failed else 0
 
