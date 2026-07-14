@@ -90,10 +90,10 @@ Does not write ledgers.
    `drafted_short: landed at 1540 words against an 1800 minimum, outline gives this
    chapter three beats where a chapter this size needs four, needs another scene not
    more prose`). Keep it to one line with no colon inside the value (frontmatter is
-   `key: value`, and a second colon would break the parse). This is how the showrunner
-   sees the shortfall at `/review-chapter` time without a second pass — never write it
-   into the prose body: a body note survives line-edit, copy-edit, and the literal
-   promotion to `.final.md` untouched, and rides straight into the assembled manuscript,
+   `key: value`, and a second colon would break the parse). This is recorded in the
+   draft's frontmatter, where the showrunner can see it when they open the draft —
+   never write it into the prose body: a body note survives line-edit, copy-edit, and
+   the literal promotion to `.final.md` untouched, and rides straight into the manuscript,
    because `assemble_book.py` strips frontmatter, not the body. Never invent a scene
    yourself to close the gap — that is the outline's call, not yours.
 

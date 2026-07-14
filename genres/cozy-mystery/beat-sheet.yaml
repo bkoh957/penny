@@ -10,3 +10,7 @@ tracks:
   max_dark_gap: { M: 2, P: 4, R: 4, B: 5 }
 questions:
   min_open_before_reveal: 1
+# Consumed by brief_render.py's hook-grade-distribution check. Unrelieved cliffhangers
+# read as machinery and the reader stops believing them; a cozy earns its turns.
+hooks:
+  max_cliffhanger_fraction: 0.4

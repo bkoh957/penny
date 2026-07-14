@@ -359,6 +359,30 @@ open items and outline staleness as a **non-blocking banner**.
 If the Codex runtime is unreachable the panel degrades to Claude-only and says so
 ("independence reduced") — by design, never a halt.
 
+### Build the chapter briefs — `/build-briefs NN`
+
+The step between the lock and the first draft:
+
+```bash
+/build-briefs 02
+```
+
+The raw outline hands the drafter a flat numbered list of beats written with equal
+lavishness — a promise of parity the model reads literally, which is how a chapter meant
+to run 1,800–2,400 words comes out at 3,800. `/build-briefs` compiles the locked outline
+into one prompt-shaped brief per chapter (`input/book-NN/briefs/ch-MM.md`): an emphasis
+hierarchy (anchor/support/connective) with per-scene word budgets from
+`config/length-profile.md`, obligations as a checklist rather than stops, a commissioned
+first line, a graded hook (cliffhanger | promise), declared negative space, and the raw
+outline demoted to reference.
+
+If the outline declares no scene weights, `/build-briefs` dispatches the `brief-weigher`
+sub-agent to propose a weighting per chapter — you accept, edit, or reject; only your
+accepted weights are written back into the outline. **An outline with no scene weights at
+all is passed through untouched**, so book 1 is unaffected until you choose to weigh it.
+Each brief is stamped with the outline's sha256; edit the outline afterwards and every
+brief goes stale, so `/draft-chapter` refuses until you re-run this.
+
 ---
 
 ## End to end, part 3 — the per-chapter loop
@@ -471,6 +495,7 @@ consensus axis (≥K-of-M via `beta_consensus_k`).
 | `/scaffold-book <NN> <outline> [--approve]` | book | mints the lock |
 | `/expand-outline <NN> [MM]` | book | requires sealed solution |
 | `/review-outline <NN> [--focus "…"]` | book | **advisory** |
+| `/build-briefs <NN>` | book | requires the lock |
 | `/draft-chapter <NN> <MM>` | chapter | requires the lock |
 | `/draft-chapter-lmstudio <NN> <MM> [model-id]` | chapter | requires the lock; LM Studio scene-shard route |
 | `/review-chapter <NN> <MM>` | chapter | **the gate** — PASS/HOLD |

@@ -33,10 +33,11 @@ Checks (ids are the waiver handles):
                      A chapter whose weight table the profile can't resolve
                      (a missing weight_* key) still gets an
                      `overloaded-chapter:` finding naming why it couldn't be
-                     budgeted — never a silent skip. A chapter with an
-                     undeclared scene weight gets `undeclared-scene-weight:`
-                     (brief_render.check_briefs' own vocabulary for the same
-                     silent-default problem) instead of guessing "support".
+                     budgeted — never a silent skip.
+  undeclared-scene-weight  a chapter declares a weight for some scenes but not
+                     others — brief_render.check_briefs' own vocabulary for
+                     the same silent-default problem, raised here too so the
+                     overload check never guesses "support" instead of asking.
 
   python3 scripts/tension_check.py input/book-NN/outline-skeleton.md \
       [--beat-sheet P] [--turning-points P] [--whodunit P] [--profile P]

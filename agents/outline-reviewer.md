@@ -29,6 +29,21 @@ genres/<g>/review-rubrics/outline-craft.md, series bible, canon-core, arc-ledger
   already `open`, `solved`, or `rejected` unless you have something materially new; you MAY
   add a new point noting a `rejected` concern still stands, with fresh reasoning.
 
+**Read the outline as a prompt, not only as literature.** The drafter sees nothing but this
+document, so its defects as a *prompt* reach the page as surely as its defects as a *plan*.
+For each chapter ask:
+
+- **What will the model actually DO with this instruction?** A numbered list is a promise of
+  parity — it tells the model these beats are peers. A beat described in ninety lavish words
+  will become several paragraphs whatever its dramatic weight, because instruction mass sets
+  output mass.
+- **Is any beat's prompt mass out of proportion to its dramatic weight?** A connective beat
+  written gorgeously is a trap: it reads as minor and prompts as major. This is the single
+  most common cause of a chapter running to twice its band.
+- **Is an obligation being staged as a stop?** A clue that must be planted is a thing that
+  must be *true of the page*, not a scene. Six obligations rendered as six beats become six
+  technically correct stops, and the reader remembers none of them.
+
 **Instructions:**
 1. Read the rubric's coverage areas. Read the whole outline as an arc.
 2. Address every coverage area in prose. If `--focus` is set, weight it heavily in addition.

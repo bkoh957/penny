@@ -133,6 +133,19 @@ engine code.
   proposal → approve + lock) — for the puzzle alone, when the dramatic outline is
   already settled some other way.
 
+**Per book, after the lock:** `/build-briefs NN` compiles the locked outline into one
+prompt-shaped brief per chapter (`input/book-NN/briefs/ch-MM.md`) — an emphasis hierarchy
+(anchor/support/connective) with per-scene word budgets from `config/length-profile.md`,
+obligations as a checklist rather than stops, a commissioned first line, a graded hook
+(cliffhanger | promise), declared negative space, and the raw outline section demoted to
+reference. Each brief is stamped `built_from_outline: <sha256>`; edit the outline and
+`preflight draft` refuses until the briefs are rebuilt. **An outline with no scene weights
+is passed through untouched** — `/draft-chapter` then reads the raw section exactly as
+before, so book 1 is unaffected. The weights are declared by the showrunner in the outline;
+`brief-weigher` proposes, it never decides. `scripts/penny_length.py` is the one place
+chapter bands and per-scene word budgets are computed; `scripts/brief_render.py`,
+dispatched by `/build-briefs`, is the stage between the lock and the first draft.
+
 **Per chapter:** `/draft-chapter NN MM` → `/review-chapter NN MM` (the gate; also dispatches
 the context-rich `developmental-editor` advisory) → `preflight clear-dev NN MM` →
 `/finalize-chapter NN MM [--commit]` (requires `gate: PASS` **and** a clear-dev cert bound
@@ -170,9 +183,10 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
 - **`scripts/preflight.py`** is the one deterministic-gate tool, six subcommands:
   `lock-mystery N` (validate fairplay+lexicon+tension, then mint the lock — the
   *only* lock writer; `tension_check.py` is the dramatic-wiring checker beside
-  `fairplay_check.py`, eight named checks — `orphan-chapter`, `dropped-question`,
+  `fairplay_check.py`, nine named checks — `orphan-chapter`, `dropped-question`,
   `phantom-answer`, `broken-hook`, `chapter-coverage`, `dead-stretch`,
-  `starved-thread`, `off-mark-beat` — each waivable with `--waive check-id:"reason"`,
+  `starved-thread`, `off-mark-beat`, `overloaded-chapter` — each waivable with
+  `--waive check-id:"reason"`,
   recorded in the lock certificate; the beat sheet driving the last three is
   resolved through the active genre's `genre.yaml` `beat_sheet:` key
   (`penny_genre.py beat-sheet`), never a hardcoded filename; an outline with no
