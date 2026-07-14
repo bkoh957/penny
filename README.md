@@ -297,8 +297,7 @@ name the questions the reader is carrying; `Carries` marks one deliberately left
 this book (a series seed, not a dropped stitch). `Hook` must lead with a question still
 open, so a hook stops being a mood and becomes a promise on record.
 
-`scripts/tension_check.py` then reads the whole outline and fails loud on **eight named
-checks**:
+`scripts/tension_check.py` then reads the whole outline and fails loud on **nine named checks**:
 
 | Check | Fires when |
 |---|---|
@@ -310,6 +309,7 @@ checks**:
 | `starved-thread` | a subplot goes dark longer than the genre allows |
 | `off-mark-beat` | a tentpole scene sits outside its beat-sheet window |
 | `chapter-coverage` | the chapter set has gaps, dupes, or extras |
+| `overloaded-chapter` | a chapter's connective scenes can't each be paid at least the floor out of its word band — too many stops for the length, a plotting problem caught before the lock rather than in the prose |
 
 Every threshold comes from the genre's `beat-sheet.yaml` — never from a constant in the
 engine. **Wiring is optional per book:** an outline without it is skipped entirely, so
@@ -380,8 +380,11 @@ If the outline declares no scene weights, `/build-briefs` dispatches the `brief-
 sub-agent to propose a weighting per chapter — you accept, edit, or reject; only your
 accepted weights are written back into the outline. **An outline with no scene weights at
 all is passed through untouched**, so book 1 is unaffected until you choose to weigh it.
-Each brief is stamped with the outline's sha256; edit the outline afterwards and every
-brief goes stale, so `/draft-chapter` refuses until you re-run this.
+Each brief is stamped with the outline's sha256 **and** the whodunit ledger's — the
+ledger is a real upstream of every brief too, since the obligations come from it, so
+moving a clue's `plant_chapter` goes stale the same way editing the outline does. Edit
+either afterwards and every brief goes stale, so `/draft-chapter` refuses until you
+re-run this.
 
 ---
 

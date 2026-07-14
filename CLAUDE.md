@@ -138,10 +138,13 @@ prompt-shaped brief per chapter (`input/book-NN/briefs/ch-MM.md`) — an emphasi
 (anchor/support/connective) with per-scene word budgets from `config/length-profile.md`,
 obligations as a checklist rather than stops, a commissioned first line, a graded hook
 (cliffhanger | promise), declared negative space, and the raw outline section demoted to
-reference. Each brief is stamped `built_from_outline: <sha256>`; edit the outline and
-`preflight draft` refuses until the briefs are rebuilt. **An outline with no scene weights
-is passed through untouched** — `/draft-chapter` then reads the raw section exactly as
-before, so book 1 is unaffected. The weights are declared by the showrunner in the outline;
+reference. Each brief is stamped `built_from_outline: <sha256>` **and**
+`built_from_whodunit: <sha256>` — the whodunit ledger is a real upstream of every brief
+too (obligations come from it), so moving a clue's `plant_chapter` goes stale the same
+way editing the outline does; edit either and `preflight draft` refuses until the briefs
+are rebuilt. **An outline with no scene weights is passed through untouched** —
+`/draft-chapter` then reads the raw section exactly as before, so book 1 is unaffected.
+The weights are declared by the showrunner in the outline;
 `brief-weigher` proposes, it never decides. `scripts/penny_length.py` is the one place
 chapter bands and per-scene word budgets are computed; `scripts/brief_render.py`,
 dispatched by `/build-briefs`, is the stage between the lock and the first draft.
