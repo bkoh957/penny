@@ -108,6 +108,40 @@ def test_has_weights_true_for_weighted_outline_false_for_the_wired_one():
     assert penny_wiring.has_weights(wired) is False
 
 
+def test_weight_accepts_bare_and_bulleted_forms():
+    # commands/build-briefs.md teaches the bulleted form (matching every other
+    # bold field a showrunner already writes: Because/Opens/Closes/Carries/Hook
+    # are all "- **Field:**"), and hand-authored outlines will follow it. The
+    # parser must accept both spellings and read the identical weight from each.
+    text = """---
+book: 01
+total_chapters: 1
+---
+
+## Chapter 01 — One
+
+### Scene 1 — Bare
+
+**Weight:** anchor
+
+**Beat flow:**
+
+1. Beat.
+
+### Scene 2 — Bulleted
+
+- **Weight:** anchor
+
+**Beat flow:**
+
+1. Beat.
+"""
+    chapters = penny_wiring.parse_wired_chapters(text)
+    scenes = chapters[0]["scenes"]
+    assert scenes[0]["weight"] == "anchor"
+    assert scenes[1]["weight"] == "anchor"
+
+
 def test_parse_scenes_bounds_last_scene_at_next_h3_heading_of_any_name():
     # A trailing "### Drafting Notes" (or "### Track Movement", etc.) after the
     # last scene must not be swept into that scene's body — its own numbered

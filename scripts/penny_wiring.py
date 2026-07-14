@@ -36,7 +36,16 @@ SCENE_RE = re.compile(r"^###\s+Scene\s+(\d+)(?:\s*[—-]\s*(.*))?$", re.MULTILIN
 # trailing subsection follows it ("### Track Movement", "### Drafting Notes",
 # "### Possible Line-Level Prompts", ...), not sweep it in as scene content.
 ANY_H3_RE = re.compile(r"^###\s+.*$", re.MULTILINE)
-WEIGHT_RE = re.compile(r"^\s*\*\*Weight:\*\*\s*(anchor|support|connective)\s*$",
+# Permissive like the outline's other bold fields (FIELD_RE, TRACK_RE): a
+# showrunner hand-authoring "- **Weight:** anchor" alongside every neighbouring
+# "- **Because:**"/"- **Opens:**"/"- **Hook:**" field is following the
+# documented, bulleted syntax (commands/build-briefs.md), not a typo. The
+# leading bullet — "-"/"*"/"+"/em-dash/en-dash, or none at all (the bare form
+# this pattern originally required) — is optional so both spellings resolve to
+# the identical weight. A silently-None weight here reads as "book has no
+# weights at all" downstream (brief_render's happy path), so under-accepting
+# is the failure mode this pattern must never have.
+WEIGHT_RE = re.compile(r"^\s*(?:[-*+—–]\s*)?\*\*Weight:\*\*\s*(anchor|support|connective)\s*$",
                        re.MULTILINE | re.IGNORECASE)
 BEAT_RE = re.compile(r"^\s*(\d+)\.\s+(.*)$")
 FIRSTLINE_RE = re.compile(r"^\s*-\s+\*\*First line:\*\*\s*(.*)$")

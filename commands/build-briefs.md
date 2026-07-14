@@ -12,14 +12,16 @@ series folder.
 
 ## Steps
 
-1. **Refuse an unlocked book.**
+1. **Parse args:** `book=$1` (e.g. `01`).
+
+2. **Refuse an unlocked book.**
 
    ```bash
-   test -f ".penny/locks/book-$1.mystery.lock" || {
-     echo "build-briefs: book $1 is not locked — the obligations are not settled yet."; exit 1; }
+   test -f ".penny/locks/book-$book.mystery.lock" || {
+     echo "build-briefs: book $book is not locked — the obligations are not settled yet."; exit 1; }
    ```
 
-2. **Weigh the scenes (the taste stage).**
+3. **Weigh the scenes (the taste stage).**
 
    If the outline declares no `- **Weight:**` on its scenes, dispatch the **`brief-weigher`**
    sub-agent once per chapter (pass `model:` = `plot_model` from `config/run-config.md`,
@@ -29,10 +31,10 @@ series folder.
    written into `input/book-NN/outline.md`.** The machine never writes a weight it chose
    itself — the weighting is the chapter's dramatic hierarchy, and that is taste.
 
-3. **Check the prompt.**
+4. **Check the prompt.**
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/brief_render.py" check "$1"
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/brief_render.py" check "$book"
    ```
 
    Findings are reported, not enforced: `prompt-mass-inversion` (a connective scene
@@ -43,10 +45,15 @@ series folder.
    anchor, more than one anchor, or an undeclared scene weight — so `check` before
    `build` is not decoration; it names the chapter `build` would otherwise skip.
 
-4. **Compile.**
+   **Present the findings to the showrunner and stop here.** Do not proceed to Step 5
+   while `check` names a chapter `build` would refuse — running `build` regardless just
+   burns the run on a chapter it will skip. Resume with Step 5 once the outline is edited
+   (or the showrunner accepts the findings as-is).
+
+5. **Compile.**
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/brief_render.py" build "$1"
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/brief_render.py" build "$book"
    ```
 
    Writes `input/book-NN/briefs/ch-MM.md`, each stamped with the sha256 of both the
@@ -55,7 +62,7 @@ series folder.
    and skips any chapter it cannot compile and exits nonzero if any failed — a partial
    write is never mistaken for a clean one.
 
-5. **Report.** Name the per-chapter word budgets and the total, so the showrunner sees the
+6. **Report.** Name the per-chapter word budgets and the total, so the showrunner sees the
    book priced before a word of it is drafted.
 
 ## Notes

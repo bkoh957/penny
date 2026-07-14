@@ -26,7 +26,7 @@ She arrives and makes the shop real.
 
 ### Scene 2 — Cal and the Mug
 
-**Weight:** anchor
+- **Weight:** anchor
 
 **Beat flow:**
 
