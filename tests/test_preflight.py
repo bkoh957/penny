@@ -535,3 +535,69 @@ def test_draft_passes_when_no_briefs_exist_at_all(tmp_path):
     # Book 1 has no briefs and must keep drafting exactly as before.
     _make_book(tmp_path, populated=True, locked=True)
     assert preflight.cmd_draft("01", "01", repo_root=tmp_path) == 0
+
+
+# --- Fix wave: cmd_lock_mystery now resolves + threads profile_path, but
+# nothing exercised that path directly — a regression in the
+# `not profile_path.is_file()` normalization would pass the whole suite
+# silently. Mirrors test_waived_finding_locks_and_records_reason /
+# test_lock_refused_on_unwaived_curve_finding_when_genre_declared. ----------
+
+OVERLOAD_PROFILE = SRC / "tests/fixtures/length-profile.md"
+
+
+def _overloaded_wired_outline() -> str:
+    # Chapter 01 carries the identical overload shape as
+    # tests/test_tension_check.py's own overload fixture (1 anchor + 20
+    # connective scenes in the default band). Chapter 02 exists purely to
+    # close/carry the questions chapter 01 opens, cleanly, so the ONLY
+    # tension finding this outline produces is overloaded-chapter — nothing
+    # else must fire, or waiving overloaded-chapter alone wouldn't be enough
+    # to lock.
+    scenes = "\n".join(
+        f"### Scene {i} — Stop {i}\n\n**Weight:** connective\n\n**Beat flow:**\n\n1. A stop.\n"
+        for i in range(2, 22))
+    return (
+        "---\nbook: 01\ntotal_chapters: 2\n---\n\n"
+        "## Chapter 01 — Too Much\n\n"
+        "- **Because:** opening\n"
+        "- **Opens:** q-a — a question.\n"
+        "- **Hook:** q-a — a hook.\n\n"
+        "### Scene 1 — The Anchor\n\n**Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
+        + scenes +
+        "\n## Chapter 02 — Cooldown\n\n"
+        "- **Because:** ch 01 — settles the pace.\n"
+        "- **Opens:** q-b — a second question.\n"
+        "- **Closes:** q-a\n"
+        "- **Carries:** q-b\n"
+        "- **Hook:** q-b — a hook.\n"
+    )
+
+
+def _scaffold_overloadable(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    (tmp_path / "config").mkdir(parents=True, exist_ok=True)
+    shutil.copy(OVERLOAD_PROFILE, tmp_path / "config/length-profile.md")
+    d = tmp_path / "input/book-01"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "outline-skeleton.md").write_text(_overloaded_wired_outline(), encoding="utf-8")
+
+
+def test_lock_refused_on_unwaived_overloaded_chapter(tmp_path):
+    _scaffold_overloadable(tmp_path)
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_lock_mystery("01", repo_root=tmp_path)
+    assert "overloaded-chapter" in str(e.value)
+    assert not preflight.lock_path("01", tmp_path).is_file()
+
+
+def test_waived_overloaded_chapter_locks_and_records_reason(tmp_path):
+    _scaffold_overloadable(tmp_path)
+    assert preflight.cmd_lock_mystery(
+        "01", repo_root=tmp_path,
+        waivers=['overloaded-chapter:ch 1 is deliberately dense; showrunner '
+                 'accepts the length risk']) == 0
+    body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
+    assert "validated: fairplay+lexicon+tension" in body
+    assert ("waived: overloaded-chapter — ch 1 is deliberately dense; showrunner "
+            "accepts the length risk") in body

@@ -30,6 +30,13 @@ Checks (ids are the waiver handles):
                      caught before a word is drafted (Task 6). Only runs
                      when a --profile is given and the outline is weighted;
                      an unweighted outline (book 1's shape) is never checked.
+                     A chapter whose weight table the profile can't resolve
+                     (a missing weight_* key) still gets an
+                     `overloaded-chapter:` finding naming why it couldn't be
+                     budgeted — never a silent skip. A chapter with an
+                     undeclared scene weight gets `undeclared-scene-weight:`
+                     (brief_render.check_briefs' own vocabulary for the same
+                     silent-default problem) instead of guessing "support".
 
   python3 scripts/tension_check.py input/book-NN/outline-skeleton.md \
       [--beat-sheet P] [--turning-points P] [--whodunit P] [--profile P]
@@ -181,6 +188,18 @@ def _overload_check(chapters, profile, blocking):
     is drafted. If the band cannot pay each connective scene its floor, the outline
     gave this chapter more stops than it can hold, and it will run long no matter how
     well it is written.
+
+    Never silently loses the signal. This is the identical anti-pattern
+    brief_render.check_briefs already rejects by name for the same problem
+    (an undeclared scene weight silently defaulting to "support") — here it
+    gets brief_render's own `undeclared-scene-weight` finding rather than a
+    default nobody asked for. And a weight class the series' length-profile.md
+    doesn't declare (e.g. no `weight_support:` line) used to make
+    `scene_budgets` raise and this check swallow the ValueError whole — a
+    genuinely overloaded chapter then locked with ZERO overload signal, and
+    nothing to waive. Both now become a NAMED, waivable finding: a finding is
+    not a crash, so "never blow up the lock" holds without silently losing
+    the check for the whole book over one missing config key.
     """
     from scripts import penny_length
     floor = profile.get("min_connective_words", 0)
@@ -190,13 +209,23 @@ def _overload_check(chapters, profile, blocking):
         scenes = ch["scenes"]
         if not scenes or not any(s["weight"] for s in scenes):
             continue
+        undeclared = [s for s in scenes if not s["weight"]]
+        if undeclared:
+            names = ", ".join(f"scene {s['num']} '{s['title']}'" for s in undeclared)
+            blocking.append(
+                f"undeclared-scene-weight: ch {ch['num']} declares a weight for some "
+                f"scenes but not {names} — an undeclared scene weight would silently "
+                f"default to 'support', which nobody asked for; the overload check "
+                f"cannot budget this chapter without it")
+            continue
         band = penny_length.band_for(profile, ch["chapter_type"])
-        weights = [s["weight"] or "support" for s in scenes]
+        weights = [s["weight"] for s in scenes]
         try:
             budgets = penny_length.scene_budgets(profile, band, weights)
-        except ValueError:
-            # A weird/unresolvable weight table must not blow up the lock —
-            # this check is a bonus arithmetic check, not the shape validator.
+        except ValueError as e:
+            blocking.append(
+                f"overloaded-chapter: ch {ch['num']} could not be budgeted — {e} — "
+                f"the overload check could not run for this chapter")
             continue
         for s, b in zip(scenes, budgets):
             if s["weight"] == "connective" and b < floor:

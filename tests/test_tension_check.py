@@ -247,3 +247,73 @@ def test_unweighted_outline_is_never_overload_checked():
     # An un-weighted outline (book 1's shape) must never trip the check.
     result = check_tension(FIX / "wired-clean.md", profile_path=PROFILE)
     assert not any(b.startswith("overloaded-chapter") for b in result["blocking"])
+
+
+# --- Fix wave: never silently lose the overload signal ---------------------
+#
+# _overload_check used to wrap penny_length.scene_budgets in a bare
+# `try/except ValueError: continue` and separately default an undeclared
+# scene weight to "support" (`s["weight"] or "support"`). Both are the exact
+# anti-pattern brief_render.check_briefs already rejects by name
+# (`undeclared-scene-weight`) for the identical problem: silently guessing
+# at data the showrunner never declared. A chapter that cannot be budgeted —
+# because the series' length-profile.md lacks a weight_* key it needs — must
+# not lock with ZERO overload signal; it must produce a NAMED, waivable
+# finding instead.
+
+def test_overload_check_never_silently_skips_when_weight_class_unresolvable(tmp_path):
+    # Reproduces the SAME 20-connective-scene overload as
+    # test_overloaded_chapter_flagged_when_a_connective_scene_cannot_be_paid_for
+    # above, but against a profile with no weight_connective — the exact
+    # missing-config-key case the fix closes. Before the fix, scene_budgets
+    # raised ValueError("unknown scene weight 'connective' ...") and the bare
+    # `except ValueError: continue` swallowed it whole: no finding, nothing
+    # to waive, a genuinely overloaded chapter locking clean.
+    scenes = "\n".join(
+        f"### Scene {i} — Stop {i}\n\n**Weight:** connective\n\n**Beat flow:**\n\n1. A stop.\n"
+        for i in range(2, 22))
+    outline = tmp_path / "outline.md"
+    outline.write_text(
+        "---\nbook: 01\ntotal_chapters: 1\n---\n\n"
+        "## Chapter 01 — Too Much\n\n"
+        "- **Because:** opening\n"
+        "- **Opens:** q-a — a question.\n"
+        "- **Hook:** q-a — a hook.\n\n"
+        "### Scene 1 — The Anchor\n\n**Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
+        + scenes, encoding="utf-8")
+    profile = tmp_path / "length-profile.md"
+    profile.write_text(
+        "```yaml\nband_default: [2000, 2500]\nweight_anchor: 8\n"
+        "min_connective_words: 100\n```\n", encoding="utf-8")  # no weight_connective
+    result = check_tension(outline, profile_path=profile)
+    finding = next((b for b in result["blocking"] if b.startswith("overloaded-chapter")), None)
+    assert finding is not None, (
+        "a chapter that could not be budgeted at all must still produce a "
+        "named, waivable finding — never silently vanish")
+    assert "ch 1" in finding
+
+
+def test_undeclared_scene_weight_gets_named_finding_not_silent_support_default(tmp_path):
+    # A chapter that declares a weight for some scenes but not others must
+    # get brief_render's own "undeclared-scene-weight" finding, not a
+    # `weight or "support"` guess the showrunner never made.
+    outline = tmp_path / "outline.md"
+    outline.write_text(
+        "---\nbook: 01\ntotal_chapters: 1\n---\n\n"
+        "## Chapter 01 — Partial\n\n"
+        "- **Because:** opening\n"
+        "- **Opens:** q-a — a question.\n"
+        "- **Hook:** q-a — a hook.\n\n"
+        "### Scene 1 — The Anchor\n\n**Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
+        "### Scene 2 — No Weight\n\n**Beat flow:**\n\n1. Untagged.\n",
+        encoding="utf-8")
+    result = check_tension(outline, profile_path=PROFILE)
+    finding = next(
+        (b for b in result["blocking"] if b.startswith("undeclared-scene-weight")), None)
+    assert finding is not None, (
+        "an undeclared scene weight in a partially-weighted chapter must get "
+        "a named finding, not a silent 'support' default")
+    assert "scene 2" in finding
+    assert not any(b.startswith("overloaded-chapter") for b in result["blocking"]), (
+        "an undeclared weight must never be silently defaulted to 'support' "
+        "and then budgeted as if the showrunner chose that")
