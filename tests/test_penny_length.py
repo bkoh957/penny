@@ -52,3 +52,19 @@ def test_scene_budgets_rejects_an_unknown_weight():
     with pytest.raises(ValueError) as e:
         penny_length.scene_budgets(p, (1800, 2400), ["anchor", "atmospheric"])
     assert "atmospheric" in str(e.value)
+
+
+def test_scene_budgets_rejects_all_zero_weights_instead_of_silently_zeroing():
+    # A length-profile that assigns weight 0 to a class must not silently drop
+    # the whole chapter's word target to zero when every scene is that class.
+    p = {"weights": {"atmospheric": 0}}
+    with pytest.raises(ValueError) as e:
+        penny_length.scene_budgets(p, (1800, 2400), ["atmospheric", "atmospheric"])
+    message = str(e.value)
+    assert "atmospheric" in message
+    assert "length-profile" in message
+
+
+def test_scene_budgets_empty_scene_list_returns_empty():
+    p = _profile()
+    assert penny_length.scene_budgets(p, (1800, 2400), []) == []

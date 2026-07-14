@@ -78,11 +78,18 @@ def scene_budgets(profile: dict, band: tuple[int, int], weights: list[str]) -> l
     for w in weights:
         if w not in table:
             raise ValueError(f"unknown scene weight {w!r} (known: {sorted(table)})")
+    if not weights:
+        return []
     target = (band[0] + band[1]) // 2
     shares = [table[w] for w in weights]
     total = sum(shares)
     if total == 0:
-        return [0] * len(weights)
+        raise ValueError(
+            f"length-profile: scene weight classes {sorted(set(weights))!r} sum to "
+            "zero for this chapter's scenes — the chapter's word target cannot be "
+            "shared out. Give at least one of these classes a nonzero weight_* "
+            "value in length-profile.md."
+        )
     budgets = [target * s // total for s in shares]
     heaviest = max(range(len(shares)), key=lambda i: shares[i])
     budgets[heaviest] += target - sum(budgets)
