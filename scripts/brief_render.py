@@ -27,8 +27,27 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml  # beat-sheet only — nested, human-edited (CLAUDE.md dependency split)
 
-from scripts import penny_paths
+from scripts import penny_length, penny_paths
 from scripts.penny_wiring import has_weights, parse_wired_chapters
+
+_FORM = {
+    "anchor": "Dramatise fully. This is the chapter's reason to exist.",
+    "support": "Brief scene texture, kept subordinate to the anchor.",
+    "connective": "Compress: one paragraph, a transition, a phone call, or a line of "
+                  "dialogue — in summary, not scene.",
+}
+
+_NO_WARMUP = ("Open in motion — no weather, no waking, no arriving, no scene-setting "
+              "run-up. The chapter starts where the trouble starts.")
+
+_NO_BUTTON = ("End on that line. Do not add a closing paragraph of reflection, and do "
+              "not tie the chapter off.")
+
+_GRADE = {
+    "cliffhanger": "a turn, threat, or revelation that makes the next page involuntary",
+    "promise": "a promise of the next action — an intention, an appointment, a decision "
+               "taken (the lesser hook, and the right one for a connective chapter)",
+}
 
 
 def _load_sheet(path) -> dict:
@@ -98,6 +117,133 @@ def check_briefs(outline_path, *, beat_sheet_path=None) -> dict:
     return {"weighted": True, "findings": findings,
             "metrics": {"chapters": len(chapters),
                         "scenes": sum(len(c["scenes"]) for c in chapters)}}
+
+
+def render_brief(chapter: dict, *, profile: dict, obligations: dict,
+                 outline_text: str) -> str:
+    """One chapter's brief: a prompt, not an outline section.
+
+    The order is the instruction. The one thing comes before any beat; the anchor is
+    the root and everything else is nested beneath it; obligations are a checklist,
+    never stops; reference material is demoted out of instruction voice.
+    """
+    scenes = chapter["scenes"]
+    band = penny_length.band_for(profile, chapter["chapter_type"])
+    budgets = penny_length.scene_budgets(
+        profile, band, [s["weight"] or "support" for s in scenes])
+    target = sum(budgets)
+
+    anchor = next((s for s in scenes if s["weight"] == "anchor"), None)
+    out: list[str] = []
+    out.append(f"# Chapter {chapter['num']:02d} — {chapter['title']}")
+    out.append("")
+    out.append("## The one thing")
+    out.append("")
+    out.append("The reader should finish this chapter remembering **one** central "
+               "dramatic experience, not a list of technically correct stops:")
+    out.append("")
+    out.append(f"> {anchor['title'] if anchor else chapter['title']}")
+    out.append("")
+    out.append(f"Total budget: **~{target} words** (band {band[0]}–{band[1]}).")
+    if chapter["long_waiver"]:
+        out.append("")
+        out.append(f"**Declared long:** {chapter['long_waiver']} — this override is "
+                   f"recorded, and the length checks honour it.")
+    out.append("")
+
+    out.append("## The shape")
+    out.append("")
+    if anchor:
+        i = scenes.index(anchor)
+        out.append(f"### ANCHOR — Scene {anchor['num']}: {anchor['title']} "
+                   f"(~{budgets[i]} words)")
+        out.append("")
+        out.append(_FORM["anchor"])
+        out.append("")
+        out.append("Everything below is **subordinate to this scene**. It is material in "
+                   "service of it, not a peer of it.")
+        out.append("")
+    for i, s in enumerate(scenes):
+        if s is anchor:
+            continue
+        weight = s["weight"] or "support"
+        out.append(f"  - **{weight.upper()} — Scene {s['num']}: {s['title']}** "
+                   f"(~{budgets[i]} words). {_FORM[weight]}")
+    out.append("")
+
+    out.append("## Obligations")
+    out.append("")
+    out.append("These **must be TRUE OF THE PAGE** by the end of the chapter. They are "
+               "**not stops on an itinerary** — most can be discharged inside the anchor "
+               "scene in a sentence. Do not give any of them their own scene.")
+    out.append("")
+    for clue in obligations.get("clues", []):
+        out.append(f"- Plant: `{clue}` — fairly, on the page, in view of the reader.")
+    for q in obligations.get("opens", []):
+        out.append(f"- Open the question: `{q}`")
+    for q in obligations.get("closes", []):
+        out.append(f"- Close the question: `{q}`")
+    for track, movement in (obligations.get("tracks") or {}).items():
+        if movement and movement.strip().lower() != "none":
+            out.append(f"- Advance thread **{track}**: {movement}")
+    if not any(obligations.get(k) for k in ("clues", "opens", "closes", "tracks")):
+        out.append("- None.")
+    out.append("")
+
+    out.append("## The first line")
+    out.append("")
+    if chapter["first_line"]:
+        out.append(f"{chapter['first_line']}")
+        out.append("")
+    out.append(_NO_WARMUP)
+    out.append("")
+
+    out.append("## The last line")
+    out.append("")
+    grade = chapter["hook_grade"]
+    if grade:
+        out.append(f"End on a **{grade}**: {_GRADE[grade]}.")
+    if chapter["hook_raw"]:
+        out.append("")
+        out.append(f"The hook: {chapter['hook_raw']}")
+    out.append("")
+    out.append(_NO_BUTTON)
+    out.append("")
+
+    out.append("## Negative space")
+    out.append("")
+    out.append("Do not resolve any question this chapter is not commissioned to close. "
+               "Do not dramatise anything not named above — if an event must be "
+               "acknowledged, refer to it in a line. Left to itself a model resolves "
+               "tension early and stages everything; both are fatal to a page-turner.")
+    out.append("")
+
+    out.append("## Reference — available material, NOT a checklist")
+    out.append("")
+    out.append("Everything below is the outline as written. It is context you may draw "
+               "on. It is **not** a list of things to do, and no line of it obliges you "
+               "to write a scene.")
+    out.append("")
+    out.append("<details>")
+    out.append("")
+    out.append(_chapter_block(outline_text, chapter["num"]))
+    out.append("")
+    out.append("</details>")
+    out.append("")
+    return "\n".join(out)
+
+
+def _chapter_block(outline_text: str, num: int) -> str:
+    """The raw `## Chapter NN` section — reference only."""
+    from scripts.penny_wiring import CHAPTER_RE, HEADING_RE
+    marks = list(HEADING_RE.finditer(outline_text))
+    for i, m in enumerate(marks):
+        cm = CHAPTER_RE.match(m.group(1))
+        if cm and int(cm.group(1)) == num:
+            start = m.start()
+            end = marks[i + 1].start() if i + 1 < len(marks) else len(outline_text)
+            return outline_text[start:end].strip()
+    return ""
 
 
 def main(argv=None) -> int:

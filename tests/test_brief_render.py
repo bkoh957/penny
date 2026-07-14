@@ -114,3 +114,87 @@ def test_malformed_hooks_scalar_is_treated_as_no_cap(tmp_path):
     # cliffhanger-fraction check (both hooks are now cliffhanger, but with no
     # cap configured there's nothing to compare against).
     assert r["weighted"] is True
+
+
+from scripts import penny_length
+
+
+def _ch(name, path=WEIGHTED):
+    from scripts.penny_wiring import parse_wired_chapters
+    chapters = parse_wired_chapters(path.read_text(encoding="utf-8"))
+    return next(c for c in chapters if c["num"] == name)
+
+
+def _profile():
+    return penny_length.parse_profile(PROFILE.read_text(encoding="utf-8"))
+
+
+def test_brief_leads_with_the_one_thing_then_the_anchor():
+    brief = brief_render.render_brief(
+        _ch(1), profile=_profile(),
+        obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
+        outline_text=WEIGHTED.read_text(encoding="utf-8"))
+    one_thing = brief.index("## The one thing")
+    shape = brief.index("## The shape")
+    obligations = brief.index("## Obligations")
+    reference = brief.index("## Reference")
+    assert one_thing < shape < obligations < reference
+
+
+def test_anchor_carries_the_largest_budget_and_the_budgets_sum_to_the_band():
+    brief = brief_render.render_brief(
+        _ch(1), profile=_profile(),
+        obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
+        outline_text=WEIGHTED.read_text(encoding="utf-8"))
+    # ch 1 has no [type:] flag, so the default band 2000-2500 → midpoint 2250,
+    # shares connective 1 + anchor 8 = 9 → 250 and 2000.
+    assert "~2000 words" in brief   # the anchor
+    assert "~250 words" in brief    # the connective drive
+    assert "Cal and the Mug" in brief
+
+
+def test_connective_scene_names_its_form_not_a_number_alone():
+    brief = brief_render.render_brief(
+        _ch(1), profile=_profile(),
+        obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
+        outline_text=WEIGHTED.read_text(encoding="utf-8"))
+    assert "in summary, not scene" in brief
+
+
+def test_brief_commissions_the_first_line_and_forbids_the_warm_up():
+    brief = brief_render.render_brief(
+        _ch(1), profile=_profile(),
+        obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
+        outline_text=WEIGHTED.read_text(encoding="utf-8"))
+    assert "in motion, mid-argument with the estate agent." in brief
+    assert "no weather, no waking, no arriving" in brief
+
+
+def test_brief_commissions_the_graded_hook_and_forbids_the_button():
+    brief = brief_render.render_brief(
+        _ch(1), profile=_profile(),
+        obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
+        outline_text=WEIGHTED.read_text(encoding="utf-8"))
+    assert "cliffhanger" in brief
+    assert "Do not add a closing paragraph of reflection" in brief
+
+
+def test_obligations_are_a_checklist_not_beats():
+    brief = brief_render.render_brief(
+        _ch(1), profile=_profile(),
+        obligations={"clues": ["clue-tide-table"], "opens": ["q-who-is-she"],
+                     "closes": [], "tracks": {"P": "She commits."}},
+        outline_text=WEIGHTED.read_text(encoding="utf-8"))
+    assert "clue-tide-table" in brief
+    assert "must be TRUE OF THE PAGE" in brief
+    assert "not stops on an itinerary" in brief
+
+
+def test_long_waiver_is_carried_into_the_brief():
+    brief = brief_render.render_brief(
+        _ch(2), profile=_profile(),
+        obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
+        outline_text=WEIGHTED.read_text(encoding="utf-8"))
+    # ch 2 declares [type: major-reveal] → band 2500-3200, midpoint 2850
+    assert "~2850 words" in brief
+    assert "the confession runs its full course" in brief
