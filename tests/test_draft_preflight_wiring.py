@@ -29,3 +29,25 @@ def test_drafter_no_longer_tells_the_model_to_pad():
 def test_drafter_treats_a_short_chapter_as_a_scene_count_problem():
     text = (REPO / "agents" / "drafter.md").read_text(encoding="utf-8").lower()
     assert "scene" in text and "do not pad" in text
+
+
+def test_drafter_short_chapter_instruction_is_specific_not_just_word_soup():
+    # A reworded padding directive can dodge a phrase ban-list while still
+    # telling the model to inflate. Pin the actual behaviour, not just the
+    # presence of the words "scene" and "pad" somewhere in the file.
+    text = (REPO / "agents" / "drafter.md").read_text(encoding="utf-8").lower()
+    assert "scene-count problem" in text
+    assert "belongs to the outline" in text
+    assert "report it" in text
+
+
+def test_drafter_short_chapter_note_goes_in_frontmatter_not_the_body():
+    # A note in the prose body rides through line-edit, copy-edit, and the
+    # literal cp-to-.final.md promotion untouched, then into the manuscript
+    # (assemble_book.py only strips frontmatter). Frontmatter is the one
+    # channel that is stripped before the manuscript is built.
+    text = (REPO / "agents" / "drafter.md").read_text(encoding="utf-8")
+    assert "drafted_short" in text, "expected a drafted_short frontmatter field"
+    assert "<!-- drafter-note" not in text, (
+        "drafter must not be told to leave a note in the draft body"
+    )

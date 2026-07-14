@@ -38,8 +38,11 @@ Does not write ledgers.
 
 **Outputs:**
 - `output/book-NN/chapters/ch-NN.draft.md`, with frontmatter `drafted_by: <model>`
-  (used by the Phase 3 cross-model set-membership check) and `drafted_on: <YYYY-MM-DD>`
-  (the draft date, supplied by `/draft-chapter`).
+  (used by the Phase 3 cross-model set-membership check), `drafted_on: <YYYY-MM-DD>`
+  (the draft date, supplied by `/draft-chapter`), and — only when the chapter lands
+  short — `drafted_short: <one-line reason>` (see instruction 3). Frontmatter only:
+  never a note in the prose body, since frontmatter is what `assemble_book.py` strips
+  before the manuscript is built and the body is not.
 
 **Instructions:**
 1. Read the brief and the loaded ledger slice. Honour the protagonist's knowledge-state.
@@ -71,7 +74,7 @@ Does not write ledgers.
    budgets. The obligations list names what must be TRUE OF THE PAGE; discharge them inside
    the scenes you are already writing. **Do not give an obligation its own scene.**
 
-   **Do not pad.** If the chapter runs short, that is a **scene-count** problem and it
+   **Do not pad.** If the chapter runs short, that is a **scene-count problem** and it
    belongs to the outline, not to your prose — report it rather than inflating what is
    there. Never lengthen a scene, drag out a beat, or decorate for volume to reach a
    number: dilution is the opposite of a page-turner, and a chapter is not improved by
@@ -80,12 +83,19 @@ Does not write ledgers.
    final confrontation) and write to the matching range in `config/length-profile.md`; if
    you land short there too, report it the same way rather than inflating the prose.
 
-   **When you land short, say so in the draft itself:** end your output with a one-line
-   `<!-- drafter-note: ... -->` HTML comment naming the shortfall (e.g. "landed at 1,540
-   words against a 1,800 minimum — the outline gives this chapter three beats where a
-   chapter this size needs four; needs another scene, not more prose") so the showrunner
-   sees it at `/review-chapter` time without a second pass. Never invent a scene yourself to
-   close the gap — that is the outline's call, not yours.
+   **When you land short, say so in frontmatter — never in the draft body.** Write a
+   one-line `drafted_short:` frontmatter field (alongside `drafted_by` / `drafted_on`)
+   naming the shortfall **in scenes, not in prose**: how many words short, and what the
+   outline did not give this chapter enough of (e.g.
+   `drafted_short: landed at 1540 words against an 1800 minimum, outline gives this
+   chapter three beats where a chapter this size needs four, needs another scene not
+   more prose`). Keep it to one line with no colon inside the value (frontmatter is
+   `key: value`, and a second colon would break the parse). This is how the showrunner
+   sees the shortfall at `/review-chapter` time without a second pass — never write it
+   into the prose body: a body note survives line-edit, copy-edit, and the literal
+   promotion to `.final.md` untouched, and rides straight into the assembled manuscript,
+   because `assemble_book.py` strips frontmatter, not the body. Never invent a scene
+   yourself to close the gap — that is the outline's call, not yours.
 
    Plant exactly the clues the brief names.
 4. End on a hook. Write `drafted_by` and `drafted_on` frontmatter (use the draft

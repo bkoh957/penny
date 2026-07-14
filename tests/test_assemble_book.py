@@ -82,6 +82,27 @@ def test_assemble_fails_on_outline_count_mismatch(tmp_path):
     assert "outline declares 2" in str(e.value)
 
 
+def test_frontmatter_note_does_not_leak_into_manuscript(tmp_path):
+    # Pins the invariant a short-chapter report depends on: anything the
+    # drafter writes in FRONTMATTER (e.g. a drafted_short shortfall note)
+    # must never reach the assembled manuscript. Only the prose body should
+    # survive assembly.
+    chapters = _book_tree(tmp_path)
+    chapters.mkdir(parents=True, exist_ok=True)
+    text = ("---\nschema: penny-chapter/1\ndrafted_by: claude-opus\n"
+            "drafted_short: landed at 1540 words against 1800 minimum, "
+            "outline gives three beats where this chapter needs four, "
+            "needs another scene not more prose\n"
+            "---\n\nChapter one prose.\n")
+    (chapters / "ch-01.final.md").write_text(text, encoding="utf-8")
+    assert assemble_book.cmd_assemble("99", repo_root=tmp_path, now=FIXED_NOW) == 0
+    man = assemble_book.manuscript_path("99", tmp_path).read_text(encoding="utf-8")
+    assert "drafted_short" not in man
+    assert "needs another scene" not in man
+    body = penny_meta.strip_frontmatter(man)
+    assert body == "# Chapter 1\n\nChapter one prose.\n"
+
+
 def _seal_setup(tmp_path, read_by="codex"):
     chapters = _book_tree(tmp_path)
     _make_chapter(chapters, 1, "claude-opus", "one")
