@@ -201,6 +201,24 @@ def test_obligations_are_a_checklist_not_beats():
     assert "not stops on an itinerary" in brief
 
 
+def test_reference_does_not_inline_the_flat_scene_beat_list():
+    """The reference section is still prompt mass. If it inlines the raw chapter
+    block, the brief becomes a small hierarchy followed by the same large flat
+    parity list this feature exists to destroy. Keep non-scene reference
+    material, but do not paste the scene beat-flow list back into the prompt."""
+    brief = brief_render.render_brief(
+        _ch(1), profile=_profile(),
+        obligations={"clues": [], "opens": [], "closes": [], "tracks": {}},
+        outline_text=WEIGHTED.read_text(encoding="utf-8"))
+    reference = brief.split("## Reference", 1)[1]
+    assert "Chapter Summary" in reference
+    assert "Track Movement" in reference
+    assert "### Scene 1" not in reference
+    assert "Start in the car, not at the shop window" not in reference
+    assert "Cal reads her through the town's scepticism" not in reference
+    assert "<details>" not in reference
+
+
 def test_long_waiver_is_carried_into_the_brief():
     brief = brief_render.render_brief(
         _ch(2), profile=_profile(),

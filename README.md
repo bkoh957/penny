@@ -408,8 +408,10 @@ to run 1,800–2,400 words comes out at 3,800. `/build-briefs` compiles the lock
 into one prompt-shaped brief per chapter (`input/book-NN/briefs/ch-MM.md`): an emphasis
 hierarchy (anchor/support/connective) with per-scene word budgets from
 `config/length-profile.md`, obligations as a checklist rather than stops, a commissioned
-first line, a graded hook (cliffhanger | promise), declared negative space, and the raw
-outline demoted to reference.
+first line, a graded hook (cliffhanger | promise), declared negative space, and a compact
+non-scene reference extract. The full raw `### Scene` beat-flow list is deliberately not
+inlined again: prompt mass is instruction mass, and pasting the flat list back into the
+brief would recreate the parity problem the compiler exists to remove.
 
 If the outline declares no scene weights, `/build-briefs` dispatches the `brief-weigher`
 sub-agent to propose a weighting per chapter — you accept, edit, or reject; only your

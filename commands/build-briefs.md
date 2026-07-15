@@ -93,6 +93,11 @@ lock must be re-minted (step 4b). Run from the series folder.
    write is never mistaken for a clean one. A compact-format chapter is *skipped*, not
    failed, and does not make the run nonzero.
 
+   The compiled brief keeps only a **compact non-scene reference extract** from the outline.
+   It does **not** paste the full raw `### Scene` beat-flow list into the Reference section:
+   prompt mass is instruction mass, and reintroducing the flat list would make the drafter
+   see those beats as peers again.
+
 6. **Report.** Name the per-chapter word budgets and the total, so the showrunner sees the
    book priced before a word of it is drafted.
 

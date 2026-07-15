@@ -33,7 +33,7 @@ import yaml  # beat-sheet only — nested, human-edited (CLAUDE.md dependency sp
 
 from scripts import penny_length, penny_paths
 from scripts.penny_meta import parse_frontmatter, write_frontmatter_field
-from scripts.penny_wiring import (has_weights, parse_wired_chapters,
+from scripts.penny_wiring import (ANY_H3_RE, SCENE_RE, has_weights, parse_wired_chapters,
                                  undeclared_scene_weight)
 
 _FORM = {
@@ -283,17 +283,16 @@ def render_brief(chapter: dict, *, profile: dict, obligations: dict,
                "tension early and stages everything; both are fatal to a page-turner.")
     out.append("")
 
-    out.append("## Reference — available material, NOT a checklist")
+    out.append("## Reference — compact, available material, NOT a checklist")
     out.append("")
-    out.append("Everything below is the outline as written. It is context you may draw "
-               "on. It is **not** a list of things to do, and no line of it obliges you "
-               "to write a scene.")
+    out.append("Everything below is non-scene reference material from the outline: context "
+               "you may draw on, not a list of things to do. The raw `### Scene` beat "
+               "flow is intentionally **not** pasted back here; the weighted shape above "
+               "is the instruction, and a flat duplicate list would make every beat look "
+               "like a peer again.")
     out.append("")
-    out.append("<details>")
-    out.append("")
-    out.append(_chapter_block(outline_text, chapter["num"]))
-    out.append("")
-    out.append("</details>")
+    ref = _chapter_reference_extract(outline_text, chapter["num"])
+    out.append(ref if ref else "- None.")
     out.append("")
     return "\n".join(out)
 
@@ -309,6 +308,33 @@ def _chapter_block(outline_text: str, num: int) -> str:
             end = marks[i + 1].start() if i + 1 < len(marks) else len(outline_text)
             return outline_text[start:end].strip()
     return ""
+
+
+def _chapter_reference_extract(outline_text: str, num: int) -> str:
+    """Non-scene reference material from the chapter block.
+
+    The full raw chapter block is the flat parity prompt this compiler exists
+    to replace. Keeping it inline — even under a "reference" heading — lets its
+    sheer mass overrule the hierarchy above. Preserve chapter-level context and
+    non-scene subsections (summary, track movement, guardrails, texture notes),
+    but remove every `### Scene N` block and its beat-flow list.
+    """
+    block = _chapter_block(outline_text, num)
+    if not block:
+        return ""
+    lines = block.splitlines()
+    kept: list[str] = []
+    skipping_scene = False
+    for line in lines:
+        if SCENE_RE.match(line):
+            skipping_scene = True
+            continue
+        if skipping_scene and ANY_H3_RE.match(line):
+            skipping_scene = False
+        if skipping_scene:
+            continue
+        kept.append(line)
+    return "\n".join(kept).strip()
 
 
 def brief_path(book: str, chapter: str, repo_root) -> Path:

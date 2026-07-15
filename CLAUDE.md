@@ -137,8 +137,10 @@ engine code.
 prompt-shaped brief per chapter (`input/book-NN/briefs/ch-MM.md`) — an emphasis hierarchy
 (anchor/support/connective) with per-scene word budgets from `config/length-profile.md`,
 obligations as a checklist rather than stops, a commissioned first line, a graded hook
-(cliffhanger | promise), declared negative space, and the raw outline section demoted to
-reference. Each brief is stamped `built_from_outline: <sha256>` **and**
+(cliffhanger | promise), declared negative space, and a compact non-scene reference extract.
+The full raw `### Scene` beat-flow list is deliberately not inlined again: prompt mass is
+instruction mass, and pasting the flat list back into the brief would recreate the parity
+problem the compiler exists to remove. Each brief is stamped `built_from_outline: <sha256>` **and**
 `built_from_whodunit: <sha256>` — the whodunit ledger is a real upstream of every brief
 too (obligations come from it), so moving a clue's `plant_chapter` goes stale the same
 way editing the outline does; edit either and `preflight draft` refuses until the briefs
