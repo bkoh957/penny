@@ -22,13 +22,15 @@ TARGET_RE = re.compile(r"^Target:\s*([\d,]+)\s*[–—-]\s*([\d,]+)\s*words?\s*$
 WEIGHT_LINE_RE = re.compile(r"^Weight:\s*(.+?)\s*$", re.MULTILINE)
 BEATS_COVERED_RE = re.compile(r"^Beats covered:\s*([\d,\s]+?)\s*$",
                               re.MULTILINE | re.IGNORECASE)
-# A `Clue:` field body runs until the next field line (a bare `Word:` or
-# `Word Word:` line, case-insensitive first letter, allowing internal
-# apostrophes/spaces), the next scene heading, or EOF — clue guidance is
-# often multi-line, and (as here) can itself contain a trailing
-# `[whodunit: ...]` tag line that must stay part of the clue body.
+# A `Clue:` field body runs until the next `Word:`-shaped field line, the next
+# scene heading, or EOF — clue guidance is often multi-line, and (as here) can
+# itself contain a trailing `[whodunit: ...]` tag line that must stay part of
+# the clue body ("[" is not a field-name start, so it never terminates). The
+# second lookahead alternative (`^\w[\w '’-]*:\s`) matters: it terminates
+# before an INLINE field like `Result: The room laughs.`, not only before a
+# bare `Turn:`-style label line.
 CLUE_FIELD_RE = re.compile(
-    r"^Clue:[ \t]*\n?(.*?)(?=\n[A-Za-z][\w '’-]*:[ \t]*(?:\n|$)|\Z|\n##\s)",
+    r"^Clue:\s*\n?(.*?)(?=^\w[\w '’-]*:\s*$|^\w[\w '’-]*:\s|\Z|^##\s)",
     re.MULTILINE | re.DOTALL)
 
 

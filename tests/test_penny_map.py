@@ -28,6 +28,24 @@ def test_parse_map_beats_covered_and_clue():
     assert m["scenes"][0]["clue_text"] is None
 
 
+def test_parse_map_clue_terminates_before_inline_field():
+    # An inline field (text on the same line as its label) must terminate the
+    # clue body just like a bare `Turn:` label line does.
+    m = parse_map(
+        "## Scene 1 — Inline After Clue\n"
+        "Weight: Support\n"
+        "\n"
+        "Clue:\n"
+        "Mary folds a tea towel.\n"
+        "[whodunit: mary-domestic-order]\n"
+        "\n"
+        "Result: The room laughs.\n"
+    )
+    clue = m["scenes"][0]["clue_text"]
+    assert "mary-domestic-order" in clue
+    assert "The room laughs" not in clue
+
+
 def test_parse_map_missing_target_is_none_not_crash():
     m = parse_map("## Scene 1 — Untargeted\nWeight: Support\n\nAction:\nX.\n")
     assert m["scenes"][0]["target"] is None
