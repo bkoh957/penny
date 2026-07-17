@@ -137,10 +137,12 @@ def cmd_clear_dev(book: str, chapter: str, *, repo_root=None) -> int:
 
 def cmd_draft(book: str, chapter: str, *, repo_root=None, run_config=None) -> int:
     repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
-    # Ledger reads go through brief_render.load_ledger — the one guarded entry
-    # point every caller uses, so a malformed or unreadable ledger fails with
-    # this module's own `preflight: <predicate>` form, never a raw traceback.
-    from scripts.brief_render import load_ledger, stale_briefs
+    # Ledger reads go through penny_whodunit.load_ledger — the one guarded
+    # entry point every caller uses, so a malformed or unreadable ledger fails
+    # with this module's own `preflight: <predicate>` form, never a raw
+    # traceback.
+    from scripts.brief_render import stale_briefs
+    from scripts.penny_whodunit import load_ledger
     led = ledger_path(book, repo_root)
     if not led.is_file():
         _fail(f"no ledger for book {book} ({led}) — run /plan-mystery {book}")

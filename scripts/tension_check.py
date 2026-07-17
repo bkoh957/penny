@@ -210,7 +210,7 @@ def _clues_by_chapter(whodunit_path, notes):
     engine cannot read is a named note, never a traceback out of a checker."""
     if whodunit_path is None or not Path(whodunit_path).is_file():
         return {}
-    from scripts.brief_render import clues_by_chapter
+    from scripts.penny_whodunit import clues_by_chapter
     try:
         return clues_by_chapter(whodunit_path)
     except ValueError as e:
