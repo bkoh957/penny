@@ -217,6 +217,18 @@ def test_packet_format_block_keeps_wiring_and_type_flag():
     assert ch5["scenes"] == []
 
 
+def test_packet_hook_raw_is_clean_of_grade_bracket():
+    # brief_render prints hook_raw verbatim into drafter-facing prose, so the
+    # [grade] bracket must be stripped in the packet position too — grade goes
+    # to hook_grade, never leaks into the raw text.
+    text = PACKET_FIXTURE.read_text(encoding="utf-8")
+    chapters = parse_wired_chapters(text)
+    ch5 = next(c for c in chapters if c["num"] == 5)
+    assert ch5["hook_grade"] == "cliffhanger"
+    assert "[cliffhanger]" not in ch5["hook_raw"]
+    assert "Faye receives the death call" in ch5["hook_raw"]
+
+
 def test_chapter_with_no_sections_has_empty_dict_and_beats():
     chapters = parse_wired_chapters("## Chapter 01 — Bare\n\nSome prose.\n")
     assert chapters[0]["sections"] == {}

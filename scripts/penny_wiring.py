@@ -203,19 +203,23 @@ def parse_wired_chapters(text: str) -> list[dict]:
                     if bm:
                         ch["because_ch"] = int(bm.group(1))
                 elif field == "Hook":
-                    qid, phrasing = split_id(value)
-                    # Try wired format first: [grade] at the start of value
+                    # The grade may lead the whole value (wired form:
+                    # "[grade] q-id — text") or lead the phrasing (packet
+                    # form: "q-id — [grade] text"). hook_raw must be clean
+                    # of the bracket in BOTH positions — brief_render prints
+                    # it verbatim into drafter-facing prose.
                     gm = GRADE_RE.match(value)
                     if gm:
                         ch["hook_grade"] = gm.group(1).lower()
                         value = gm.group(2).strip()
-                        qid, phrasing = split_id(value)
+                        qid, _ = split_id(value)
                     else:
-                        # Try packet format: [grade] in the phrasing part
+                        qid, phrasing = split_id(value)
                         gm = GRADE_RE.match(phrasing)
                         if gm:
                             ch["hook_grade"] = gm.group(1).lower()
                             phrasing = gm.group(2).strip()
+                            value = f"{qid} — {phrasing}" if phrasing else qid
                     ch["hook_raw"] = value
                     if QID_RE.match(qid):
                         ch["hook_q"] = qid
