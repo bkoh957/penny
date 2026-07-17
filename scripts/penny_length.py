@@ -41,9 +41,10 @@ _FLOOR_RE = re.compile(r"^min_(.+)_words$")
 
 SCHEMA_HINT = (
     "a length-profile needs band_default: [min, max] (plus any band_<type> "
-    "overrides), a weight_<class> for each of weight_anchor / weight_support / "
-    "weight_connective, and a min_<class>_words floor (min_connective_words, "
-    "min_support_words) — see README.md, 'The length profile'"
+    "overrides selected by a chapter title's [type: ...] flag) and a "
+    "min_scene_words floor for the prose map's scenes — see README.md, 'The "
+    "length profile'. (Legacy weight_<class> / min_<class>_words keys are "
+    "tolerated and ignored.)"
 )
 
 
@@ -77,7 +78,8 @@ def parse_profile(text: str) -> dict:
     if "default" not in bands:
         raise ValueError(f"length-profile: no band_default — {SCHEMA_HINT}")
     return {"bands": bands, "weights": weights, "floors": floors,
-            "min_connective_words": floors.get("connective", 0)}
+            "min_connective_words": floors.get("connective", 0),
+            "min_scene_words": floors.get("scene")}
 
 
 def load_profile(path) -> dict:
@@ -124,3 +126,43 @@ def scene_budgets(profile: dict, band: tuple[int, int], weights: list[str]) -> l
     heaviest = max(range(len(shares)), key=lambda i: shares[i])
     budgets[heaviest] += target - sum(budgets)
     return budgets
+
+
+def validate_targets(profile: dict, band: tuple[int, int],
+                     scenes: list[dict]) -> dict:
+    """Validate a prose map's AUTHORED per-scene targets against the band.
+
+    The redesign flips this module from generator to validator: the map-maker
+    proposes targets and the showrunner approves them; the engine's only
+    opinion is whether the numbers add up (spec 2026-07-18 §6).
+    """
+    blocking: list[str] = []
+    notes: list[str] = []
+    parseable = [s for s in scenes if s.get("target")]
+    for s in scenes:
+        if not s.get("target"):
+            blocking.append(
+                f"unparseable-target: scene {s['num']} '{s['title']}' has no "
+                f"parseable `Target: A–B words` line — every scene must be priced")
+    if parseable:
+        lo = sum(s["target"][0] for s in parseable)
+        hi = sum(s["target"][1] for s in parseable)
+        if lo > band[1] or hi < band[0]:
+            blocking.append(
+                f"band-mismatch: scene targets sum to {lo}–{hi} words against a "
+                f"chapter band of {band[0]}–{band[1]} — the map and the length "
+                f"profile disagree about the chapter's size")
+    floor = profile.get("min_scene_words")
+    if floor is None:
+        notes.append(
+            "starved-scene — the floor check could not run: the length profile "
+            "declares no min_scene_words (schema v2); no scene can be called starved")
+    else:
+        for s in parseable:
+            if s["target"][1] < floor:
+                blocking.append(
+                    f"starved-scene: scene {s['num']} '{s['title']}' tops out at "
+                    f"{s['target'][1]} words against the profile's {floor}-word "
+                    f"min_scene_words floor — a scene priced this low is a beat, "
+                    f"not a scene; fold it into a neighbour or cut it")
+    return {"blocking": blocking, "notes": notes}

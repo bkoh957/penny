@@ -85,7 +85,8 @@ def test_claude_md_documents_the_length_profile_schema():
 def test_parse_profile_error_teaches_the_documented_schema():
     # The named error a legacy profile produces must point at the same keys the
     # docs teach — one schema, three voices (error, README, CLAUDE.md).
+    # v2 schema: band_default and min_scene_words are required; legacy keys tolerated.
     from scripts import penny_length
     hint = penny_length.SCHEMA_HINT
-    for key in ("band_default", "weight_anchor", "min_connective_words"):
+    for key in ("band_default", "min_scene_words", "Legacy"):
         assert key in hint
