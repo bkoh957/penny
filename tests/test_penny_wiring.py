@@ -172,3 +172,60 @@ total_chapters: 1
     scene = chapters[0]["scenes"][0]
     assert scene["beats"] == 2
     assert scene["instruction_words"] == len("First beat.".split()) + len("Second beat.".split())
+
+
+from scripts.penny_wiring import (chapter_block, parse_packet_sections,
+                                  parse_wired_chapters)
+
+PACKET_FIXTURE = Path("tests/fixtures/outlines/packet-format.md")
+
+
+def test_parse_packet_sections_maps_h3_headings_to_bodies():
+    text = PACKET_FIXTURE.read_text(encoding="utf-8")
+    block = chapter_block(text, 5)
+    sections = parse_packet_sections(block)
+    assert "Chapter Purpose" in sections
+    assert "tempts her to use" in sections["Chapter Purpose"]
+    assert "Required Beats" in sections
+    assert "Guardrails" in sections
+    # A section body stops at the next H3 heading
+    assert "Faye brings food" not in sections["Chapter Purpose"]
+
+
+def test_parse_wired_chapters_extracts_required_beats_in_order():
+    text = PACKET_FIXTURE.read_text(encoding="utf-8")
+    chapters = parse_wired_chapters(text)
+    ch5 = next(c for c in chapters if c["num"] == 5)
+    assert len(ch5["required_beats"]) == 10
+    assert ch5["required_beats"][0] == "Stronger pottery is finally displayed."
+    assert ch5["required_beats"][9] == "Faye receives the death call."
+    ch6 = next(c for c in chapters if c["num"] == 6)
+    assert ch6["required_beats"] == [
+        "Maggie hears the official version of Neil's death."]
+
+
+def test_packet_format_block_keeps_wiring_and_type_flag():
+    text = PACKET_FIXTURE.read_text(encoding="utf-8")
+    chapters = parse_wired_chapters(text)
+    ch5 = next(c for c in chapters if c["num"] == 5)
+    assert ch5["chapter_type"] == "event"
+    assert ch5["because_ch"] == 4
+    assert [q for q, _ in ch5["opens"]] == ["q-neil-death"]
+    assert ch5["hook_grade"] == "cliffhanger"
+    assert ch5["tracks"]["M"].startswith("the death arrives")
+    # Packet blocks have no ### Scene sections — the scene list is empty
+    assert ch5["scenes"] == []
+
+
+def test_chapter_with_no_sections_has_empty_dict_and_beats():
+    chapters = parse_wired_chapters("## Chapter 01 — Bare\n\nSome prose.\n")
+    assert chapters[0]["sections"] == {}
+    assert chapters[0]["required_beats"] == []
+
+
+def test_chapter_block_returns_raw_block():
+    text = PACKET_FIXTURE.read_text(encoding="utf-8")
+    block = chapter_block(text, 6)
+    assert block.startswith("### Chapter Purpose")
+    assert "sergeant asks" in block
+    assert "Opening Day" not in block

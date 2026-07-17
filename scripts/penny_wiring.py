@@ -53,6 +53,53 @@ GRADE_RE = re.compile(r"^\[(cliffhanger|promise)\]\s*(.*)$", re.IGNORECASE)
 TYPE_FLAG_RE = re.compile(r"\[type:\s*([a-z0-9-]+)\]", re.IGNORECASE)
 LONG_FLAG_RE = re.compile(r"\[long:\s*([^\]]+)\]", re.IGNORECASE)
 
+H3_HEADING_RE = re.compile(r"^###\s+(.*?)\s*$", re.MULTILINE)
+BULLET_RE = re.compile(r"^\s*-\s+(.*\S)\s*$")
+
+
+def chapter_block(text: str, num: int) -> str:
+    """The raw `## Chapter NN` block — heading end to the next `##` or EOF."""
+    matches = list(HEADING_RE.finditer(text))
+    for i, m in enumerate(matches):
+        cm = CHAPTER_RE.match(m.group(1))
+        if cm and int(cm.group(1)) == num:
+            start = m.end()
+            end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+            return text[start:end].strip()
+    return ""
+
+
+def parse_packet_sections(block: str) -> dict[str, str]:
+    """Packet-format `###` sections of one chapter block: heading -> body text.
+
+    The packet-format block (spec 2026-07-18 §3) carries its authored content in
+    named H3 sections (Chapter Purpose, Required Beats, Guardrails, ...). A
+    `### Scene N` heading is NOT a packet section — scenes are the legacy format
+    and parse_scenes owns them; both parsers reading one block must not fight.
+    """
+    sections: dict[str, str] = {}
+    marks = [m for m in H3_HEADING_RE.finditer(block)
+             if not SCENE_RE.match(m.group(0))]
+    all_heads = sorted(m.start() for m in H3_HEADING_RE.finditer(block))
+    for m in marks:
+        start = m.end()
+        end = len(block)
+        for hs in all_heads:
+            if hs > m.start():
+                end = hs
+                break
+        sections[m.group(1)] = block[start:end].strip()
+    return sections
+
+
+def parse_required_beats(sections: dict[str, str]) -> list[str]:
+    """The Required Beats list, in authored order. One line per beat — the
+    1-based index into this list is the id a map's `Beats covered:` line uses,
+    so ORDER IS CONTRACT: never sort, never dedupe."""
+    body = sections.get("Required Beats", "")
+    return [bm.group(1) for line in body.splitlines()
+            if (bm := BULLET_RE.match(line))]
+
 
 def split_id(value: str) -> tuple[str, str]:
     """'q-x — phrasing' -> ('q-x', 'phrasing'); 'q-x' -> ('q-x', '')."""
@@ -137,6 +184,8 @@ def parse_wired_chapters(text: str) -> list[dict]:
               "because": None, "because_ch": None, "opens": [], "closes": [],
               "carries": [], "hook_q": None, "hook_raw": None, "tracks": {},
               "scenes": parse_scenes(block), "first_line": None, "hook_grade": None,
+              "sections": (sections := parse_packet_sections(block)),
+              "required_beats": parse_required_beats(sections),
               "chapter_type": tf.group(1).lower() if tf else None,
               "long_waiver": lf.group(1).strip() if lf else None,
               "errors": []}
@@ -154,12 +203,20 @@ def parse_wired_chapters(text: str) -> list[dict]:
                     if bm:
                         ch["because_ch"] = int(bm.group(1))
                 elif field == "Hook":
+                    qid, phrasing = split_id(value)
+                    # Try wired format first: [grade] at the start of value
                     gm = GRADE_RE.match(value)
                     if gm:
                         ch["hook_grade"] = gm.group(1).lower()
                         value = gm.group(2).strip()
+                        qid, phrasing = split_id(value)
+                    else:
+                        # Try packet format: [grade] in the phrasing part
+                        gm = GRADE_RE.match(phrasing)
+                        if gm:
+                            ch["hook_grade"] = gm.group(1).lower()
+                            phrasing = gm.group(2).strip()
                     ch["hook_raw"] = value
-                    qid, _ = split_id(value)
                     if QID_RE.match(qid):
                         ch["hook_q"] = qid
                 else:  # Opens / Closes / Carries
