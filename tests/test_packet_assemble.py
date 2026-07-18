@@ -127,3 +127,28 @@ def test_absent_ledger_is_stamped_none_and_late_ledger_goes_stale(series_tree):
     (series_tree / "series/whodunit/book-01.yaml").unlink()
     p = packet_assemble.assemble("01", "05", repo_root=series_tree)
     assert parse_frontmatter(p.read_text(encoding="utf-8"))["built_from_whodunit"] == "none"
+    # The other half of the contract: a ledger that shows up LATER (after the
+    # packet was built with none) must make the packet stale, exactly like an
+    # outline edit does — the whodunit ledger is a real upstream of the packet.
+    (series_tree / "series/whodunit").mkdir(parents=True, exist_ok=True)
+    (series_tree / "series/whodunit/book-01.yaml").write_text(
+        "book: '01'\nreveal_chapter: 22\n", encoding="utf-8")
+    assert "05" in packet_assemble.stale_packets("01", series_tree)
+
+
+def test_same_stem_in_two_continuity_subdirs_are_both_matched(series_tree):
+    # characters/mary.md already exists in the fixture. Add threads/mary.md —
+    # a same-named entry in a DIFFERENT subdir — and confirm both survive
+    # into the packet rather than one silently clobbering the other in the
+    # (formerly) bare-stem-keyed entries dict.
+    threads = series_tree / "series/continuity/threads"
+    threads.mkdir(parents=True, exist_ok=True)
+    (threads / "mary.md").write_text(
+        "<!-- canon-meta: {id: mary-thread} -->\n\n"
+        "## Mary's Thread\n\nMary's domestic-order habit runs the whole book.\n",
+        encoding="utf-8")
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(encoding="utf-8")
+    assert "### characters/mary.md" in text
+    assert "### threads/mary.md" in text
+    assert "Mary's domestic-order habit runs the whole book." in text
+    assert "Mary keeps everything in its place." in text

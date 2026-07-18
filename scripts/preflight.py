@@ -189,10 +189,35 @@ def cmd_draft(book: str, chapter: str, *, repo_root=None, run_config=None) -> in
     if mp.is_file():
         if not pkt.is_file():
             _fail("map exists but its packet is missing — re-run /map-chapter")
-        stamp = parse_map(mp.read_text(encoding="utf-8"))["stamp"]
+        packet_text = pkt.read_text(encoding="utf-8")
+        map_text = mp.read_text(encoding="utf-8")
+        stamp = parse_map(map_text)["stamp"]
         if stamp != file_sha256(pkt):
             _fail(f"stale map for ch {chapter} — the packet changed since the map "
                   f"was built; re-run /map-chapter {book} {chapter}")
+        # FRESH (stamp matches) is necessary but not sufficient: a hand-edited
+        # map can drop a beat, duplicate one, mis-price a scene, or forget a
+        # ledger clue without ever touching the stamp. spec §6/§7 requires
+        # preflight draft to also run map_check's coverage/pricing/clue
+        # checks — the same ones /map-chapter runs at build time — so a
+        # dirty map can't slip straight through to drafting. Mirror
+        # map_check.py's own CLI: the length profile may legitimately be
+        # missing or unparseable (a note, never a crash); notes never block,
+        # only BLOCKING findings do.
+        from scripts import map_check
+        from scripts.penny_length import parse_profile
+        profile = None
+        profile_path = penny_paths.config_path("length-profile.md", root=repo_root)
+        if profile_path.is_file():
+            try:
+                profile = parse_profile(profile_path.read_text(encoding="utf-8"))
+            except ValueError:
+                profile = None
+        result = map_check.check_map(packet_text, map_text, profile)
+        if result["blocking"]:
+            _fail(f"map for ch {chapter} is not clean — "
+                  + "; ".join(result["blocking"])
+                  + f" — run /map-chapter {book} {chapter}")
     return 0
 
 

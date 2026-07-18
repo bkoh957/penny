@@ -50,8 +50,12 @@ _CONTINUITY_SUBDIRS = ("characters", "locations", "threads")
 
 def _continuity_entries(root) -> dict[str, dict]:
     """Every series/continuity/{characters,locations,threads}/*.md entry,
-    keyed by its filename stem (lowercased) — the unit the matching and
-    one-hop rules both operate on."""
+    keyed by `"<subdir>/<stem>"` (lowercased) — a subdir-qualified key, so a
+    same-named file in two subdirs (characters/mary.md and threads/mary.md)
+    gets two distinct entries instead of one silently clobbering the other.
+    Matching and one-hop linking still operate on the unqualified `names` set
+    (stem + canon-meta id) carried inside each entry, unaffected by the key
+    change — only storage was colliding, not lookup."""
     entries: dict[str, dict] = {}
     for sub in _CONTINUITY_SUBDIRS:
         d = series_path(f"continuity/{sub}", root)
@@ -63,7 +67,7 @@ def _continuity_entries(root) -> dict[str, dict]:
             stem = f.stem.lower()
             mid = str(meta.get("id", "")).strip().lower()
             names = {stem} | ({mid} if mid else set())
-            entries[stem] = {"path": f, "text": text, "meta": meta, "names": names}
+            entries[f"{sub}/{stem}"] = {"path": f, "text": text, "meta": meta, "names": names}
     return entries
 
 

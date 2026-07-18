@@ -81,9 +81,23 @@ Compress:
 ### Guardrails
 - <Hard constraints — things this chapter must or must not do.>
 
-Because: <ch NN — the earlier turn that forced this chapter; ch 1 writes "opening">
-Opens: <q-slug>. Closes: <q-slug>. Carries: <thread letters>.
-Hook (cliffhanger|promise): <the line the chapter ends on>.
+<!-- Wiring footer: one bulleted-bold field per line — this is the ONLY form
+     scripts/penny_wiring.py's FIELD_RE parses. Bare "Because: …" / "Opens: x.
+     Closes: y." prose lines are silently invisible to the nine tension
+     checks. Opens/Closes/Carries all take q-slugs (never thread letters);
+     thread letters (M/P/R/B) are their OWN bulleted-bold rows, read by
+     TRACK_RE, one per active track. Hook's grade is the bracketed tag next
+     to its q-slug, read by GRADE_RE — [cliffhanger] or [promise], never
+     both on one line. -->
+- **Because:** <ch NN — the earlier turn that forced this chapter; ch 1 writes "opening">
+- **Opens:** q-slug — <the question this chapter plants> (one line per question opened)
+- **Closes:** q-slug (one line per question this chapter resolves)
+- **Carries:** q-slug (one line per question left open past this chapter)
+- **M:** <Mystery-thread advancement this chapter — or "None" for a rest chapter.>
+- **P:** <Personal/internal-thread advancement.>
+- **R:** <Romance/community-thread advancement.>
+- **B:** <Business-thread advancement.>
+- **Hook:** q-slug — [cliffhanger] <the line the chapter ends on> (or [promise] for a quieter close)
 ```
 
 **Instructions:**
@@ -105,8 +119,10 @@ Hook (cliffhanger|promise): <the line the chapter ends on>.
    (both the knows-list, cross-checkable against the ledger, and the does-not-know
    list, which is authorial and cannot be derived).
 5. Write **Guardrails**, then the wiring footer (`Because`/`Opens`/`Closes`/`Carries`/
-   `Hook`) exactly as the wired-outline convention already works — this chapter's causal
-   place in the book, machine-read by the nine tension checks.
+   the per-track `M`/`P`/`R`/`B` rows/`Hook`) exactly as the wired-outline convention
+   already works — one bulleted-bold field per line, q-slugs (never thread letters) in
+   Opens/Closes/Carries — this chapter's causal place in the book, machine-read by the
+   nine tension checks.
 
 **Guardrails (HARD — the outline is what schedules the reveal):**
 - NEVER schedule a beat that names the culprit as the culprit, states the motive/central

@@ -46,6 +46,27 @@ def test_unscheduled_clue_named():
                for b in out["blocking"])
 
 
+def test_unscheduled_clue_is_not_satisfied_by_a_superstring_id():
+    # A clue id that is a hyphenated PREFIX of another id ("clue-jam" inside
+    # "clue-jam-2") must not be considered planted by that other id's mention
+    # — substring/loose word-boundary matching both get this wrong.
+    packet = (
+        "# Packet — Chapter 01\n\n## Chapter 01 — Test\n\n"
+        "### Required Beats\n- A beat.\n\n"
+        "## Ledger Clues\n- [clue-jam] plant_chapter 1: the jam clue.\n"
+    )
+    map_text = (
+        "---\nbuilt_from_packet: deadbeef\n---\n\n"
+        "## Scene 1 — Only\n"
+        "Beats covered: 1\n\n"
+        "Clue:\n"
+        "Something else entirely.\n"
+        "[whodunit: clue-jam-2]\n"
+    )
+    out = check_map(packet, map_text, None)
+    assert any(b.startswith("unscheduled-clue") and "[clue-jam]" in b for b in out["blocking"])
+
+
 def test_no_profile_is_note_not_crash():
     out = check_map(_packet_text(), _map_text(), None)
     assert any("length profile" in n for n in out["notes"])

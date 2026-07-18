@@ -602,6 +602,78 @@ def test_draft_passes_when_packet_is_fresh_and_no_map_exists_yet(tmp_path):
     assert preflight.cmd_draft("01", "01", repo_root=tmp_path) == 0
 
 
+# --- Final review C2: draft gate must run map_check, not just freshness ----
+#
+# A FRESH map (built_from_packet stamp matches the packet on disk) can still
+# be DIRTY — hand-edited to drop a Beats covered line, duplicate one, or lose
+# a scene entirely — without ever touching its own stamp. spec §6/§7 requires
+# cmd_draft to run map_check.check_map and block on any BLOCKING finding.
+
+def _packet_text(beats: list[str]) -> str:
+    beat_lines = "\n".join(f"- {b}" for b in beats)
+    return (
+        "---\nbuilt_from_outline: PLACEHOLDER\nbuilt_from_whodunit: PLACEHOLDER\n---\n\n"
+        "# Packet — Chapter 01\n\n"
+        "## Chapter 01 — Test Chapter\n\n"
+        "### Required Beats\n" + beat_lines + "\n\n"
+        "## Ledger Clues\n\n- None.\n"
+    )
+
+
+def _clean_map_text(stamp: str) -> str:
+    return (
+        f"---\nbuilt_from_packet: {stamp}\n---\n\n"
+        "## Scene 1 — Opening\n"
+        "Target: 300-400 words\n"
+        "Beats covered: 1\n\n"
+        "## Scene 2 — Closing\n"
+        "Target: 300-400 words\n"
+        "Beats covered: 2\n"
+    )
+
+
+def _scaffold_mapped_chapter(tmp_path, map_text_fn):
+    led = _make_book(tmp_path, populated=True, locked=True)
+    outline = tmp_path / "input/book-01/outline.md"
+    outline.parent.mkdir(parents=True, exist_ok=True)
+    outline.write_text("## Chapter 01 — X\n", encoding="utf-8")
+    outline_sha = hashlib.sha256(outline.read_bytes()).hexdigest()
+    ledger_sha = hashlib.sha256(led.read_bytes()).hexdigest()
+
+    pkt = _packet_dir(tmp_path) / "ch-01.md"
+    pkt.write_text(
+        _packet_text(["Beat one happens.", "Beat two happens."])
+        .replace("PLACEHOLDER\nbuilt_from_whodunit: PLACEHOLDER",
+                  f"{outline_sha}\nbuilt_from_whodunit: {ledger_sha}"),
+        encoding="utf-8")
+    packet_sha = hashlib.sha256(pkt.read_bytes()).hexdigest()
+
+    mp = _map_dir(tmp_path) / "ch-01.md"
+    mp.write_text(map_text_fn(packet_sha), encoding="utf-8")
+    return pkt, mp
+
+
+def test_draft_passes_when_map_is_fresh_and_clean(tmp_path):
+    _scaffold_mapped_chapter(tmp_path, _clean_map_text)
+    assert preflight.cmd_draft("01", "01", repo_root=tmp_path) == 0
+
+
+def test_draft_fails_when_fresh_map_drops_a_beat(tmp_path):
+    _scaffold_mapped_chapter(tmp_path, _clean_map_text)
+    mp = tmp_path / "input/book-01/maps/ch-01.md"
+    # Hand-edit the approved map to drop Scene 2's "Beats covered:" line —
+    # the stamp (still the packet's real sha256) does not change, so the
+    # map remains FRESH by the staleness check alone.
+    text = mp.read_text(encoding="utf-8")
+    text = text.replace("Beats covered: 2\n", "")
+    mp.write_text(text, encoding="utf-8")
+
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_draft("01", "01", repo_root=tmp_path)
+    assert "dropped-beat" in str(e.value)
+    assert "/map-chapter" in str(e.value)
+
+
 # --- Task 7: overloaded-chapter re-based onto Required Beats ---------------
 #
 # The check no longer reads length-profile.md at all — its cap comes from

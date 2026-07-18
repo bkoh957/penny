@@ -106,7 +106,15 @@ def check_map(packet_text: str, map_text: str, profile: "dict | None") -> dict:
     clue_ids = _ledger_clue_ids(packet_text)
     all_clue_text = " ".join(s["clue_text"] or "" for s in scenes)
     for cid in clue_ids:
-        if cid not in all_clue_text:
+        # A plain substring test lets "clue-jam" match inside "clue-jam-2" —
+        # a real clue id that happens to be a hyphenated prefix of another
+        # one. A bare \b...\b word-boundary regex does not fix this: regex
+        # \b treats the hyphen itself as a boundary, so "clue-jam" still
+        # matches at the start of "clue-jam-2". The token IS the id
+        # including its internal hyphens, so the character immediately
+        # before/after the match must not be a further identifier character
+        # (word char OR hyphen) — a lookaround pins that, a plain \b cannot.
+        if not re.search(rf"(?<![\w-]){re.escape(cid)}(?![\w-])", all_clue_text):
             blocking.append(
                 f"unscheduled-clue: ledger clue [{cid}] appears in no "
                 f"scene's Clue: line — an unplanted clue is an unfair reveal")
