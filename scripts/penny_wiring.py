@@ -36,17 +36,6 @@ SCENE_RE = re.compile(r"^###\s+Scene\s+(\d+)(?:\s*[—-]\s*(.*))?$", re.MULTILIN
 # trailing subsection follows it ("### Track Movement", "### Drafting Notes",
 # "### Possible Line-Level Prompts", ...), not sweep it in as scene content.
 ANY_H3_RE = re.compile(r"^###\s+.*$", re.MULTILINE)
-# Permissive like the outline's other bold fields (FIELD_RE, TRACK_RE): a
-# showrunner hand-authoring "- **Weight:** anchor" alongside every neighbouring
-# "- **Because:**"/"- **Opens:**"/"- **Hook:**" field is following the
-# documented, bulleted syntax (commands/build-briefs.md), not a typo. The
-# leading bullet — "-"/"*"/"+"/em-dash/en-dash, or none at all (the bare form
-# this pattern originally required) — is optional so both spellings resolve to
-# the identical weight. A silently-None weight here reads as "book has no
-# weights at all" downstream (brief_render's happy path), so under-accepting
-# is the failure mode this pattern must never have.
-WEIGHT_RE = re.compile(r"^\s*(?:[-*+—–]\s*)?\*\*Weight:\*\*\s*(anchor|support|connective)\s*$",
-                       re.MULTILINE | re.IGNORECASE)
 BEAT_RE = re.compile(r"^\s*(\d+)\.\s+(.*)$")
 FIRSTLINE_RE = re.compile(r"^\s*-\s+\*\*First line:\*\*\s*(.*)$")
 GRADE_RE = re.compile(r"^\[(cliffhanger|promise)\]\s*(.*)$", re.IGNORECASE)
@@ -108,12 +97,13 @@ def split_id(value: str) -> tuple[str, str]:
 
 
 def parse_scenes(block: str) -> list[dict]:
-    """The `### Scene N` blocks of one chapter, with their declared weight, beat
-    count, and instruction mass.
+    """The `### Scene N` blocks of one chapter (the LEGACY outline shape), with
+    their beat count and instruction mass. `weight` is always None — the
+    scene-weight machinery is gone (packet/map redesign); the key survives only
+    so legacy-block consumers need no shape change.
 
     `instruction_words` is the word count of the beat-flow text — the covert word
-    budget the model actually obeys. A 'connective' scene whose instruction mass
-    exceeds the anchor's is the outline lying to the drafter about what matters.
+    budget the model actually obeys.
     """
     scenes: list[dict] = []
     marks = list(SCENE_RE.finditer(block))
@@ -131,38 +121,16 @@ def parse_scenes(block: str) -> list[dict]:
                 end = hs
                 break
         body = block[start:end]
-        wm = WEIGHT_RE.search(body)
         beats = [BEAT_RE.match(line) for line in body.splitlines()]
         beat_texts = [b.group(2) for b in beats if b]
         scenes.append({
             "num": int(m.group(1)),
             "title": (m.group(2) or "").strip(),
-            "weight": wm.group(1).lower() if wm else None,
+            "weight": None,
             "beats": len(beat_texts),
             "instruction_words": sum(len(t.split()) for t in beat_texts),
         })
     return scenes
-
-
-def undeclared_scene_weight(chapter_num: int, scenes: list[dict]) -> str:
-    """THE message for a partially-weighted chapter — one string, two callers.
-
-    brief_render.check_briefs and tension_check._overload_check raise the identical
-    finding for the identical defect (some scenes declare a weight, others don't, and
-    the compiler is NOT entitled to guess 'support' for the rest). It used to be typed
-    out verbatim in both files, which is how two copies of one predicate drift apart.
-    """
-    names = ", ".join(f"scene {s['num']} '{s['title']}'" for s in scenes)
-    return (f"undeclared-scene-weight: ch {chapter_num} declares a weight for some "
-            f"scenes but not {names} — an undeclared scene weight would silently "
-            f"default to 'support', which nobody asked for")
-
-
-def has_weights(chapters: list[dict]) -> bool:
-    """An outline is weighted iff any scene declares a Weight. All-or-nothing per
-    book, exactly like the wiring: an unweighted outline is passed through untouched.
-    """
-    return any(s["weight"] for c in chapters for s in c["scenes"])
 
 
 def parse_wired_chapters(text: str) -> list[dict]:
@@ -206,8 +174,8 @@ def parse_wired_chapters(text: str) -> list[dict]:
                     # The grade may lead the whole value (wired form:
                     # "[grade] q-id — text") or lead the phrasing (packet
                     # form: "q-id — [grade] text"). hook_raw must be clean
-                    # of the bracket in BOTH positions — brief_render prints
-                    # it verbatim into drafter-facing prose.
+                    # of the bracket in BOTH positions — downstream consumers
+                    # print it verbatim into drafter-facing prose.
                     gm = GRADE_RE.match(value)
                     if gm:
                         ch["hook_grade"] = gm.group(1).lower()

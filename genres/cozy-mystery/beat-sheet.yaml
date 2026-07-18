@@ -19,7 +19,3 @@ questions:
 # opened, two closed, two clues, four tracks = eleven) does not.
 obligations:
   max_per_chapter: 8
-# Consumed by brief_render.py's hook-grade-distribution check. Unrelieved cliffhangers
-# read as machinery and the reader stops believing them; a cozy earns its turns.
-hooks:
-  max_cliffhanger_fraction: 0.4

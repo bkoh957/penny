@@ -9,10 +9,6 @@ never mentioned.
 The expected check-id list is derived from scripts/tension_check.py's own
 module docstring rather than hand-typed here a second time, so this test
 cannot itself drift out of sync with the source the way the prose docs did.
-`undeclared-scene-weight` is deliberately excluded from that derived list:
-the docstring describes it as "brief_render's own vocabulary... raised here
-too", not a tension_check check in its own right — which is exactly why
-CLAUDE.md's existing "nine named checks" sentence omits it too.
 """
 import re
 from pathlib import Path

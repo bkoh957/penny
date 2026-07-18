@@ -18,8 +18,8 @@ def test_ledger_identity_absent_file_is_none_sentinel(tmp_path):
     assert penny_whodunit.ledger_identity(tmp_path / "missing.yaml") == "none"
 
 
-# ---- ported from tests/test_brief_render.py: load_ledger's guard must reach
-# the shape of clue_schedule/red_herrings, not just the top level. ----------
+# ---- ported from the deleted brief compiler's tests: load_ledger's guard must
+# reach the shape of clue_schedule/red_herrings, not just the top level. ----
 
 def test_load_ledger_raises_named_error_for_malformed_yaml(tmp_path):
     ledger = tmp_path / "book-01.yaml"
@@ -105,7 +105,7 @@ def test_clues_by_chapter_raises_named_error_on_null_plant_chapter(tmp_path):
 
 
 # ---- ledger_identity: sha256 hex, or the "none" sentinel for an absent ledger.
-# stale_briefs (in brief_render) compares this exact sentinel, so it must never
+# packet_assemble.stale_packets compares this exact sentinel, so it must never
 # change spelling. ------------------------------------------------------------
 
 def test_ledger_identity_matches_file_sha256_for_an_existing_file():

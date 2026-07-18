@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from scripts.outline_check import check_outline, main
-from scripts.penny_wiring import has_weights, parse_wired_chapters
+from scripts.penny_wiring import parse_wired_chapters
 
 FIX = Path("tests/fixtures/outlines")
 
@@ -72,7 +72,6 @@ def test_shipped_template_teaches_syntax_the_wiring_parser_accepts():
     """
     text = Path("config/outline-template.md").read_text(encoding="utf-8")
     chapters = parse_wired_chapters(text)
-    assert has_weights(chapters), "the template's own example must declare a scene weight"
 
     ch1 = next(c for c in chapters if c["num"] == 1)
     # The title flag must sit after the em-dash and still resolve to a band name.
@@ -81,6 +80,5 @@ def test_shipped_template_teaches_syntax_the_wiring_parser_accepts():
     assert ch1["first_line"]
     # The hook grade is read from the front of the Hook field's value.
     assert ch1["hook_grade"] == "cliffhanger"
-    # The scene block resolves a real weight, not an unmatched placeholder.
+    # The scene block parses as a real scene.
     assert len(ch1["scenes"]) == 1
-    assert ch1["scenes"][0]["weight"] == "anchor"

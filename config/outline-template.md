@@ -12,13 +12,6 @@ total_chapters: 2
   ride as threads). "## Threads" is optional; omit it and the scaffolder proposes
   the roster. The Chapter Engine and Story Tracks sections are optional guidance
   for the drafter; include them when using the rich chapter-brief format.
-
-  Scene weights (Chapter 01 below shows the syntax) are OPTIONAL and
-  all-or-nothing per book: declare a "- **Weight:**" on every "### Scene N" or
-  on none at all. A weighted book gets a compiled, prompt-shaped chapter brief
-  from `scripts/brief_render.py` / `/build-briefs`; an unweighted book (this is
-  book 1's shape) is passed through untouched and drafts from the raw outline
-  section exactly as before.
 -->
 
 ## Solution: the-central-mystery
@@ -68,25 +61,11 @@ total_chapters: 2
 
 ### Scene 1 — <Title>
 
-<!-- Scene weights are OPTIONAL and all-or-nothing per book, exactly like the
-     wiring above (scripts/penny_wiring.py has_weights). Consumed by
-     scripts/brief_render.py / /build-briefs to compile
-     input/book-NN/briefs/ch-MM.md: anchor is the chapter's reason to exist and
-     is dramatised fully; support is brief scene texture kept subordinate to
-     the anchor; connective compresses to a paragraph, a transition, or a line
-     of dialogue — write it THINLY, because the prompt's own density is a word
-     budget the model obeys. One scene per chapter should be tagged anchor.
-     Keep the bare word on its own line with nothing else after it — that is
-     what the parser reads.
-
-     The word budgets come from config/length-profile.md, which is YOURS to author
-     (the engine ships no default). It needs a flat yaml block:
+<!-- The chapter word bands come from config/length-profile.md, which is YOURS
+     to author (the engine ships no default). It needs a flat yaml block:
        band_default: [2000, 2500]   (+ band_<type> for each [type: ...] flag)
-       weight_anchor / weight_support / weight_connective
-       min_connective_words / min_support_words
-     See README.md, "The length profile". Without those keys the briefs cannot be
-     priced and the lock's overloaded-chapter check records itself as skipped. -->
-- **Weight:** anchor
+       min_scene_words: 250
+     See README.md, "The length profile". -->
 
 **Beat flow:**
 

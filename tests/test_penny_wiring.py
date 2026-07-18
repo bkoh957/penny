@@ -71,16 +71,17 @@ def test_turning_points_tolerates_missing_fields():
 WEIGHTED = Path(__file__).resolve().parent / "fixtures" / "outlines" / "weighted-clean.md"
 
 
-def test_parse_scenes_reads_weights_beats_and_instruction_mass():
+def test_parse_scenes_reads_beats_and_instruction_mass():
     chapters = penny_wiring.parse_wired_chapters(WEIGHTED.read_text(encoding="utf-8"))
     ch1 = chapters[0]
-    assert [s["weight"] for s in ch1["scenes"]] == ["connective", "anchor"]
     assert [s["num"] for s in ch1["scenes"]] == [1, 2]
     assert ch1["scenes"][0]["title"] == "The Drive"
     assert ch1["scenes"][0]["beats"] == 2
     assert ch1["scenes"][1]["beats"] == 3
-    # instruction mass = words in the beat-flow text; the anchor carries more here
+    # instruction mass = words in the beat-flow text
     assert ch1["scenes"][1]["instruction_words"] > ch1["scenes"][0]["instruction_words"]
+    # the scene-weight machinery is gone: a legacy Weight line no longer resolves
+    assert [s["weight"] for s in ch1["scenes"]] == [None, None]
 
 
 def test_parse_chapter_reads_first_line_and_hook_grade():
@@ -101,52 +102,11 @@ def test_title_flags_parse_type_and_long_waiver():
     assert chapters[1]["title"] == "The Reveal"
 
 
-def test_has_weights_true_for_weighted_outline_false_for_the_wired_one():
-    weighted = penny_wiring.parse_wired_chapters(WEIGHTED.read_text(encoding="utf-8"))
-    assert penny_wiring.has_weights(weighted) is True
-    wired = penny_wiring.parse_wired_chapters((FIX / "wired-clean.md").read_text(encoding="utf-8"))
-    assert penny_wiring.has_weights(wired) is False
-
-
-def test_weight_accepts_bare_and_bulleted_forms():
-    # commands/build-briefs.md teaches the bulleted form (matching every other
-    # bold field a showrunner already writes: Because/Opens/Closes/Carries/Hook
-    # are all "- **Field:**"), and hand-authored outlines will follow it. The
-    # parser must accept both spellings and read the identical weight from each.
-    text = """---
-book: 01
-total_chapters: 1
----
-
-## Chapter 01 — One
-
-### Scene 1 — Bare
-
-**Weight:** anchor
-
-**Beat flow:**
-
-1. Beat.
-
-### Scene 2 — Bulleted
-
-- **Weight:** anchor
-
-**Beat flow:**
-
-1. Beat.
-"""
-    chapters = penny_wiring.parse_wired_chapters(text)
-    scenes = chapters[0]["scenes"]
-    assert scenes[0]["weight"] == "anchor"
-    assert scenes[1]["weight"] == "anchor"
-
-
 def test_parse_scenes_bounds_last_scene_at_next_h3_heading_of_any_name():
     # A trailing "### Drafting Notes" (or "### Track Movement", etc.) after the
     # last scene must not be swept into that scene's body — its own numbered
     # list is drafting guidance, not beats, and must not inflate beats/
-    # instruction_words (the overloaded-chapter check reads these numbers).
+    # instruction_words.
     text = """---
 book: 01
 total_chapters: 1
@@ -155,8 +115,6 @@ total_chapters: 1
 ## Chapter 01 — One
 
 ### Scene 1 — Only Scene
-
-**Weight:** anchor
 
 **Beat flow:**
 
@@ -218,7 +176,7 @@ def test_packet_format_block_keeps_wiring_and_type_flag():
 
 
 def test_packet_hook_raw_is_clean_of_grade_bracket():
-    # brief_render prints hook_raw verbatim into drafter-facing prose, so the
+    # hook_raw is printed verbatim into drafter-facing prose downstream, so the
     # [grade] bracket must be stripped in the packet position too — grade goes
     # to hook_grade, never leaks into the raw text.
     text = PACKET_FIXTURE.read_text(encoding="utf-8")

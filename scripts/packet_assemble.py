@@ -230,7 +230,7 @@ _CHAPTER_PACKET_RE = re.compile(r"^ch-(\d+)\.md$")
 def stale_packets(book: str, repo_root=None) -> set[str]:
     """Chapter numbers (zero-padded) whose packet was built from a different
     outline OR a different whodunit ledger than the ones now on disk — the
-    same staleness contract brief_render.stale_briefs uses for briefs."""
+    staleness contract the deleted brief compiler pioneered, inherited here."""
     root = Path(repo_root) if repo_root is not None else series_root()
     book2 = str(book).zfill(2)
     packets_dir = input_path(f"book-{book2}/packets", root)

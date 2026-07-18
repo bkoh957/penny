@@ -10,18 +10,18 @@ False, exit 0) — book 1 stays valid.
 wiring, so it is deliberately outside that skip: the beats live in the
 packet-format chapter block (`### Required Beats`), which need carry no
 wiring at all. A chapter with no Required Beats gives it nothing to do, and
-an outline with none anywhere (the pre-packet/legacy shape, still scenes and
-weights) is skipped exactly as before.
+an outline with none anywhere (the pre-packet/legacy scene shape) is skipped
+exactly as before.
 
 Two result channels, and nothing is ever silent:
   blocking — findings. They stop the lock unless waived, and the waiver's
              reason is recorded in the certificate.
-  notes    — a check that COULD NOT RUN, and why (no length profile, one the
-             engine cannot parse, no min_<class>_words floor, no obligation
-             cap). Never a traceback out of a working command, never a silent
-             `return`: preflight prints them and stamps them on the lock as
-             `skipped: <check-id> — <why>`, so the certificate cannot claim
-             coverage it does not have.
+  notes    — a check that COULD NOT RUN, and why (the genre beat sheet
+             declares no obligations.max_per_chapter, or the whodunit ledger
+             cannot be read). Never a traceback out of a working command,
+             never a silent `return`: preflight prints them and stamps them
+             on the lock as `skipped: <check-id> — <why>`, so the certificate
+             cannot claim coverage it does not have.
 
 Checks (ids are the waiver handles):
   orphan-chapter    a chapter's Because is missing, names a nonexistent
