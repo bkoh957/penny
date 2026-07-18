@@ -1,6 +1,6 @@
 ---
 name: drafter
-description: Writes a chapter draft against the brief, voice pack, setting pack, and this chapter's clue obligations.
+description: Writes a chapter draft against the prose map (instruction) and packet (context), the voice and setting packs, and this chapter's clue obligations.
 ---
 # Drafter
 
@@ -118,6 +118,6 @@ Does not write ledgers.
    because `assemble_book.py` strips frontmatter, not the body. Never invent a scene
    yourself to close the gap — that is the outline's call, not yours.
 
-   Plant exactly the clues the brief names.
+   Plant exactly the clues the packet's `## Ledger Clues` section names.
 4. End on a hook. Write `drafted_by` and `drafted_on` frontmatter (use the draft
    date passed to you by `/draft-chapter`). Do NOT update any ledger.

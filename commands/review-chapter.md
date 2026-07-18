@@ -32,7 +32,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    legacy path (no packet), assemble it the old way: always
    `series/continuity/canon-core.md`; then the continuity entries named in the
    chapter's raw outline section and their one-hop `links`. Canon-core-only
-   fallback if neither a packet nor a brief exists.
+   fallback if there is no packet and no outline section for this chapter.
 
 5. **Run the 2a deterministic checkers:**
 
