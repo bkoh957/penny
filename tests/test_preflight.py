@@ -537,35 +537,37 @@ def test_draft_passes_when_no_briefs_exist_at_all(tmp_path):
     assert preflight.cmd_draft("01", "01", repo_root=tmp_path) == 0
 
 
-# --- Fix wave: cmd_lock_mystery now resolves + threads profile_path, but
-# nothing exercised that path directly — a regression in the
-# `not profile_path.is_file()` normalization would pass the whole suite
-# silently. Mirrors test_waived_finding_locks_and_records_reason /
-# test_lock_refused_on_unwaived_curve_finding_when_genre_declared. ----------
+# --- Task 7: overloaded-chapter re-based onto Required Beats ---------------
+#
+# The check no longer reads length-profile.md at all — its cap comes from
+# the genre beat sheet's obligations.max_per_chapter, which (like the
+# curve/beat checks) only resolves through a DECLARED genre
+# (penny_genre.beat_sheet). The real cozy-mystery beat sheet caps at 8.
 
-OVERLOAD_PROFILE = SRC / "tests/fixtures/length-profile.md"
-
-
-def _overloaded_wired_outline() -> str:
-    # Chapter 01 carries the identical overload shape as
-    # tests/test_tension_check.py's own overload fixture (1 anchor + 20
-    # connective scenes in the default band). Chapter 02 exists purely to
-    # close/carry the questions chapter 01 opens, cleanly, so the ONLY
-    # tension finding this outline produces is overloaded-chapter — nothing
-    # else must fire, or waiving overloaded-chapter alone wouldn't be enough
-    # to lock.
-    scenes = "\n".join(
-        f"### Scene {i} — Stop {i}\n\n**Weight:** connective\n\n**Beat flow:**\n\n1. A stop.\n"
-        for i in range(2, 22))
+def _beat_heavy_wired_outline() -> str:
+    # Chapter 01 declares 9 Required Beats and opens one question — an
+    # obligation load of 10 against the cozy-mystery beat sheet's cap of 8.
+    # Chapter 02 carries the identical clean-close shape as
+    # tests/test_tension_check.py's own overload fixtures: it opens a fresh
+    # question, closes chapter 01's, and CARRIES + hooks the one it just
+    # opened — so the open-question count never drops to 0 (dead-stretch)
+    # and the hook never names an already-closed question (broken-hook),
+    # against a ledger whose reveal_chapter (22) sits well past this 2-chapter
+    # outline. The ONLY tension finding this outline produces is
+    # overloaded-chapter — nothing else must fire, or waiving
+    # overloaded-chapter alone wouldn't be enough to lock. Only 2 chapters
+    # total also keeps starved-thread trivially satisfied regardless of the
+    # genre's real max_dark_gap thresholds.
+    beats = "\n".join(f"- Beat {i}." for i in range(1, 10))
     return (
         "---\nbook: 01\ntotal_chapters: 2\n---\n\n"
         "## Chapter 01 — Too Much\n\n"
+        "### Required Beats\n" + beats + "\n\n"
+        "### Guardrails\n- None.\n\n"
         "- **Because:** opening\n"
         "- **Opens:** q-a — a question.\n"
         "- **Hook:** q-a — a hook.\n\n"
-        "### Scene 1 — The Anchor\n\n**Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
-        + scenes +
-        "\n## Chapter 02 — Cooldown\n\n"
+        "## Chapter 02 — Cooldown\n\n"
         "- **Because:** ch 01 — settles the pace.\n"
         "- **Opens:** q-b — a second question.\n"
         "- **Closes:** q-a\n"
@@ -574,13 +576,13 @@ def _overloaded_wired_outline() -> str:
     )
 
 
-def _scaffold_overloadable(tmp_path):
+def _scaffold_overloadable(tmp_path, *, declare_genre=True):
     _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
-    (tmp_path / "config").mkdir(parents=True, exist_ok=True)
-    shutil.copy(OVERLOAD_PROFILE, tmp_path / "config/length-profile.md")
+    if declare_genre:
+        shutil.copy(FIXTURE / "series.yaml", tmp_path / "series.yaml")
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True, exist_ok=True)
-    (d / "outline-skeleton.md").write_text(_overloaded_wired_outline(), encoding="utf-8")
+    (d / "outline-skeleton.md").write_text(_beat_heavy_wired_outline(), encoding="utf-8")
 
 
 def test_lock_refused_on_unwaived_overloaded_chapter(tmp_path):
@@ -603,74 +605,14 @@ def test_waived_overloaded_chapter_locks_and_records_reason(tmp_path):
             "accepts the length risk") in body
 
 
-# --- FINAL REVIEW C1 + I4: the lock and the length profile ------------------
-#
-# C1: the live series' length-profile.md is the LEGACY format (a prose table +
-# book_target_words — no band_*/weight_* keys). check_tension parsed it
-# unconditionally, so /plot-book 02 -> lock-mystery raised a raw ValueError:
-# a regression that made the live series unable to lock its next book.
-#
-# I4: weights are authored into the EXPANDED outline (input/book-NN/outline.md),
-# which is where overloaded-chapter must therefore look — lock-mystery reads
-# outline-skeleton.md for the wiring, and the skeleton has no scenes at all, so
-# the ninth check was unreachable on the only path that produces weights.
-
-LEGACY_PROFILE = SRC / "tests/fixtures/length-profile-legacy.md"
-NEW_PROFILE = SRC / "tests/fixtures/length-profile.md"
-WEIGHTED_OVERLOADED = SRC / "tests/fixtures/outlines/weighted-overloaded.md"
-WIRED_CLEAN = SRC / "tests/fixtures/outlines/wired-clean.md"
-
-
-def _add_profile(tmp_path, fixture):
-    (tmp_path / "config").mkdir(parents=True, exist_ok=True)
-    shutil.copy(fixture, tmp_path / "config/length-profile.md")
-
-
-def _add_expanded_outline(tmp_path, fixture):
-    d = tmp_path / "input/book-01"
-    d.mkdir(parents=True, exist_ok=True)
-    shutil.copy(fixture, d / "outline.md")
-
-
-def test_legacy_length_profile_still_locks_a_wired_book(tmp_path):
-    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
-    _add_wired_skeleton(tmp_path, WIRED_CLEAN)
-    _add_profile(tmp_path, LEGACY_PROFILE)
-    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
-    assert preflight.lock_path("01", tmp_path).is_file()
-
-
-def test_legacy_length_profile_records_the_skipped_overload_check(tmp_path, capsys):
-    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
-    _add_wired_skeleton(tmp_path, WIRED_CLEAN)
-    _add_expanded_outline(tmp_path, WEIGHTED_OVERLOADED)
-    _add_profile(tmp_path, LEGACY_PROFILE)
+def test_overload_check_skipped_and_recorded_without_a_resolvable_cap(tmp_path):
+    # No genre declared -> no beat sheet -> no obligations.max_per_chapter ->
+    # the obligation half of the check cannot run. The certificate must say
+    # so BY NAME, not silently drop the check or crash the lock.
+    _scaffold_overloadable(tmp_path, declare_genre=False)
     assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
     body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
     assert "skipped: overloaded-chapter" in body, (
         "a certificate that stamps validated:...+tension while the overload check "
         "never ran is a certificate that lies")
-    assert "band_default" in body
-
-
-def test_overloaded_chapter_fires_at_the_lock_on_the_weighted_expanded_outline(tmp_path):
-    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
-    _add_wired_skeleton(tmp_path, WIRED_CLEAN)
-    _add_expanded_outline(tmp_path, WEIGHTED_OVERLOADED)
-    _add_profile(tmp_path, NEW_PROFILE)
-    with pytest.raises(SystemExit) as e:
-        preflight.cmd_lock_mystery("01", repo_root=tmp_path)
-    assert "overloaded-chapter" in str(e.value)
-    assert not preflight.lock_path("01", tmp_path).is_file()
-
-
-def test_overloaded_chapter_is_waivable_at_the_lock(tmp_path):
-    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
-    _add_wired_skeleton(tmp_path, WIRED_CLEAN)
-    _add_expanded_outline(tmp_path, WEIGHTED_OVERLOADED)
-    _add_profile(tmp_path, NEW_PROFILE)
-    assert preflight.cmd_lock_mystery(
-        "01", repo_root=tmp_path,
-        waivers=['overloaded-chapter:the day is meant to be relentless']) == 0
-    body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
-    assert "waived: overloaded-chapter — the day is meant to be relentless" in body
+    assert "obligations.max_per_chapter" in body

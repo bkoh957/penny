@@ -295,15 +295,6 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
         # nonexistent case to None so the note below fires correctly instead
         # of silently passing a dead path through to check_tension.
         beat_sheet_path = None
-    # The engine ships no length-profile.md (series-authored) — same guard as
-    # beat_sheet_path: config_path() always returns SOME path (falling back
-    # to the plugin default location), so normalize a nonexistent one to
-    # None. check_tension() itself no-ops the overloaded-chapter check when
-    # profile_path is None or the file is absent — a series without one must
-    # still lock.
-    profile_path = penny_paths.config_path("length-profile.md", root=repo_root)
-    if not profile_path.is_file():
-        profile_path = None
     validated = "fairplay+lexicon"
     waived_lines: list[str] = []
     skipped_lines: list[str] = []
@@ -316,8 +307,7 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
             beat_sheet_path=beat_sheet_path,
             turning_points_path=_first_file(
                 repo_root / "input" / f"book-{book}" / "plot" / "turning-points.md"),
-            whodunit_path=led,
-            profile_path=profile_path)
+            whodunit_path=led)
         findings += tres["blocking"]
         notes += tres["notes"]
         if tres["wired"]:
@@ -328,20 +318,20 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
                 # skipped for lack of a resolvable beat sheet.
                 print("lock-mystery: note — no beat sheet resolved; curve/beat "
                       "checks (dead-stretch, starved-thread, off-mark-beat) skipped")
-    # The WEIGHTS live in the expanded outline (input/book-NN/outline.md), which
-    # /expand-outline writes and /build-briefs weighs; the WIRING lives in the
-    # skeleton the workshop writes, and `outline` above resolves to the skeleton
-    # first. The skeleton has no `### Scene` blocks at all, so overloaded-chapter —
-    # the ninth check, its --waive handle, and its certificate line — was
-    # unreachable on the only path that produces weights (final review I4). Run it
-    # over the scene-level outline whenever that is a different file.
+    # The REQUIRED BEATS live in the expanded outline (input/book-NN/outline.md),
+    # which /expand-outline writes; the WIRING lives in the skeleton the workshop
+    # writes, and `outline` above resolves to the skeleton first. The skeleton
+    # carries no `### Required Beats` blocks at all, so overloaded-chapter — the
+    # ninth check, its --waive handle, and its certificate line — was
+    # unreachable on the only path that produces beats (final review I4). Run it
+    # over the beat-level outline whenever that is a different file.
     expanded = repo_root / "input" / f"book-{book}" / "outline.md"
     if expanded.is_file() and (outline is None or expanded != Path(outline)):
         from scripts.penny_wiring import parse_wired_chapters
         from scripts.tension_check import check_overload
         ores = check_overload(
             parse_wired_chapters(expanded.read_text(encoding="utf-8")),
-            profile_path=profile_path, beat_sheet_path=beat_sheet_path, whodunit_path=led)
+            beat_sheet_path=beat_sheet_path, whodunit_path=led)
         findings += ores["blocking"]
         notes += ores["notes"]
     for n in notes:

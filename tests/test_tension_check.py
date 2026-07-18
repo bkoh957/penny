@@ -201,242 +201,75 @@ def test_starved_thread_still_quiet_when_rows_present_and_advancing():
     assert "starved-thread" not in _predicates(r)
 
 
-# --- Task 6: overloaded-chapter — the plot-level check ---------------------
-
-PROFILE = Path(__file__).resolve().parent / "fixtures" / "length-profile.md"
-
-
-def test_overloaded_chapter_flagged_when_a_connective_scene_cannot_be_paid_for(tmp_path):
-    # 1 anchor + 8 connective in the default band (midpoint 2250): shares 8 + 8 = 16,
-    # so each connective gets 2250/16 = 140 words... still above the 100 floor.
-    # Push it to 20 connective scenes: 2250 * 1 / 28 = 80 < 100 → overloaded.
-    scenes = "\n".join(
-        f"### Scene {i} — Stop {i}\n\n**Weight:** connective\n\n**Beat flow:**\n\n1. A stop.\n"
-        for i in range(2, 22))
-    outline = tmp_path / "outline.md"
-    outline.write_text(
-        "---\nbook: 01\ntotal_chapters: 1\n---\n\n"
-        "## Chapter 01 — Too Much\n\n"
-        "- **Because:** opening\n"
-        "- **Opens:** q-a — a question.\n"
-        "- **Hook:** q-a — a hook.\n\n"
-        "### Scene 1 — The Anchor\n\n**Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
-        + scenes, encoding="utf-8")
-    result = check_tension(outline, profile_path=PROFILE)
-    assert any(b.startswith("overloaded-chapter") for b in result["blocking"])
-    finding = next(b for b in result["blocking"] if b.startswith("overloaded-chapter"))
-    assert "ch 1" in finding
-
-
-def test_no_overload_when_the_scene_count_fits_the_band(tmp_path):
-    outline = tmp_path / "outline.md"
-    outline.write_text(
-        "---\nbook: 01\ntotal_chapters: 1\n---\n\n"
-        "## Chapter 01 — Just Right\n\n"
-        "- **Because:** opening\n"
-        "- **Opens:** q-a — a question.\n"
-        "- **Hook:** q-a — a hook.\n\n"
-        "### Scene 1 — The Anchor\n\n**Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
-        "### Scene 2 — A Stop\n\n**Weight:** connective\n\n**Beat flow:**\n\n1. A stop.\n",
-        encoding="utf-8")
-    result = check_tension(outline, profile_path=PROFILE)
-    assert not any(b.startswith("overloaded-chapter") for b in result["blocking"])
-
-
-def test_unweighted_outline_is_never_overload_checked():
-    # An un-weighted outline (book 1's shape) must never trip the check.
-    result = check_tension(FIX / "wired-clean.md", profile_path=PROFILE)
-    assert not any(b.startswith("overloaded-chapter") for b in result["blocking"])
-
-
-# --- Fix wave: never silently lose the overload signal ---------------------
+# --- Task 7: overloaded-chapter, re-based onto Required Beats --------------
 #
-# _overload_check used to wrap penny_length.scene_budgets in a bare
-# `try/except ValueError: continue` and separately default an undeclared
-# scene weight to "support" (`s["weight"] or "support"`). Both are the exact
-# anti-pattern brief_render.check_briefs already rejects by name
-# (`undeclared-scene-weight`) for the identical problem: silently guessing
-# at data the showrunner never declared. A chapter that cannot be budgeted —
-# because the series' length-profile.md lacks a weight_* key it needs — must
-# not lock with ZERO overload signal; it must produce a NAMED, waivable
-# finding instead.
+# The check used to read SCENE WEIGHTS (a length-profile.md band/floor
+# budget). It now reads REQUIRED BEATS (packet format, spec-v3): the
+# obligation load a chapter carries is its beats + clues to plant + questions
+# opened/closed + tracks advanced, against the genre beat sheet's
+# `obligations.max_per_chapter`. A legacy outline (scenes/weights, no
+# Required Beats sections) is skipped entirely — the stop-everything
+# invariant that lets an unmigrated book keep locking exactly as before.
 
-def test_overload_check_never_silently_skips_when_weight_class_unresolvable(tmp_path):
-    # Reproduces the SAME 20-connective-scene overload as
-    # test_overloaded_chapter_flagged_when_a_connective_scene_cannot_be_paid_for
-    # above, but against a profile with no weight_connective — the exact
-    # missing-config-key case the fix closes. Before the fix, scene_budgets
-    # raised ValueError("unknown scene weight 'connective' ...") and the bare
-    # `except ValueError: continue` swallowed it whole: no finding, nothing
-    # to waive, a genuinely overloaded chapter locking clean.
-    scenes = "\n".join(
-        f"### Scene {i} — Stop {i}\n\n**Weight:** connective\n\n**Beat flow:**\n\n1. A stop.\n"
-        for i in range(2, 22))
-    outline = tmp_path / "outline.md"
-    outline.write_text(
-        "---\nbook: 01\ntotal_chapters: 1\n---\n\n"
-        "## Chapter 01 — Too Much\n\n"
-        "- **Because:** opening\n"
-        "- **Opens:** q-a — a question.\n"
-        "- **Hook:** q-a — a hook.\n\n"
-        "### Scene 1 — The Anchor\n\n**Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
-        + scenes, encoding="utf-8")
-    profile = tmp_path / "length-profile.md"
-    profile.write_text(
-        "```yaml\nband_default: [2000, 2500]\nweight_anchor: 8\n"
-        "min_connective_words: 100\n```\n", encoding="utf-8")  # no weight_connective
-    result = check_tension(outline, profile_path=profile)
-    finding = next((b for b in result["blocking"] if b.startswith("overloaded-chapter")), None)
-    assert finding is not None, (
-        "a chapter that could not be budgeted at all must still produce a "
-        "named, waivable finding — never silently vanish")
-    assert "ch 1" in finding
+from scripts.tension_check import check_overload
+from scripts.penny_wiring import parse_wired_chapters
+
+PACKET = FIX / "packet-format.md"
 
 
-def test_undeclared_scene_weight_gets_named_finding_not_silent_support_default(tmp_path):
-    # A chapter that declares a weight for some scenes but not others must
-    # get brief_render's own "undeclared-scene-weight" finding, not a
-    # `weight or "support"` guess the showrunner never made.
-    outline = tmp_path / "outline.md"
-    outline.write_text(
-        "---\nbook: 01\ntotal_chapters: 1\n---\n\n"
-        "## Chapter 01 — Partial\n\n"
-        "- **Because:** opening\n"
-        "- **Opens:** q-a — a question.\n"
-        "- **Hook:** q-a — a hook.\n\n"
-        "### Scene 1 — The Anchor\n\n**Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
-        "### Scene 2 — No Weight\n\n**Beat flow:**\n\n1. Untagged.\n",
-        encoding="utf-8")
-    result = check_tension(outline, profile_path=PROFILE)
-    finding = next(
-        (b for b in result["blocking"] if b.startswith("undeclared-scene-weight")), None)
-    assert finding is not None, (
-        "an undeclared scene weight in a partially-weighted chapter must get "
-        "a named finding, not a silent 'support' default")
-    assert "scene 2" in finding
-    assert not any(b.startswith("overloaded-chapter") for b in result["blocking"]), (
-        "an undeclared weight must never be silently defaulted to 'support' "
-        "and then budgeted as if the showrunner chose that")
-
-
-# --- FINAL REVIEW C1: a length-profile the engine cannot parse must NEVER
-# crash the lock. The live series' length-profile.md predates the scene-budget
-# schema (a prose table + book_target_words, no band_*/weight_* keys), and
-# check_tension parsed it unconditionally: /plot-book 02 -> lock-mystery ->
-# raw ValueError traceback, no lock, no named predicate. The other eight
-# checks must still run and the book must still be lockable; the overload
-# check says, by name, that it could not run. --------------------------------
-
-LEGACY = Path(__file__).resolve().parent / "fixtures" / "length-profile-legacy.md"
-WEIGHTED_OVERLOADED = FIX / "weighted-overloaded.md"
-
-
-def test_legacy_profile_never_crashes_a_wired_lock():
-    result = check_tension(FIX / "wired-clean.md", profile_path=LEGACY)
-    assert result["wired"] is True
-    assert result["blocking"] == []          # the book is still lockable
-
-
-def test_legacy_profile_names_the_skipped_overload_check_on_a_weighted_book():
-    result = check_tension(WEIGHTED_OVERLOADED, profile_path=LEGACY)
-    notes = " ".join(result["notes"])
-    assert "overloaded-chapter" in notes
-    assert "band_default" in notes, "the note must name what the profile is missing"
-    assert not any(b.startswith("overloaded-chapter") for b in result["blocking"]), (
-        "a profile the engine cannot use is a SKIP, recorded on the certificate — "
-        "not a finding the showrunner has to waive on every lock")
-
-
-# --- FINAL REVIEW I3: `floor = profile.get("min_connective_words", 0); if not
-# floor: return` silently disabled the whole check for the whole book. -------
-
-def test_missing_min_connective_words_is_a_named_note_never_a_silent_skip(tmp_path):
-    profile = tmp_path / "length-profile.md"
-    profile.write_text(
-        "```yaml\nband_default: [2000, 2500]\nweight_anchor: 8\n"
-        "weight_support: 3\nweight_connective: 1\n```\n", encoding="utf-8")  # no floors
-    result = check_tension(WEIGHTED_OVERLOADED, profile_path=profile)
-    notes = " ".join(result["notes"])
-    assert "overloaded-chapter" in notes
-    assert "min_" in notes, f"the note must name the missing floor key: {notes}"
-
-
-# --- FINAL REVIEW I4: the check must be able to fire on the path that
-# actually produces weights — the EXPANDED outline, which on the /plot-book
-# path carries scenes but (because outline-expander predates the wiring) not
-# necessarily any wiring at all. An unwired-but-weighted outline used to
-# return before the overload check ever ran. --------------------------------
-
-def test_overload_fires_on_a_weighted_outline_with_no_wiring(tmp_path):
-    text = WEIGHTED_OVERLOADED.read_text(encoding="utf-8")
-    stripped = "\n".join(
-        line for line in text.splitlines()
-        if not line.startswith(("- **Because:**", "- **Opens:**", "- **Hook:**")))
-    outline = tmp_path / "outline.md"
-    outline.write_text(stripped, encoding="utf-8")
-    result = check_tension(outline, profile_path=PROFILE)
-    assert result["wired"] is False
-    assert any(b.startswith("overloaded-chapter") for b in result["blocking"]), (
-        "scene weights, not wiring, are what the overload check reads — an "
-        "expanded outline carrying weights but no wiring must still be checked")
-
-
-# --- FINAL REVIEW I5: the spec defines overloaded-chapter as "scenes plus
-# OBLIGATIONS exceed what the chapter's word band can hold". The check read
-# neither support scenes nor obligations. -----------------------------------
-
-def test_starved_support_scenes_overload_the_chapter():
-    # 1 anchor + 12 support at the default band: 2250 * 3 / 44 = 153 words each,
-    # against the profile's 250-word support floor.
-    result = check_tension(FIX / "weighted-support-heavy.md", profile_path=PROFILE)
-    finding = next((b for b in result["blocking"] if b.startswith("overloaded-chapter")), None)
-    assert finding is not None, (
-        "a chapter of twelve starved SUPPORT scenes is overloaded exactly as one "
-        "of twenty starved connective scenes is")
-    assert "support" in finding
-
-
-def test_obligation_load_overloads_the_chapter(tmp_path):
-    # Two scenes that price fine, but the chapter must also plant clues, open
-    # and close questions, and advance every track — the load the band pays for.
-    outline = tmp_path / "outline.md"
-    outline.write_text(
-        "---\nbook: 01\ntotal_chapters: 2\n---\n\n"
-        "## Chapter 01 — Setup\n\n"
-        "- **Because:** opening\n"
-        "- **Opens:** q-a — a.\n"
-        "- **Opens:** q-b — b.\n"
-        "- **Opens:** q-c — c.\n"
-        "- **Hook:** q-a — a hook.\n\n"
-        "### Scene 1 — The Anchor\n\n- **Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
-        "## Chapter 02 — Everything At Once\n\n"
-        "- **Because:** ch 01 — it follows.\n"
-        "- **Opens:** q-d — d.\n"
-        "- **Closes:** q-a\n"
-        "- **Closes:** q-b\n"
-        "- **Closes:** q-c\n"
-        "- **Closes:** q-d\n"
-        "- **Hook:** q-a — a hook.\n\n"
-        "### Scene 1 — The Anchor\n\n- **Weight:** anchor\n\n**Beat flow:**\n\n1. The turn.\n\n"
-        "### Scene 2 — A Stop\n\n- **Weight:** connective\n\n**Beat flow:**\n\n1. A stop.\n\n"
-        "### Track Movement\n- **M:** The tin.\n- **P:** She commits.\n"
-        "- **R:** Cal calls.\n- **B:** The shop opens.\n",
-        encoding="utf-8")
+def test_overload_fires_on_beat_heavy_chapter(tmp_path):
+    # Packet-format ch 05: 10 Required Beats, 1 open, 1 close, 2 live tracks
+    # (M, R) — plus 1 clue scheduled here in a fixture ledger built for this
+    # test. Load = 10 + 1 + 1 + 1 + 2 = 15 against a cap of 12: blocking.
+    chapters = parse_wired_chapters(PACKET.read_text(encoding="utf-8"))
     whodunit = tmp_path / "book-01.yaml"
     whodunit.write_text(
-        "reveal_chapter: 2\nclue_schedule:\n"
-        "  - {id: c-1, plant_chapter: 2}\n  - {id: c-2, plant_chapter: 2}\n"
-        "red_herrings:\n  - {id: rh-1, plant_chapter: 2}\n", encoding="utf-8")
-    sheet = tmp_path / "beat-sheet.yaml"
-    sheet.write_text("obligations:\n  max_per_chapter: 6\n", encoding="utf-8")
-    result = check_tension(outline, profile_path=PROFILE, whodunit_path=whodunit,
-                           beat_sheet_path=sheet)
-    finding = next((b for b in result["blocking"]
-                    if b.startswith("overloaded-chapter") and "ch 2" in b), None)
-    assert finding is not None, (
-        "ch 2 discharges 12 obligations (3 clues + 1 open + 4 closes + 4 tracks) "
-        "against the genre's cap of 6 — a chapter that will run long no matter "
-        "how well it is written")
-    assert "obligation" in finding
-    assert not any(b.startswith("overloaded-chapter") and "ch 1" in b
-                   for b in result["blocking"]), "ch 1 carries 4 obligations — under the cap"
+        "reveal_chapter: 6\nclue_schedule:\n"
+        "  - {id: c-death, plant_chapter: 5}\n", encoding="utf-8")
+    beat_sheet = tmp_path / "beat-sheet.yaml"
+    beat_sheet.write_text("obligations:\n  max_per_chapter: 12\n", encoding="utf-8")
+    result = check_overload(chapters, beat_sheet_path=beat_sheet, whodunit_path=whodunit)
+    assert result["applicable"] is True
+    finding = next((b for b in result["blocking"] if b.startswith("overloaded-chapter")), None)
+    assert finding is not None
+    assert "ch 5" in finding
+    assert "10 required beat(s)" in finding
+
+
+def test_overload_skips_by_name_without_required_beats(tmp_path):
+    # A legacy outline (scenes, weights, no Required Beats sections) must be
+    # skipped entirely — applicable False, no blocking, and NO notes. Any
+    # note here would mean the un-migrated shape is no longer "exactly as
+    # before", which is the whole point of the gate.
+    chapters = parse_wired_chapters((FIX / "wired-clean.md").read_text(encoding="utf-8"))
+    beat_sheet = tmp_path / "beat-sheet.yaml"
+    beat_sheet.write_text("obligations:\n  max_per_chapter: 1\n", encoding="utf-8")
+    result = check_overload(chapters, beat_sheet_path=beat_sheet)
+    assert result == {"applicable": False, "blocking": [], "notes": []}
+
+
+def test_overload_counts_beats_plus_obligations(tmp_path):
+    # Same chapter, same load (15), but a cap of 20: clean.
+    chapters = parse_wired_chapters(PACKET.read_text(encoding="utf-8"))
+    whodunit = tmp_path / "book-01.yaml"
+    whodunit.write_text(
+        "reveal_chapter: 6\nclue_schedule:\n"
+        "  - {id: c-death, plant_chapter: 5}\n", encoding="utf-8")
+    beat_sheet = tmp_path / "beat-sheet.yaml"
+    beat_sheet.write_text("obligations:\n  max_per_chapter: 20\n", encoding="utf-8")
+    result = check_overload(chapters, beat_sheet_path=beat_sheet, whodunit_path=whodunit)
+    assert result["applicable"] is True
+    assert result["blocking"] == []
+
+
+def test_overload_missing_cap_is_named_note():
+    # A beat-heavy outline with no beat sheet (or one without
+    # obligations.max_per_chapter) can't be capped at all: a named note, not
+    # a silent skip and not a crash.
+    chapters = parse_wired_chapters(PACKET.read_text(encoding="utf-8"))
+    result = check_overload(chapters)
+    assert result["applicable"] is True
+    assert result["blocking"] == []
+    notes = " ".join(result["notes"])
+    assert "overloaded-chapter" in notes
+    assert "obligations.max_per_chapter" in notes
