@@ -146,9 +146,12 @@ Maggie does not know:
 - Do not ominously foreshadow Neil's death.
 - Cal understands Maggie's attraction; he is not oblivious.
 
-Because: opening day gathers the full cast the investigation will need.
-Opens: Q-NEIL-DEATH. Closes: Q-OPENING-READY. Carries: M, P, R, B.
-Hook (cliffhanger): Faye receives the death call.
+- **Because:** ch 04 — opening day gathers the full cast the investigation will need.
+- **Opens:** q-neil-death — who killed Neil?
+- **Closes:** q-opening-ready
+- **M:** the death arrives; the mystery begins.
+- **R:** Cal notices Maggie's overload.
+- **Hook:** q-neil-death — [cliffhanger] Faye receives the death call.
 ```
 
 Rules:
@@ -166,9 +169,15 @@ Rules:
 - **Clues and Plants** carries both the plants and the authored anti-spotlight
   guidance ("must appear ordinary and helpful"). At packet-assembly time the
   ledger's machine clue IDs are merged in (§5).
-- **The wiring footer** (`Because / Opens / Closes / Carries / Hook`) is
-  machine-read by the nine tension checks — same syntax as today, at the foot
-  of the block, beneath Guardrails.
+- **The wiring footer** (`Because / Opens / Closes / Carries` plus the
+  per-track `M`/`P`/`R`/`B` rows / `Hook`) is machine-read by the nine tension
+  checks, at the foot of the block, beneath Guardrails. It is the **same
+  bulleted-bold field-per-line syntax the wired-outline convention already
+  uses** (`- **Field:** value`, one field per line, q-slugs — never thread
+  letters — in Opens/Closes/Carries, `[cliffhanger]`/`[promise]` bracketed
+  onto the Hook line) — a bare `Because: …` / `Opens: x. Closes: y.` prose
+  line is invisible to `penny_wiring.py`'s `FIELD_RE`, not merely a stylistic
+  variant of it.
 - **NO `### Scene` sections.** The container that drifted no longer exists.
 
 ## 4. The prose map (Pass 1 output — replaces the brief)
