@@ -519,21 +519,86 @@ def test_phantom_waiver_note_prints_when_outline_present_but_unwired(tmp_path, c
     assert "waiver for 'dead-stretch' matched no finding; not recorded" in out
 
 
-def test_draft_fails_on_a_stale_brief(tmp_path):
-    _make_book(tmp_path, populated=True, locked=True)
-    briefs = tmp_path / "input/book-01/briefs"
-    briefs.mkdir(parents=True, exist_ok=True)
+# --- Task 8: packet/map staleness chain (replaces the old brief check) -----
+#
+# cmd_draft now polices the packet/map chain instead of briefs: a packet
+# built from a stale outline/ledger, or a map whose built_from_packet stamp
+# no longer matches the packet on disk, must fail by name. Neither existing
+# is the legacy fallback (book 1, or any book not yet mapped) and must still
+# pass — the runbook warns, preflight does not block.
+
+def _packet_dir(root, book="01"):
+    d = root / f"input/book-{book}/packets"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _map_dir(root, book="01"):
+    d = root / f"input/book-{book}/maps"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def test_draft_fails_on_a_stale_packet(tmp_path):
+    led = _make_book(tmp_path, populated=True, locked=True)
+    (tmp_path / "input/book-01").mkdir(parents=True, exist_ok=True)
     (tmp_path / "input/book-01/outline.md").write_text("## Chapter 01 — X\n", encoding="utf-8")
-    (briefs / "ch-01.md").write_text(
-        "---\nbuilt_from_outline: deadbeef\n---\n# brief\n", encoding="utf-8")
+    (_packet_dir(tmp_path) / "ch-01.md").write_text(
+        "---\nbuilt_from_outline: deadbeef\nbuilt_from_whodunit: deadbeef\n---\n"
+        "# Packet — Chapter 01\n", encoding="utf-8")
     with pytest.raises(SystemExit) as e:
         preflight.cmd_draft("01", "01", repo_root=tmp_path)
-    assert "stale brief" in str(e.value)
+    assert "stale packet for ch 01" in str(e.value)
+    assert "/map-chapter 01 01" in str(e.value)
 
 
-def test_draft_passes_when_no_briefs_exist_at_all(tmp_path):
-    # Book 1 has no briefs and must keep drafting exactly as before.
+def test_draft_fails_when_map_stamp_does_not_match_packet(tmp_path):
+    led = _make_book(tmp_path, populated=True, locked=True)
+    outline = tmp_path / "input/book-01/outline.md"
+    outline.parent.mkdir(parents=True, exist_ok=True)
+    outline.write_text("## Chapter 01 — X\n", encoding="utf-8")
+    outline_sha = hashlib.sha256(outline.read_bytes()).hexdigest()
+    ledger_sha = hashlib.sha256(led.read_bytes()).hexdigest()
+    pkt = _packet_dir(tmp_path) / "ch-01.md"
+    pkt.write_text(
+        f"---\nbuilt_from_outline: {outline_sha}\nbuilt_from_whodunit: {ledger_sha}\n---\n"
+        "# Packet — Chapter 01\n", encoding="utf-8")
+    (_map_dir(tmp_path) / "ch-01.md").write_text(
+        "---\nbuilt_from_packet: deadbeef\n---\n## Scene 1 — X\n", encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_draft("01", "01", repo_root=tmp_path)
+    assert "stale map for ch 01" in str(e.value)
+    assert "/map-chapter" in str(e.value)
+
+
+def test_draft_fails_when_map_exists_but_packet_is_missing(tmp_path):
     _make_book(tmp_path, populated=True, locked=True)
+    (_map_dir(tmp_path) / "ch-01.md").write_text(
+        "---\nbuilt_from_packet: deadbeef\n---\n## Scene 1 — X\n", encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_draft("01", "01", repo_root=tmp_path)
+    assert "map exists but its packet is missing" in str(e.value)
+    assert "/map-chapter" in str(e.value)
+
+
+def test_draft_passes_when_no_packet_or_map_exists(tmp_path):
+    # Book 1 (or any not-yet-mapped book) has neither and must keep drafting
+    # exactly as before — the legacy fallback the runbook warns about.
+    _make_book(tmp_path, populated=True, locked=True)
+    assert preflight.cmd_draft("01", "01", repo_root=tmp_path) == 0
+
+
+def test_draft_passes_when_packet_is_fresh_and_no_map_exists_yet(tmp_path):
+    # Mapping may be in progress: a fresh packet with no map yet is fine.
+    led = _make_book(tmp_path, populated=True, locked=True)
+    outline = tmp_path / "input/book-01/outline.md"
+    outline.parent.mkdir(parents=True, exist_ok=True)
+    outline.write_text("## Chapter 01 — X\n", encoding="utf-8")
+    outline_sha = hashlib.sha256(outline.read_bytes()).hexdigest()
+    ledger_sha = hashlib.sha256(led.read_bytes()).hexdigest()
+    (_packet_dir(tmp_path) / "ch-01.md").write_text(
+        f"---\nbuilt_from_outline: {outline_sha}\nbuilt_from_whodunit: {ledger_sha}\n---\n"
+        "# Packet — Chapter 01\n", encoding="utf-8")
     assert preflight.cmd_draft("01", "01", repo_root=tmp_path) == 0
 
 

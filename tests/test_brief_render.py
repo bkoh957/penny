@@ -473,30 +473,6 @@ def test_brief_with_no_whodunit_stamp_at_all_is_treated_as_stale(tmp_path):
     assert brief_render.stale_briefs("01", root) == ["01", "02"]
 
 
-def test_preflight_draft_refuses_a_brief_stale_only_on_the_ledger(tmp_path):
-    """The reviewer's exact repro, through the actual gate:
-    preflight.cmd_draft must refuse to draft a chapter whose brief drifted
-    from a ledger edit alone, no outline edit involved."""
-    from scripts import preflight
-    root = _series(tmp_path)
-    brief_render.build("01", repo_root=root)
-    lock_dir = root / ".penny/locks"
-    lock_dir.mkdir(parents=True, exist_ok=True)
-    (lock_dir / "book-01.mystery.lock").write_text("locked\n", encoding="utf-8")
-    run_config = root / "config/run-config.md"
-    run_config.write_text(
-        "```yaml\ndrafting_model: model-a\ninspector_model: model-b\n```\n",
-        encoding="utf-8")
-    ledger = root / "series/whodunit/book-01.yaml"
-    ledger.write_text(
-        "book: '01'\nreveal_chapter: 2\nclue_schedule:\n"
-        "  - { id: clue-tide-table, plant_chapter: 2, pays_off_chapter: 2, necessary: true }\n",
-        encoding="utf-8")
-    with pytest.raises(SystemExit) as e:
-        preflight.cmd_draft("01", "01", repo_root=root, run_config=run_config)
-    assert "stale brief" in str(e.value)
-
-
 # ---- REVIEW FIX 2: a malformed plant_chapter must fail loud and per-chapter,
 # never crash the whole book build with a raw traceback. ---------------------
 

@@ -141,7 +141,6 @@ def cmd_draft(book: str, chapter: str, *, repo_root=None, run_config=None) -> in
     # entry point every caller uses, so a malformed or unreadable ledger fails
     # with this module's own `preflight: <predicate>` form, never a raw
     # traceback.
-    from scripts.brief_render import stale_briefs
     from scripts.penny_whodunit import load_ledger
     led = ledger_path(book, repo_root)
     if not led.is_file():
@@ -169,18 +168,31 @@ def cmd_draft(book: str, chapter: str, *, repo_root=None, run_config=None) -> in
     if inspector == drafting:
         _fail(f"inspector_model equals drafting_model ({inspector}) — the review "
               "panel would grade its own prose")
-    # A brief built from a different outline (or whodunit ledger) is a lie
-    # about what this chapter owes. No briefs at all is fine — that is book 1,
-    # and it drafts from the raw section. An unreadable ledger, though, is a
-    # real failure — caught here and reported through the same named-predicate
-    # convention as every other preflight miss, never a raw traceback.
-    try:
-        stale = stale_briefs(book, repo_root)
-    except ValueError as e:
-        _fail(str(e))
-    if chapter.zfill(2) in stale:
-        _fail(f"stale brief for ch {chapter} — the outline or whodunit ledger changed "
-              f"since it was built; re-run /build-briefs {book}")
+    # The packet/map staleness chain (spec 2026-07-18 §4/§5) replaces the old
+    # brief check. A packet built from a different outline or whodunit ledger
+    # is a lie about what this chapter owes — caught by name before a map or
+    # draft gets built on top of it. A map's `built_from_packet` stamp must
+    # match the packet actually on disk; a map with no packet underneath it
+    # means the packet was deleted or never assembled, which is a real
+    # failure, not silent absence. Neither existing at all is the legacy
+    # fallback — book 1, or any book not yet mapped — and must keep drafting
+    # from the raw outline section exactly as before: the runbook warns about
+    # this, preflight does not block it.
+    from scripts import packet_assemble
+    from scripts.penny_map import map_path, parse_map
+    from scripts.penny_whodunit import file_sha256
+    pkt = packet_assemble.packet_path(book, chapter, repo_root)
+    if pkt.is_file() and chapter.zfill(2) in packet_assemble.stale_packets(book, repo_root):
+        _fail(f"stale packet for ch {chapter} — the outline or whodunit ledger changed "
+              f"since it was built; re-run /map-chapter {book} {chapter}")
+    mp = map_path(book, chapter, repo_root)
+    if mp.is_file():
+        if not pkt.is_file():
+            _fail("map exists but its packet is missing — re-run /map-chapter")
+        stamp = parse_map(mp.read_text(encoding="utf-8"))["stamp"]
+        if stamp != file_sha256(pkt):
+            _fail(f"stale map for ch {chapter} — the packet changed since the map "
+                  f"was built; re-run /map-chapter {book} {chapter}")
     return 0
 
 
