@@ -133,43 +133,70 @@ engine code.
   proposal → approve + lock) — for the puzzle alone, when the dramatic outline is
   already settled some other way.
 
-**Per book, around the lock:** `/build-briefs NN` compiles the outline into one
-prompt-shaped brief per chapter (`input/book-NN/briefs/ch-MM.md`) — an emphasis hierarchy
-(anchor/support/connective) with per-scene word budgets from `config/length-profile.md`,
-obligations as a checklist rather than stops, a commissioned first line, a graded hook
-(cliffhanger | promise), declared negative space, and a compact non-scene reference extract.
-The full raw `### Scene` beat-flow list is deliberately not inlined again: prompt mass is
-instruction mass, and pasting the flat list back into the brief would recreate the parity
-problem the compiler exists to remove. Each brief is stamped `built_from_outline: <sha256>` **and**
-`built_from_whodunit: <sha256>` — the whodunit ledger is a real upstream of every brief
-too (obligations come from it), so moving a clue's `plant_chapter` goes stale the same
-way editing the outline does; edit either and `preflight draft` refuses until the briefs
-are rebuilt. **An outline with no scene weights is passed through untouched** —
-`/draft-chapter` then reads the raw section exactly as before, so book 1 is unaffected.
-The weights are declared by the showrunner in the outline;
-`brief-weigher` proposes, it never decides. `scripts/penny_length.py` is the one place
-chapter bands and per-scene word budgets are computed; `scripts/brief_render.py`,
-dispatched by `/build-briefs`, is the stage between the lock and the first draft.
+**Per book, around the lock — three artifacts, one per chapter (design
+`docs/superpowers/specs/2026-07-18-packet-map-chapter-design.md` §2–§7,
+supersedes the brief compiler above the lock):**
 
-**Weighing is an OUTLINE act; compiling is a POST-LOCK act.** The two halves of
-`/build-briefs` have different preconditions, and conflating them made the ninth tension
-check unreachable. *Weigh + check* needs only the outline and the length profile, so it
-runs **before** the lock — which is the only way `overloaded-chapter` (a plot property,
-spec §6) can see the weights it exists to check. *Compile* needs the locked ledger's
-obligations, so it runs **after**. Weights added to an already-locked book mean the
-certificate no longer covers them: delete the lock and re-run `preflight lock-mystery`
-(the documented re-planning flow) rather than editing a sealed outline and pretending
-otherwise.
+```
+outline.md  — packet-format chapter blocks, wired, NO scenes         (locked)
+    │  slice + lookups, deterministic — packet_assemble.py
+    ▼
+PACKET  input/book-NN/packets/ch-MM.md      what the chapter needs to know
+    │  map-maker proposes, showrunner approves — /map-chapter
+    ▼
+MAP     input/book-NN/maps/ch-MM.md         how the chapter spends its words
+    │  drafter: map = instruction, packet = context
+    ▼
+DRAFT   output/book-NN/chapters/ch-MM.draft.md
+```
+
+Each outline chapter block carries packet-section `###` headings (Chapter Purpose,
+Starting/Ending State, Reader-Facing Shape, Required Beats, Clues and Plants, Character
+Knowledge, Guardrails, the wiring footer) and **no `### Scene` section, ever** — scenes
+drifted into chapter-sized units once already (design §1) and the fix is removing the
+container, not compressing its contents downstream. `/map-chapter NN MM` (replaces
+`/build-briefs`) runs both halves per chapter, post-lock:
+
+1. `packet_assemble.py NN MM` — deterministic, no LLM: slices this chapter's outline
+   block, merges in every ledger clue scheduled for this chapter (rendering each clue's
+   `description:` field, falling back to `misleads_toward:`, then a named placeholder if
+   neither is set — series authors should add `description:` to
+   `clue_schedule`/`red_herrings` entries so packets read well), appends the continuity
+   extracts (canon-core + entries the block names + their one-hop links), the standing
+   `config/series-guardrails.md` block, and the chapter's word band. Refuses **by name**:
+   no mystery lock (the packet needs the sealed ledger's obligations), or no `###
+   Required Beats` section (this chapter isn't in packet format yet). Stamps
+   `built_from_outline: <sha256>` and `built_from_whodunit: <sha256|none>`.
+2. The **`map-maker`** agent proposes the prose map from the packet — scene divisions,
+   `Target: A–B words` per scene, free-text `Weight:` (no enum, no per-class pricing —
+   the one-anchor rule is dead), `Beats covered:` indices into the packet's Required
+   Beats (1-based, order is contract), and every ledger clue id placed in exactly one
+   scene's `Clue:` field. **Proposes only** — the showrunner edits/approves, and only the
+   approved map is written, stamped `built_from_packet: <sha256 of the packet file>`
+   (`scripts/penny_map.py`'s `map_path`).
+3. `map_check.py NN MM` gates the approved map with named findings — `band-mismatch`
+   (scene targets can't sum into the band), `starved-scene` (a target's max is below
+   `min_scene_words`), `unparseable-target`, `dropped-beat`, `duplicate-beat`,
+   `unscheduled-clue`, `stale-map` (the packet changed since) — **no waivers at this
+   level**: fix the map or fix the outline. Exit 0/1/2 (clean / findings / usage).
+
+`/draft-chapter` then reads the map as its instruction and the packet as its context (plus
+the previous chapter's final ~300 words). `preflight draft` polices the staleness chain —
+stale packet, or a map whose `built_from_packet` stamp no longer matches — and **passes
+silently when neither a packet nor a map exists at all**, the legacy fallback: an
+unmigrated book (book 1) drafts from the raw outline section exactly as before, warned by
+name, never blocked.
 
 **The length profile is series-authored and the engine ships none** — so its schema is
-documented, not defaulted (README, "The length profile"). It carries flat yaml:
-`band_default: [min, max]` (plus `band_<type>` overrides selected by a chapter title's
-`[type: …]` flag), a `weight_<class>` for each of anchor/support/connective, and a
-`min_<class>_words` floor per class (`min_connective_words`, `min_support_words`). The
-three emphasis classes are the **engine's** vocabulary (`penny_wiring.WEIGHT_RE`,
-`brief_render._FORM`); the **numbers** are the series'. A profile the engine cannot parse
-never crashes a command: `lock-mystery` records `skipped: overloaded-chapter — …` on the
-certificate and locks; `/build-briefs build` fails by name and says which keys are missing.
+documented, not defaulted (README, "The length profile"). Schema v2: `band_default: [min,
+max]` (plus `band_<type>` overrides selected by a chapter title's `[type: …]` flag,
+unchanged) and one flat `min_scene_words` floor for any scene in the prose map.
+`scripts/penny_length.py` no longer generates per-scene budgets from emphasis weights — it only
+`band_for`s the chapter and validates the map-maker's authored targets against the band
+and the floor (`validate_targets`). Legacy v1 keys (`weight_<class>`, `min_<class>_words`)
+are tolerated and ignored, never a hard failure. A profile the engine cannot parse never
+crashes a command: `lock-mystery` records `skipped: overloaded-chapter — …` on the
+certificate and locks; `map_check.py` names which keys are missing.
 
 **Per chapter:** `/draft-chapter NN MM` → `/review-chapter NN MM` (the gate; also dispatches
 the context-rich `developmental-editor` advisory) → `preflight clear-dev NN MM` →
@@ -185,8 +212,9 @@ and **non-blocking**.
 ### Optional pre-draft passes
 
 `/expand-outline NN [MM]` expands skeletal stubs from `input/book-NN/outline-skeleton.md`
-into the scene-breakdown `outline.md`. It reads the solution to schedule clue beats, and must
-not schedule a reveal beat before `reveal_chapter`.
+into packet-format chapter blocks in `outline.md` — never a `### Scene` section. It reads
+the solution to schedule clue beats, and must not schedule a reveal beat before
+`reveal_chapter`.
 
 `/review-outline NN [--focus "…"]` runs an **independent Claude + Codex panel** over the
 whole outline (identical inputs) and appends prose feedback — **no scores** —
@@ -217,16 +245,19 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
   (`penny_genre.py beat-sheet`), never a hardcoded filename; an outline with no
   wiring is SKIPPED entirely, so book 1 and any hand-authored/scaffolded outline
   still lock exactly as before. `overloaded-chapter` is the one check that reads
-  **scene weights rather than wiring** — it runs over the expanded
-  `input/book-NN/outline.md` (where the weights are) even when the wiring checks
-  read `outline-skeleton.md`, prices every scene against its class's
-  `min_<class>_words` floor, and counts the chapter's **obligation load** (clues
-  planted + questions opened/closed + tracks advanced) against the genre beat
-  sheet's `obligations.max_per_chapter`. A check that **cannot run** — no length
-  profile, an unparseable one, no floors, no cap — is never silent and never a
-  traceback: it prints a named note and the lock certificate records it as
-  `skipped: <check-id> — <why>`, so the certificate cannot claim coverage it
-  does not have), `draft N CH`
+  **Required Beats rather than wiring** — it runs over any chapter block carrying a
+  `### Required Beats` section (packet format), even when the wiring checks read
+  `outline-skeleton.md`, and counts the chapter's **obligation load** (required beats +
+  clues planted + questions opened/closed + tracks advanced) against the genre beat
+  sheet's `obligations.max_per_chapter`. A chapter with no Required Beats gives it
+  nothing to do; an outline with none anywhere (the legacy scenes/weights shape) is
+  never checked. Per-scene word pricing (band-mismatch, starved-scene) moved with the
+  scenes themselves to `map_check.py`, post-lock, per chapter — this check is now purely
+  a plot-obligation count, not a word-count arithmetic. A check that **cannot run** — the
+  genre beat sheet declares no `obligations.max_per_chapter`, or the whodunit ledger
+  cannot be read — is never silent and never a traceback: it prints a named note and the
+  lock certificate records it as `skipped: <check-id> — <why>`, so the certificate cannot
+  claim coverage it does not have), `draft N CH`
   (lock present + ledger populated + the review panel is routed off the drafting
   model — `inspector_model` must exist and differ from `drafting_model`, since the
   inspector agents carry no `model:` frontmatter and would otherwise inherit the

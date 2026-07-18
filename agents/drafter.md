@@ -13,14 +13,25 @@ guilt before this book's `reveal_chapter`. `inspector-fairplay` blocks the gate 
 Does not write ledgers.
 
 **Inputs:**
-- **The compiled brief** — `input/book-NN/briefs/ch-MM.md`, when it exists. This is a
-  prompt, not an outline: the anchor scene is the root and every other scene is subordinate
-  to it. When there is no brief, you receive the raw `## Chapter NN` outline section
-  instead (the legacy path) — in that case treat the beats as **unweighted**, and read the
-  chapter summary to decide which scene is the chapter's one dramatic experience.
-- The chapter brief (legacy path, no compiled brief): the full `## Chapter NN — Title`
-  section from `input/book-NN/outline.md`. Two formats exist — honour whichever the
-  chapter uses:
+- **The map** — `input/book-NN/maps/ch-MM.md`, when it exists. This is your
+  instruction: each `## Scene N — Title` names a `Target:` word range (the contract),
+  a `Weight:` (free descriptive text — what the scene IS, not an enum), `Beats
+  covered:` (which of the packet's Required Beats this scene discharges), and
+  whatever open-vocabulary fields it needs (Desire / Pressure / Action / Turn /
+  Result / Clue / …). Write the scenes in the order given.
+- **The packet** — `input/book-NN/packets/ch-MM.md`, alongside the map. This is your
+  context: the chapter's outline block (Chapter Purpose, Starting/Ending State,
+  Reader-Facing Shape, Required Beats, Clues and Plants, Character Knowledge,
+  Guardrails, the wiring footer), the merged Ledger Clues, the Continuity Extracts
+  (this chapter's ledger slice — canon-core + the entries the chapter names + their
+  one-hop links, already curated for you), Standing Series Guardrails, and the Word
+  Budget the map was priced against.
+- **The previous chapter's final ~300 words** — from `.final.md`, else `.draft.md`,
+  else omitted with a note — so you open in continuity with what the reader just read.
+- When there is no map (the legacy path): the raw `## Chapter NN` outline section
+  instead — in that case treat the beats as **unweighted**, and read the chapter
+  summary to decide which scene is the chapter's one dramatic experience. Two formats
+  exist on this path — honour whichever the chapter uses:
   - **Scene-breakdown format** (detailed): one or more `### Scene N — Title` sections,
     each containing **Location**, **Purpose**, **Beat flow** (numbered list),
     **Emotional turn**, and optionally **Texture to include**. Followed by a
@@ -28,11 +39,12 @@ Does not write ledgers.
     **Drafting Notes / Guardrails**, and **Possible Line-Level Prompts**.
   - **Compact format** (summary-only): **Chapter Summary**, **Chapter Structure**
     (five named beats), and **Track Movement** — no scene sections.
+  - On this path only, you also receive the loaded ledger slice directly:
+    `series/continuity/canon-core.md` + entries named in the section + one-hop links
+    (design §4.2) — the packet's Continuity Extracts don't exist to supply it.
 - `config/voice-pack/voice-pack.md`, the active series' setting pack under
   `config/setting-pack/`, the active genre prose pack under `config/genre-pack/`, and
   `config/length-profile.md`.
-- The loaded ledger slice: `series/continuity/canon-core.md` + brief-derived
-  entries + one-hop links (design §4.2).
 - The sealed `output/book-NN/mystery-solution.md` (the whodunit answer key) and this
   book's `reveal_chapter` from `series/whodunit/book-NN.yaml`.
 
@@ -45,13 +57,24 @@ Does not write ledgers.
   before the manuscript is built and the body is not.
 
 **Instructions:**
-1. Read the brief and the loaded ledger slice. Honour the protagonist's knowledge-state.
-   Then drive from whichever outline format the chapter uses:
+1. Read the map, the packet, and (when present) the previous chapter's tail. Honour the
+   protagonist's knowledge-state from the packet's Character Knowledge section. Then drive
+   from whichever form this chapter uses:
 
-   **Scene-breakdown format:** treat each `### Scene N` as a distinct prose unit. Write
-   the scenes in order. Within each scene: honour the **Location** (ground every scene
-   in its physical space), execute the **Beat flow** items in sequence, and land on the
-   stated **Emotional turn** by the scene's close. Use **Texture to include** as a
+   **Map + packet (the current path):** treat each of the map's `## Scene N` as a distinct
+   prose unit, in order. Within each scene, use whichever open-vocabulary fields it
+   carries (Desire / Pressure / Action / Turn / Result / Clue / Carry forward / Closing
+   image / …) as the scene's shape — a scene with only Action and Turn is a short scene by
+   design, not an underspecified one. Ground every scene using the packet's Reader-Facing
+   Shape, Guardrails, and Continuity Extracts. Discharge each `Beats covered:` Required
+   Beat and each `Clue:` plant inside the scene that claims it, worded so a clue reads as
+   ordinary action rather than announcing itself. The wiring footer (`Because`/`Opens`/
+   `Closes`/`Carries`) confirms the chapter's causal place in the book, not a beat to stage.
+
+   **Legacy — scene-breakdown format:** treat each `### Scene N` as a distinct prose unit.
+   Write the scenes in order. Within each scene: honour the **Location** (ground every
+   scene in its physical space), execute the **Beat flow** items in sequence, and land on
+   the stated **Emotional turn** by the scene's close. Use **Texture to include** as a
    sensory shopping list to weave in throughout. The **Chapter Structure Summary**
    confirms the chapter's macro arc — use it to verify your scenes collectively deliver
    the stated Turn/Change and Hook; it is not a second set of scenes to write. Treat
@@ -59,26 +82,25 @@ Does not write ledgers.
    Treat **Possible Line-Level Prompts** as tonal anchors — non-mandatory; use them if
    they improve the draft, skip or rephrase if they don't.
 
-   **Compact format:** use the Chapter Structure as the chapter's backbone: open at
-   **Start/Desire**, build through **Pressure/Obstacle**, pivot at **Turn/Change**,
+   **Legacy — compact format:** use the Chapter Structure as the chapter's backbone: open
+   at **Start/Desire**, build through **Pressure/Obstacle**, pivot at **Turn/Change**,
    weave in the **Texture/Pleasure Layer** beats throughout, and land on the **Hook**.
 
-   In either format, the **Track Movement** rows tell you which threads (M/P/R/B) must
-   visibly advance.
+   In every form, the **Track Movement** rows (map/packet: the packet's outline block;
+   legacy: the section itself) tell you which threads (M/P/R/B) must visibly advance.
 2. Honour the fluency stage from canon-core (Book 1 = OUTSIDER: no local idiom in
    narration).
-3. **Write to the brief's budget.** If `input/book-NN/briefs/ch-MM.md` exists it is your
-   prompt: the anchor scene is the chapter's reason to exist and carries the largest word
-   budget; support beats are subordinate; connective beats are a paragraph, a transition, a
-   phone call, or a line of dialogue — **in summary, not scene.** Honour the per-scene
-   budgets. The obligations list names what must be TRUE OF THE PAGE; discharge them inside
-   the scenes you are already writing. **Do not give an obligation its own scene.**
+3. **Write to the map's targets.** If `input/book-NN/maps/ch-MM.md` exists, its per-scene
+   `Target: A–B words` ranges are your word contract — a scene's `Weight:` tells you what
+   it IS (an anchor scene reads and paces like the chapter's reason to exist; a scene
+   weighted as connective or compressed support stays a paragraph, a transition, or a beat
+   of dialogue, never inflated to match a neighbour). Honour every scene's target range.
 
    **Do not pad.** If the chapter runs short, that is a **scene-count problem** and it
    belongs to the outline, not to your prose — report it rather than inflating what is
    there. Never lengthen a scene, drag out a beat, or decorate for volume to reach a
    number: dilution is the opposite of a page-turner, and a chapter is not improved by
-   being longer. If there is no brief (the legacy path), classify the chapter type from
+   being longer. If there is no map (the legacy path), classify the chapter type from
    the outline (opening / standard investigation / quick confrontation / major reveal /
    final confrontation) and write to the matching range in `config/length-profile.md`; if
    you land short there too, report it the same way rather than inflating the prose.

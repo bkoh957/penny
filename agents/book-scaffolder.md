@@ -27,8 +27,16 @@ Route each derived thing to its EXISTING home. Do not invent new formats.
    `central_deception`, `clue_schedule[]` (each `{id, plant_chapter,
    pays_off_chapter, necessary}`), `red_herrings[]`, `alibi_grid[]` (each
    `{suspect, chapter, alibi, holds}`). Match `tests/fixtures/outlines/derived-whodunit.yaml`
-   exactly as the canonical shape. **Never add a `locked:` field** — the lock is
-   out-of-band and is never written here.
+   as the canonical shape (a `description:` key on `clue_schedule`/`red_herrings` entries —
+   see below — is a recommended addition beyond that minimal fixture, not a deviation from
+   it). **Never add a `locked:` field** — the lock is out-of-band and is never written here.
+
+   **Add a `description:` to every `clue_schedule`/`red_herrings` entry you write.**
+   `packet_assemble.py` renders this text verbatim into each chapter's packet under
+   `## Ledger Clues`, falling back to `misleads_toward:` (red herrings already carry this)
+   and then a named placeholder ("(no description in ledger)") only when neither is set —
+   a clue with no description reads badly in every packet built from this ledger, so write
+   real fair-play prose here, not a bare id.
    - Each ADDITIONAL `## Solution: <label>` in v1 is a NON-gated thread (below); a
      future looping gate will project it to `series/whodunit/book-NN.<label>.yaml`.
 

@@ -1,8 +1,10 @@
 # /expand-outline
 
-Expands skeletal chapter stubs from `input/book-NN/outline-skeleton.md` into the full
-scene-breakdown outline in `input/book-NN/outline.md`. Context-rich: the expander reads
-the sealed solution, so the mystery must already be planned.
+Expands skeletal chapter stubs from `input/book-NN/outline-skeleton.md` into packet-format
+chapter blocks (spec 2026-07-18 §3) in `input/book-NN/outline.md`. Context-rich: the
+expander reads the sealed solution, so the mystery must already be planned. Scenes are no
+longer part of the outline at all — they belong to the per-chapter map, staged later by
+`/map-chapter`.
 
 ## Steps
 
@@ -25,7 +27,8 @@ the sealed solution, so the mystery must already be planned.
    - If `chapter` given → just that chapter.
    - Else (batch) → every `## Chapter NN` in `input/book-$book/outline-skeleton.md`
      whose section in `input/book-$book/outline.md` does **not** already contain a
-     `### Scene ` heading (i.e. not yet expanded). This protects hand-crafted chapters.
+     `### Required Beats` heading (i.e. not yet expanded into packet format). This
+     protects hand-crafted chapters.
    - **If `input/book-$book/outline.md` does not exist yet**, initialize it before the
      skip-check (copy the frontmatter from `outline-skeleton.md`, or create an empty file)
      so that section replacement in Step 5 will work.

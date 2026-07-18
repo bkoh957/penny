@@ -39,29 +39,42 @@ edit and commit with `/finalize-chapter`.
    echo "book=$book chapter=$chapter stage=DRAFT" > .penny/current-stage
    ```
 
-3. **Assemble the chapter brief and ledger slice** (design §4.2):
-   - **Chapter brief:** if `input/book-$book/briefs/ch-$chapter.md` exists, that file **is**
-     the brief — pass it verbatim. It is a compiled prompt: an emphasis hierarchy with word
-     budgets, an obligations checklist, a commissioned first line, a graded hook, declared
-     negative space, and the raw outline section demoted to reference.
+3. **Assemble the chapter's instruction and context** (design §2, §7 — map = instruction,
+   packet = context):
+   - **Map + packet (the current path):** if `input/book-$book/maps/ch-$chapter.md`
+     exists, that file **is** the drafter's instruction — the per-scene `Target:` ranges
+     are the word contract, `Weight:` tells the drafter what each scene IS, and
+     `Beats covered:`/`Clue:` lines name which packet obligations land where. Pass
+     alongside it `input/book-$book/packets/ch-$chapter.md` as context — the chapter's
+     outline block, merged ledger clues, continuity extracts (canon-core + the entries
+     the chapter names, plus their one-hop links — this replaces the separate ledger-slice
+     step the brief compiler needed, since the packet already carries it), standing
+     series guardrails, and the word budget the map was priced against.
 
-     If it does not exist, **fall back** to the legacy path: read
-     `input/book-$book/outline.md` and extract the full `## Chapter $chapter` section. Warn
-     that the chapter is drafting from an uncompiled outline, and that a flat beat list
-     will be read by the model as a promise of parity — run `/build-briefs $book` to fix it.
+     (`preflight draft` above already refuses a **stale** packet or map — one built from
+     an outline, whodunit ledger, or packet that has since changed — before this step
+     runs; if it refused, the cure is the same: re-run `/map-chapter $book $chapter`.)
+   - **Previous chapter's tail:** attach the previous chapter's final ~300 words, so the
+     drafter opens in continuity with what the reader just read. Prefer
+     `output/book-$book/chapters/ch-<chapter-1>.final.md`; if that doesn't exist yet, fall
+     back to `ch-<chapter-1>.draft.md`; if neither exists (chapter 1, or the previous
+     chapter isn't drafted yet), omit it and say so rather than inventing a tail.
+   - **Legacy fallback (no map yet):** if there is no map for this chapter, fall back to
+     the raw outline path exactly as before — read `input/book-$book/outline.md` and
+     extract the full `## Chapter $chapter` section verbatim as the drafter's brief. Warn
+     that the chapter is drafting from an unmapped outline, and that a flat beat list
+     will be read by the model as a promise of parity — run `/map-chapter $book $chapter`
+     to fix it.
      - **Scene-breakdown format:** `### Overall Summary`, one or more
        `### Scene N — Title` sections with Location/Purpose/Beat flow/Emotional
        turn/Texture, then `### Chapter Structure Summary`, `### Track Movement`,
        `### Drafting Notes / Guardrails`, and optional line prompts.
      - **Compact format:** `### Chapter Summary`, `### Chapter Structure`, and
        `### Track Movement`.
-     This full section is the brief passed to the drafter.
-
-     (`preflight draft` above already refuses a **stale** brief — one built from an
-     outline or whodunit ledger that has since changed — before this step runs; if it
-     refused, the cure is the same: re-run `/build-briefs $book`.)
-   - **Ledger slice:** Always load `series/continuity/canon-core.md`; then load the
-     continuity entries named in the brief and their one-hop `links`.
+     This full section is the brief passed to the drafter, plus the legacy ledger
+     slice: always load `series/continuity/canon-core.md`; then load the continuity
+     entries named in the section and their one-hop `links` (the packet does not exist
+     on this path, so nothing else supplies it).
 
 4. **Ensure output paths exist:**
 

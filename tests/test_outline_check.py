@@ -69,6 +69,13 @@ def test_shipped_template_teaches_syntax_the_wiring_parser_accepts():
     scripts/penny_wiring.py reads. A doc that teaches a form the parser silently
     ignores (the exact failure a prior task shipped for `- **Weight:**`) is worse
     than no doc at all, so this asserts the fields actually resolve.
+
+    Post packet/map redesign (spec 2026-07-18 §3): the template's chapter blocks
+    are packet format, not scene-breakdown — there is no `### Scene` section to
+    round-trip any more (scenes moved to the per-chapter map). The contract now
+    pins the packet-format shape instead: a real, non-empty Required Beats list
+    and real, non-empty packet `###` sections, both read through
+    `parse_wired_chapters` exactly as `packet_assemble.py` reads them.
     """
     text = Path("config/outline-template.md").read_text(encoding="utf-8")
     chapters = parse_wired_chapters(text)
@@ -80,5 +87,9 @@ def test_shipped_template_teaches_syntax_the_wiring_parser_accepts():
     assert ch1["first_line"]
     # The hook grade is read from the front of the Hook field's value.
     assert ch1["hook_grade"] == "cliffhanger"
-    # The scene block parses as a real scene.
-    assert len(ch1["scenes"]) == 1
+    # No "### Scene" section survives in packet format.
+    assert ch1["scenes"] == []
+    # The packet-format sections and Required Beats list both resolve non-empty.
+    assert ch1["sections"], "template must teach real packet-format ### sections"
+    assert ch1["required_beats"], "template must teach a non-empty Required Beats list"
+    assert "Required Beats" in ch1["sections"]

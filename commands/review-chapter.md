@@ -25,9 +25,14 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    echo "book=$book chapter=$chapter stage=REVIEW" > .penny/current-stage
    ```
 
-4. **Assemble the ledger slice** (design §4.2, same as `draft-chapter`): always
+4. **Assemble the ledger slice** (design §4.2, same as `draft-chapter`): when
+   `input/book-$book/packets/ch-$chapter.md` exists, its `## Continuity Extracts`
+   section already carries the assembled slice — canon-core + the entries this
+   chapter names + their one-hop `links` — so read it from there directly. On the
+   legacy path (no packet), assemble it the old way: always
    `series/continuity/canon-core.md`; then the continuity entries named in the
-   chapter brief and their one-hop `links`. Canon-core-only fallback if no brief.
+   chapter's raw outline section and their one-hop `links`. Canon-core-only
+   fallback if neither a packet nor a brief exists.
 
 5. **Run the 2a deterministic checkers:**
 
@@ -115,7 +120,8 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    guard above is inert, because the agent silently inherits the drafting session) with
    its **context-rich** inputs — the
    chapter draft text, `config/review-rubrics/developmental-craft.md`, the setting pack,
-   a character-bible slice, and the chapter brief, plus `output/book-$book/mystery-solution.md`. Pass
+   a character-bible slice, and the chapter's map + packet (or, on the legacy path, the
+   raw outline section), plus `output/book-$book/mystery-solution.md`. Pass
    `$dev_sha` as the `reviewed_draft_sha256` it must record. It writes
    `output/book-$book/chapters/ch-$chapter.reviews/developmental-edit.md` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py` (`kind: developmental`, no `^BLOCKING:` lines).

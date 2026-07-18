@@ -20,7 +20,10 @@ bible / arc-ledger for continuity.
 **Output:** a proposed `series/whodunit/book-NN.yaml` body — `book`,
 `total_chapters`, `reveal_chapter`, `culprit`, `victim`,
 `culprit_first_appearance_chapter`, `clue_schedule[]`, `red_herrings[]`,
-`alibi_grid[]` — for the showrunner to review, edit, and lock.
+`alibi_grid[]` — for the showrunner to review, edit, and lock. Give every
+`clue_schedule`/`red_herrings` entry a `description:` (fair-play prose, not a bare id) —
+`packet_assemble.py` renders it verbatim into every chapter's packet under `## Ledger
+Clues`, falling back to `misleads_toward:` then a named placeholder when it's missing.
 
 **Discipline:** propose only; the showrunner approves and the command validates +
 locks. `culprit`, `victim`, and every `alibi_grid` suspect must be ids that resolve

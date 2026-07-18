@@ -13,10 +13,12 @@ def test_draft_chapter_runs_preflight_gate():
 REPO = Path(__file__).resolve().parents[1]
 
 
-def test_draft_chapter_prefers_the_compiled_brief():
+def test_draft_chapter_prefers_the_map_and_packet():
     text = (REPO / "commands" / "draft-chapter.md").read_text(encoding="utf-8")
-    assert "briefs/ch-$chapter.md" in text
+    assert "maps/ch-$chapter.md" in text
+    assert "packets/ch-$chapter.md" in text
     assert "falls back" in text.lower() or "fall back" in text.lower()
+    assert "/map-chapter" in text
 
 
 def test_drafter_no_longer_tells_the_model_to_pad():
