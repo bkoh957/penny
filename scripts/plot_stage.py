@@ -157,7 +157,8 @@ def stamp(book: str, target, upstreams, *, repo_root=None) -> None:
     p.write_text(text, encoding="utf-8")
 
 
-def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None) -> str:
+def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None,
+                      last_chapter: "int | None" = None) -> str:
     """The blind reader's copy (spec §5): chapters only, in story order, with the
     Solution/Threads sections, wiring lines, question ids, and drafting machinery
     stripped BY CONSTRUCTION — blindness is not an instruction to an agent.
@@ -167,7 +168,13 @@ def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None) -> str:
     truncating before it mirrors the real reading experience — a reader guesses
     before the reveal — while keeping the whole sagging-middle span the
     put-down signal needs. When None, all chapters are emitted (current/legacy
-    behaviour)."""
+    behaviour).
+
+    `last_chapter` is the STAGED form (spec 2026-07-30 §4): emit chapters
+    num <= last_chapter, so a caller can cut one chapter short of a protected
+    reveal without pretending that reveal is the book's culprit reveal. The two
+    parameters are mutually exclusive — they express the same cut with different
+    off-by-one conventions, and accepting both would silently apply one."""
     body = strip_frontmatter(text)
     sections = list(HEADING_RE.finditer(body))
     chapters = []
@@ -179,9 +186,15 @@ def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None) -> str:
         end = sections[i + 1].start() if i + 1 < len(sections) else len(body)
         chapters.append((int(cm.group(1)), start, end))
 
-    emitted = [c for c in chapters
-               if reveal_chapter is None or c[0] < reveal_chapter]
-    truncated = reveal_chapter is not None and len(emitted) < len(chapters)
+    if reveal_chapter is not None and last_chapter is not None:
+        raise ValueError(
+            "readers_copy_text: pass reveal_chapter or last_chapter, not both")
+    if last_chapter is not None:
+        emitted = [c for c in chapters if c[0] <= last_chapter]
+    else:
+        emitted = [c for c in chapters
+                   if reveal_chapter is None or c[0] < reveal_chapter]
+    truncated = len(emitted) < len(chapters)
 
     out_lines = ["# Outline — reader's copy"]
     if truncated:
@@ -437,6 +450,41 @@ def readers_copy(book: str, *, repo_root=None) -> Path:
     return dest
 
 
+def readers_copy_staged(book: str, *, repo_root=None) -> list[Path]:
+    """Write one reader's copy per protected reveal (spec 2026-07-30 §4).
+
+    Each stage's copy is CUMULATIVE from chapter 1 and stops one chapter short
+    of that stage's reveal; the final stage is the whole book. Returns the paths
+    in stage order, or [] when the ledger declares no `reveals:` — the caller
+    then falls back to readers_copy() and today's behaviour is untouched."""
+    root = _root(repo_root)
+    reveals = _reveals(book, root)
+    stages = reveal_stages(reveals)
+    if not stages:
+        return []
+    skel = stage_paths(book, root)["chapters"]
+    if not skel.is_file():
+        sys.exit(f"plot_stage: no outline-skeleton for book {book} ({skel})")
+    skel_text = skel.read_text(encoding="utf-8")
+    nums = _chapter_numbers(skel_text)
+    last = max(nums) if nums else 0
+    for r in reveals:
+        if r["reveal_chapter"] > last:
+            sys.exit(
+                f"plot_stage: reveal {r['id']!r} is at chapter "
+                f"{r['reveal_chapter']} but the skeleton's last chapter is "
+                f"{last} for book {book} — that stage cannot be cut")
+    out_dir = root / "output" / f"book-{book}" / "reports"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    written: list[Path] = []
+    for i, bound in enumerate(stages, start=1):
+        dest = out_dir / f"outline-readers-copy-stage-{i}.md"
+        dest.write_text(readers_copy_text(skel_text, last_chapter=bound),
+                        encoding="utf-8")
+        written.append(dest)
+    return written
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Plotting-workshop stage machinery.")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -448,6 +496,10 @@ def main(argv=None) -> int:
     p_sp.add_argument("--from", dest="upstreams", nargs="+", required=True)
     p_rc = sub.add_parser("readers-copy")
     p_rc.add_argument("book")
+    p_rc.add_argument("--staged", action="store_true",
+                      help="one copy per protected reveal (whodunit reveals: "
+                           "block); falls back to the single-cut copy when the "
+                           "ledger declares none")
     args = ap.parse_args(argv)
     if args.cmd == "status":
         rows = stage_status(args.book)
@@ -460,6 +512,13 @@ def main(argv=None) -> int:
         stamp(args.book, args.target, args.upstreams)
         return 0
     if args.cmd == "readers-copy":
+        if args.staged:
+            paths = readers_copy_staged(args.book)
+            if paths:
+                for p in paths:
+                    print(p)
+                return 0
+            print("plot_stage: no reveals: block — writing the single-cut copy")
         print(readers_copy(args.book))
         return 0
     ap.error(f"unknown command {args.cmd!r}")  # pragma: no cover

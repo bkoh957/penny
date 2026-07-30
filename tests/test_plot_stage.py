@@ -3,8 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from scripts.plot_stage import (STAGE_ORDER, next_stage, readers_copy, readers_copy_text,
-                                 reveal_stages, stage_paths, stage_status, stamp, _reveals)
+from scripts.plot_stage import (STAGE_ORDER, next_stage, readers_copy, readers_copy_staged,
+                                 readers_copy_text, reveal_stages, stage_paths, stage_status,
+                                 stamp, _reveals)
 
 
 def _series(tmp_path, book="01"):
@@ -652,3 +653,107 @@ def test_reveal_stages_dedupes_shared_chapter():
     reveals = [{"id": "a", "reveal_chapter": 27, "author_truth": "x"},
                {"id": "b", "reveal_chapter": 27, "author_truth": "y"}]
     assert reveal_stages(reveals) == [26, None]
+
+
+# --- readers_copy_text: staged (last_chapter) vs legacy (reveal_chapter) cut
+
+_SKEL = """---
+book: '01'
+total_chapters: 4
+---
+
+## Chapter 01 — Arrival
+
+### Required Beats
+- Maggie arrives.
+
+- **Hook:** q-start — what is wrong with the studio?
+- **Opens:** q-start
+### Track Movement
+- **M:** Setup.
+
+## Chapter 02 — The Key
+
+### Required Beats
+- An odd early key note surfaces.
+
+## Chapter 03 — The Turn
+
+### Required Beats
+- The case changes shape.
+
+## Chapter 04 — The End
+
+### Required Beats
+- Maggie names the culprit.
+"""
+
+
+def test_readers_copy_text_last_chapter_is_inclusive():
+    out = readers_copy_text(_SKEL, last_chapter=2)
+    assert "## Chapter 02" in out
+    assert "## Chapter 03" not in out
+    assert "Chapters 1–2" in out
+
+
+def test_readers_copy_text_rejects_both_cut_params():
+    with pytest.raises(ValueError):
+        readers_copy_text(_SKEL, reveal_chapter=3, last_chapter=2)
+
+
+def test_readers_copy_text_last_chapter_none_emits_all():
+    out = readers_copy_text(_SKEL, last_chapter=None)
+    assert "## Chapter 04" in out
+    assert "The book continues past this point" not in out
+
+
+def test_readers_copy_text_still_strips_wiring_at_every_cut():
+    for kwargs in ({"last_chapter": 2}, {"last_chapter": None}, {"reveal_chapter": 3}):
+        out = readers_copy_text(_SKEL, **kwargs)
+        assert "**Opens:**" not in out
+        assert "q-start" not in out
+        assert "**M:**" not in out
+
+
+def test_readers_copy_staged_writes_one_file_per_stage(tmp_path):
+    root = _series(tmp_path)
+    _write(root, "input/book-01/outline-skeleton.md", _SKEL)
+    _write(root, "series/whodunit/book-01.yaml",
+           "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n"
+           "reveals:\n- id: turn\n  reveal_chapter: 3\n  author_truth: The case turns.\n")
+    paths = readers_copy_staged("01", repo_root=root)
+    assert [p.name for p in paths] == ["outline-readers-copy-stage-1.md",
+                                       "outline-readers-copy-stage-2.md"]
+    s1 = paths[0].read_text(encoding="utf-8")
+    assert "## Chapter 02" in s1 and "## Chapter 03" not in s1
+    s2 = paths[1].read_text(encoding="utf-8")
+    assert "## Chapter 04" in s2
+
+
+def test_readers_copy_staged_is_cumulative_from_chapter_one(tmp_path):
+    root = _series(tmp_path)
+    _write(root, "input/book-01/outline-skeleton.md", _SKEL)
+    _write(root, "series/whodunit/book-01.yaml",
+           "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n"
+           "reveals:\n- id: turn\n  reveal_chapter: 3\n  author_truth: The case turns.\n")
+    s2 = readers_copy_staged("01", repo_root=root)[1].read_text(encoding="utf-8")
+    assert "## Chapter 01" in s2  # spec §4: cumulative, not just the new chapters
+
+
+def test_readers_copy_staged_returns_empty_without_reveals(tmp_path):
+    root = _series(tmp_path)
+    _write(root, "input/book-01/outline-skeleton.md", _SKEL)
+    _write(root, "series/whodunit/book-01.yaml",
+           "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n")
+    assert readers_copy_staged("01", repo_root=root) == []
+
+
+def test_legacy_readers_copy_unchanged_without_reveals(tmp_path):
+    """Regression pin — the legacy invariant (Global Constraints)."""
+    root = _series(tmp_path)
+    _write(root, "input/book-01/outline-skeleton.md", _SKEL)
+    _write(root, "series/whodunit/book-01.yaml",
+           "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n")
+    dest = readers_copy("01", repo_root=root)
+    assert dest.name == "outline-readers-copy.md"
+    assert dest.read_text(encoding="utf-8") == readers_copy_text(_SKEL, reveal_chapter=4)
