@@ -1,9 +1,10 @@
 # Staged reveal-aware read-back — design
 
 Date: 2026-07-30
-Status: approved (showrunner, 2026-07-30), amended same day on two points — §7 (a clean
-context matters, a second model does not) and §10 (book 01 is repaired at outline level by
-the showrunner via `/plot-book`, not patched by this engine work).
+Status: approved (showrunner, 2026-07-30), amended same day on three points — §7 (a clean
+context matters, a second model does not), §6.1 (findings land as measured, one-change-each
+items in the existing feedback ledger, because the repair is conversational), and §10 (book
+01 is repaired at outline level by working those items, and `/plot-book` is not re-run).
 Supersedes: nothing. Extends the `/plot-book` readback stage
 (`docs/superpowers/specs/2026-07-12-plot-book-workshop-design.md` §7, beside the
 proofreader of its §6) and the reader-simulation property described in
@@ -221,6 +222,73 @@ findings, and the showrunner's existing sign-off is the decision point — uncha
 today, and consistent with the fan's advisory contract. The lock is still readback's last
 act.
 
+### 6.1 Findings land as dispositionable items, not prose
+
+**Decision (showrunner, 2026-07-30): the outline is repaired by working findings one at a
+time in conversation, never by re-running the workshop. So a finding has to be granular and
+measured — a general or vague observation is unusable.**
+
+The markdown table above stays as the at-a-glance view, but it is not the product. Every
+finding is also appended to the **existing** feedback ledger,
+`output/book-NN/reports/outline-feedback.yaml`, via `outline_feedback.py append` with
+`source: fan-audit`. That ledger already provides everything this needs: sequential
+`OF-<n>` ids, a `state:` per item the showrunner owns by hand (`open`/`solved`/`rejected`),
+append-only history, a side-by-side reading view via `render`, and a
+never-blocks-drafting backlog banner via `status`. It is the same surface `/review-outline`
+already writes to, so there is one place to work through and one place to disposition.
+
+**The granularity rule: one item = one change to one chapter.** If a finding implicates six
+chapters, it is split into six items. An audit that emits "the Lisa thread is weak" has
+failed, however true it is, because it cannot be worked one at a time. Each item names its
+chapter, states what the reader did, and proposes the smallest specific repair.
+
+`append_items` currently builds each item from `{source, text, recommendation?}`. It gains
+passthrough of two optional fields so items carry their measurements:
+
+```yaml
+- id: OF-13
+  source: fan-audit
+  pass: 1
+  state: open
+  chapters: [11]
+  metrics: {finding: early, reveal: impersonation, meant_to_land: 15,
+            first_suspected: 11, confidence: 4, gap_chapters: 4}
+  text: >
+    At the end of stage 1 the reader said the story was "about someone pretending
+    to be Maggie" and rated that 4/5 sure, from chapter 11's wrong-voice note.
+    The reveal is not due until chapter 15, so the midpoint arrives four chapters
+    after the reader already had it.
+  recommendation: >
+    Chapter 11: make the note's wrongness a class/handwriting oddity Maggie reads
+    as Lisa's office sloppiness, not a voice that isn't Maggie's.
+```
+
+`chapters` is a list of ints; `metrics` is a flat mapping. Both are optional, both are
+opaque to the ledger — it stores and renders them, it does not interpret them. Existing
+items without them are unaffected, and `/review-outline`'s panel items may use them too
+where a point is chapter-specific.
+
+The measurements per finding type:
+
+| Finding | Metrics |
+|---|---|
+| `early` | `reveal`, `meant_to_land`, `first_suspected`, `confidence` (1–5), `gap_chapters` |
+| `never` | `reveal`, `meant_to_land`, `first_suspected: null`, `confidence: 0` |
+| `predicted` | `stage`, `predicted`, `actual_next`, `reveal`, `meant_to_land` |
+| `drift` | `interest` (1–5), `put_down_risk` (bool) — one item per chapter |
+| `dead-thread` | `stage`, `closed_question`, `still_serviced_in` (chapter list) — the reader stopped wondering, the outline keeps paying |
+
+`dead-thread` is the one that reaches the plumbing complaint from the reader's side: a
+question the reader has closed while chapters 17 and 19 still spend words servicing it is
+exactly a chapter existing for bookkeeping rather than for the story.
+
+**The loop this creates.** Readback is no longer one pass. Read → items → work the open
+items against the outline → re-read to confirm → lock. The outline must be unlocked while
+items are being worked, which it already is: readback's sign-off is what mints the lock,
+and re-locking after edits is the ordinary "delete the lock, re-run `lock-mystery`" path.
+A book may go round this loop as many times as the showrunner wants; the ledger's
+append-only history is the record of what each pass found.
+
 ## 7. A clean context, not a second model
 
 **Decision (showrunner, 2026-07-30): running the fan on the plotting model is
@@ -286,23 +354,29 @@ New deterministic tests (`tests/test_plot_stage.py`, fixtures under `tests/fixtu
   stage, including the final whole-book stage.
 - `lock-mystery --note-skipped` puts the note on the certificate.
 
+- `append_items` passes `chapters` and `metrics` through when present, omits both keys when
+  absent, and never mutates an existing item's `state` (extends the current append tests).
+- `render` shows an item's chapters and metrics without choking on an unknown metric key —
+  the ledger stores them opaquely.
+
 The staged read itself and the audit are LLM work and are **not** unit-testable. Their
-verification is the book-01 re-run in §10.
+verification is the book-01 repair in §10.
 
 ## 10. Book 01 as the proof
 
 Book 01 is the case that produced the failure, so it verifies the fix.
 
-**Decision (showrunner, 2026-07-30): book 01 is repaired at the OUTLINE level, as the
-showrunner's own review and edits combined with a re-run of `/plot-book`.** Not by
-hand-patching identifiers downstream, and not driven by this engine work. The engine ships
-the machinery; the showrunner re-develops the book through the workshop.
+**Decision (showrunner, 2026-07-30): book 01 is repaired at the OUTLINE level, by the
+showrunner working the ledger's findings one at a time in conversation. `/plot-book` is NOT
+re-run.** Regenerating the book would discard the outline the showrunner has already shaped
+and would replace deliberate judgment with a fresh machine pass. The engine ships the
+machinery and the measured findings; the repair is editorial, item by item, per §6.1.
 
-That ordering matters for §3.1's naming rule. The leaking clue ids live in the whodunit
-ledger, which the workshop's **counterplot** stage regenerates via `mystery-planner`. With
-the naming discipline in that agent's contract, a re-run produces neutral ids as a matter
-of course — better than renaming five entries by hand and leaving the generator free to do
-it again. The known leaks a re-run must clear:
+The known leaks the findings must therefore name as individual items — each one a change to
+one chapter or one ledger entry: the clue ids, the q-slug, and the missing `reveals:`
+block. §3.1's naming rule accordingly lands as a rule the showrunner applies while working
+these items, and in `mystery-planner`'s contract so future books get it at generation
+time:
 
 - clue ids `c01-marion-tara-memory`, `c02-lisa-already-met-maggie`,
   `c03-wrong-clay-wrong-hand-vase`, `c09-lisa-note-voice-wrong`,
@@ -311,9 +385,17 @@ it again. The known leaks a re-run must clear:
   carried ch 4 and ch 10, closed ch 24)
 - a `reveals:` block: `impersonation` at 15, `marion-is-tara` at 27
 
-The lock must be re-minted regardless: the current certificate dates 2026-07-28T03:10
-while `outline.md` was modified 2026-07-29T16:31, so it attests to an outline that no
-longer exists.
+**Order of work**, because the staged read cannot stage without the answer key:
+
+1. The showrunner writes the `reveals:` block — `impersonation` at 15, `marion-is-tara` at
+   27. This is a taste call about which turns are protected and cannot be derived.
+2. Delete the lock. It must be re-minted regardless: the current certificate dates
+   2026-07-28T03:10 while `outline.md` was modified 2026-07-29T16:31, so it already
+   attests to an outline that no longer exists.
+3. Run the staged read and the audit. Findings append to the ledger as `fan-audit` items.
+4. Work the open items in conversation, one at a time, editing `outline.md` and the
+   whodunit ledger. Mark each `solved` or `rejected` by hand.
+5. Re-read to confirm, then `lock-mystery`. Repeat 3–5 as needed.
 
 Readback's staged read, as a fresh sub-agent per §7, is the verification.
 
