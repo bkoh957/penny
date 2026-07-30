@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from scripts.plot_stage import (STAGE_ORDER, next_stage, readers_copy, readers_copy_text,
-                                 stage_paths, stage_status, stamp)
+                                 stage_paths, stage_status, stamp, _reveals)
 
 
 def _series(tmp_path, book="01"):
@@ -19,6 +19,62 @@ def _write(root, rel, text="---\n---\nbody\n"):
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(text, encoding="utf-8")
     return p
+
+
+def _whodunit(root, book="01", extra=""):
+    return _write(root, f"series/whodunit/book-{book}.yaml",
+                  "book: '01'\ntotal_chapters: 30\nreveal_chapter: 26\n" + extra)
+
+
+def test_reveals_absent_ledger_returns_empty(tmp_path):
+    root = _series(tmp_path)
+    assert _reveals("01", root) == []
+
+
+def test_reveals_key_absent_returns_empty(tmp_path):
+    root = _series(tmp_path)
+    _whodunit(root)
+    assert _reveals("01", root) == []
+
+
+def test_reveals_parsed_in_order(tmp_path):
+    root = _series(tmp_path)
+    _whodunit(root, extra=(
+        "reveals:\n"
+        "- id: impersonation\n"
+        "  reveal_chapter: 15\n"
+        "  author_truth: Someone used Maggie's identity before she arrived.\n"
+        "  reader_should_think_before:\n"
+        "  - Lisa was abusing property records\n"
+        "- id: marion-is-tara\n"
+        "  reveal_chapter: 27\n"
+        "  author_truth: Marion is Tara.\n"))
+    got = _reveals("01", root)
+    assert [r["id"] for r in got] == ["impersonation", "marion-is-tara"]
+    assert [r["reveal_chapter"] for r in got] == [15, 27]
+    assert got[0]["reader_should_think_before"] == ["Lisa was abusing property records"]
+    assert "reader_should_think_before" not in got[1]
+
+
+@pytest.mark.parametrize("bad,needle", [
+    ("reveals: not-a-list\n", "must be a list"),
+    ("reveals:\n- reveal_chapter: 15\n  author_truth: x\n", "missing 'id'"),
+    ("reveals:\n- id: a\n  author_truth: x\n", "missing 'reveal_chapter'"),
+    ("reveals:\n- id: a\n  reveal_chapter: 15\n", "missing 'author_truth'"),
+    ("reveals:\n- id: a\n  reveal_chapter: nine\n  author_truth: x\n", "not an integer"),
+    ("reveals:\n- id: a\n  reveal_chapter: 1\n  author_truth: x\n", "cannot be chapter 1"),
+    ("reveals:\n- id: a\n  reveal_chapter: 31\n  author_truth: x\n", "beyond total_chapters"),
+    ("reveals:\n- id: a\n  reveal_chapter: 20\n  author_truth: x\n"
+     "- id: b\n  reveal_chapter: 15\n  author_truth: y\n", "not in ascending"),
+    ("reveals:\n- id: a\n  reveal_chapter: 15\n  author_truth: x\n"
+     "- id: a\n  reveal_chapter: 20\n  author_truth: y\n", "duplicate reveal id"),
+])
+def test_reveals_malformed_exits_loud(tmp_path, bad, needle):
+    root = _series(tmp_path)
+    _whodunit(root, extra=bad)
+    with pytest.raises(SystemExit) as exc:
+        _reveals("01", root)
+    assert needle in str(exc.value)
 
 
 def test_stage_order_is_the_spec_order():

@@ -295,6 +295,80 @@ def _reveal_chapter(book: str, root: Path) -> "int | None":
     return rc_int
 
 
+def _reveals(book: str, root: Path) -> list[dict]:
+    """Read the OPTIONAL `reveals:` block from series/whodunit/book-NN.yaml
+    (spec 2026-07-30 §3) — the protected turns the staged reader's copy is cut
+    at, and the answer key the audit measures the reader against.
+
+    Absent ledger, or a ledger with no `reveals:` key, returns [] — that is the
+    normal legacy case and the caller falls back to the single-cut copy. But a
+    block that EXISTS and is malformed exits loud, never open: the same
+    fail-loud-not-open rule _reveal_chapter documents. Silently falling back to
+    one stage would hand the fan a copy that runs past a protected turn while
+    the showrunner believed it was staged."""
+    path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
+    if not path.is_file():
+        return []
+    import yaml  # PyYAML: the whodunit ledger is genuinely nested human data
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        sys.exit(f"plot_stage: malformed whodunit ledger {path}: {exc}")
+    if not isinstance(data, dict):
+        sys.exit(
+            f"plot_stage: whodunit ledger {path} must be a YAML mapping, "
+            f"got {type(data).__name__}")
+    raw = data.get("reveals")
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        sys.exit(f"plot_stage: {path}: 'reveals' must be a list, "
+                 f"got {type(raw).__name__}")
+    total = data.get("total_chapters")
+    total_int = total if isinstance(total, int) and not isinstance(total, bool) else None
+    out: list[dict] = []
+    seen_ids: set[str] = set()
+    prev_ch = 0
+    for i, entry in enumerate(raw, start=1):
+        where = f"{path}: reveals[{i}]"
+        if not isinstance(entry, dict):
+            sys.exit(f"plot_stage: {where} must be a mapping, "
+                     f"got {type(entry).__name__}")
+        rid = entry.get("id")
+        if not isinstance(rid, str) or not rid.strip():
+            sys.exit(f"plot_stage: {where} missing 'id'")
+        rid = rid.strip()
+        if rid in seen_ids:
+            sys.exit(f"plot_stage: {where} duplicate reveal id {rid!r}")
+        seen_ids.add(rid)
+        if "reveal_chapter" not in entry:
+            sys.exit(f"plot_stage: {where} ({rid}) missing 'reveal_chapter'")
+        rc = entry["reveal_chapter"]
+        if not isinstance(rc, int) or isinstance(rc, bool):
+            sys.exit(f"plot_stage: {where} ({rid}) reveal_chapter is not an "
+                     f"integer: {rc!r}")
+        truth = entry.get("author_truth")
+        if not isinstance(truth, str) or not truth.strip():
+            sys.exit(f"plot_stage: {where} ({rid}) missing 'author_truth'")
+        if rc < 2:
+            sys.exit(f"plot_stage: {where} ({rid}) cannot be chapter {rc} — a "
+                     "reveal at chapter 1 leaves its stage with no chapters to "
+                     "read")
+        if total_int is not None and rc > total_int:
+            sys.exit(f"plot_stage: {where} ({rid}) reveal_chapter {rc} is "
+                     f"beyond total_chapters ({total_int})")
+        if rc < prev_ch:
+            sys.exit(f"plot_stage: {where} ({rid}) reveal_chapter {rc} is not "
+                     f"in ascending order (previous was {prev_ch})")
+        prev_ch = rc
+        item = {"id": rid, "reveal_chapter": rc, "author_truth": truth.strip()}
+        hints = entry.get("reader_should_think_before")
+        if isinstance(hints, list) and hints:
+            item["reader_should_think_before"] = [str(h).strip() for h in hints]
+        out.append(item)
+    return out
+
+
 def _chapter_numbers(text: str) -> list[int]:
     body = strip_frontmatter(text)
     return [int(cm.group(1)) for m in HEADING_RE.finditer(body)
