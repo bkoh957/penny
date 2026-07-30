@@ -25,6 +25,22 @@ bible / arc-ledger for continuity.
 `packet_assemble.py` renders it verbatim into every chapter's packet under `## Ledger
 Clues`, falling back to `misleads_toward:` then a named placeholder when it's missing.
 
+**Protected reveals.** Propose a `reveals:` block beside `act_pivots:` — one entry per
+turn the reader must not have early, in ascending `reveal_chapter` order, each with
+`id`, `reveal_chapter`, `author_truth` (one line), and optionally
+`reader_should_think_before` (what the reader should believe instead meanwhile). A book
+has more than one: the culprit reveal that `reveal_chapter` already names is usually the
+LAST of several, and the mid-book turns are the ones that get leaked. `reveal_chapter`
+(singular) keeps its existing meaning and is unaffected.
+
+**Name a clue by what it LOOKS like, never by what it means.** Clue ids and q-slugs are
+rendered verbatim into the chapter packet, which is the drafter's instruction — so
+`c02-lisa-already-met-maggie` at plant chapter 2 tells chapter 2's writer the Act II
+answer, and the scene gets shaped around it even if the word never reaches the page.
+Write `c02-early-key-note`. The true meaning belongs in the clue's `description:` and in
+the reveal's `author_truth`, which carry no label into the packet. Same for questions:
+`q-vase — whose hand made this vase?`, never "who made the false Maggie vase?".
+
 **Discipline:** propose only; the showrunner approves and the command validates +
 locks. `culprit`, `victim`, and every `alibi_grid` suspect must be ids that resolve
 to existing character entities (the lock-time existence gate will block otherwise).

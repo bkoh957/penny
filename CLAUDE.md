@@ -227,6 +227,12 @@ and **never exits nonzero** (it must never block drafting); `append`/`render` fa
 Advisory throughout; if the Codex runtime is unreachable the panel degrades to Claude-only
 and says "independence reduced" — by design, never a halt.
 
+The same ledger also receives the plot workshop's **`fan-audit`** items — the staged
+read-back's measured findings (spec `2026-07-30-staged-reveal-readback-design.md`).
+Items may carry `chapters:` and `metrics:`, stored opaquely; one item is one change to
+one chapter, because the showrunner works them one at a time. `/plot-book`'s readback is
+therefore a **loop** — read, findings, work them, re-read, lock — not a single pass.
+
 Chapter artifacts live under `output/book-NN/chapters/`:
 `ch-MM.draft.md` → `.lineedit.md` → `.copyedit.md` → `.final.md`, plus the review
 sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
@@ -302,9 +308,14 @@ three properties, each with its own justification (spec:
   rubric, one ledger slice, and never another inspector's verdict. Isolation is about
   *whose reasoning* an inspector can see, never about *what is true* — which is why
   `inspector-fairplay` holds the solution and is still isolated.
-- **Reader simulation = the beta reader stays unknowing.** `{ text, persona_file }` only.
-  Not a guardrail: a reader who knows the culprit cannot report that she guessed her in
-  chapter four. Personas are distinct lenses and are **never averaged**; models are the
+- **Reader simulation = the reader stays unknowing, in a clean context.**
+  `{ text, persona_file }` only. Not a guardrail: a reader who knows the culprit cannot
+  report that she guessed her in chapter four. For the OUTLINE fan read the operative
+  property is **isolation, not independence** — `outline-fan` must always be a fresh
+  sub-agent and never run inline in the plotting session, because inherited context
+  defeats any persona; running on the same *model* as the plot is fine and is not
+  recorded as a shortfall (spec `2026-07-30-staged-reveal-readback-design.md` §7).
+  Personas are distinct lenses and are **never averaged**; models are the
   within-persona consensus axis (≥K-of-M via `beta_consensus_k`).
 
 **There is no solution-blindness.** The drafter, outline-expander, outline-reviewer,
@@ -339,8 +350,8 @@ diff review (resume with `--commit`); `auto` commits end-to-end. Likewise `book_
 for `/assemble-book`. Note `panel_size: 1` (fast mode) means a put-down can never reach
 `beta_consensus_k: 2` consensus — expected, not a bug. Optional `plot_model:` routes
 `/plot-book`'s `plot-proposer` and `chapter-weaver` (defaults to `drafting_model`); the
-`outline-fan` prefers any reachable model other than `plot_model`, degrading to
-"independence reduced" rather than halting.
+`outline-fan` prefers any reachable model other than `plot_model`; proceeding on
+`plot_model` when none is reachable is not a degradation and gets no note.
 
 ## Conventions
 

@@ -30,8 +30,16 @@ def test_chapter_weaver_contract():
 
 def test_outline_fan_contract():
     t = _text("outline-fan.md")
-    for phrase in ("reader's copy", "whodunit guess", "put it down",
-                   "outline-fan.md", "never emit any `^BLOCKING:`",
-                   "NOTHING else", "guessed her in chapter four",
-                   "**Independence"):
+    for phrase in (
+        "reader's copy",
+        "fresh sub-agent",              # was: **Independence
+        "**Isolation",                  # the point of the change
+        "outline-fan-stage-K.md",       # was: outline-fan.md
+        "MUST never emit any",          # split from the token below by a line wrap
+        "^BLOCKING:",
+        "Nothing else",                 # was: NOTHING else
+        "reveals:",                     # never shown the answer key
+        "put the book down",            # was: put it down
+        "cannot report whether the surprise works",   # was: guessed her in chapter four
+    ):
         assert phrase in t, phrase

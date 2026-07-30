@@ -79,7 +79,13 @@ Compress:
      ledger clue's `description:` field (falling back to `misleads_toward:`,
      then a placeholder if neither is set), so give every scheduled clue a
      `description:` in series/whodunit/book-NN.yaml. This section carries the
-     AUTHORED anti-spotlight guidance alongside — how the plant must land. -->
+     AUTHORED anti-spotlight guidance alongside — how the plant must land.
+
+     NAME a clue and a q-slug by what it LOOKS like at the chapter where it
+     lands, never by what it turns out to mean — the id is rendered into the
+     packet, which is the drafter's instruction, so a solution-shaped id
+     leaks the reveal into the writing of every chapter that plants it.
+     "early-key-note", not "lisa-already-met-maggie". -->
 - <plant, with anti-spotlight guidance: "must appear ordinary and helpful">
 
 ### Character Knowledge
@@ -100,7 +106,11 @@ Compress:
 <!-- Hook grade comes FIRST on the line, before the q-slug: [cliffhanger] is a turn,
      threat, or revelation that makes the next page involuntary; [promise] is the
      lesser hook — an intention, an appointment, a decision taken, and the right
-     choice for a quieter chapter. A chapter that ends on neither ends on nothing. -->
+     choice for a quieter chapter. A chapter that ends on neither ends on nothing.
+
+     The q-slug and its phrasing travel: the wiring graph matches a question
+     across chapters by slug, so a question named after its own answer leaks
+     for its whole life. Phrase it as the reader would ask it. -->
 
 <!-- Wiring (optional; all-or-nothing per book — see tension_check.py). -->
 - **Because:** <ch NN — which earlier turn forced this chapter; chapter 1 writes: opening>
