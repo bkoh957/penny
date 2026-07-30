@@ -584,13 +584,16 @@ consensus axis (≥K-of-M via `beta_consensus_k`).
 | `/beta-read <path> [--out <dir>]` | book | **non-blocking** |
 
 `scripts/preflight.py` is the one deterministic-gate tool — six subcommands:
-`lock-mystery NN [--waive check-id:"reason"]` (validate fairplay + lexicon + tension, then
-mint — the *only* lock writer), `draft NN MM`, `finalize NN MM`, `clear-dev NN MM`,
-`assemble NN`, `approve-book NN`.
+`lock-mystery NN [--waive check-id:"reason"] [--note-skipped check-id:"reason"]` (validate
+fairplay + lexicon + tension, then mint — the *only* lock writer; `--note-skipped` records
+coverage the certificate must not claim, e.g. a fan read that never happened at all),
+`draft NN MM`, `finalize NN MM`, `clear-dev NN MM`, `assemble NN`, `approve-book NN`.
 
 `scripts/plot_stage.py` runs the workshop's save points: `status NN` (which stage is next,
-what your last edit invalidated), `stamp NN …` (the fingerprints), and `readers-copy NN`
-(the blind fan's copy).
+what your last edit invalidated), `stamp NN …` (the fingerprints), and `readers-copy NN
+[--staged]` (the blind fan's copy — `--staged` writes one copy per protected reveal
+declared in the whodunit ledger's `reveals:` block, falling back to the single-cut copy
+when the ledger declares none).
 
 `scripts/packet_assemble.py NN MM` and `scripts/map_check.py NN MM` are `/map-chapter`'s two
 deterministic halves — see "Map the chapter" above.
@@ -660,8 +663,13 @@ holds certificates.
   whole outline and ask it not to peek. `plot_stage.py readers-copy` *mechanically* removes
   the solution, the wiring, the question ids and the track rows, and truncates before the
   reveal chapter — because the reveal chapter's own summary names the culprit, so no amount
-  of stripping could hide the answer. The fan reads chapters 1..reveal−1, which is exactly
-  what reading is: you guess **before** the ending.
+  of stripping could hide the answer. That single truncation is the *unstaged* case. With
+  `--staged`, the same mechanical strip runs once per protected turn declared in the
+  whodunit ledger's `reveals:` block: each stage's copy is cumulative from chapter 1 and cut
+  one chapter short of that turn, plus a final whole-book stage — so a fan is never handed a
+  copy that runs *past* a mid-book reversal and reports it landed. The fan reads each stage
+  as a fresh sub-agent and is never shown `reveals:` itself, which is exactly what reading
+  is: you guess **before** the turn, not after it.
 - **Cross-model independence is difference, not identity.** `final_read_model` must not
   appear among the chapters' `drafted_by` stamps.
 - **Independent panels are not averaged.** Outline review is side-by-side because

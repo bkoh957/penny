@@ -91,6 +91,97 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+_TOP_LEVEL_ENTRY_RE = re.compile(r"^[^\s#-]")
+
+
+def _strip_reveals_block(text: str) -> str:
+    """Remove the top-level `reveals:` block from raw ledger text, byte-for-byte
+    over everything else (final review C1).
+
+    The whodunit ledger is flat at the top level, so the block runs from the
+    line matching `^reveals:` (column 0) through every following line up to,
+    but not including, the next line that starts a new top-level entry — or
+    EOF. A one-line `reveals: []` is the degenerate case: the very next line
+    is already top-level, so the block is that single line.
+
+    "Starts a new top-level entry" is NOT simply "any non-whitespace at
+    column 0": this repo's own reveals: block (spec 2026-07-30 §3) writes its
+    sequence items unindented — `- id: impersonation` at column 0, same style
+    `clue_schedule:` already uses — so a bare non-whitespace test would treat
+    every list item as ending the block after just one line. A line continues the
+    current block if it is indented (nested content) OR starts with `-` (a
+    block-sequence item); it starts a NEW top-level entry only when neither
+    is true (`_TOP_LEVEL_ENTRY_RE`).
+
+    Lines are removed whole (via str.splitlines(keepends=True) + rejoin),
+    never re-flowed, so blank lines and the trailing newline outside the
+    block are untouched."""
+    lines = text.splitlines(keepends=True)
+    out = []
+    i, n = 0, len(lines)
+    while i < n:
+        line = lines[i]
+        if re.match(r"^reveals:", line):
+            i += 1
+            while i < n and not _TOP_LEVEL_ENTRY_RE.match(lines[i]):
+                i += 1
+            continue
+        out.append(line)
+        i += 1
+    return "".join(out)
+
+
+def _upstream_sha(path: Path) -> str:
+    """The fingerprint for one upstream file.
+
+    The whodunit ledger is the one upstream whose file carries content for TWO
+    different stages: the clue schedule feeds `chapters` (change it and the
+    chapters carrying those clues must be rewoven), while `reveals:` feeds only
+    readback. Hashing the whole file would make declaring a protected turn look
+    like a clue-schedule edit and send /plot-book back to chapter regeneration —
+    the feature's own activation path undoing the book (final review C1).
+
+    So for that file the fingerprint is taken over the ledger with `reveals:`
+    removed. Every other upstream keeps the plain file hash.
+
+    **Detect structurally, strip textually.** `yaml.safe_load` answers only
+    "does this ledger have a top-level `reveals:` key?" — parsing (rather than
+    a raw substring search) is what keeps a `description:` that happens to
+    mention the word "reveals" from being mistaken for the block. But the
+    REMOVAL itself is done on the raw text (`_strip_reveals_block`), never by
+    re-serialising the parsed dict through `yaml.safe_dump`: a round-trip
+    reformats the WHOLE file (PyYAML reorders keys under `sort_keys=True`,
+    reflows quoting/wrapping) and changes the hash of content that never
+    changed. That would just relocate the false-staleness bug from "reveals:
+    exists at all" to "reveals: is declared for the first time on an
+    already-stamped book" — book 01's actual next step (spec §10) — instead of
+    eliminating it. Text-level removal keeps every other byte identical, so:
+    - absent `reveals:` → returns `_sha(path)`, byte-identical to today (every
+      already-stamped book that never uses this feature is untouched).
+    - `reveals:` added for the first time to an already-stamped ledger →
+      stripping it back out reproduces the ORIGINAL bytes exactly (assuming
+      nothing else changed), so the fingerprint does not move and `chapters`
+      does not go stale. This is the whole point: there is no one-time
+      migration cost, because nothing is ever re-serialised.
+    - editing content outside `reveals:` (e.g. `clue_schedule`) still changes
+      the stripped text, so `chapters` still correctly goes stale.
+
+    Used on BOTH sides of the fingerprint (stamp() writes it, _stage_stale()
+    compares against it) — both must agree or the comparison never matches.
+    """
+    if path.parent.name == "whodunit":
+        text = path.read_text(encoding="utf-8")
+        try:
+            import yaml  # PyYAML: only to detect whether reveals: exists
+            data = yaml.safe_load(text)
+        except Exception:
+            return _sha(path)   # malformed: fall back; _reveals fails loud elsewhere
+        if isinstance(data, dict) and "reveals" in data:
+            stripped = _strip_reveals_block(text)
+            return hashlib.sha256(stripped.encode("utf-8")).hexdigest()
+    return _sha(path)
+
+
 def _root(repo_root) -> Path:
     return Path(repo_root) if repo_root is not None else penny_paths.series_root()
 
@@ -106,6 +197,12 @@ def stage_paths(book: str, root: Path) -> dict:
     return {"material": plot / "material.md", "premise": plot / "premise.md",
             "ending": plot / "ending.md", "turning-points": plot / "turning-points.md",
             "counterplot": out / "mystery-solution.md", "chapters": skel,
+            # readback writes one report PER STAGE (outline-fan-stage-K.md), so
+            # there is no single canonical filename any more — this entry's
+            # ".parent" is the only part callers use (stage_status globs
+            # "outline-fan*.md" under it); the "outline-fan.md" filename itself
+            # is kept only as the human-readable hint in the "missing" detail
+            # line printed when no report exists yet.
             "weave": skel, "readback": out / "reports" / "outline-fan.md",
             "whodunit": root / "series" / "whodunit" / f"book-{book}.yaml"}
 
@@ -124,7 +221,7 @@ def _stage_stale(name: str, path: Path, paths: dict) -> list[str]:
             if up == "material" and not upath.is_file():
                 continue  # absent material is a legitimate blank start
             stale.append(f"{field} unstamped")
-        elif not upath.is_file() or _sha(upath) != recorded:
+        elif not upath.is_file() or _upstream_sha(upath) != recorded:
             stale.append(f"{field} mismatch")
     return stale
 
@@ -179,7 +276,7 @@ def stamp(book: str, target, upstreams, *, repo_root=None) -> None:
         text = "---\n---\n\n" + text
     for up in upstreams:
         upp = Path(up)
-        text = write_frontmatter_field(text, f"built_from_{upp.stem}", _sha(upp))
+        text = write_frontmatter_field(text, f"built_from_{upp.stem}", _upstream_sha(upp))
     p.write_text(text, encoding="utf-8")
 
 

@@ -340,6 +340,14 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
     # current use is a fan read that did not happen at all — a same-model read
     # is NOT a shortfall and gets no note, because what a reader's credibility
     # rests on is a clean context, not a second model.
+    #
+    # FINAL REVIEW M12: unlike --waive below, --note-skipped accepts any
+    # check-id with no vocabulary check against a known set of checks. That
+    # asymmetry is deliberate, not an oversight: a waiver that "matched no
+    # finding" would silently claim credit for a check that never fired, so it
+    # must be validated and reported when it doesn't line up. A skip note only
+    # ever REDUCES claimed coverage — there is no failure mode where a bogus
+    # check-id here makes the certificate claim more than it should.
     for raw in (note_skipped or []):
         cid, sep, why = str(raw).partition(":")
         if not sep or not cid.strip() or not why.strip():

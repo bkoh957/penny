@@ -36,7 +36,12 @@ bonus, not the claim — if none is reachable, proceed on `plot_model` and say s
 neutrally in the header. Do not write "independence reduced": it is not.
 
 **Output:** `output/book-NN/reports/outline-fan-stage-K.md`, header carrying
-`stage: K`, `context: fresh sub-agent`, and the model id. Then, in this order:
+`stage: K`, `context: fresh sub-agent`, and the model id. **On an unstaged book**
+(you were given `outline-readers-copy.md`, not a `-stage-K` copy) treat that as
+stage 1 and write `outline-fan-stage-1.md` — never the unsuffixed
+`outline-fan.md`; the runbook's stamp loop only ever globs `-stage-*` files, so
+anything else is invisible to it and readback would never register as done.
+Then, in this order:
 
 1. **What is this story about right now?** One sentence — the question actually live
    in your head as you stop reading.

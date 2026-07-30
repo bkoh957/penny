@@ -5,7 +5,7 @@ import pytest
 
 from scripts.plot_stage import (STAGE_ORDER, next_stage, readers_copy, readers_copy_staged,
                                  readers_copy_text, reveal_stages, stage_paths, stage_status,
-                                 stamp, _reveals)
+                                 stamp, _reveals, _sha, _upstream_sha)
 
 
 def _series(tmp_path, book="01"):
@@ -153,6 +153,120 @@ def test_stage_order_unaffected_by_whodunit_upstream_addition():
     assert STAGE_ORDER == ["premise", "ending", "turning-points", "counterplot",
                            "chapters", "weave", "readback"]
     assert "whodunit" not in STAGE_ORDER
+
+
+# --- FINAL REVIEW C1 (Critical, RULING): declaring reveals: must not send
+# /plot-book back to chapter regeneration — only the clue schedule is a real
+# upstream of "chapters"; reveals: feeds only readback. ----------------------
+
+def _chapters_ready(root, book="01"):
+    """Stamp every stage through "chapters" (incl. the whodunit ledger, per
+    FINDING 3), so the returned whodunit path can be edited to isolate what
+    that edit does to the "chapters" verdict."""
+    prem = _write(root, f"input/book-{book}/plot/premise.md")
+    end = _write(root, f"input/book-{book}/plot/ending.md")
+    tp = _write(root, f"input/book-{book}/plot/turning-points.md")
+    sol = _write(root, f"output/book-{book}/mystery-solution.md")
+    wd = _whodunit(root, book=book)
+    skel = _write(root, f"input/book-{book}/outline-skeleton.md",
+                  "---\nwoven: true\n---\n## Chapter 01 — A\n")
+    stamp(book, end, [prem], repo_root=root)
+    stamp(book, tp, [prem, end], repo_root=root)
+    stamp(book, sol, [end, tp], repo_root=root)
+    stamp(book, skel, [tp, sol, wd], repo_root=root)
+    return wd
+
+
+def test_declaring_reveals_leaves_next_stage_unchanged(tmp_path):
+    """Regression pin for C1: writing a reveals: block onto an already-stamped
+    ledger must not make "chapters" go stale — next_stage() must not step
+    backwards to "chapters"."""
+    root = _series(tmp_path)
+    wd = _chapters_ready(root)
+    rows = stage_status("01", repo_root=root)
+    assert dict((n, s) for n, s, _ in rows)["chapters"] == "done"
+
+    wd.write_text(wd.read_text(encoding="utf-8") + (
+        "reveals:\n"
+        "- id: impersonation\n"
+        "  reveal_chapter: 15\n"
+        "  author_truth: Someone used Maggie's identity before she arrived.\n"
+    ), encoding="utf-8")
+
+    rows = stage_status("01", repo_root=root)
+    assert dict((n, s) for n, s, _ in rows)["chapters"] == "done"
+    assert next_stage(rows) != "chapters"
+
+
+def test_editing_clue_schedule_still_makes_chapters_stale(tmp_path):
+    """The link that must survive C1's fix: the clue schedule genuinely feeds
+    chapter-weaver, so editing it (unlike editing reveals:) must still make
+    "chapters" stale."""
+    root = _series(tmp_path)
+    wd = _chapters_ready(root)
+    assert dict((n, s) for n, s, _ in stage_status("01", repo_root=root))["chapters"] == "done"
+
+    wd.write_text(wd.read_text(encoding="utf-8") + (
+        "clue_schedule:\n- id: c01-early-key-note\n  chapter: 2\n"
+    ), encoding="utf-8")
+
+    rows = stage_status("01", repo_root=root)
+    assert dict((n, s) for n, s, _ in rows)["chapters"] == "stale"
+
+
+def test_upstream_sha_without_reveals_key_is_the_plain_file_hash(tmp_path):
+    """Pins the no-op path that keeps every already-stamped book valid: a
+    ledger with no reveals: key must fingerprint identically to _sha (never
+    a re-serialised path)."""
+    root = _series(tmp_path)
+    wd = _whodunit(root)
+    assert _upstream_sha(wd) == _sha(wd)
+
+
+def test_declaring_reveals_in_the_middle_of_the_ledger_leaves_chapters_done(tmp_path):
+    """Text-level stripping, not a yaml.safe_dump round-trip, is what makes
+    C1's fix work — and inserting reveals: BETWEEN two existing keys (not
+    just appending at EOF) is the case most likely to break line-boundary
+    logic. Stripping the inserted block should restore the original bytes
+    exactly, same as the append case."""
+    root = _series(tmp_path)
+    book = "01"
+    prem = _write(root, f"input/book-{book}/plot/premise.md")
+    end = _write(root, f"input/book-{book}/plot/ending.md")
+    tp = _write(root, f"input/book-{book}/plot/turning-points.md")
+    sol = _write(root, f"output/book-{book}/mystery-solution.md")
+    wd = _write(root, f"series/whodunit/book-{book}.yaml",
+                "book: '01'\n"
+                "total_chapters: 30\n"
+                "clue_schedule:\n"
+                "- id: c01-early-key-note\n"
+                "  chapter: 2\n"
+                "reveal_chapter: 26\n")
+    skel = _write(root, f"input/book-{book}/outline-skeleton.md",
+                  "---\nwoven: true\n---\n## Chapter 01 — A\n")
+    stamp(book, end, [prem], repo_root=root)
+    stamp(book, tp, [prem, end], repo_root=root)
+    stamp(book, sol, [end, tp], repo_root=root)
+    stamp(book, skel, [tp, sol, wd], repo_root=root)
+    assert dict((n, s) for n, s, _ in stage_status(book, repo_root=root))["chapters"] == "done"
+
+    # Insert reveals: between total_chapters: and clue_schedule:, not at EOF.
+    wd.write_text(
+        "book: '01'\n"
+        "total_chapters: 30\n"
+        "reveals:\n"
+        "- id: impersonation\n"
+        "  reveal_chapter: 15\n"
+        "  author_truth: Someone used Maggie's identity before she arrived.\n"
+        "clue_schedule:\n"
+        "- id: c01-early-key-note\n"
+        "  chapter: 2\n"
+        "reveal_chapter: 26\n",
+        encoding="utf-8")
+
+    rows = stage_status(book, repo_root=root)
+    assert dict((n, s) for n, s, _ in rows)["chapters"] == "done"
+    assert next_stage(rows) != "chapters"
 
 
 def test_stamp_creates_frontmatter_if_absent(tmp_path):
@@ -761,17 +875,23 @@ def test_legacy_readers_copy_unchanged_without_reveals(tmp_path):
 
 def _readback_ready(root, book="01"):
     """A book whose earlier stages are all done, so stage_status's verdict on
-    readback is the only thing under test."""
+    readback is the only thing under test.
+
+    T7-deferred (final review): this must stamp the whodunit ledger too, since
+    "chapters" (final review FINDING 3 / C1) counts it as a real upstream —
+    without it "chapters" itself reads "stale" and the docstring's claim would
+    be false, even though every test below only asserts on "readback"."""
     skel = _write(root, f"input/book-{book}/outline-skeleton.md",
                   "---\nwoven: true\n---\n## Chapter 01 — A\n")
     prem = _write(root, f"input/book-{book}/plot/premise.md")
     end = _write(root, f"input/book-{book}/plot/ending.md")
     tp = _write(root, f"input/book-{book}/plot/turning-points.md")
     sol = _write(root, f"output/book-{book}/mystery-solution.md")
+    wd = _whodunit(root, book=book)
     stamp(book, end, [prem], repo_root=root)
     stamp(book, tp, [prem, end], repo_root=root)
     stamp(book, sol, [end, tp], repo_root=root)
-    stamp(book, skel, [tp, sol], repo_root=root)
+    stamp(book, skel, [tp, sol, wd], repo_root=root)
     return skel
 
 

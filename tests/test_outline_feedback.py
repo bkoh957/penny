@@ -173,6 +173,41 @@ def test_cli_append_writes_ledger_and_view(tmp_path):
                                    "state": "open", "text": "new concern"}
 
 
+def test_cli_append_with_source_leaves_reviewed_sha_untouched(tmp_path):
+    """FINAL REVIEW I6: at /plot-book's fan-audit stage the reviewed artifact is
+    outline-skeleton.md, not outline.md (which may not exist yet). --source
+    marks the append as non-panel: reviewed_outline_sha256 must not be
+    restamped from outline.md at all, whether that means clearing an earned
+    staleness warning (book 01) or falsely inventing one (a fresh book)."""
+    _write_ledger(tmp_path, "01", {
+        "book": "01", "reviewed_outline_sha256": "panel-earned-sha", "items": []})
+    points = tmp_path / "pts.json"
+    points.write_text(of.json.dumps([{"source": "fan-audit", "text": "ch11 too early"}]),
+                       encoding="utf-8")
+
+    rc = of.main(["append", "01", "--points", str(points), "--root", str(tmp_path),
+                  "--source", "input/book-01/outline-skeleton.md"])
+    assert rc == 0
+
+    ledger = of.load_ledger("01", repo_root=tmp_path)
+    assert ledger["reviewed_outline_sha256"] == "panel-earned-sha"
+    assert [it["id"] for it in ledger["items"]] == ["OF-1"]
+
+
+def test_cli_append_without_source_behaves_as_today(tmp_path):
+    _write_outline(tmp_path, "01", "the outline body")
+    points = tmp_path / "pts.json"
+    points.write_text(of.json.dumps([{"source": "claude", "text": "romance thin"}]),
+                       encoding="utf-8")
+
+    rc = of.main(["append", "01", "--points", str(points), "--root", str(tmp_path)])
+    assert rc == 0
+
+    ledger = of.load_ledger("01", repo_root=tmp_path)
+    assert ledger["reviewed_outline_sha256"] == of.sha256_of(
+        tmp_path / "input" / "book-01" / "outline.md")
+
+
 def test_append_missing_points_exits_nonzero(tmp_path):
     # append is operator-driven, not the advisory /draft-chapter banner — a bad
     # invocation (no --points) must propagate as a nonzero exit, not be swallowed
@@ -388,3 +423,15 @@ def test_render_shows_chapters_and_unknown_metrics():
     view = of.render_view(led)
     assert "ch 17, 19" in view
     assert "some_future_key=value" in view
+
+
+def test_render_shows_none_metric_as_em_dash():
+    """M13: a `never` finding's first_suspected is legitimately None (spec
+    §6.1) — must render as "—", never the literal string "None"."""
+    led = of.append_items(_seed(), [{
+        "source": "fan-audit", "text": "Never suspected.",
+        "metrics": {"finding": "never", "first_suspected": None, "confidence": 0},
+    }], reviewed_sha="abc")
+    view = of.render_view(led)
+    assert "first_suspected=—" in view
+    assert "first_suspected=None" not in view

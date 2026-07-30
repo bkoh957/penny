@@ -164,8 +164,11 @@ def render_view(ledger) -> str:
             mets = it.get("metrics")
             if isinstance(mets, dict) and mets:
                 # Rendered generically so an unrecognised metric key still shows.
+                # M13: a `never` finding's first_suspected is legitimately None
+                # (spec §6.1) — render it as "—" rather than the literal string
+                # "None" in a document the showrunner reads.
                 lines.append("  _" + " · ".join(
-                    f"{k}={v}" for k, v in mets.items()) + "_")
+                    f"{k}={'—' if v is None else v}" for k, v in mets.items()) + "_")
             rec = it.get("recommendation")
             if isinstance(rec, str) and rec.strip():
                 lines.append(f"  **→** {rec.strip()}")
@@ -187,12 +190,24 @@ def write_ledger(ledger, book, repo_root=None) -> None:
     p.write_text(yaml.safe_dump(ledger, sort_keys=False, allow_unicode=True), encoding="utf-8")
 
 
-def _cli_append(book, points_path, root):
+def _cli_append(book, points_path, root, source=None):
     if not points_path:
         raise SystemExit("append: --points <json-file> is required")
     new_points = json.loads(Path(points_path).read_text(encoding="utf-8"))
-    reviewed_sha = sha256_of(outline_src_path(book, repo_root=root))
-    ledger = append_items(load_ledger(book, repo_root=root), new_points, reviewed_sha=reviewed_sha)
+    ledger_before = load_ledger(book, repo_root=root)
+    if source:
+        # FINAL REVIEW I6: --source marks a non-panel append (e.g. /plot-book's
+        # fan-audit, which reviews outline-skeleton.md, not outline.md — the
+        # file this sha normally stamps). Leave reviewed_outline_sha256
+        # exactly as it was: a source that never reviewed outline.md must not
+        # claim to have, either by re-stamping it to the current sha (which
+        # would silently clear a staleness warning no panel review earned) or
+        # by stamping it "" (which would falsely flag outline.md as changed
+        # the moment it is first written).
+        reviewed_sha = ledger_before.get("reviewed_outline_sha256", "")
+    else:
+        reviewed_sha = sha256_of(outline_src_path(book, repo_root=root))
+    ledger = append_items(ledger_before, new_points, reviewed_sha=reviewed_sha)
     write_ledger(ledger, book, repo_root=root)
     _cli_render(book, root)
     print(f"appended {len(new_points)} item(s) to book-{book} outline ledger")
@@ -205,6 +220,11 @@ def main(argv=None) -> int:
     ap.add_argument("--root", default=None, help="repo/series root override (tests)")
     ap.add_argument("--points", help="append: path to a JSON array of "
                                      "{source,text,recommendation?,chapters?,metrics?}")
+    ap.add_argument("--source", default=None,
+                     help="append: path of the artifact this pass actually reviewed "
+                          "(e.g. outline-skeleton.md, not outline.md); when given, "
+                          "reviewed_outline_sha256 is left untouched rather than "
+                          "re-stamped from outline.md")
     # NOTE: argparse usage errors (missing `book`, `cmd` outside choices) still exit 2
     # here via parse_args — that's a mis-written invocation, not a showrunner runtime
     # state, so it is deliberately NOT suppressed. The exit-0 guarantee below covers
@@ -223,7 +243,7 @@ def main(argv=None) -> int:
     elif args.cmd == "render":
         _cli_render(args.book, root)
     elif args.cmd == "append":
-        _cli_append(args.book, args.points, root)
+        _cli_append(args.book, args.points, root, source=args.source)
     return 0
 
 

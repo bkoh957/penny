@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 A = Path("agents")
@@ -35,11 +36,21 @@ def test_outline_fan_contract():
         "fresh sub-agent",              # was: **Independence
         "**Isolation",                  # the point of the change
         "outline-fan-stage-K.md",       # was: outline-fan.md
-        "MUST never emit any",          # split from the token below by a line wrap
-        "^BLOCKING:",
         "Nothing else",                 # was: NOTHING else
         "reveals:",                     # never shown the answer key
         "put the book down",            # was: put it down
         "cannot report whether the surprise works",   # was: guessed her in chapter four
+        # FINAL REVIEW: nothing pinned the two questions this whole spec
+        # exists to add — the load-bearing ones that measure whether the
+        # trapdoor is visible from outside and whether a thread died on the
+        # page (2026-07-30-staged-reveal-readback-design.md §5).
+        "What do you expect the next big turn to be?",
+        "What have you stopped wondering about?",
     ):
         assert phrase in t, phrase
+    # was: two disjoint pins, "MUST never emit any" + "^BLOCKING:" — two
+    # SEPARATE sentences could each satisfy one half, silently weakening the
+    # pin. Pin the whole sentence as one whitespace-tolerant regex instead so
+    # a reflow (e.g. a line wrap moving the backtick token) still matches but
+    # the sentence itself can't be split apart from the token it constrains.
+    assert re.search(r"MUST never emit any\s+`\^BLOCKING:`", t)

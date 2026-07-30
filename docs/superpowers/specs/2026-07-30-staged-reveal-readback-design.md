@@ -209,8 +209,17 @@ Findings are named for the showrunner's eye, not for an exit code:
 
 - **`early`** — the reader named the reveal, with confidence ≥3, in a stage that closes
   before its `reveal_chapter`.
-- **`never`** — the reveal is not suspected in any stage that closes at or after its
-  `reveal_chapter`. The fairness end of the dial.
+- **`never`** — in the stage closing immediately before its `reveal_chapter`, the reader
+  does not name the reveal at all. The fairness end of the same dial: `early` is that
+  stage naming it with confidence ≥3; `never` is that stage not reaching it.
+
+  (RULING, final review I4: the earlier wording — "not suspected in any stage closing at
+  or after its `reveal_chapter`" — cannot fire. Stage boundaries are `r₁−1, …, r_k−1, T`,
+  so every stage closing at or after `r_i` **contains chapter `r_i`**, meaning the reader
+  has already read the reveal on the page by the time that stage closes; a reader who
+  "never suspects it" in such a stage cannot be observed at all. Measuring it one stage
+  earlier — the same stage `early` reads — is what makes the fairness end of the dial
+  actually readable.)
 - **`predicted`** — the reader's "next big turn" for stage K is the reveal that stage K+1
   contains. The sharpest form of `early`.
 

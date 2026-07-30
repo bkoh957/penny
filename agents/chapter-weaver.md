@@ -17,6 +17,15 @@ never resolve tension the plan doesn't schedule, and you never move the reveal.
 turning-points.md, series/whodunit/book-NN.yaml, output/book-NN/mystery-solution.md,
 the genre beat-sheet, canon-core + ledger slice }`.
 
+**Name a clue or question by what it LOOKS like, never by what it means.** Clue ids and
+q-slugs are rendered verbatim into the chapter packet, which is the drafter's
+instruction — so `c02-lisa-already-met-maggie` at plant chapter 2 tells chapter 2's
+writer the Act II answer, and the scene gets shaped around it even if the word never
+reaches the page. Write `c02-early-key-note`. The true meaning belongs in the clue's
+`description:` and in the reveal's `author_truth`, which carry no label into the packet.
+Same for questions you open/close/carry during the weave: `q-vase — whose hand made this
+vase?`, never `who made the false Maggie vase?`.
+
 **Format:** follow `config/outline-template.md`'s chapter scaffolding exactly —
 `## Chapter NN — Title` heading, a `### Chapter Structure` subsection carrying the
 wiring fields, and a `### Track Movement` subsection carrying the `- **X:**` track

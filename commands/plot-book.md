@@ -100,7 +100,7 @@ state; this command never asks you anything a file already answers.
 
    **No lock here** — the lock is stage readback's last act (validate once,
    then freeze). Do not run `lock-mystery` at this stage; it runs exactly
-   once, at the end of step 8.
+   once, at step 9.
 
 6. **Stage chapters:** for each gap between consecutive turning points, dispatch
    `chapter-weaver` (fill pass; pass `model:` = `plot_model` from
@@ -141,6 +141,15 @@ state; this command never asks you anything a file already answers.
    ```bash
    echo "book=$book stage=PLOT-READBACK" > .penny/current-stage
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" readers-copy $book --staged
+   # Clear stale fan reports BEFORE dispatching, so what is on disk always
+   # matches the stages the ledger currently declares. `plot_stage.py status`
+   # counts EVERY outline-fan*.md under this glob: a report left over from a
+   # previous shape — a legacy single-file read, or a stage that no longer
+   # exists because a reveal was removed — would either deadlock readback
+   # (the stamp loop in step 9 only ever writes outline-fan-stage-*.md, never
+   # the legacy outline-fan.md) or be silently miscounted as coverage for a
+   # stage that isn't being read this pass (final review I2).
+   rm -f output/book-$book/reports/outline-fan*.md
    ```
 
    `--staged` writes one reader's copy per protected reveal declared in the whodunit
@@ -178,8 +187,9 @@ state; this command never asks you anything a file already answers.
    Name findings:
    - **`early`** — the reader named the reveal, confidence ≥3, in a stage closing before
      its `reveal_chapter`.
-   - **`never`** — not suspected in any stage closing at or after its `reveal_chapter`.
-     The fairness end of the same dial: too early is boring, never is a cheat.
+   - **`never`** — in the stage closing immediately before its `reveal_chapter`, the
+     reader does not name the reveal at all. The fairness end of the same dial: `early`
+     is that stage naming it with confidence ≥3; `never` is that stage not reaching it.
    - **`predicted`** — the reader's "next big turn" for stage K is what stage K+1
      contains. The sharpest form of `early`.
    - **`drift`** — a chapter scored ≤3 for interest, or named as a put-down point.
@@ -192,13 +202,22 @@ state; this command never asks you anything a file already answers.
    true it is, because the showrunner cannot sit down and fix it.
 
    Write a JSON array of
-   `{source: "fan-audit", text, recommendation?, chapters?, metrics?}` to a temp file,
-   then:
+   `{source: "fan-audit", text, recommendation?, chapters?, metrics?}` to
+   `output/book-$book/reports/.fan-audit-points.json` (book-scoped — a fixed `/tmp` path
+   would collide across two concurrently-worked books), then:
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/outline_feedback.py" append $book \
-     --points /tmp/fan-audit-points.json
+     --points output/book-$book/reports/.fan-audit-points.json \
+     --source input/book-$book/outline-skeleton.md
    ```
+
+   `--source` matters here: at this stage the reviewed artifact is `outline-skeleton.md`,
+   not `outline.md` (that file doesn't exist yet). Passing it leaves
+   `reviewed_outline_sha256` untouched instead of either stamping it blank (which would
+   later mislabel a freshly-written `outline.md` as "changed since review") or silently
+   re-stamping it to current (which would clear a staleness warning no panel review
+   earned) — final review I6.
 
    Metrics per finding type: `early` → `finding, reveal, meant_to_land,
    first_suspected, confidence, gap_chapters`; `never` → `finding, reveal,
@@ -226,8 +245,8 @@ state; this command never asks you anything a file already answers.
    open-question ledger, hook chain, chapter coverage).
 
    Present the audit, the open ledger items, and the tension findings side by side. The
-   showrunner either works the open items (editing `outline.md` and the whodunit ledger,
-   marking each `solved`/`rejected` by hand in
+   showrunner either works the open items (editing `outline-skeleton.md` and the whodunit
+   ledger, marking each `solved`/`rejected` by hand in
    `output/book-$book/reports/outline-feedback.yaml`) and comes back round this stage,
    or signs off. Nothing here blocks: the audit has no exit code and the fan holds no
    gate. The showrunner's sign-off is the decision point, as before.
