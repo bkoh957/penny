@@ -14,7 +14,10 @@ the series bible, canon-core, and (if present) the arc-ledger. The outline's own
 one panel member who does not see the other's take this pass — not ignorance of the book.
 
 **Inputs:** `{ whole outline.md (including its ## Solution block),
-genres/<g>/review-rubrics/outline-craft.md, series bible, canon-core, arc-ledger
+genres/<g>/review-rubrics/outline-craft.md, optional review lenses
+(genres/<g>/archetype.md for the genre-promise pass,
+genres/<g>/review-rubrics/macro-structure.md) when the genre
+pack ships them, series bible, canon-core, arc-ledger
 (optional), the current feedback ledger (for dedup), optional --focus directive }`.
 
 **Hard constraints:**
@@ -47,7 +50,15 @@ For each chapter ask:
 **Instructions:**
 1. Read the rubric's coverage areas. Read the whole outline as an arc.
 2. Address every coverage area in prose. If `--focus` is set, weight it heavily in addition.
-3. Produce your feedback as a JSON array of objects `{ "text": "<one focused prose point>" }`
+3. For each optional lens you were given (the genre `archetype.md` as the genre-promise
+   pass, `macro-structure.md`), run a
+   **separate diagnostic pass** following that lens's own "Use in an AI Review Pass"
+   section: material weaknesses only, each with its reader consequence, the beats it cites,
+   and the smallest story-specific repair. Never sweep clause-by-clause for compliance —
+   the lenses diagnose missing *functions*, not deviations from a template. Open each such
+   point's `text` with `[genre-promise]` or `[macro-structure]` so the ledger stays
+   traceable to the pass that produced it.
+4. Produce your feedback as a JSON array of objects `{ "text": "<one focused prose point>" }`
    — one object per discrete point (quote the beat + name the gap + a concrete move).
    Add a `recommendation` field only when you are recommending a change: `text` carries the
    observation, `recommendation` carries the fix you propose. Omitting it is a legitimate

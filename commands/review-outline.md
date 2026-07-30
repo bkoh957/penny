@@ -20,6 +20,13 @@ feedback as ID'd items you can disposition. Advisory — nothing here blocks dra
    its `review-rubrics/outline-craft.md`. If the active genre pack ships no `outline-craft.md`,
    abort: this tier needs the rubric.
 
+   Also collect the **optional review lenses** if the pack ships them: the pack's own
+   `archetype.md` (the genre-promise pass — does the outline deliver the genre's reader
+   promise; the same file `/plot-book` builds against, so plot and review judge one text)
+   and `review-rubrics/macro-structure.md` (act movement, escalation, information flow).
+   Each is a self-contained diagnostic pass with its own "Use in an AI Review Pass"
+   section. Absence is normal — older genre packs ship neither; never an error.
+
 3. **Marker:**
    ```bash
    mkdir -p .penny && echo "book=$1 stage=OUTLINE-REVIEW" > .penny/current-stage
@@ -33,10 +40,15 @@ feedback as ID'd items you can disposition. Advisory — nothing here blocks dra
    `output/book-$1/reports/outline-feedback.yaml`.
 
 6. **Dispatch each panel member independently, with identical inputs** (whole
-   `input/book-$1/outline.md`, the genre `outline-craft.md`, `input/series/series-bible.md`,
-   `series/continuity/canon-core.md`, `series/arc-ledger.md` if present, the current ledger
-   for dedup, and the `--focus` directive if given). The outline includes its own
-   `## Solution` block; panel members reason about the whole book.
+   `input/book-$1/outline.md`, the genre `outline-craft.md`, the optional lenses collected
+   in step 2, `input/series/series-bible.md`, `series/continuity/canon-core.md`,
+   `series/arc-ledger.md` if present, the current ledger for dedup, and the `--focus`
+   directive if given). The outline includes its own `## Solution` block; panel members
+   reason about the whole book. Instruct each member to run every supplied lens as a
+   **separate diagnostic pass** per that lens's own "Use in an AI Review Pass" section —
+   material issues only, never a clause-by-clause compliance sweep — and to open a point's
+   `text` with `[genre-promise]` or `[macro-structure]` when it arises from a lens, so
+   dispositions in the ledger stay traceable to their pass.
    - `claude` → dispatch the `outline-reviewer` sub-agent.
    - `codex` → send the SAME rubric + inputs to the Codex reviewer via the codex plugin
      runtime (independent tool; this is the "difference, not identity" second set of eyes).

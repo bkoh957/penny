@@ -1,295 +1,486 @@
 # Archetypal Cozy Mystery Framework
 
-> Provenance: derived from the YouTube video "How to Write a Cozy Mystery".
-> This is a **reference lens**, not a rulebook and not a checker. Nothing in the engine
-> loads this file. It exists to be read by a human, and to be cited by prompts that help
-> a writer develop a book. Compare a draft outline against it loosely; a book that
-> satisfies every clause mechanically is a formula, not a novel.
+> **Provenance:** Originally derived from the YouTube video *How to Write a Cozy Mystery*;
+> subsequently expanded and refined as a working development reference.
+>
+> **Purpose:** A genre-development lens for cozy mystery outlines and manuscripts.
+> It describes the reader experience a satisfying cozy usually provides. It is not a
+> rulebook, chapter template, four-act structure, or substitute for a separate
+> murder-logic check.
+>
+> Use it to diagnose missing or weak **functions**, not to demand mechanical compliance.
+> A village, baker, pet, craft, or community event does not make a story cozy by itself;
+> each element must affect the mystery, relationships, tone, or restoration.
 
-**Core promise:** A cozy mystery is a murder puzzle inside a safe, charming, socially
-intimate world. The reader wants danger, but not dread; justice, but not nihilism; clues,
-but also community, humour, food, craft, setting, and emotional restoration.
+## Core Promise
 
-The shape is:
+A cozy mystery is a fair-play murder puzzle inside a charming, socially intimate world.
+The reader wants danger without sustained dread; justice without nihilism; and clues
+alongside community, humour, food, craft, place, relationships, and emotional
+restoration.
 
-1. A death disturbs a beloved small world.
-2. An amateur sleuth notices what professionals miss.
-3. Secrets surface.
-4. The community frays.
-5. The sleuth risks belonging by pursuing truth.
-6. The killer is exposed.
-7. Order returns, changed but warmer and more honest.
+The essential movement is:
+
+1. A death wounds a world worth caring about.
+2. A socially embedded amateur notices what formal investigation misses.
+3. The victim's hidden life and the community's private fractures emerge.
+4. The sleuth's pursuit of truth creates social and personal consequences.
+5. The killer is exposed through clues the reader could have interpreted.
+6. Order returns, not untouched, but safer, warmer, and more honest.
+
+---
+
+# I. The Cozy Foundation
 
 ## 1. The Cozy World
 
-The setting is not backdrop. It is the engine.
+The setting is not backdrop. It is a social engine.
 
-Usually: small town, village, island, seaside town, retirement community, inn, craft
-circle, bookshop district, bakery hub. Socially enclosed enough that everyone knows
-everyone. Beautiful or charming enough that readers want to return. Full of routines —
-markets, cafés, shops, clubs, committees, gossip points. Slightly comic in its local
-choreography. Safe-feeling, even with murder in it.
+Common forms include a small town, village, island, seaside community, retirement
+complex, inn, craft circle, market precinct, or neighbourhood centred on a recurring
+institution.
 
-**Reader function:** the world gives pleasure before the crime, pressure during the
-crime, and restoration after the crime. The murder matters because it wounds a place the
-reader already likes.
+The world should be:
+
+- socially enclosed enough that relationships overlap;
+- pleasurable enough that readers want to return;
+- organised around recognisable routines, gathering places, and local rituals;
+- large enough to contain different circles, histories, and secrets;
+- slightly comic in its local choreography;
+- safe-feeling even when safety has been disturbed.
+
+**Reader function:** the world provides pleasure before the crime, pressure during the
+investigation, and restoration afterward. The murder matters because it wounds a place
+the reader has begun to value.
+
+**Strong version:** the setting determines who meets, who observes, who gossips, what can
+be hidden, whom the town protects, and what the community fears losing.
 
 ## 2. The Amateur Sleuth
 
-The protagonist is not a professional detective. Typical forms: baker, bookseller,
-librarian, potter/crafter, innkeeper, florist, retiree, journalist, shop owner, newcomer
-with outsider eyes, overlooked local who knows more than people realise.
+The protagonist is not a professional criminal investigator. They may be a baker,
+bookseller, librarian, potter, florist, innkeeper, journalist, retiree, shop owner,
+newcomer, or overlooked local.
 
-**Core trait:** they have a non-police reason to see the truth. Their skill/hobby/job
-should help the investigation indirectly. They do not solve the case by being a cop. They
-solve it because their ordinary life gives them access, pattern recognition, social
-cover, or unusual expertise.
+Their ordinary identity should provide a credible investigative advantage:
 
-- baker hears gossip
-- librarian understands records
-- potter notices hand habits, objects, use, weight, residue
-- innkeeper sees guests' routines
-- retiree is underestimated
+- **access** — people speak to them or allow them into spaces;
+- **pattern recognition** — their work trains them to notice meaningful differences;
+- **social cover** — they can ask questions without conducting formal interviews;
+- **specialist knowledge** — they understand a material, object, routine, or behaviour;
+- **underestimation** — people reveal more than they intend;
+- **community knowledge** — they recognise relationships and broken routines.
 
-**Character arc:** the sleuth usually moves from underestimated / uncertain / displaced /
-dismissed into agency. They learn: *"I see more than people think, and that matters."*
+They should not solve the murder by imitating an unlicensed police officer. They solve it
+because ordinary life gives them another route to the truth.
 
-## 3. The Victim
+Examples:
 
-The victim is often respected but complicated; disliked by several people; connected to
-old secrets; socially important enough that their death shakes the town; morally messy
-enough to create suspects. Cozy victims are rarely random — they are a pressure point in
-the community.
+- a baker hears conversations before the town is fully awake;
+- a librarian understands records, omissions, and patterns of borrowing;
+- a potter notices hand habits, weight, residue, material, and tool marks;
+- an innkeeper sees routines, absences, private meetings, and performed identities;
+- a retiree is underestimated and has time, memory, and social reach.
 
-The victim's death should reveal hidden resentments, old wrongs, money problems, family
-secrets, romantic betrayals, professional rivalries, shameful history.
+**Character movement:** the sleuth often moves from underestimated, uncertain,
+displaced, or dismissed into earned agency. The deeper realisation is not merely *I can
+solve a murder*, but *my way of seeing has value, and I am willing to act on it*.
 
-**Best cozy victim design:** the town has a public story about the victim; the
-investigation reveals the private story; the truth is more complicated than either saint
-or monster.
+## 3. Community and Belonging
 
-## 4. The Murder
+A cozy mystery is not only about identifying a killer. It is about what truth does to a
+network of people.
 
-The death can be serious. The treatment should not be gruesome.
+The sleuth should have something social to gain or lose: a new place in town, a business,
+friendships, family trust, romantic possibility, reputation, a sanctuary, or the belief
+that this community can become home.
 
-Usually: body found offscreen or after the fact; violence not described in graphic
-detail; emotional/social consequences matter more than gore; murder method often has a
-thematic link to setting/hobby.
+The investigation should alter relationships. Questions create offence. Private truths
+become public. Innocent people are hurt by suspicion. Allies may disagree with the
+sleuth's methods. The town may need the truth while resenting the person who insists on
+finding it.
 
-In a craft cozy, the murder weapon or clue may connect to the craft world. A pottery vase
-is not just a weapon — it ties the murder to the protagonist's business, reputation, and
-sense of self.
+**Core tension:** the sleuth wants belonging, but truth may require risking belonging.
 
-## 5. The Suspect Circle
+## 4. The Victim
 
-The suspect pool should be socially enclosed: business rival, old friend, ex-lover,
-relative, local official, outsider with motive, gossip, person hiding money trouble,
-person hiding illness/shame, person who seems too obvious, person who seems too kind.
+The victim should be connected strongly enough to the community that their death creates
+social aftershocks and enough unresolved feeling to generate credible suspects.
 
-Each suspect needs a motive, an opportunity, a secret, a social mask, and a reason they
-cannot simply tell the truth.
+The victim is often:
 
-**Not every secret should be murder-related.** Cozy mysteries thrive on privacy being
-mistaken for guilt. A good suspect may be hiding debt, illness, family shame, an affair,
-a professional lie, old grief, or a kindness they do not want exposed.
+- respected publicly but resented privately;
+- loved by some and feared by others;
+- connected to an old secret or unresolved wrong;
+- positioned between competing families, businesses, or social groups;
+- morally complicated rather than wholly admirable or conveniently monstrous.
 
-The sleuth's job is not just "find the liar." It is *"learn what each lie is
-protecting."*
+The investigation should uncover three versions of the victim:
 
-## 6. The Sidekick / Sounding Board
+1. the public story;
+2. the private stories told by different suspects;
+3. the more complicated truth assembled by the sleuth.
 
-The sleuth usually needs someone to talk to. Functions: comic relief, emotional
-grounding, theory testing, access to local gossip, practical help, reader surrogate,
-moral check.
+**Best victim design:** the victim acted as a pressure point. Their death does not create
+the community's fractures; it exposes fractures already present.
 
-Possible forms: best friend, sibling, café owner, pet, police contact, romantic interest,
-older local, eccentric expert.
+## 5. The Murder and Its Treatment
 
-The sidekick should not solve the case for the sleuth. They help the sleuth think.
+The murder may be serious, painful, and emotionally consequential. Its presentation
+should not depend on graphic suffering or prolonged terror.
 
-## 7. The Police Dynamic
+Typical cozy treatment includes:
 
-Usually there is an official investigator: sceptical but fair local cop; exasperated
-detective; hunky lawman love interest; competent outsider cop; police officer who slowly
-learns the amateur sees real things.
+- the body discovered after the violence;
+- limited physical description;
+- emphasis on shock, grief, disruption, and suspicion rather than gore;
+- a method, object, or location linked to the setting or sleuth's world.
 
-**Function:** the police create boundaries. They say: observation is not proof; gossip is
-not evidence; stop interfering; you are making this worse.
+In a craft cozy, the craft connection should do more than decorate the murder. It may
+implicate the protagonist's business, create a specialist clue, damage the sleuth's
+reputation, give the killer camouflage, or make the crime feel like a violation of the
+sleuth's identity and sanctuary.
 
-A good cozy police dynamic lets the amateur contribute without making law enforcement
-stupid. The sleuth notices socially embedded details; the police handle evidence,
-procedure, interviews, arrest.
+---
 
-## 8. The Clue System
+# II. The Mystery Engine
 
-Cozy mysteries are fair-play puzzles. The reader should be able to look back and say:
-*"I could have seen it."*
+## 6. The Suspect Circle
 
-Clue types: physical clue, social mismatch, overheard line, object out of place, routine
-broken, old document, alibi contradiction, gossip with missing context, repeated habit,
-symbolic craft/object clue.
+The suspect pool should be socially connected rather than a collection of unrelated
+people who happen to have motives.
 
-**Clues should be visible. Meaning should be delayed.** The clue is shown early; its
-interpretation changes later. A folded tea towel looks like domestic care; later it
-becomes the signature of someone who resets rooms to control truth.
+Each major suspect should have:
 
-## 9. Red Herrings
+- a plausible motive;
+- a credible opportunity or apparent opportunity;
+- a secret;
+- a social mask;
+- a reason they cannot simply tell the whole truth;
+- a distinct relationship with the victim and sleuth;
+- at least one fact that still matters after they are cleared.
 
-Red herrings are essential, but they should not be random.
+Not every secret should concern the murder. Cozy mysteries thrive on privacy being
+mistaken for guilt. A suspect may be hiding debt, illness, shame, an affair, family
+conflict, professional misconduct, grief, an old lie, or a kindness they do not want
+exposed.
 
-A good red herring has a real secret; has a real emotional reason for hiding; teaches the
-sleuth something; narrows the real case when cleared; costs the sleuth socially if
-mishandled.
+The sleuth's task is not merely to find the liar. It is to learn what each lie protects
+and whether that protected truth connects to the murder.
 
-A bad red herring: "they looked suspicious"; no real motive; no consequence; dead-end
-filler.
+**Strong suspect design:** each suspect represents a different possible explanation of
+the victim's death and reveals a different fracture in the community.
 
-**Best pattern:** suspect appears guilty → sleuth pushes too hard → private truth is
-exposed → suspect clears → case gains one useful fact.
+## 7. The Sidekick or Sounding Board
 
-## 10. The Midpoint Turn
+The sleuth usually benefits from someone with whom they can test ideas and process the
+social consequences of investigating.
 
-Around the middle, the case should change shape.
+The sidekick may provide comic contrast, emotional grounding, local access, practical
+help, scepticism, a moral boundary, an alternative interpretation, or a natural reason
+for the sleuth to articulate a theory.
 
-- Before midpoint: *"Who killed the victim because of recent conflict?"*
-- After midpoint: *"This murder is connected to something deeper/older/more personal than
-  we thought."*
+The sidekick should affect the story but should not solve the case. Their best
+contribution is often a question, objection, ordinary observation, or emotional truth
+that helps the sleuth think differently.
 
-Possible midpoint turns: second body; old case resurfaces; victim was not who they
-seemed; murder weapon confirmed; suspect alibi collapses or holds; hidden relationship
-revealed; old document changes motive; protagonist's own work/home/business becomes
-implicated.
+## 8. The Police Dynamic
 
-The midpoint should feel like: *"Oh. This is not the case we thought."*
+The official investigation creates boundaries and a useful contrast in methods.
 
-## 11. Escalation
+The police may be sceptical, fair, impatient, competent, locally embedded, or unfamiliar
+with the community. They should not need to be foolish for the amateur sleuth to matter.
 
-Even cozy mysteries need pressure. Escalation does not have to mean thriller violence.
+A strong division of function is:
 
-Cozy-safe escalation: sleuth publicly embarrasses someone; business reputation suffers;
-gossip turns against the protagonist; police lose patience; romantic trust ruptures;
-sanctuary/shop/home is disturbed; a beloved community event is threatened; the killer
-quietly manipulates the story; a key object disappears or is cleaned; a suspect is harmed
-socially by a false theory; the protagonist realises they may be wrong about someone they
-love.
+- police handle forensic evidence, procedure, formal interviews, legal proof, and arrest;
+- the sleuth notices socially embedded details, broken routines, private relationships,
+  ordinary objects, and meanings revealed outside formal questioning.
 
-The generic dramatic template runs: warning → failed trap → midpoint twist → sanctuary
-violation → loved one endangered → dark night → epiphany.
+The police should sometimes be right where the sleuth is wrong. Their objections may
+expose weak evidence, reckless assumptions, or harm caused by amateur interference.
 
-For a gentler cozy, translate that as: social warning → failed proof test → old-secret
-reveal → domestic/workplace intrusion → emotional danger to a loved one → protagonist
-quits or loses confidence → ordinary-task epiphany.
+**Useful tension:** observation is not proof; gossip is not evidence; a true theory may
+still be unprovable.
 
-## 12. The Dark Night
+## 9. The Clue System
 
-The sleuth should hit a low point: the best suspect is cleared; the sleuth has hurt
-someone innocent; the town turns against them; police shut them out; their business/life
-is damaged; they suspect someone they care about; they realise observation is not the
-same as truth.
+A cozy mystery is a fair-play puzzle. The reader should be able to look back and think:
+*I saw that, but I understood it incorrectly.*
 
-This is where the protagonist's flaw is exposed. The sleuth wanted certainty; the case
-teaches humility. Or: the sleuth wanted belonging; the case forces them to risk belonging
-for truth.
+Useful clues include physical evidence, an object out of place, a broken routine, a
+social mismatch, an overheard line, incorrect specialist language, knowledge someone
+should not possess, an alibi contradiction, an old document, gossip with missing
+context, a repeated habit, or a craft-related material or technique.
 
-## 13. The Epiphany
+A clue should usually have three stages:
 
-The final insight often comes from ordinary life — not from "detective genius" but from
-the cozy world itself: baking, knitting, pottery, cleaning, gardening, walking the dog,
-arranging shelves, making tea, repairing an object, hearing local gossip in a new
-context.
+1. **visibility** — the reader encounters it;
+2. **misinterpretation** — it appears to support another explanation;
+3. **reinterpretation** — later knowledge reveals what it actually means.
 
-The ordinary task reveals the pattern. This matters most in craft cozies: the sleuth's
-craft should not just decorate the book, it should shape how they think.
+Clues should be distributed through the story. The solution may surprise the reader, but
+it should not depend on decisive information withheld until the reveal.
 
-## 14. The Killer
+## 10. Red Herrings
 
-The killer should be emotionally legible — not necessarily sympathetic, but
-understandable.
+Red herrings should arise from real human behaviour, not manufactured suspiciousness.
 
-Common motives: revenge, inheritance, shame, family protection, old betrayal, fear of
-exposure, business ruin, obsessive love, protecting reputation, misunderstanding an old
-event.
+A strong red herring:
 
-**Best killer design:** the killer's behaviour was visible all along, but misread as a
-benign trait. Helpfulness was control. Tidiness was staging. Grief was rage.
-Protectiveness was concealment. Charm was manipulation. Fragility was leverage.
+- points toward a plausible suspect or theory;
+- is supported by a real secret;
+- has an emotional reason for being concealed;
+- changes how the sleuth sees someone;
+- creates a social cost if mishandled;
+- contributes a useful fact when resolved;
+- narrows the real case rather than ending as disposable filler.
 
-The killer should be hidden in plain sight.
+A reliable pattern is:
 
-## 15. The Climax
+> suspect appears guilty → sleuth applies pressure → private truth emerges → suspect is
+> partly or fully cleared → the case gains one useful fact → the relationship changes
 
-The sleuth confirms the truth and confronts or helps expose the killer. Tense, but not
-brutally violent.
+## 11. The Killer
 
-Options: killer confrontation in a domestic setting; police arrive after the sleuth keeps
-the killer talking; killer confesses under emotional pressure; physical danger handled
-lightly; a public event reveals the contradiction; an old letter/object makes the
-killer's motive collapse.
+The killer should be emotionally legible, though not necessarily sympathetic.
 
-**The sleuth should earn the solution.** A confession, letter, or old document can add
-moral meaning, but should not solve the case by itself.
+Common motives include revenge, inheritance, shame, family protection, betrayal, fear of
+exposure, business ruin, obsessive love, preservation of status, or the need to protect a
+life built on deception.
 
-## 16. Restoration
+The strongest killer design uses **misread visibility**. The killer's important behaviour
+was present throughout the story but interpreted as benign, comic, weak, or unrelated:
 
-The ending restores order — not by pretending nothing happened, but by making the truth
-livable.
+- helpfulness was control;
+- tidiness was staging;
+- grief was rage;
+- protectiveness was concealment;
+- charm was manipulation;
+- fragility was leverage;
+- generosity was access;
+- forgetfulness was selective performance.
 
-Typical ending beats: killer arrested; innocent suspects cleared; victim understood more
-honestly; protagonist repairs key relationships; town resumes routines;
-business/community event succeeds; romantic thread advances but may not resolve;
-protagonist's self-worth improves; next-book hook appears lightly.
+The killer should belong meaningfully to the suspect circle and the community's social
+story. Their actions should make sense from what they knew, wanted, and feared at each
+point in the story.
 
-**Cozy ending promise:** the world is safe enough to return to. Not untouched. Restored.
+---
 
-## 17. Common Cozy Beat Sheet
+# III. Pressure and Revelation
 
-A commercial cozy often moves through these beats, in roughly this order.
+## 12. The Case Changes Shape
 
-*Opening:*
-1. Establish protagonist and cozy world.
-2. Show job/hobby/community.
-3. Introduce victim and social tensions.
-4. Body/death disrupts world.
-5. Sleuth has personal reason to care.
+Around the middle, the investigation should undergo a meaningful reinterpretation.
 
-*Early investigation:*
-6. Police boundary established.
-7. First clues and suspect pool.
-8. Gossip/community hub.
-9. First wrong theory.
-10. Sleuth makes a social mistake.
+Before the turn, the sleuth and reader believe they understand the kind of conflict that
+caused the murder. After it, the case appears older, deeper, more personal, or more
+dangerous than expected.
 
-*Middle:*
-11. Suspects deepen.
-12. Red herrings reveal private wounds.
-13. Midpoint changes case shape.
-14. Sleuth becomes more personally implicated.
-15. False answer collapses.
+Possible turns include a hidden relationship, an old case, an alibi that unexpectedly
+collapses or holds, a false apparent motive, a key object acquiring new meaning, a second
+crime, the sleuth's home or work becoming implicated, or the discovery that the victim
+was investigating or manipulating someone.
 
-*Late middle:*
-16. Killer or truth pushes back.
-17. Sleuth's sanctuary/business/relationship is threatened.
-18. Sleuth suspects wrong person or loved one.
-19. Dark night: quit, shame, isolation.
-20. Ordinary-task epiphany.
+The turn should feel like:
 
-*Endgame:*
-21. Proof chain assembled.
-22. Worst personal conversation.
-23. Confrontation with killer.
-24. Arrest / truth lands.
-25. Community/victim aftermath.
-26. Business/community/romance restoration.
-27. Series hook / coda.
+> *This is not the case we thought we were solving.*
 
-> **A beat is not a chapter.** This sheet has 27 beats; that is a coincidence of
-> enumeration, not a chapter count. A beat may span three chapters, share one with
-> another beat, or be delivered in a single paragraph — and a chapter may carry no beat
-> at all, and exist to let the world breathe. Mapping beat *n* onto chapter *n* is the
-> fastest way to make every book in a series structurally identical.
+It should redirect the investigation, not merely add another clue.
 
-## 18. Cozy Mystery Archetype in One Sentence
+## 13. Escalation Through Consequence
 
-A socially embedded amateur, using ordinary-world expertise, solves a murder that exposes
-hidden fractures in a charming community, then restores order through truth, justice, and
-renewed belonging.
+A cozy mystery still needs mounting pressure. Escalation does not require repeated
+physical attacks.
+
+Cozy-appropriate escalation may include:
+
+- the sleuth publicly embarrassing an innocent person;
+- gossip turning against the protagonist;
+- damage to a business or reputation;
+- police withdrawing trust or access;
+- a friendship or romantic relationship rupturing;
+- the sleuth's home, shop, or sanctuary being disturbed;
+- a community event being threatened;
+- evidence disappearing or being cleaned;
+- the killer manipulating the town's interpretation of events;
+- the sleuth realising they may be wrong about someone they love.
+
+Each escalation should arise from something the sleuth discovered, assumed, said, or
+attempted—not from an unrelated danger beat inserted to increase excitement.
+
+## 14. The Sleuth's Mistake and Low Point
+
+The sleuth should be wrong in a way that matters.
+
+They may expose an innocent person's private pain, accuse the wrong person, lose the
+town's trust, damage their livelihood, be manipulated by the killer, or discover that an
+accurate observation was paired with a false interpretation.
+
+The low point should expose a character limitation, not merely delay the plot:
+
+- the sleuth wanted certainty, and the case teaches humility;
+- the sleuth wanted belonging, and the case forces them to risk it;
+- the sleuth trusted appearances because questioning them felt disloyal;
+- the sleuth treated people as puzzles and ignored emotional truth;
+- the sleuth doubted their perception until silence became more dangerous.
+
+The low point clears away the sleuth's preferred explanation and prepares them to see the
+case differently.
+
+## 15. The Ordinary-World Epiphany
+
+The final insight should grow from the sleuth's established way of living and thinking,
+not from sudden generic detective brilliance.
+
+The recognition may occur while baking, knitting, throwing clay, cleaning, gardening,
+walking a dog, arranging shelves, making tea, repairing an object, or hearing a familiar
+story in a new context.
+
+The ordinary task should not merely trigger a convenient memory. It should reveal a
+pattern, contradiction, material fact, social habit, or emotional truth that the sleuth
+was uniquely equipped to understand.
+
+In a craft cozy, the craft should shape cognition. It should influence how the sleuth
+notices pressure, balance, residue, repetition, transformation, damage, or repair.
+
+---
+
+# IV. Exposure and Restoration
+
+## 16. Proof and Climax
+
+Recognising the killer is not the same as proving the case.
+
+The endgame should distinguish between:
+
+1. **epiphany** — the sleuth understands the true explanation;
+2. **verification** — they test the theory or assemble the proof chain;
+3. **exposure** — the killer's lie can no longer survive;
+4. **intervention** — police or others act on the truth.
+
+The climax may involve a domestic confrontation, a public contradiction, a controlled
+test, recovery of an already established object, or restrained physical danger
+appropriate to the tone.
+
+The sleuth must earn the solution. A confession, letter, recording, or old document may
+confirm or deepen the truth, but it should not perform all the deductive work.
+
+The final explanation should account for motive, means, opportunity, the killer's major
+lie, the decisive clues, the misleading evidence, the relevant secrets of cleared
+suspects, and the killer's attempts to shape the investigation.
+
+## 17. Restoration
+
+The ending restores order by making the truth livable, not by pretending nothing
+happened.
+
+Restoration may include:
+
+- the killer arrested, exposed, or prevented from causing further harm;
+- innocent suspects cleared;
+- the victim understood more honestly;
+- damaged relationships repaired or redefined;
+- a valued routine, business, event, meal, class, or market resuming;
+- the protagonist's place in the community becoming more secure;
+- a romantic or friendship thread advancing without full resolution;
+- a light series hook emerging from ordinary life.
+
+The ending should answer two questions:
+
+1. Who committed the murder, and why?
+2. Is this world emotionally safe and pleasurable enough to revisit?
+
+**Cozy ending promise:** the world is not untouched. It is restored—changed, more honest,
+and safe enough to return to.
+
+---
+
+# V. Loose Cozy Mystery Beat Sequence
+
+These are common functions, not mandatory chapters. Several may occur in one scene, and
+some books will vary their order.
+
+## Opening and Disruption
+
+1. Establish the protagonist and the pleasurable world.
+2. Show the protagonist's ordinary role, expertise, and important relationships.
+3. Introduce the victim, social tensions, or an early disturbance.
+4. The death disrupts the community.
+5. Give the sleuth a personal, social, or practical reason to care.
+6. Establish the official investigation and its boundaries.
+7. Present the initial clues and suspect circle.
+
+## Expanding Investigation
+
+8. Use a community hub or ordinary obligation to begin informal enquiries.
+9. Develop a plausible first theory.
+10. Let the sleuth make a social or interpretive mistake.
+11. Deepen suspects through motives, opportunities, masks, and private secrets.
+12. Resolve a red herring in a way that reveals a private wound and useful fact.
+13. Change the meaning of the case.
+
+## Pressure and Contraction
+
+14. Make the sleuth more personally implicated.
+15. Collapse or substantially weaken the earlier theory.
+16. Let the killer, community, or consequences of truth push back.
+17. Threaten the sleuth's sanctuary, livelihood, reputation, or relationship.
+18. Narrow the field while increasing the personal cost of being wrong.
+19. Bring the sleuth to a low point caused partly by their own mistake or limitation.
+
+## Endgame
+
+20. Let ordinary life reveal the decisive pattern or contradiction.
+21. Assemble and test the proof chain.
+22. Force the most difficult personal truth or conversation.
+23. Confront or expose the killer.
+24. Allow official action or public truth to land.
+25. Show the victim and innocent suspects understood more honestly.
+26. Restore community, vocation, relationship, and belonging.
+27. End with a light coda or series-facing thread.
+
+> **A beat is not a chapter.** A beat may span several chapters, share a scene with
+> another beat, or be delivered in a few lines. A chapter may exist mainly to deepen the
+> world, relationships, humour, or emotional rhythm. Mapping beat *n* onto chapter *n* is
+> one of the fastest ways to make every book in a series feel mechanically identical.
+
+---
+
+# VI. Use in an AI Review Pass
+
+Use this framework as a **cozy-promise pass**, separate from the four-act and
+murder-logic passes.
+
+The reviewer should:
+
+1. identify only material genre weaknesses;
+2. explain the reader consequence of each weakness;
+3. cite the relevant outline beats or chapters;
+4. distinguish missing functions from optional variations;
+5. recommend the smallest story-specific change that repairs the weakness;
+6. avoid scoring every section or demanding one-to-one compliance.
+
+Priority questions:
+
+- Would the reader want to return to this world?
+- Why can this amateur discover something the police reasonably miss?
+- What does the sleuth risk socially by pursuing the truth?
+- Does each major suspect conceal a distinct, meaningful private truth?
+- Are the decisive clues visible before their meaning is revealed?
+- Was the killer present and meaningfully hidden in plain sight?
+- Does the sleuth's ordinary expertise produce the final insight?
+- Does the ending restore community, connection, and reader comfort?
+
+Common failures include decorative coziness, amateur-cop imitation, interchangeable
+suspects, empty red herrings, late decisive evidence, a passive killer, cost-free
+investigation, a generic epiphany, confession replacing deduction, and an abbreviated
+restoration.
+
+---
+
+# Archetype in One Sentence
+
+A socially embedded amateur uses ordinary-world expertise to solve a fair-play murder
+that exposes hidden fractures in a charming community, risks belonging in pursuit of the
+truth, and restores order through justice, emotional honesty, and renewed connection.
