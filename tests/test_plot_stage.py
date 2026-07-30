@@ -757,3 +757,78 @@ def test_legacy_readers_copy_unchanged_without_reveals(tmp_path):
     dest = readers_copy("01", repo_root=root)
     assert dest.name == "outline-readers-copy.md"
     assert dest.read_text(encoding="utf-8") == readers_copy_text(_SKEL, reveal_chapter=4)
+
+
+def _readback_ready(root, book="01"):
+    """A book whose earlier stages are all done, so stage_status's verdict on
+    readback is the only thing under test."""
+    skel = _write(root, f"input/book-{book}/outline-skeleton.md",
+                  "---\nwoven: true\n---\n## Chapter 01 — A\n")
+    prem = _write(root, f"input/book-{book}/plot/premise.md")
+    end = _write(root, f"input/book-{book}/plot/ending.md")
+    tp = _write(root, f"input/book-{book}/plot/turning-points.md")
+    sol = _write(root, f"output/book-{book}/mystery-solution.md")
+    stamp(book, end, [prem], repo_root=root)
+    stamp(book, tp, [prem, end], repo_root=root)
+    stamp(book, sol, [end, tp], repo_root=root)
+    stamp(book, skel, [tp, sol], repo_root=root)
+    return skel
+
+
+def _readback_state(root, book="01"):
+    return dict((n, s) for n, s, _ in stage_status(book, repo_root=root))["readback"]
+
+
+def test_readback_missing_when_no_fan_report(tmp_path):
+    root = _series(tmp_path)
+    _readback_ready(root)
+    assert _readback_state(root) == "missing"
+
+
+def test_readback_done_from_a_staged_fan_report(tmp_path):
+    root = _series(tmp_path)
+    skel = _readback_ready(root)
+    fan = _write(root, "output/book-01/reports/outline-fan-stage-1.md")
+    stamp("01", fan, [skel], repo_root=root)
+    assert _readback_state(root) == "done"
+
+
+def test_readback_done_only_when_every_stage_report_is_stamped(tmp_path):
+    root = _series(tmp_path)
+    skel = _readback_ready(root)
+    f1 = _write(root, "output/book-01/reports/outline-fan-stage-1.md")
+    f2 = _write(root, "output/book-01/reports/outline-fan-stage-2.md")
+    stamp("01", f1, [skel], repo_root=root)
+    assert _readback_state(root) == "stale"   # f2 unstamped
+    stamp("01", f2, [skel], repo_root=root)
+    assert _readback_state(root) == "done"
+
+
+def test_readback_goes_stale_when_the_skeleton_changes(tmp_path):
+    root = _series(tmp_path)
+    skel = _readback_ready(root)
+    fan = _write(root, "output/book-01/reports/outline-fan-stage-1.md")
+    stamp("01", fan, [skel], repo_root=root)
+    assert _readback_state(root) == "done"
+    skel.write_text("---\nwoven: true\n---\n## Chapter 01 — A\n## Chapter 02 — B\n",
+                    encoding="utf-8")
+    assert _readback_state(root) == "stale"
+
+
+def test_readback_detail_names_the_offending_report(tmp_path):
+    root = _series(tmp_path)
+    skel = _readback_ready(root)
+    _write(root, "output/book-01/reports/outline-fan-stage-1.md")
+    detail = dict((n, d) for n, _, d in stage_status("01", repo_root=root))["readback"]
+    assert "outline-fan-stage-1" in detail
+
+
+def test_legacy_unstaged_fan_report_still_counts(tmp_path):
+    """A book read back before this change wrote plain outline-fan.md. The glob
+    must keep recognising it — an existing series must not be told to redo its
+    readback."""
+    root = _series(tmp_path)
+    skel = _readback_ready(root)
+    fan = _write(root, "output/book-01/reports/outline-fan.md")
+    stamp("01", fan, [skel], repo_root=root)
+    assert _readback_state(root) == "done"

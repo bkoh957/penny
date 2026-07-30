@@ -110,31 +110,57 @@ def stage_paths(book: str, root: Path) -> dict:
             "whodunit": root / "series" / "whodunit" / f"book-{book}.yaml"}
 
 
+def _stage_stale(name: str, path: Path, paths: dict) -> list[str]:
+    """The `built_from_*` staleness findings for one stage file, or [] if it is
+    current. Extracted from stage_status so the readback stage can run it over
+    several files — the fan writes one report per protected reveal."""
+    fm = parse_frontmatter(path.read_text(encoding="utf-8"))
+    stale = []
+    for up in _UPSTREAM[name]:
+        upath = paths[up]
+        field = f"built_from_{upath.stem}"
+        recorded = fm.get(field)
+        if recorded is None:
+            if up == "material" and not upath.is_file():
+                continue  # absent material is a legitimate blank start
+            stale.append(f"{field} unstamped")
+        elif not upath.is_file() or _sha(upath) != recorded:
+            stale.append(f"{field} mismatch")
+    return stale
+
+
 def stage_status(book: str, *, repo_root=None) -> list:
     root = _root(repo_root)
     paths = stage_paths(book, root)
     rows = []
     for name in STAGE_ORDER:
         p = paths[name]
+        if name == "readback":
+            # The fan writes ONE REPORT PER STAGE (spec 2026-07-30 §5), so
+            # there is no single canonical filename to stat. Readback is done
+            # when at least one report exists AND every one of them is stamped
+            # against the current skeleton: a readback is only complete if
+            # every stage was read against the plan actually on disk. The glob
+            # also keeps recognising a pre-staging `outline-fan.md`, so a
+            # series read back before this change is not told to redo it.
+            reports = sorted(p.parent.glob("outline-fan*.md"))
+            if not reports:
+                rows.append((name, "missing", str(p.parent / "outline-fan*.md")))
+                continue
+            stale = []
+            for rp in reports:
+                stale += [f"{rp.stem}: {s}" for s in _stage_stale(name, rp, paths)]
+            rows.append((name, "stale" if stale else "done", "; ".join(stale)))
+            continue
         if not p.is_file():
             rows.append((name, "missing", str(p)))
             continue
-        fm = parse_frontmatter(p.read_text(encoding="utf-8"))
         if name == "weave":
+            fm = parse_frontmatter(p.read_text(encoding="utf-8"))
             done = str(fm.get("woven", "")).strip().lower() == "true"
             rows.append((name, "done" if done else "missing", "woven flag"))
             continue
-        stale = []
-        for up in _UPSTREAM[name]:
-            upath = paths[up]
-            field = f"built_from_{upath.stem}"
-            recorded = fm.get(field)
-            if recorded is None:
-                if up == "material" and not upath.is_file():
-                    continue  # absent material is a legitimate blank start
-                stale.append(f"{field} unstamped")
-            elif not upath.is_file() or _sha(upath) != recorded:
-                stale.append(f"{field} mismatch")
+        stale = _stage_stale(name, p, paths)
         rows.append((name, "stale" if stale else "done", "; ".join(stale)))
     return rows
 

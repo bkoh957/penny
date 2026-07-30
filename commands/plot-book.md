@@ -234,13 +234,20 @@ state; this command never asks you anything a file already answers.
 
 9. **Mint the lock:**
 
-   On sign-off, stamp the fan report:
+   On sign-off, stamp every stage's fan report (the fan writes one per protected
+   reveal, so this is a loop, not a single file):
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
-     output/book-$book/reports/outline-fan.md \
-     --from input/book-$book/outline-skeleton.md
+   for f in output/book-$book/reports/outline-fan-stage-*.md; do
+     [ -e "$f" ] || continue
+     python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
+       "$f" --from input/book-$book/outline-skeleton.md
+   done
    ```
+
+   The `[ -e "$f" ] || continue` guard matters: with no matching files the glob stays
+   literal and would otherwise be passed through as a filename. `plot_stage.py status`
+   counts readback done only when EVERY stage report carries a current stamp.
 
    Then mint the lock (the ONE time it is minted this workshop) — with any
    per-check waivers the showrunner dictates, each with a reason, and any

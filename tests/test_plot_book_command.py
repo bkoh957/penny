@@ -64,8 +64,8 @@ def test_runbook_gives_literal_bash_for_every_stamp_call():
         "     --from input/book-$book/plot/turning-points.md output/book-$book/mystery-solution.md"
         in t
     )
-    assert (
-        "output/book-$book/reports/outline-fan.md \\\n"
-        "     --from input/book-$book/outline-skeleton.md"
-        in t
-    )
+    # Readback stamps one report PER STAGE, so this is a loop rather than a
+    # single literal path — but it is still literal bash with the exact --from
+    # _UPSTREAM expects, which is what this test exists to pin.
+    assert 'for f in output/book-$book/reports/outline-fan-stage-*.md; do' in t
+    assert '"$f" --from input/book-$book/outline-skeleton.md' in t
