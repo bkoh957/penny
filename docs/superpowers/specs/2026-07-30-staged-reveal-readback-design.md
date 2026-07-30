@@ -1,7 +1,9 @@
 # Staged reveal-aware read-back — design
 
 Date: 2026-07-30
-Status: approved (showrunner, this session)
+Status: approved (showrunner, 2026-07-30), amended same day on two points — §7 (a clean
+context matters, a second model does not) and §10 (book 01 is repaired at outline level by
+the showrunner via `/plot-book`, not patched by this engine work).
 Supersedes: nothing. Extends the `/plot-book` readback stage
 (`docs/superpowers/specs/2026-07-12-plot-book-workshop-design.md` §7, beside the
 proofreader of its §6) and the reader-simulation property described in
@@ -31,11 +33,14 @@ chapter that was supposed to reverse the book — and then praised the midpoint.
 
 Three structural reasons it could not do better:
 
-1. **It graded its own work.** The report header records
+1. **It read its own work with its own context.** The report header records
    `independence: reduced — report generated in the active Hermes session rather than a
-   separate non-plotting model`. The same model that plotted the book read it back.
-   Independence-as-model-difference is the engine's first principle and it degraded
-   silently at the one place it mattered most.
+   separate non-plotting model`. The operative words are **"in the active session"**, not
+   "same model". The read happened inside the plotting conversation, carrying the
+   solution, the turning points, and every decision that built the book. This is an
+   **isolation** failure in CLAUDE.md's existing sense — narrow inputs, no cross-talk —
+   and not an independence failure. No persona instruction survives a context that
+   already knows the answer; it will take the shortcut every time.
 2. **It was never told a surprise was coming.** Nothing told the fan chapter 15 was a
    trapdoor. Certainty at 11 therefore read as satisfying foreshadowing, not a broken
    midpoint. A reader who does not know where the trapdoor is cannot report that the
@@ -216,17 +221,43 @@ findings, and the showrunner's existing sign-off is the decision point — uncha
 today, and consistent with the fan's advisory contract. The lock is still readback's last
 act.
 
-## 7. Independence recorded on the certificate
+## 7. A clean context, not a second model
 
-The fan already prefers a non-`plot_model` model and degrades to "independence reduced"
-rather than halting. That degrade is correct and stays. What changes: it must reach the
-paperwork.
+**Decision (showrunner, 2026-07-30): running the fan on the plotting model is
+acceptable. Running it in the plotting model's *context* is not.** What corrupts the read
+is inherited context — an AI that already holds the solution and its own planning
+decisions will take the shortcut regardless of the persona it is handed. Model identity
+is the wrong axis for this particular read.
 
-`preflight.py lock-mystery` gains `--note-skipped "<check-id>: <why>"`, appending to the
-`skipped_lines` list it already builds, so the certificate records
-`skipped: fan-independence — no non-plot_model model reachable`. Same convention as
-`overloaded-chapter`'s existing skip note: a certificate must not claim coverage it does
-not have. The readback runbook passes it when and only when the fan degraded.
+So the requirement inverts. Today's runbook prefers a different model and tolerates a
+same-session read. From here:
+
+- **The fan MUST be a sub-agent dispatch, always.** Never performed inline by the
+  orchestrating session. A sub-agent dispatch is a fresh context by construction, which is
+  the only mechanical guarantee available — and it is precisely what was skipped on
+  2026-07-28.
+- **Its inputs stay exactly `{ reader's copy for this stage, fan persona }`.** Nothing
+  else, as its agent definition already says. Same model, no shared context, narrow
+  inputs.
+- **A same-model read is no longer a degradation and is not noted as one.** The
+  `independence: reduced` header line loses its meaning here and is replaced by
+  `context: fresh sub-agent` plus the model id, which is what the reader's credibility
+  actually rests on.
+- **Model preference stays as a preference.** Where a non-`plot_model` model is reachable,
+  still use it — a second model is a bonus, no longer the thing being claimed.
+
+`preflight.py lock-mystery` still gains `--note-skipped "<check-id>: <why>"`, appending to
+the `skipped_lines` list it already builds, but for one case only: the fan read **did not
+happen at all**, recording `skipped: fan-read — <why>`. Same convention as
+`overloaded-chapter`'s existing skip note — a certificate must not claim coverage it does
+not have. There is no longer a `fan-independence` note, because same-model is no longer a
+shortfall.
+
+The wider engine principle is untouched: `preflight.py assemble` still enforces
+model difference against `drafted_by` for the final read, where a genuinely different
+model *is* the claim. This section narrows only the fan read, and it does so using
+CLAUDE.md's existing distinction — reader simulation needs **isolation**; the final read
+needs **independence**.
 
 ## 8. Error handling and degradation
 
@@ -236,7 +267,9 @@ not have. The readback runbook passes it when and only when the fan degraded.
 | `reveals:` present, malformed (missing `id`/`reveal_chapter`, non-int, out of `1..total_chapters`, duplicate id, not ascending) | `plot_stage.py` exits loud and names the offending entry. Consistent with `_reveal_chapter`'s existing fail-loud-not-open rule — a book that authored the block and got it wrong must not silently fall back to one stage. |
 | A reveal at `reveal_chapter: 1` | Loud error: stage 1 would emit zero chapters. |
 | Whodunit ledger absent | No truncation, no stages — the legitimate pre-planning case, already handled. |
-| Fan unreachable on any model | Print "fan read skipped" and pass `--note-skipped fan-read`. Never halts the workshop. |
+| Fan cannot be dispatched at all | Print "fan read skipped" and pass `--note-skipped fan-read`. Never halts the workshop. |
+| Only `plot_model` reachable | Proceed on it, as a fresh sub-agent. Not a degradation, no note (§7). |
+| Fan would have to run inline (no sub-agent dispatch available) | Refuse the read and treat it as skipped, above. An inline read is the 2026-07-28 failure and is worse than no read — it returns a confident report that reassures. |
 
 ## 9. Testing
 
@@ -258,21 +291,35 @@ verification is the book-01 re-run in §10.
 
 ## 10. Book 01 as the proof
 
-Book 01 is the case that produced the failure, so it verifies the fix:
+Book 01 is the case that produced the failure, so it verifies the fix.
 
-1. Rename the leaking identifiers per §3.1 — clue ids `c01-marion-tara-memory`,
-   `c02-lisa-already-met-maggie`, `c03-wrong-clay-wrong-hand-vase`,
-   `c09-lisa-note-voice-wrong`, `c10-tara-object-hidden-catch`, and the q-slug `q-vase`
-   (opened ch 3, carried ch 4 and ch 10, closed ch 24 — all four sites).
-2. Add the `reveals:` block: `impersonation` at 15, `marion-is-tara` at 27.
-3. The lock must be re-minted anyway — the certificate dates 2026-07-28T03:10 while
-   `outline.md` was modified 2026-07-29T16:31, so it currently attests to an outline that
-   no longer exists.
-4. Re-run readback with the staged read on a non-plotting model, and read the audit.
+**Decision (showrunner, 2026-07-30): book 01 is repaired at the OUTLINE level, as the
+showrunner's own review and edits combined with a re-run of `/plot-book`.** Not by
+hand-patching identifiers downstream, and not driven by this engine work. The engine ships
+the machinery; the showrunner re-develops the book through the workshop.
+
+That ordering matters for §3.1's naming rule. The leaking clue ids live in the whodunit
+ledger, which the workshop's **counterplot** stage regenerates via `mystery-planner`. With
+the naming discipline in that agent's contract, a re-run produces neutral ids as a matter
+of course — better than renaming five entries by hand and leaving the generator free to do
+it again. The known leaks a re-run must clear:
+
+- clue ids `c01-marion-tara-memory`, `c02-lisa-already-met-maggie`,
+  `c03-wrong-clay-wrong-hand-vase`, `c09-lisa-note-voice-wrong`,
+  `c10-tara-object-hidden-catch`
+- the q-slug `q-vase — who made the false Maggie vase?`, at all four sites (opened ch 3,
+  carried ch 4 and ch 10, closed ch 24)
+- a `reveals:` block: `impersonation` at 15, `marion-is-tara` at 27
+
+The lock must be re-minted regardless: the current certificate dates 2026-07-28T03:10
+while `outline.md` was modified 2026-07-29T16:31, so it attests to an outline that no
+longer exists.
+
+Readback's staged read, as a fresh sub-agent per §7, is the verification.
 
 **Success is not a green run.** Success is stage 1's "what is this story about" sentence
 being about Lisa and the property, and its "next big turn" prediction being something
-other than the impersonation. If the reader still calls it at stage 1 after the renames,
+other than the impersonation. If the reader still calls it at stage 1 after the re-run,
 the leak is in the beats rather than the labels, and the audit will have told us that —
 which is the whole point of measuring the effect instead of grepping the cause.
 
