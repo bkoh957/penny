@@ -17,9 +17,9 @@ questions:
 # are now part of the count, where the old (pre-redesign) basis counted only what a
 # chapter owed BESIDES its scenes and assumed those obligations were discharged inside
 # the anchor scene in a sentence. That assumption is gone along with the anchor scene
-# itself, so this cap needs SHOWRUNNER RETUNING for the beats-inclusive basis: the spec's
-# own canonical example (book one's real chapter 5 — ten Required Beats, one clue plant,
-# one question opened, one closed, two tracks advanced) carries a load of 15, well past
-# the number below. Retune before relying on this check against a beats-inclusive count.
+# itself. RETUNED 2026-07-19 for the beats-inclusive basis: the spec's own canonical
+# example (book one's real chapter 5 — ten Required Beats, one clue plant, one question
+# opened, one closed, two tracks advanced) carries a load of exactly 15 and must clear
+# unwaived — the check fires on load > cap, so 15 is the ceiling, not a trigger.
 obligations:
-  max_per_chapter: 8
+  max_per_chapter: 15

@@ -682,8 +682,11 @@ def test_draft_fails_when_fresh_map_drops_a_beat(tmp_path):
 # (penny_genre.beat_sheet). The real cozy-mystery beat sheet caps at 8.
 
 def _beat_heavy_wired_outline() -> str:
-    # Chapter 01 declares 9 Required Beats and opens one question — an
-    # obligation load of 10 against the cozy-mystery beat sheet's cap of 8.
+    # Chapter 01 declares 16 Required Beats and opens one question — an
+    # obligation load of 17 against the cozy-mystery beat sheet's cap of 15
+    # (retuned 2026-07-19 for the beats-inclusive count; the canonical
+    # spec example carries a load of exactly 15, so this fixture must clear
+    # that headroom to still trip the check).
     # Chapter 02 carries the identical clean-close shape as
     # tests/test_tension_check.py's own overload fixtures: it opens a fresh
     # question, closes chapter 01's, and CARRIES + hooks the one it just
@@ -695,7 +698,7 @@ def _beat_heavy_wired_outline() -> str:
     # overloaded-chapter alone wouldn't be enough to lock. Only 2 chapters
     # total also keeps starved-thread trivially satisfied regardless of the
     # genre's real max_dark_gap thresholds.
-    beats = "\n".join(f"- Beat {i}." for i in range(1, 10))
+    beats = "\n".join(f"- Beat {i}." for i in range(1, 17))
     return (
         "---\nbook: 01\ntotal_chapters: 2\n---\n\n"
         "## Chapter 01 — Too Much\n\n"
