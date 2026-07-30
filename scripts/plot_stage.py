@@ -376,6 +376,30 @@ def _reveals(book: str, root: Path) -> list[dict]:
     return out
 
 
+def reveal_stages(reveals: list[dict]) -> list[int | None]:
+    """Stage boundaries for the staged reader's copy (spec 2026-07-30 §4).
+
+    Returns one entry per stage: the LAST chapter that stage's copy may
+    contain, with None (the always-final entry) meaning the whole book. Stage n
+    stops one chapter short of the nth protected reveal, so the reader files
+    what it believes BEFORE reading the turn.
+
+    Equal reveal_chapter values collapse to one boundary — two protected turns
+    landing in the same chapter is legitimate (a suspect reveal and an identity
+    reveal can share it) and must not produce two identical stages. Empty input
+    returns [], which the caller reads as "no staging, use the legacy
+    single-cut copy"."""
+    if not reveals:
+        return []
+    bounds: list[int | None] = []
+    for r in reveals:
+        b = r["reveal_chapter"] - 1
+        if b not in bounds:
+            bounds.append(b)
+    bounds.append(None)
+    return bounds
+
+
 def _chapter_numbers(text: str) -> list[int]:
     body = strip_frontmatter(text)
     return [int(cm.group(1)) for m in HEADING_RE.finditer(body)

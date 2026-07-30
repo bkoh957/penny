@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from scripts.plot_stage import (STAGE_ORDER, next_stage, readers_copy, readers_copy_text,
-                                 stage_paths, stage_status, stamp, _reveals)
+                                 reveal_stages, stage_paths, stage_status, stamp, _reveals)
 
 
 def _series(tmp_path, book="01"):
@@ -630,3 +630,25 @@ def test_readers_copy_strips_title_flags_from_flagged_heading():
 def test_readers_copy_unflagged_heading_round_trips_unchanged():
     out = readers_copy_text(WEIGHTED.read_text(encoding="utf-8"))
     assert "## Chapter 01 — The Wheelhouse" in out
+
+
+# --- reveal_stages: derive stage boundaries from protected turns ---------
+
+def test_reveal_stages_empty_when_no_reveals():
+    assert reveal_stages([]) == []
+
+
+def test_reveal_stages_two_reveals_gives_three_stages():
+    reveals = [{"id": "a", "reveal_chapter": 15, "author_truth": "x"},
+               {"id": "b", "reveal_chapter": 27, "author_truth": "y"}]
+    assert reveal_stages(reveals) == [14, 26, None]
+
+
+def test_reveal_stages_single_reveal_gives_two_stages():
+    assert reveal_stages([{"id": "a", "reveal_chapter": 15, "author_truth": "x"}]) == [14, None]
+
+
+def test_reveal_stages_dedupes_shared_chapter():
+    reveals = [{"id": "a", "reveal_chapter": 27, "author_truth": "x"},
+               {"id": "b", "reveal_chapter": 27, "author_truth": "y"}]
+    assert reveal_stages(reveals) == [26, None]
