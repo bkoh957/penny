@@ -291,7 +291,8 @@ def cmd_approve_book(book: str, *, repo_root=None) -> int:
     return 0
 
 
-def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None) -> int:
+def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None,
+                     note_skipped=None) -> int:
     repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
     run_config = run_config or penny_paths.config_path("run-config.md", root=repo_root)
     led = ledger_path(book, repo_root)
@@ -335,6 +336,15 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
     validated = "fairplay+lexicon"
     waived_lines: list[str] = []
     skipped_lines: list[str] = []
+    # Coverage the certificate must not claim (spec 2026-07-30 §7). The only
+    # current use is a fan read that did not happen at all — a same-model read
+    # is NOT a shortfall and gets no note, because what a reader's credibility
+    # rests on is a clean context, not a second model.
+    for raw in (note_skipped or []):
+        cid, sep, why = str(raw).partition(":")
+        if not sep or not cid.strip() or not why.strip():
+            _fail(f"--note-skipped expects 'check-id: reason', got {raw!r}")
+        skipped_lines.append(f"skipped: {cid.strip()} — {why.strip()}")
     fired: set[str] = set()
     findings: list[str] = []
     notes: list[str] = []
@@ -421,6 +431,10 @@ def main(argv=None) -> int:
     p_lock = sub.add_parser("lock-mystery", help="validate + write the lock (last)")
     p_lock.add_argument("book")
     p_lock.add_argument("--waive", action="append", default=[], metavar='CHECK:"REASON"')
+    p_lock.add_argument("--note-skipped", action="append", default=[],
+                        metavar='CHECK:"REASON"',
+                        help="record coverage the certificate must not claim "
+                             "(e.g. 'fan-read: no sub-agent dispatch available')")
     p_fin = sub.add_parser("finalize", help="post-gate guard: chapter must have PASSed")
     p_fin.add_argument("book")
     p_fin.add_argument("chapter")
@@ -435,7 +449,8 @@ def main(argv=None) -> int:
     if args.cmd == "approve-book":
         return cmd_approve_book(args.book)
     if args.cmd == "lock-mystery":
-        return cmd_lock_mystery(args.book, waivers=args.waive)
+        return cmd_lock_mystery(args.book, waivers=args.waive,
+                                note_skipped=args.note_skipped)
     if args.cmd == "finalize":
         return cmd_finalize(args.book, args.chapter)
     if args.cmd == "clear-dev":

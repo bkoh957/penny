@@ -89,6 +89,22 @@ def test_lock_mystery_no_lock_when_culprit_unresolvable(tmp_path):
     assert not preflight.lock_path("01", tmp_path).is_file()
 
 
+def test_lock_mystery_records_note_skipped_on_certificate(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    assert preflight.cmd_lock_mystery(
+        "01", repo_root=tmp_path,
+        note_skipped=["fan-read: no sub-agent dispatch available"]) == 0
+    cert = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
+    assert "skipped: fan-read — no sub-agent dispatch available" in cert
+
+
+def test_lock_mystery_note_skipped_without_colon_is_a_usage_error(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    with pytest.raises(SystemExit):
+        preflight.cmd_lock_mystery("01", repo_root=tmp_path,
+                                   note_skipped=["fan-read"])
+
+
 def _make_book(root, book="01", *, populated=True, locked=True, run_config=True):
     wd = root / "series/whodunit"
     wd.mkdir(parents=True, exist_ok=True)
