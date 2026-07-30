@@ -103,6 +103,7 @@ def test_lock_mystery_note_skipped_without_colon_is_a_usage_error(tmp_path):
     with pytest.raises(SystemExit):
         preflight.cmd_lock_mystery("01", repo_root=tmp_path,
                                    note_skipped=["fan-read"])
+    assert not preflight.lock_path("01", tmp_path).is_file()
 
 
 def _make_book(root, book="01", *, populated=True, locked=True, run_config=True):
