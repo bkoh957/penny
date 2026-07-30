@@ -249,10 +249,29 @@ def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None) -> str:
     return "\n".join(out_lines).rstrip() + "\n"
 
 
+def _load_whodunit(book: str, root: Path) -> "dict | None":
+    """Load the whodunit ledger from series/whodunit/book-NN.yaml. Returns None
+    if the ledger file doesn't exist (the legitimate pre-planning-stage case);
+    exits loud if the file exists but is malformed YAML or not a mapping."""
+    path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
+    if not path.is_file():
+        return None
+    import yaml  # PyYAML: the whodunit ledger is genuinely nested human data
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        sys.exit(f"plot_stage: malformed whodunit ledger {path}: {exc}")
+    if not isinstance(data, dict):
+        sys.exit(
+            f"plot_stage: whodunit ledger {path} must be a YAML mapping, "
+            f"got {type(data).__name__}")
+    return data
+
+
 def _reveal_chapter(book: str, root: Path) -> "int | None":
     """Read reveal_chapter from series/whodunit/book-NN.yaml. That ledger is
     genuinely nested human-edited data, so PyYAML is permitted here —
-    imported inside this function-scoped helper only, the same pattern
+    imported inside the function-scoped helper _load_whodunit, the same pattern
     tension_check.py's _load_yaml uses. The outline itself stays penny_meta/
     penny_wiring only.
 
@@ -267,20 +286,13 @@ def _reveal_chapter(book: str, root: Path) -> "int | None":
     leak the reveal chapter, so it exits loud instead.
 
     FINDING 4 — malformed YAML or a non-mapping ledger (e.g. a bare list)
-    also exits with a named error instead of a raw traceback; it already
-    failed closed (nothing written), this only makes the failure legible."""
-    path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
-    if not path.is_file():
+    is handled by _load_whodunit, which exits with a named error instead of
+    a raw traceback; it already failed closed (nothing written), this only
+    makes the failure legible."""
+    data = _load_whodunit(book, root)
+    if data is None:
         return None
-    import yaml  # PyYAML: the whodunit ledger is genuinely nested human data
-    try:
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
-    except yaml.YAMLError as exc:
-        sys.exit(f"plot_stage: malformed whodunit ledger {path}: {exc}")
-    if not isinstance(data, dict):
-        sys.exit(
-            f"plot_stage: whodunit ledger {path} must be a YAML mapping, "
-            f"got {type(data).__name__}")
+    path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
     rc = data.get("reveal_chapter")
     rc_int = None
     if isinstance(rc, int) and not isinstance(rc, bool):
@@ -306,18 +318,10 @@ def _reveals(book: str, root: Path) -> list[dict]:
     fail-loud-not-open rule _reveal_chapter documents. Silently falling back to
     one stage would hand the fan a copy that runs past a protected turn while
     the showrunner believed it was staged."""
-    path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
-    if not path.is_file():
+    data = _load_whodunit(book, root)
+    if data is None:
         return []
-    import yaml  # PyYAML: the whodunit ledger is genuinely nested human data
-    try:
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
-    except yaml.YAMLError as exc:
-        sys.exit(f"plot_stage: malformed whodunit ledger {path}: {exc}")
-    if not isinstance(data, dict):
-        sys.exit(
-            f"plot_stage: whodunit ledger {path} must be a YAML mapping, "
-            f"got {type(data).__name__}")
+    path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
     raw = data.get("reveals")
     if raw is None:
         return []
@@ -362,8 +366,11 @@ def _reveals(book: str, root: Path) -> list[dict]:
                      f"in ascending order (previous was {prev_ch})")
         prev_ch = rc
         item = {"id": rid, "reveal_chapter": rc, "author_truth": truth.strip()}
-        hints = entry.get("reader_should_think_before")
-        if isinstance(hints, list) and hints:
+        if "reader_should_think_before" in entry:
+            hints = entry["reader_should_think_before"]
+            if not isinstance(hints, list) or not hints:
+                sys.exit(f"plot_stage: {where} ({rid}) 'reader_should_think_before' "
+                         f"must be a non-empty list")
             item["reader_should_think_before"] = [str(h).strip() for h in hints]
         out.append(item)
     return out

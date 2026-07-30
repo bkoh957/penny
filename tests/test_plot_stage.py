@@ -68,6 +68,10 @@ def test_reveals_parsed_in_order(tmp_path):
      "- id: b\n  reveal_chapter: 15\n  author_truth: y\n", "not in ascending"),
     ("reveals:\n- id: a\n  reveal_chapter: 15\n  author_truth: x\n"
      "- id: a\n  reveal_chapter: 20\n  author_truth: y\n", "duplicate reveal id"),
+    ("reveals:\n- id: a\n  reveal_chapter: 15\n  author_truth: x\n"
+     "  reader_should_think_before: bare string\n", "must be a non-empty list"),
+    ("reveals:\n- id: a\n  reveal_chapter: 15\n  author_truth: x\n"
+     "  reader_should_think_before: []\n", "must be a non-empty list"),
 ])
 def test_reveals_malformed_exits_loud(tmp_path, bad, needle):
     root = _series(tmp_path)
@@ -528,6 +532,16 @@ def test_present_ledger_with_invalid_reveal_chapter_exits_loud(tmp_path, ledger_
         readers_copy("01", repo_root=root)
     assert "plot_stage:" in str(e.value)
     assert "reveal_chapter" in str(e.value)
+
+
+def test_reveal_chapter_accepts_numeric_string(tmp_path):
+    # _reveal_chapter deliberately tolerates reveal_chapter: '15' (string) —
+    # this tolerance is critical to preserve through the _load_whodunit refactor.
+    root = _ledger_series(tmp_path, "reveal_chapter: '5'\nculprit: Mary\n")
+    p = readers_copy("01", repo_root=root)
+    out = p.read_text(encoding="utf-8")
+    assert "## Chapter 04" in out
+    assert "## Chapter 05" not in out
 
 
 # --- FINAL REVIEW FINDING 1: an out-of-range reveal_chapter must not un-blind
