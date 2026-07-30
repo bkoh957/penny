@@ -96,6 +96,28 @@ def append_items(ledger, new_points, *, reviewed_sha) -> dict:
         rec = pt.get("recommendation")
         if isinstance(rec, str) and rec.strip():
             item["recommendation"] = rec
+        # Optional measurements (spec 2026-07-30 §6.1). Stored OPAQUELY — the
+        # ledger records and renders them, it never interprets them, so a new
+        # finding type needs no change here. `append` is operator-driven and
+        # fails loudly (module docstring), so a malformed value is named rather
+        # than dropped: a silently-discarded metric would leave an item reading
+        # as a vague observation, which is the exact failure §6.1 exists to fix.
+        chapters = pt.get("chapters")
+        if chapters is not None:
+            if (not isinstance(chapters, list)
+                    or not all(isinstance(c, int) and not isinstance(c, bool)
+                               for c in chapters)):
+                raise SystemExit(
+                    f"append: item {item['id']}: 'chapters' must be a list of "
+                    f"integers, got {chapters!r}")
+            item["chapters"] = list(chapters)
+        metrics = pt.get("metrics")
+        if metrics is not None:
+            if not isinstance(metrics, dict):
+                raise SystemExit(
+                    f"append: item {item['id']}: 'metrics' must be a mapping, "
+                    f"got {type(metrics).__name__}")
+            item["metrics"] = dict(metrics)
         items.append(item)
         next_id += 1
     out["reviewed_outline_sha256"] = reviewed_sha
@@ -133,8 +155,17 @@ def render_view(ledger) -> str:
         if not rows:
             lines.append("_none_")
         for it in rows:
-            lines.append(f"- **{it.get('id')}** · _{it.get('source')}_ · pass {it.get('pass')}")
+            head = f"- **{it.get('id')}** · _{it.get('source')}_ · pass {it.get('pass')}"
+            chs = it.get("chapters")
+            if isinstance(chs, list) and chs:
+                head += " · ch " + ", ".join(str(c) for c in chs)
+            lines.append(head)
             lines.append(f"  {it.get('text', '').strip()}")
+            mets = it.get("metrics")
+            if isinstance(mets, dict) and mets:
+                # Rendered generically so an unrecognised metric key still shows.
+                lines.append("  _" + " · ".join(
+                    f"{k}={v}" for k, v in mets.items()) + "_")
             rec = it.get("recommendation")
             if isinstance(rec, str) and rec.strip():
                 lines.append(f"  **→** {rec.strip()}")
@@ -172,7 +203,8 @@ def main(argv=None) -> int:
     ap.add_argument("cmd", choices=["status", "render", "append"])
     ap.add_argument("book")
     ap.add_argument("--root", default=None, help="repo/series root override (tests)")
-    ap.add_argument("--points", help="append: path to a JSON array of {source,text,recommendation?}")
+    ap.add_argument("--points", help="append: path to a JSON array of "
+                                     "{source,text,recommendation?,chapters?,metrics?}")
     # NOTE: argparse usage errors (missing `book`, `cmd` outside choices) still exit 2
     # here via parse_args — that's a mis-written invocation, not a showrunner runtime
     # state, so it is deliberately NOT suppressed. The exit-0 guarantee below covers

@@ -329,3 +329,62 @@ def test_status_line_never_prints_recommendation_text(tmp_path):
     assert "OF-1" in line
     assert "SECRET_FIX" not in line
     assert "SECRET_OBSERVATION" not in line
+
+
+def test_append_passes_through_chapters_and_metrics():
+    out = of.append_items(_seed(), [{
+        "source": "fan-audit",
+        "text": "Reader named the impersonation at ch 11.",
+        "chapters": [11],
+        "metrics": {"finding": "early", "reveal": "impersonation",
+                    "meant_to_land": 15, "first_suspected": 11,
+                    "confidence": 4, "gap_chapters": 4},
+    }], reviewed_sha="abc")
+    item = out["items"][-1]
+    assert item["id"] == "OF-3"
+    assert item["chapters"] == [11]
+    assert item["metrics"]["gap_chapters"] == 4
+    assert item["metrics"]["finding"] == "early"
+
+
+def test_append_omits_both_keys_when_absent():
+    out = of.append_items(_seed(), [{"source": "claude", "text": "A point."}],
+                          reviewed_sha="abc")
+    assert "chapters" not in out["items"][-1]
+    assert "metrics" not in out["items"][-1]
+
+
+def test_append_rejects_non_int_chapters():
+    with pytest.raises(SystemExit) as exc:
+        of.append_items(_seed(),
+                        [{"source": "fan-audit", "text": "x", "chapters": ["11"]}],
+                        reviewed_sha="abc")
+    assert "chapters" in str(exc.value)
+
+
+def test_append_rejects_non_mapping_metrics():
+    with pytest.raises(SystemExit) as exc:
+        of.append_items(_seed(),
+                        [{"source": "fan-audit", "text": "x", "metrics": [1, 2]}],
+                        reviewed_sha="abc")
+    assert "metrics" in str(exc.value)
+
+
+def test_append_with_metrics_does_not_disturb_existing_state():
+    out = of.append_items(_seed(), [{"source": "fan-audit", "text": "second",
+                                     "chapters": [4], "metrics": {"interest": 3}}],
+                          reviewed_sha="b")
+    assert out["items"][0]["state"] == "solved"    # OF-1 from _seed()
+    assert out["items"][1]["state"] == "rejected"  # OF-2 from _seed()
+    assert out["items"][2]["id"] == "OF-3"
+
+
+def test_render_shows_chapters_and_unknown_metrics():
+    led = of.append_items(_seed(), [{
+        "source": "fan-audit", "text": "A finding.",
+        "chapters": [17, 19],
+        "metrics": {"finding": "dead-thread", "some_future_key": "value"},
+    }], reviewed_sha="abc")
+    view = of.render_view(led)
+    assert "ch 17, 19" in view
+    assert "some_future_key=value" in view
