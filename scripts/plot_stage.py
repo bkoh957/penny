@@ -559,11 +559,30 @@ def _chapter_numbers(text: str) -> list[int]:
             for cm in [CHAPTER_RE.match(m.group(1))] if cm]
 
 
+def _readback_source(book: str, *, root=None) -> Path:
+    """The file the reader's copy is cut from.
+
+    outline-skeleton.md is retired (spec 2026-07-31 §3.3): it was a thinner copy
+    of outline.md, and being a second description of one story is how book 01
+    drifted into two books with different reveal chapters. Prefer it while it
+    still exists so an in-flight book is not disturbed, then fall back to the
+    canonical outline. Failing loud when neither exists preserves the module's
+    "fail LOUD, not open" promise.
+    """
+    root = _root(root)
+    skel = stage_paths(book, root)["chapters"]
+    if skel.is_file():
+        return skel
+    outline = root / "input" / f"book-{book}" / "outline.md"
+    if outline.is_file():
+        return outline
+    sys.exit(f"plot_stage: no outline for book {book} — looked for {skel} "
+             f"and {outline}")
+
+
 def readers_copy(book: str, *, repo_root=None) -> Path:
     root = _root(repo_root)
-    skel = stage_paths(book, root)["chapters"]
-    if not skel.is_file():
-        sys.exit(f"plot_stage: no outline-skeleton for book {book} ({skel})")
+    skel = _readback_source(book, root=root)
     skel_text = skel.read_text(encoding="utf-8")
     reveal_ch = _reveal_chapter(book, root)
     # FINAL REVIEW FINDING 1: a reveal_chapter LARGER than the last chapter in
@@ -602,9 +621,7 @@ def readers_copy_staged(book: str, *, repo_root=None) -> list[Path]:
     stages = reveal_stages(reveals)
     if not stages:
         return []
-    skel = stage_paths(book, root)["chapters"]
-    if not skel.is_file():
-        sys.exit(f"plot_stage: no outline-skeleton for book {book} ({skel})")
+    skel = _readback_source(book, root=root)
     skel_text = skel.read_text(encoding="utf-8")
     nums = _chapter_numbers(skel_text)
     last = max(nums) if nums else 0

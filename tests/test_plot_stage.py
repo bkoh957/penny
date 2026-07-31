@@ -1061,3 +1061,32 @@ def test_legacy_unstaged_fan_report_still_counts(tmp_path):
     fan = _write(root, "output/book-01/reports/outline-fan.md")
     stamp("01", fan, [skel], repo_root=root)
     assert _readback_state(root) == "done"
+
+
+def test_readback_source_prefers_the_skeleton_when_present(tmp_path):
+    from scripts import plot_stage
+    (tmp_path / ".penny").mkdir()
+    d = tmp_path / "input" / "book-01"
+    d.mkdir(parents=True)
+    (d / "outline-skeleton.md").write_text("## Chapter 01 — S\n", encoding="utf-8")
+    (d / "outline.md").write_text("## Chapter 01 — O\n", encoding="utf-8")
+    assert plot_stage._readback_source("01", root=tmp_path).name == "outline-skeleton.md"
+
+
+def test_readback_source_falls_back_to_the_outline(tmp_path):
+    """The skeleton is retired (spec 2026-07-31 §3.3). A book that has only
+    outline.md must still be readable — book 01's skeleton is a different book."""
+    from scripts import plot_stage
+    (tmp_path / ".penny").mkdir()
+    d = tmp_path / "input" / "book-01"
+    d.mkdir(parents=True)
+    (d / "outline.md").write_text("## Chapter 01 — O\n", encoding="utf-8")
+    assert plot_stage._readback_source("01", root=tmp_path).name == "outline.md"
+
+
+def test_readback_source_fails_loud_when_neither_exists(tmp_path):
+    from scripts import plot_stage
+    (tmp_path / ".penny").mkdir()
+    (tmp_path / "input" / "book-01").mkdir(parents=True)
+    with pytest.raises(SystemExit, match="no outline"):
+        plot_stage._readback_source("01", root=tmp_path)
