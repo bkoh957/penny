@@ -97,10 +97,13 @@ def test_strand_raises_on_hyphens_only_slug(text):
 
 
 def test_parse_jobs_reads_ids_in_file_order():
-    from scripts import penny_genre
+    from scripts import penny_genre, penny_paths
     path = penny_genre.macro_structure()
     if path is None:                      # engine repo has no declared genre
-        path = Path("genres/cozy-mystery/review-rubrics/macro-structure.md")
+        # cwd-relative fallback would break if pytest ran from a subdirectory —
+        # anchor on the plugin root instead.
+        path = (penny_paths.plugin_root() / "genres" / "cozy-mystery"
+                 / "review-rubrics" / "macro-structure.md")
     jobs = outline_views.parse_jobs(Path(path).read_text(encoding="utf-8"))
     assert len(jobs) == 28
     assert jobs[0] == ("establish-protected-world", "Establish the Protected World")
@@ -111,3 +114,57 @@ def test_parse_jobs_reads_ids_in_file_order():
 def test_parse_jobs_ignores_a_heading_with_no_marker():
     text = "## 1. Titled\n<!-- job: titled -->\n\n## 2. Unmarked\n\nbody\n"
     assert outline_views.parse_jobs(text) == [("titled", "Titled")]
+
+
+def test_parse_jobs_raises_on_marker_inline_with_its_heading():
+    """A marker glued onto the heading line itself is present but malformed —
+    unlike a heading with no marker at all, this must fail loud, not vanish."""
+    text = "## 1. Titled <!-- job: titled -->\n\nbody\n"
+    with pytest.raises(ValueError, match="malformed job marker"):
+        outline_views.parse_jobs(text)
+
+
+def test_parse_jobs_raises_on_indented_marker():
+    text = "## 1. Titled\n    <!-- job: titled -->\n\nbody\n"
+    with pytest.raises(ValueError, match="malformed job marker"):
+        outline_views.parse_jobs(text)
+
+
+def test_parse_jobs_raises_on_marker_id_with_uppercase_or_underscore():
+    text = "## 1. Titled\n<!-- job: Titled_Job -->\n\nbody\n"
+    with pytest.raises(ValueError, match="malformed job marker"):
+        outline_views.parse_jobs(text)
+
+
+def test_parse_jobs_raises_on_duplicate_job_id():
+    """A job is addressed by its id — two jobs sharing one makes that address
+    ambiguous, which defeats the entire point of adding ids."""
+    text = ("## 1. First\n<!-- job: same-id -->\n\n"
+            "## 2. Second\n<!-- job: same-id -->\n\nbody\n")
+    with pytest.raises(ValueError, match="duplicate job id 'same-id'"):
+        outline_views.parse_jobs(text)
+
+
+def test_roster_reads_suspects_and_victim_from_the_ledger(tmp_path):
+    """Regression for a Task-2 defect: roster() called series_path() with a
+    'series/...' prefix, but series_path() already prepends 'series/', so the
+    resolved path was <root>/series/series/whodunit/book-NN.yaml — never a
+    real file — and roster() silently returned [] for every real series."""
+    (tmp_path / ".penny").mkdir()
+    ledger_dir = tmp_path / "series" / "whodunit"
+    ledger_dir.mkdir(parents=True)
+    (ledger_dir / "book-01.yaml").write_text(
+        "victim: neil-hartigan\n"
+        "alibi_grid:\n"
+        "  - { suspect: mary-kearney, chapter: 7, alibi: x, holds: false }\n"
+        "  - { suspect: saffron, chapter: 17, alibi: y, holds: true }\n",
+        encoding="utf-8",
+    )
+    assert outline_views.roster("01", root=tmp_path) == [
+        "mary-kearney", "saffron", "neil-hartigan",
+    ]
+
+
+def test_roster_returns_empty_list_when_ledger_is_missing(tmp_path):
+    (tmp_path / ".penny").mkdir()
+    assert outline_views.roster("01", root=tmp_path) == []

@@ -99,7 +99,7 @@ def roster(book: str, root=None) -> list[str]:
     import yaml
 
     from scripts import penny_paths
-    path = penny_paths.series_path(f"series/whodunit/book-{book}.yaml", root=root)
+    path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
     if not Path(path).is_file():
         return []
     data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
@@ -123,6 +123,44 @@ def parse_jobs(text: str) -> list[tuple[str, str]]:
     A job is addressed by its STABLE ID, never its ordinal position: 'job 11'
     means nothing in a genre whose file has a different shape. An unmarked
     heading is not a job — silently skipped, so a genre pack can carry prose
-    headings alongside its jobs.
+    headings alongside its jobs. That silence is deliberate.
+
+    A marker that IS present but malformed — inline with its heading, indented,
+    or naming an id outside [a-z0-9-] — is a different case and must fail loud:
+    a genre author's typo would otherwise leave the spine worksheet quietly
+    missing a job. Detected by scanning for the literal '<!-- job:' substring
+    and comparing it against what _JOB_RE actually captured — a well-formed
+    file can never have more literal occurrences than captures.
+
+    Two jobs sharing an id also fails loud: the whole premise of an id is that
+    it addresses one job unambiguously.
     """
-    return [(m.group("id"), m.group("title")) for m in _JOB_RE.finditer(text)]
+    jobs: list[tuple[str, str]] = []
+    matched_line_nos: set[int] = set()
+    for m in _JOB_RE.finditer(text):
+        jobs.append((m.group("id"), m.group("title")))
+        marker_offset = m.start() + m.group(0).index("<!--")
+        matched_line_nos.add(text.count("\n", 0, marker_offset))
+
+    lines = text.split("\n")
+    stray = [i for i, line in enumerate(lines)
+             if "<!-- job:" in line and i not in matched_line_nos]
+    if stray:
+        i = stray[0]
+        raise ValueError(
+            f"parse_jobs: malformed job marker at line {i + 1}: {lines[i]!r} — "
+            "a '<!-- job: some-id -->' marker must sit alone on the line "
+            "immediately after its '## N. Title' heading, with a lowercase "
+            "id made only of [a-z0-9-]"
+        )
+
+    seen: dict[str, str] = {}
+    for job_id, title in jobs:
+        if job_id in seen:
+            raise ValueError(
+                f"parse_jobs: duplicate job id {job_id!r} (used by both "
+                f"{seen[job_id]!r} and {title!r})"
+            )
+        seen[job_id] = title
+
+    return jobs

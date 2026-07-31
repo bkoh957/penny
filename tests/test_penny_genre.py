@@ -248,3 +248,15 @@ def test_macro_structure_is_validated_as_a_file_key():
     way beat_sheet and fan_persona already do."""
     from scripts import penny_genre
     assert "macro_structure" in penny_genre._OPTIONAL_FILE_KEYS
+
+
+def test_macro_structure_accessor_resolves_through_manifest_key(tmp_path):
+    """Mirrors test_beat_sheet_accessor_resolves_through_manifest_key: in THIS
+    repo macro_structure() always takes the undeclared-genre None path, so
+    without a real declared-genre case the resolver could return the wrong
+    Path and the suite would stay green."""
+    s = _cozy_series(tmp_path)
+    p = pg.macro_structure(root=s)
+    assert p == (pp.plugin_root() / "genres" / "cozy-mystery"
+                 / "review-rubrics" / "macro-structure.md")
+    assert p.is_file()
