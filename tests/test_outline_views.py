@@ -473,4 +473,98 @@ def test_cli_refuses_a_book_id_with_a_trailing_newline(tmp_path):
     (tmp_path / ".penny").mkdir()
     proc = _run(tmp_path, "glance", "01\n")
     assert proc.returncode == 2
-    assert "invalid" in (proc.stderr + proc.stdout).lower()
+
+
+def test_roster_raises_value_error_on_a_non_list_alibi_grid(tmp_path):
+    """FINDING 3: `for entry in data.get("alibi_grid") or []` raised a raw
+    TypeError ('int' object is not iterable) on a ledger with a scalar
+    alibi_grid — a third member of the ledger-shape family this file has
+    twice already closed (malformed YAML, non-mapping top level)."""
+    (tmp_path / ".penny").mkdir()
+    ledger_dir = tmp_path / "series" / "whodunit"
+    ledger_dir.mkdir(parents=True)
+    (ledger_dir / "book-01.yaml").write_text("alibi_grid: 5\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="alibi_grid.*must be a list"):
+        outline_views.roster("01", root=tmp_path)
+
+
+def test_cli_strands_names_a_non_list_alibi_grid_and_exits_usage(tmp_path, text):
+    """CLI-level companion to the unit test above."""
+    root = _series(tmp_path, text)
+    ledger_dir = root / "series" / "whodunit"
+    ledger_dir.mkdir(parents=True)
+    (ledger_dir / "book-01.yaml").write_text("alibi_grid: 5\n", encoding="utf-8")
+    proc = _run(root, "strands", "01")
+    assert proc.returncode == 2
+    assert "must be a list" in (proc.stderr + proc.stdout).lower()
+
+
+@pytest.mark.parametrize("body", ["false\n", "0\n", "[]\n"])
+def test_roster_raises_value_error_on_a_falsy_non_mapping_ledger(tmp_path, body):
+    """FINDING 3 (masking bug): `yaml.safe_load(...) or {}` turned a falsy
+    non-dict top level (false/0/[]) into `{}` BEFORE the isinstance guard
+    ever saw it, so a ledger this malformed silently reported "no whodunit
+    ledger was found" instead of naming it as malformed — worse than the
+    already-fixed non-falsy non-mapping cases ("just a string", a populated
+    list), which never hit the `or {}` fallback because they're truthy."""
+    (tmp_path / ".penny").mkdir()
+    ledger_dir = tmp_path / "series" / "whodunit"
+    ledger_dir.mkdir(parents=True)
+    (ledger_dir / "book-01.yaml").write_text(body, encoding="utf-8")
+    with pytest.raises(ValueError, match="must be a mapping"):
+        outline_views.roster("01", root=tmp_path)
+
+
+@pytest.mark.parametrize("body", ["false\n", "0\n", "[]\n"])
+def test_cli_strands_names_a_falsy_non_mapping_ledger_and_exits_usage(tmp_path, text, body):
+    """CLI-level companion: must surface as a named 'must be a mapping'
+    refusal, never the generic 'no roster'/'no whodunit ledger was found'
+    message that the masking bug produced instead."""
+    root = _series(tmp_path, text)
+    ledger_dir = root / "series" / "whodunit"
+    ledger_dir.mkdir(parents=True)
+    (ledger_dir / "book-01.yaml").write_text(body, encoding="utf-8")
+    proc = _run(root, "strands", "01")
+    assert proc.returncode == 2
+    msg = (proc.stderr + proc.stdout).lower()
+    assert "must be a mapping" in msg
+    assert "no whodunit ledger was found" not in msg
+
+
+@pytest.mark.parametrize("text", [
+    "## 1. Titled\n    <!--job: titled -->\n\nbody\n",
+    "## 1. Titled <!--job: titled -->\n\nbody\n",
+])
+def test_parse_jobs_catches_a_stray_marker_with_no_space_after_the_opener(text):
+    """FINDING 4: the stray-marker scan looked for the literal '<!-- job:'
+    (one space after the opener), so a malformed marker written as
+    '<!--job:' (no space) — indented, or glued inline to its heading — was
+    silently dropped instead of failing loud like every other malformed
+    placement this function already catches."""
+    with pytest.raises(ValueError, match="malformed job marker"):
+        outline_views.parse_jobs(text)
+
+
+def test_cli_spine_names_a_missing_macro_structure_file_and_exits_usage(
+        tmp_path, text, monkeypatch):
+    """FINDING 2: macro_structure() resolves through the overlay's
+    config_path(), which falls back to a plugin-default path that may not
+    exist on disk — Path.read_text() on that missing file used to raise a
+    raw FileNotFoundError (exit 1, full traceback) instead of the named
+    exit-2 refusal every other bad-input case in this module gets.
+
+    Reproduced by monkeypatching penny_genre.macro_structure() directly
+    (called via `from scripts import penny_genre` inside outline_views._main)
+    rather than fabricating a genre pack: a genre.yaml declaring a
+    macro_structure file that doesn't exist in its own genre_dir would
+    already be refused earlier, by penny_genre.load_manifest's manifest
+    validation — this defends outline_views.py itself against trusting
+    macro_structure()'s return without checking it landed on a real file."""
+    root = _series(tmp_path, text)
+    monkeypatch.chdir(root)
+    monkeypatch.syspath_prepend(str(Path.cwd()))
+    from scripts import penny_genre
+    missing = tmp_path / "no-such-macro-structure.md"
+    monkeypatch.setattr(penny_genre, "macro_structure", lambda root=None: missing)
+    rc = outline_views._main(["spine", "01"])
+    assert rc == 2

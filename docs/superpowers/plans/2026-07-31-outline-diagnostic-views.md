@@ -1090,6 +1090,18 @@ Before the read-back, delete the drifted `input/book-01/outline-skeleton.md` and
 chapter numbers — 13 and 25 against `outline.md`, not the 15 and 27 the previous handoff
 records, which are skeleton-indexed (spec §8.4).
 
+**Warning (final review Finding 1) — deleting the skeleton walks `/plot-book`'s tracker
+backwards.** Task 6 made `readers_copy`/`readers_copy_staged` fall back to `outline.md` when
+`outline-skeleton.md` is absent, but `plot_stage.stage_paths()` still hard-names the skeleton
+for the `chapters` and `weave` stages. Once you delete it, `plot_stage.py status` reports
+`chapters: missing` and `weave: missing`, so `next_stage()` returns `chapters` — meaning
+`/plot-book 01` would try to resume by dispatching `chapter-weaver` to regenerate the middle
+of the book. **Do not run `/plot-book 01` on this book again until the later
+skeleton-retirement work (the "Also not in this plan" item below) lands.** `outline.md` is
+never overwritten by this, so it is not data loss — but the tracker will steer you straight
+back into re-plotting a book that doesn't need it. `/diagnose-outline` and the three views
+above are unaffected; they read `outline.md` directly and never touch the tracker.
+
 **Deliberately not in this plan:** book 01's derived `story.md` worksheet (spec §8.2.1).
 Its format depends on what the strands actually turn up, which is spec §9's own reason for
 putting the diagnostic first. It gets a second, short plan once the showrunner has read the

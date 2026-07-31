@@ -108,24 +108,41 @@ def roster(book: str, root=None) -> list[str]:
     if not Path(path).is_file():
         return []
     try:
-        data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+        # FINDING 3 (masking bug): no `or {}` here. That fallback used to turn
+        # a falsy non-dict top level (`false`, `0`, `[]` — all valid YAML,
+        # all falsy in Python) into `{}` BEFORE the isinstance guard below
+        # ever saw it, so a genuinely malformed ledger of that shape was
+        # reported as "no whodunit ledger was found" instead of naming it as
+        # malformed. Removing the fallback lets the guard see the real value.
+        data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
     except yaml.YAMLError as exc:
         raise ValueError(
             f"roster: whodunit ledger for book {book} is not valid YAML "
             f"({path}): {exc}"
         ) from exc
     if not isinstance(data, dict):
-        # Valid YAML, wrong shape: a scalar ("just a string\n") or a bare
-        # top-level list both parse cleanly but have no .get() — a truncated
-        # or mis-saved hand-edited ledger is a realistic way to get here, and
-        # this is exactly the failure mode the earlier YAMLError guard was
-        # meant to eliminate.
+        # Valid YAML, wrong shape: a scalar ("just a string\n"), a bare
+        # top-level list, or a falsy scalar (false/0/[]/empty file -> None)
+        # all parse cleanly but have no .get() — a truncated or mis-saved
+        # hand-edited ledger is a realistic way to get here, and this is
+        # exactly the failure mode the earlier YAMLError guard was meant to
+        # eliminate.
         raise ValueError(
             f"roster: whodunit ledger for book {book} must be a mapping at "
             f"the top level, got {type(data).__name__} ({path})"
         )
+    grid = data.get("alibi_grid")
+    if grid is not None and not isinstance(grid, list):
+        # FINDING 3: a non-list alibi_grid (e.g. `alibi_grid: 5`) used to
+        # raise a raw TypeError out of `for entry in ... or []` — the
+        # ledger-shape family this branch has twice already closed for the
+        # top level and for malformed YAML.
+        raise ValueError(
+            f"roster: whodunit ledger for book {book} 'alibi_grid' must be "
+            f"a list, got {type(grid).__name__} ({path})"
+        )
     names: list[str] = []
-    for entry in data.get("alibi_grid") or []:
+    for entry in grid or []:
         if isinstance(entry, dict) and entry.get("suspect"):
             names.append(str(entry["suspect"]))
     victim = data.get("victim")
@@ -136,6 +153,15 @@ def roster(book: str, root=None) -> list[str]:
 
 _JOB_RE = re.compile(r"^##\s+\d+\.\s+(?P<title>.+?)\s*$\n<!--\s*job:\s*(?P<id>[a-z0-9-]+)\s*-->",
                      re.MULTILINE)
+# FINDING 4: the stray-marker scan below used to look for the literal
+# "<!-- job:" (one space after the opener) — the exact substring _JOB_RE's own
+# well-formed match contains. A marker written as "<!--job:" (no space) is
+# still a job marker by _JOB_RE's own `<!--\s*job:` sub-pattern, but when it
+# sits somewhere _JOB_RE's full shape doesn't match (inline with its heading,
+# indented, etc.) the old literal scan couldn't see it at all, so it was
+# silently dropped instead of failing loud like every other malformed
+# placement. This regex mirrors _JOB_RE's own opener tolerance.
+_JOB_MARKER_OPENER_RE = re.compile(r"<!--\s*job:")
 
 
 def parse_jobs(text: str) -> list[tuple[str, str]]:
@@ -149,9 +175,11 @@ def parse_jobs(text: str) -> list[tuple[str, str]]:
     A marker that IS present but malformed — inline with its heading, indented,
     or naming an id outside [a-z0-9-] — is a different case and must fail loud:
     a genre author's typo would otherwise leave the spine worksheet quietly
-    missing a job. Detected by scanning for the literal '<!-- job:' substring
-    and comparing it against what _JOB_RE actually captured — a well-formed
-    file can never have more literal occurrences than captures.
+    missing a job. Detected by scanning for the marker opener (`<!--` +
+    optional whitespace + `job:` — the same tolerance _JOB_RE itself uses, so
+    a no-space `<!--job:` opener is caught too, FINDING 4) and comparing it
+    against what _JOB_RE actually captured — a well-formed file can never
+    have more opener occurrences than captures.
 
     Two jobs sharing an id also fails loud: the whole premise of an id is that
     it addresses one job unambiguously.
@@ -165,7 +193,7 @@ def parse_jobs(text: str) -> list[tuple[str, str]]:
 
     lines = text.split("\n")
     stray = [i for i, line in enumerate(lines)
-             if "<!-- job:" in line and i not in matched_line_nos]
+             if _JOB_MARKER_OPENER_RE.search(line) and i not in matched_line_nos]
     if stray:
         i = stray[0]
         raise ValueError(
@@ -316,6 +344,16 @@ def _main(argv: list[str]) -> int:
             if path is None:
                 print("outline_views: the active series declares no genre, or its "
                       "genre.yaml has no macro_structure: key — the spine view "
+                      "cannot know what jobs to check", file=sys.stderr)
+                return 2
+            # FINDING 2: macro_structure() resolves through the overlay's
+            # config_path(), which falls back to a plugin-default path that
+            # may not exist on disk (the plugin ships no such default file) —
+            # Path.read_text() on a missing file is a raw FileNotFoundError,
+            # exit 1, full traceback. Named refusal + exit 2 instead.
+            if not Path(path).is_file():
+                print(f"outline_views: the active genre declares macro_structure "
+                      f"but the file does not exist ({path}) — the spine view "
                       "cannot know what jobs to check", file=sys.stderr)
                 return 2
             jobs = parse_jobs(Path(path).read_text(encoding="utf-8"))

@@ -575,6 +575,7 @@ consensus axis (≥K-of-M via `beta_consensus_k`).
 | `/scaffold-book <NN> <outline> [--approve]` | book | mints the lock |
 | `/expand-outline <NN> [MM]` | book | requires sealed solution |
 | `/review-outline <NN> [--focus "…"]` | book | **advisory** |
+| `/diagnose-outline <NN>` | book | **read-only** — never writes `outline.md`, never touches a lock |
 | `/map-chapter <NN> <MM>` | chapter | requires the lock |
 | `/draft-chapter <NN> <MM>` | chapter | requires the lock |
 | `/draft-chapter-lmstudio <NN> <MM> [model-id]` | chapter | requires the lock; LM Studio scene-shard route |
@@ -628,9 +629,10 @@ writes `ch-MM.gate.md` and prints `GATE: PASS|HOLD`. **Exit 0 means the gate *ev
    `outline-fan` (the blind genre-fan reader).
 
 3. **Swappable data — genre packs and the series folder.** `genres/<g>/` holds `genre.yaml`
-   (inspector roster, gates, planning command, tracks, plus the optional `beat_sheet:` and
-   `fan_persona:` keys `/plot-book` reads — cozy's `beat-sheet.yaml` and
-   `personas/genre-fan.md` are the worked example a thriller pack will follow),
+   (inspector roster, gates, planning command, tracks, plus the optional `beat_sheet:`,
+   `fan_persona:`, and `macro_structure:` keys `/plot-book` and `/diagnose-outline` read —
+   cozy's `beat-sheet.yaml`, `personas/genre-fan.md`, and `review-rubrics/macro-structure.md`
+   are the worked example a thriller pack will follow),
    conventions, and genre rubrics. The series folder holds `config/` overrides, `series/`
    continuity, `input/`, `output/`. Swap either and you change genre or location without
    touching the engine.

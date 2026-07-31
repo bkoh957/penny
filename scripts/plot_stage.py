@@ -182,7 +182,16 @@ def _upstream_sha(path: Path) -> str:
 
     Used on BOTH sides of the fingerprint (stamp() writes it, _stage_stale()
     compares against it) — both must agree or the comparison never matches.
+
+    FINAL REVIEW FINDING 1: a missing upstream file used to reach `_sha`'s
+    `read_bytes()` and raise a raw FileNotFoundError — no named predicate, no
+    controlled exit code, breaking this module's "fail LOUD, not open"
+    convention. `_stage_stale` already guards its own call site with an
+    `is_file()` check before ever reaching here, but `stamp()` did not — this
+    guard is the one place both callers are covered at once.
     """
+    if not path.is_file():
+        sys.exit(f"plot_stage: missing upstream file {path}")
     if path.parent.name == "whodunit":
         text = path.read_text(encoding="utf-8")
         try:

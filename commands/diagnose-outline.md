@@ -1,5 +1,6 @@
 ---
 description: Render the three read-only diagnostic views over a book's existing outline, and map its chapters onto the genre's structural jobs.
+argument-hint: <book-number>
 ---
 
 Read-only throughout. Nothing here writes to `input/book-NN/outline.md`, and
@@ -15,6 +16,10 @@ nothing mints or deletes a lock. Safe to run on a locked book.
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/outline_views.py" glance "$book"
    ```
+
+   Exit 2 means the CLI refused — read the exact line it printed on stderr; it
+   fires for a missing `outline.md` or an invalid book id. Fix the named
+   problem and re-run rather than guessing.
 
 3. **Render the strand pages:**
 

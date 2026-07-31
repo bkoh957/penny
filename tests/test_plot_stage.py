@@ -386,6 +386,31 @@ def test_stamp_creates_frontmatter_if_absent(tmp_path):
     assert "built_from_premise:" in end.read_text(encoding="utf-8")
 
 
+def test_stamp_refuses_a_missing_upstream_file_by_name(tmp_path):
+    """FINAL REVIEW FINDING 1(a): stamp() used to call _upstream_sha() ->
+    _sha() -> Path.read_bytes() on a missing upstream, raising a raw
+    FileNotFoundError — a traceback, not the module's "fail LOUD, not open"
+    convention of a named sys.exit predicate. Reproduces the readback
+    sign-off call named in the finding: stamping a fan report against the
+    retired outline-skeleton.md on a book that only has outline.md."""
+    root = _series(tmp_path)
+    fan_report = _write(root, "output/book-01/reports/outline-fan-stage-1.md",
+                        "---\n---\n\nsome report\n")
+    missing_skel = root / "input" / "book-01" / "outline-skeleton.md"
+    assert not missing_skel.is_file()
+    with pytest.raises(SystemExit, match="missing upstream file"):
+        stamp("01", fan_report, [missing_skel], repo_root=root)
+
+
+def test_upstream_sha_refuses_a_missing_file_by_name(tmp_path):
+    """FINAL REVIEW FINDING 1(a), the direct-call companion: _upstream_sha()
+    itself must refuse by name rather than tracebacking, independent of
+    which caller reaches it."""
+    missing = tmp_path / "no-such-upstream.md"
+    with pytest.raises(SystemExit, match="missing upstream file"):
+        _upstream_sha(missing)
+
+
 WIRED_CLEAN = Path("tests/fixtures/outlines/wired-clean.md")
 
 
