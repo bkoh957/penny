@@ -295,11 +295,102 @@ def test_cli_strands_names_the_problem_when_it_has_no_roster(tmp_path, text):
 
 
 def test_cli_strands_names_a_degenerate_slug_and_exits_usage(tmp_path, text):
-    """CARRY-FORWARD: strand() raises ValueError on a slug with no name tokens
-    (a placeholder like '-' from a hand-edited ledger). The CLI must turn
-    that into a named refusal on stderr and exit 2 — never a raw traceback."""
+    """CARRY-FORWARD: a slug with no name tokens (a placeholder like '-' from
+    a hand-edited ledger) must never reach strand() at all after the fix-round-1
+    path-safety fix below — '-' fails the path-safety format check first
+    (it can't start with a hyphen), which is a strictly earlier and stricter
+    refusal than strand()'s own 'yields no name tokens' ValueError. Either way:
+    named message on stderr, exit 2, never a raw traceback. (strand()'s own
+    ValueError is still covered directly at the unit level by
+    test_strand_raises_on_empty_slug / test_strand_raises_on_hyphens_only_slug
+    above, since strand() may still be called by future non-CLI callers with
+    an unvalidated slug.)"""
     root = _series(tmp_path, text)
     proc = _run(root, "strands", "01", "--who", "-")
     assert proc.returncode == 2
     msg = (proc.stderr + proc.stdout).lower()
-    assert "yields no name tokens" in msg
+    assert "invalid" in msg and "character slug" in msg
+
+
+def test_cli_strands_refuses_a_traversal_slug_and_leaves_the_outline_untouched(tmp_path, text):
+    """CRITICAL fix (round 1): a character slug reached Path(...) via
+    f"{slug}.md" with no validation — the reviewer demonstrated
+    `strands 01 --who '../../../../input/book-01/outline'` silently
+    overwriting input/book-01/outline.md with exit 0. Must now refuse by
+    name, exit 2, and leave the outline byte-for-byte untouched, with no
+    'strands' report directory created at all (validate-before-write)."""
+    root = _series(tmp_path, text)
+    outline_path = root / "input" / "book-01" / "outline.md"
+    before = outline_path.read_text(encoding="utf-8")
+    proc = _run(root, "strands", "01", "--who",
+                "../../../../input/book-01/outline")
+    assert proc.returncode == 2
+    msg = (proc.stderr + proc.stdout).lower()
+    assert "invalid" in msg and "character slug" in msg
+    assert outline_path.read_text(encoding="utf-8") == before
+    assert not (root / "output" / "book-01" / "reports" / "strands").exists()
+
+
+def test_cli_strands_refuses_a_traversal_slug_reaching_the_lock_dir(tmp_path, text):
+    """Same defect as above, aimed at .penny/locks/ instead of the outline —
+    the reviewer named both as reachable targets of the same unvalidated
+    slug-as-filename construction."""
+    root = _series(tmp_path, text)
+    lock_dir = root / ".penny" / "locks"
+    lock_dir.mkdir(parents=True)
+    lock_path = lock_dir / "book-01.mystery.lock"
+    lock_path.write_text("SEALED\n", encoding="utf-8")
+    proc = _run(root, "strands", "01", "--who",
+                "../../../../.penny/locks/book-01.mystery")
+    assert proc.returncode == 2
+    assert "invalid" in (proc.stderr + proc.stdout).lower()
+    assert lock_path.read_text(encoding="utf-8") == "SEALED\n"
+
+
+def test_cli_refuses_a_traversal_book_id_before_creating_anything(tmp_path):
+    """CRITICAL fix (round 1): the book id reached _outline_text/_reports_dir
+    unvalidated — the reviewer showed `_reports_dir("../..")` creating
+    directories outside output/. Must refuse before anything is created."""
+    (tmp_path / ".penny").mkdir()
+    proc = _run(tmp_path, "glance", "../..")
+    assert proc.returncode == 2
+    assert "invalid" in (proc.stderr + proc.stdout).lower()
+    assert not (tmp_path / "output").exists()
+
+
+def test_cli_strands_refuses_cleanly_when_who_has_no_value(tmp_path, text):
+    """Important fix (round 1): --who as the very last argument used to raise
+    IndexError (exit 1, raw traceback) instead of a named exit-2 refusal like
+    every other bad-input case."""
+    root = _series(tmp_path, text)
+    proc = _run(root, "strands", "01", "--who")
+    assert proc.returncode == 2
+    assert "--who requires a value" in (proc.stderr + proc.stdout)
+
+
+def test_roster_raises_value_error_on_malformed_yaml(tmp_path):
+    """Important fix (round 1): a hand-edited ledger that isn't valid YAML
+    used to raise a raw yaml.YAMLError out of roster() — not a ValueError,
+    so the CLI's single `except ValueError` never caught it either."""
+    (tmp_path / ".penny").mkdir()
+    ledger_dir = tmp_path / "series" / "whodunit"
+    ledger_dir.mkdir(parents=True)
+    (ledger_dir / "book-01.yaml").write_text(
+        "victim: [unterminated\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="not valid YAML"):
+        outline_views.roster("01", root=tmp_path)
+
+
+def test_cli_strands_names_a_malformed_ledger_and_exits_usage(tmp_path, text):
+    """CLI-level companion to the unit test above: a malformed ledger must
+    surface as a named exit-2 refusal, not a traceback, when strands falls
+    back to roster() (no --who given)."""
+    root = _series(tmp_path, text)
+    ledger_dir = root / "series" / "whodunit"
+    ledger_dir.mkdir(parents=True)
+    (ledger_dir / "book-01.yaml").write_text(
+        "victim: [unterminated\n", encoding="utf-8")
+    proc = _run(root, "strands", "01")
+    assert proc.returncode == 2
+    msg = (proc.stderr + proc.stdout).lower()
+    assert "not valid yaml" in msg

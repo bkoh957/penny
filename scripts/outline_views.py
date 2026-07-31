@@ -95,14 +95,25 @@ def render_strand(slug: str, hits: list[tuple[int, str]]) -> str:
 def roster(book: str, root=None) -> list[str]:
     """Character slugs from the whodunit ledger: every alibi_grid suspect, plus
     the victim. PyYAML is correct here — the ledger is nested human-edited data.
-    Returns [] when there is no readable ledger; the caller then needs --who."""
+    Returns [] when there is no readable ledger; the caller then needs --who.
+
+    Raises ValueError (never a raw yaml.YAMLError) when the ledger file exists
+    but is not parseable — a hand-edited yaml file can be truncated or broken,
+    and the CLI's single ValueError catch is what turns this into a named
+    stderr line instead of a traceback."""
     import yaml
 
     from scripts import penny_paths
     path = penny_paths.series_path(f"whodunit/book-{book}.yaml", root=root)
     if not Path(path).is_file():
         return []
-    data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+    try:
+        data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError as exc:
+        raise ValueError(
+            f"roster: whodunit ledger for book {book} is not valid YAML "
+            f"({path}): {exc}"
+        ) from exc
     names: list[str] = []
     for entry in data.get("alibi_grid") or []:
         if isinstance(entry, dict) and entry.get("suspect"):
@@ -189,6 +200,23 @@ def spine_worksheet(jobs: list[tuple[str, str]],
     return "\n".join(out)
 
 
+_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+
+
+def _slug_error(kind: str, value: str) -> str | None:
+    """None if `value` is safe to use as a single path component; otherwise a
+    named refusal message. A book id or character slug is showrunner-authored
+    — typed by hand after --who, or read out of a hand-edited yaml ledger's
+    `suspect:`/`victim:` fields — and this is the only check standing between
+    a stray '/' or '..' and a write outside output/book-NN/reports/. It MUST
+    run before the value ever reaches Path(...), never after."""
+    if not _SLUG_RE.match(value):
+        return (f"outline_views: invalid {kind} {value!r} — must match "
+                f"{_SLUG_RE.pattern!r} (lowercase letters, digits, hyphens "
+                "only; no '/', no '.', no leading hyphen)")
+    return None
+
+
 def _reports_dir(book: str, root=None) -> Path:
     from scripts import penny_paths
     d = Path(penny_paths.output_path(f"book-{book}/reports", root=root))
@@ -213,14 +241,25 @@ def _main(argv: list[str]) -> int:
               file=sys.stderr)
         return 2
     cmd, book = argv[0], argv[1]
+
+    # Validate the book id BEFORE it ever reaches a path — _outline_text and
+    # _reports_dir both interpolate it straight into a filesystem path, so a
+    # book id of e.g. "../.." must be refused here, before either function
+    # creates or opens anything.
+    err = _slug_error("book id", book)
+    if err:
+        print(err, file=sys.stderr)
+        return 2
+
     text = _outline_text(book)
     dest_dir = _reports_dir(book)
 
     # Every view below can raise ValueError from the view layer — a degenerate
-    # character slug (strand()) or a malformed/duplicate job marker
-    # (parse_jobs(), spine_worksheet()). All of those are showrunner-data
-    # problems, not engine bugs: turn each into one named line on stderr and
-    # exit 2, never a raw traceback in the writer's face.
+    # character slug (strand()), an unparseable ledger (roster()), or a
+    # malformed/duplicate job marker (parse_jobs(), spine_worksheet()). All of
+    # those are showrunner-data problems, not engine bugs: turn each into one
+    # named line on stderr and exit 2, never a raw traceback in the writer's
+    # face.
     try:
         if cmd == "glance":
             dest = dest_dir / "outline-glance.md"
@@ -231,14 +270,28 @@ def _main(argv: list[str]) -> int:
         if cmd == "strands":
             who: list[str] = []
             if "--who" in argv:
-                who = [s.strip() for s in argv[argv.index("--who") + 1].split(",") if s.strip()]
+                idx = argv.index("--who")
+                if idx + 1 >= len(argv):
+                    print("outline_views: --who requires a value "
+                          "(comma-separated character slugs)", file=sys.stderr)
+                    return 2
+                who = [s.strip() for s in argv[idx + 1].split(",") if s.strip()]
             else:
                 who = roster(book)
             if not who:
-                print(f"outline_views: no roster for book {book} — the whodunit "
-                      "ledger has no alibi_grid, so pass --who name,name",
+                print(f"outline_views: no roster for book {book} — no "
+                      "whodunit ledger was found, or it was found but has no "
+                      "alibi_grid entries — pass --who name,name",
                       file=sys.stderr)
                 return 2
+            # Validate every slug BEFORE any file is written — a batch of N
+            # slugs where the last one is a path-traversal attempt must not
+            # have already written the first N-1 files.
+            for slug in who:
+                err = _slug_error("character slug", slug)
+                if err:
+                    print(err, file=sys.stderr)
+                    return 2
             out_dir = dest_dir / "strands"
             out_dir.mkdir(parents=True, exist_ok=True)
             for slug in who:
