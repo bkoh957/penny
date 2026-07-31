@@ -1,4 +1,5 @@
 import glob
+import hashlib
 from pathlib import Path
 
 import pytest
@@ -214,13 +215,121 @@ def test_editing_clue_schedule_still_makes_chapters_stale(tmp_path):
     assert dict((n, s) for n, s, _ in rows)["chapters"] == "stale"
 
 
-def test_upstream_sha_without_reveals_key_is_the_plain_file_hash(tmp_path):
-    """Pins the no-op path that keeps every already-stamped book valid: a
-    ledger with no reveals: key must fingerprint identically to _sha (never
-    a re-serialised path)."""
+def test_upstream_sha_without_reveals_is_blank_line_insensitive(tmp_path):
+    """RULING (final review re-review): the whitespace-proof fingerprint
+    applies to EVERY whodunit ledger, not just ones that declare reveals: —
+    so a ledger with no reveals: key no longer equals the bare _sha(path)
+    (that was the old, whitespace-EXACT contract this test used to pin; it
+    broke the moment spec §3's own documented example layout — a blank line
+    before reveals: — was followed). This is a SANCTIONED test-contract
+    change, not a weakening: what must hold now is that hashing a ledger's
+    non-blank lines is insensitive to blank lines with nothing else changed,
+    and the formula is pinned explicitly below."""
     root = _series(tmp_path)
     wd = _whodunit(root)
-    assert _upstream_sha(wd) == _sha(wd)
+    no_blank = _upstream_sha(wd)
+    wd.write_text(wd.read_text(encoding="utf-8") + "\n\n", encoding="utf-8")
+    with_blank = _upstream_sha(wd)
+    assert no_blank == with_blank
+
+    non_blank_text = "".join(
+        line for line in wd.read_text(encoding="utf-8").splitlines(keepends=True)
+        if line.strip())
+    assert with_blank == hashlib.sha256(non_blank_text.encode("utf-8")).hexdigest()
+
+
+def test_declaring_reveals_with_blank_line_before_leaves_next_stage_unchanged(tmp_path):
+    """RULING (final review re-review): spec §3's own reveals: example puts a
+    blank line between reveal_chapter: and reveals: — a showrunner following
+    the docs must not go stale for it."""
+    root = _series(tmp_path)
+    wd = _chapters_ready(root)
+    wd.write_text(wd.read_text(encoding="utf-8") + "\n" + (
+        "reveals:\n"
+        "- id: impersonation\n"
+        "  reveal_chapter: 15\n"
+        "  author_truth: Someone used Maggie's identity before she arrived.\n"
+    ), encoding="utf-8")
+
+    rows = stage_status("01", repo_root=root)
+    assert dict((n, s) for n, s, _ in rows)["chapters"] == "done"
+    assert next_stage(rows) != "chapters"
+
+
+def test_declaring_reveals_with_blank_line_after_leaves_next_stage_unchanged(tmp_path):
+    root = _series(tmp_path)
+    wd = _chapters_ready(root)
+    wd.write_text(wd.read_text(encoding="utf-8") + (
+        "reveals:\n"
+        "- id: impersonation\n"
+        "  reveal_chapter: 15\n"
+        "  author_truth: Someone used Maggie's identity before she arrived.\n"
+        "\n"
+    ), encoding="utf-8")
+
+    rows = stage_status("01", repo_root=root)
+    assert dict((n, s) for n, s, _ in rows)["chapters"] == "done"
+    assert next_stage(rows) != "chapters"
+
+
+def test_reveals_inserted_before_a_pre_existing_trailing_comment_leaves_chapters_done(tmp_path):
+    """A column-0 comment that PRE-EXISTS the reveals: block is real content
+    the block doesn't own and must survive being stripped, not be swept away
+    with it (final review re-review — an earlier version's boundary regex
+    excluded '#' from ending the block, so a standalone comment sitting right
+    after an inserted reveals: block was deleted along with it, moving the
+    hash even though the comment itself never changed)."""
+    root = _series(tmp_path)
+    book = "01"
+    prem = _write(root, f"input/book-{book}/plot/premise.md")
+    end = _write(root, f"input/book-{book}/plot/ending.md")
+    tp = _write(root, f"input/book-{book}/plot/turning-points.md")
+    sol = _write(root, f"output/book-{book}/mystery-solution.md")
+    wd = _write(root, f"series/whodunit/book-{book}.yaml",
+                "book: '01'\ntotal_chapters: 30\nreveal_chapter: 26\n"
+                "# a trailing note\n")
+    skel = _write(root, f"input/book-{book}/outline-skeleton.md",
+                  "---\nwoven: true\n---\n## Chapter 01 — A\n")
+    stamp(book, end, [prem], repo_root=root)
+    stamp(book, tp, [prem, end], repo_root=root)
+    stamp(book, sol, [end, tp], repo_root=root)
+    stamp(book, skel, [tp, sol, wd], repo_root=root)
+    assert dict((n, s) for n, s, _ in stage_status(book, repo_root=root))["chapters"] == "done"
+
+    wd.write_text(
+        "book: '01'\ntotal_chapters: 30\nreveal_chapter: 26\n"
+        "reveals:\n"
+        "- id: impersonation\n"
+        "  reveal_chapter: 15\n"
+        "  author_truth: Someone used Maggie's identity before she arrived.\n"
+        "# a trailing note\n",
+        encoding="utf-8")
+
+    rows = stage_status(book, repo_root=root)
+    assert dict((n, s) for n, s, _ in rows)["chapters"] == "done"
+    assert next_stage(rows) != "chapters"
+
+
+def test_declaring_then_removing_reveals_returns_to_the_original_fingerprint(tmp_path):
+    """Round-trip: declaring reveals: and later deleting it again must not
+    leave chapters stale either way — the whitespace-proof rule has no memory
+    of what used to be there, only of what's on the page now."""
+    root = _series(tmp_path)
+    wd = _chapters_ready(root)
+    original = wd.read_text(encoding="utf-8")
+    wd.write_text(original + (
+        "reveals:\n"
+        "- id: impersonation\n"
+        "  reveal_chapter: 15\n"
+        "  author_truth: Someone used Maggie's identity before she arrived.\n"
+    ), encoding="utf-8")
+    assert dict((n, s) for n, s, _ in stage_status("01", repo_root=root))["chapters"] == "done"
+
+    wd.write_text(original, encoding="utf-8")   # reveals: removed again
+
+    rows = stage_status("01", repo_root=root)
+    assert dict((n, s) for n, s, _ in rows)["chapters"] == "done"
+    assert next_stage(rows) != "chapters"
 
 
 def test_declaring_reveals_in_the_middle_of_the_ledger_leaves_chapters_done(tmp_path):

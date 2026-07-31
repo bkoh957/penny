@@ -113,6 +113,13 @@ preserves reader simulation as CLAUDE.md defines it: the beta/fan reader receive
 `reveals:` is **optional and absent is normal** — a book with no block gets today's
 single-cut read, unchanged. Legacy books never break.
 
+The blank line between `reveal_chapter:` and `reveals:` above is intentional and safe to
+keep — layout around the block (blank lines before/after, a trailing top-level comment,
+appended vs. inserted mid-file vs. later removed) does not affect the `chapters` stage
+fingerprint (final review re-review, C1): `plot_stage.py`'s fingerprint for this file is
+taken over its non-blank lines with the `reveals:` block itself removed, so only real
+content — the clue schedule, `reveal_chapter`, etc. — can ever move it.
+
 ### 3.1 Clue and question naming
 
 `c02-lisa-already-met-maggie` leaks because `packet_assemble.py:168` renders the id into

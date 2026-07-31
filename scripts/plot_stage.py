@@ -91,12 +91,12 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-_TOP_LEVEL_ENTRY_RE = re.compile(r"^[^\s#-]")
+_TOP_LEVEL_ENTRY_RE = re.compile(r"^[^\s-]")
 
 
 def _strip_reveals_block(text: str) -> str:
-    """Remove the top-level `reveals:` block from raw ledger text, byte-for-byte
-    over everything else (final review C1).
+    """Remove the top-level `reveals:` block from raw ledger text (final
+    review C1).
 
     The whodunit ledger is flat at the top level, so the block runs from the
     line matching `^reveals:` (column 0) through every following line up to,
@@ -108,14 +108,18 @@ def _strip_reveals_block(text: str) -> str:
     column 0": this repo's own reveals: block (spec 2026-07-30 §3) writes its
     sequence items unindented — `- id: impersonation` at column 0, same style
     `clue_schedule:` already uses — so a bare non-whitespace test would treat
-    every list item as ending the block after just one line. A line continues the
-    current block if it is indented (nested content) OR starts with `-` (a
-    block-sequence item); it starts a NEW top-level entry only when neither
-    is true (`_TOP_LEVEL_ENTRY_RE`).
+    every list item as ending the block after just one line. A line continues
+    the current block if it is indented (nested content) OR starts with `-`
+    (a block-sequence item); it starts a NEW top-level entry only when
+    neither is true (`_TOP_LEVEL_ENTRY_RE`).
 
-    Lines are removed whole (via str.splitlines(keepends=True) + rejoin),
-    never re-flowed, so blank lines and the trailing newline outside the
-    block are untouched."""
+    A column-0 `#` comment line counts as a new top-level entry and is NEVER
+    swept into the block (final review re-review, residual on C1): an earlier
+    version excluded `#` from `_TOP_LEVEL_ENTRY_RE`'s negated class, so a
+    standalone comment sitting right after the block — content that has
+    nothing to do with `reveals:` — was absorbed and deleted along with it.
+    Deleting real content the block doesn't own is exactly the kind of
+    layout-sensitivity this helper exists to eliminate."""
     lines = text.splitlines(keepends=True)
     out = []
     i, n = 0, len(lines)
@@ -144,27 +148,37 @@ def _upstream_sha(path: Path) -> str:
     So for that file the fingerprint is taken over the ledger with `reveals:`
     removed. Every other upstream keeps the plain file hash.
 
-    **Detect structurally, strip textually.** `yaml.safe_load` answers only
-    "does this ledger have a top-level `reveals:` key?" — parsing (rather than
-    a raw substring search) is what keeps a `description:` that happens to
-    mention the word "reveals" from being mistaken for the block. But the
-    REMOVAL itself is done on the raw text (`_strip_reveals_block`), never by
-    re-serialising the parsed dict through `yaml.safe_dump`: a round-trip
-    reformats the WHOLE file (PyYAML reorders keys under `sort_keys=True`,
-    reflows quoting/wrapping) and changes the hash of content that never
-    changed. That would just relocate the false-staleness bug from "reveals:
-    exists at all" to "reveals: is declared for the first time on an
-    already-stamped book" — book 01's actual next step (spec §10) — instead of
-    eliminating it. Text-level removal keeps every other byte identical, so:
-    - absent `reveals:` → returns `_sha(path)`, byte-identical to today (every
-      already-stamped book that never uses this feature is untouched).
-    - `reveals:` added for the first time to an already-stamped ledger →
-      stripping it back out reproduces the ORIGINAL bytes exactly (assuming
-      nothing else changed), so the fingerprint does not move and `chapters`
-      does not go stale. This is the whole point: there is no one-time
-      migration cost, because nothing is ever re-serialised.
-    - editing content outside `reveals:` (e.g. `clue_schedule`) still changes
-      the stripped text, so `chapters` still correctly goes stale.
+    **Whitespace-proof, not whitespace-exact (RULING, final review
+    re-review).** The fingerprint is the sha256 of the ledger's NON-BLANK
+    lines with the `reveals:` block removed — applied unconditionally,
+    whether or not `reveals:` is present. Layout genuinely stops mattering: a
+    blank line before or after the block, a trailing comment after it, the
+    block appended vs inserted mid-file vs later deleted entirely — all
+    produce the same fingerprint, because none of that is content. Only
+    `reveals:`'s own lines and blank lines are ever excluded; a real edit to
+    `clue_schedule` (or anything else) still changes the hash.
+
+    An earlier version of this helper was whitespace-EXACT instead: it took
+    the raw-text-minus-`reveals:` path only when `reveals:` was present, and
+    returned the untouched `_sha(path)` otherwise, on the theory that "same
+    bytes in, same bytes out" for the no-`reveals:` case was the strongest
+    possible guarantee. It wasn't strong enough — spec §3's own documented
+    example puts a blank line between `reveal_chapter:` and `reveals:`, so a
+    showrunner following the docs would hit exactly the layout that broke it:
+    a blank line adjacent to the block, or a trailing top-level comment,
+    still moved the hash and made `chapters` go stale — the same Critical
+    this whole fix exists to remove, just relocated to a second kind of
+    adjacent whitespace/content instead of eliminated.
+
+    **This unconditional path is a deliberate, accepted trade,** not an
+    oversight: applying it to every whodunit ledger (not just ones with
+    `reveals:`) means a book with NO `reveals:` block no longer fingerprints
+    to the bare `_sha(path)` — a book already `chapters`-stamped under the
+    OLD (whitespace-exact) scheme, whose file happens to contain a blank
+    line, would see one, one-time re-stamp under the new scheme. The
+    showrunner accepted that cost: book 01 is unlocked and being re-plotted,
+    so in practice no live book pays it, and robustness against layout is
+    worth more than a transition no one will actually hit.
 
     Used on BOTH sides of the fingerprint (stamp() writes it, _stage_stale()
     compares against it) — both must agree or the comparison never matches.
@@ -172,13 +186,16 @@ def _upstream_sha(path: Path) -> str:
     if path.parent.name == "whodunit":
         text = path.read_text(encoding="utf-8")
         try:
-            import yaml  # PyYAML: only to detect whether reveals: exists
-            data = yaml.safe_load(text)
+            import yaml  # PyYAML: malformed ledgers fail closed to the plain
+            # hash below; _reveals() gives the loud, named error elsewhere
+            # when the ledger is actually consumed for staging.
+            yaml.safe_load(text)
         except Exception:
-            return _sha(path)   # malformed: fall back; _reveals fails loud elsewhere
-        if isinstance(data, dict) and "reveals" in data:
-            stripped = _strip_reveals_block(text)
-            return hashlib.sha256(stripped.encode("utf-8")).hexdigest()
+            return _sha(path)
+        stripped = _strip_reveals_block(text)
+        non_blank = "".join(line for line in stripped.splitlines(keepends=True)
+                            if line.strip())
+        return hashlib.sha256(non_blank.encode("utf-8")).hexdigest()
     return _sha(path)
 
 
