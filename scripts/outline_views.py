@@ -114,6 +114,16 @@ def roster(book: str, root=None) -> list[str]:
             f"roster: whodunit ledger for book {book} is not valid YAML "
             f"({path}): {exc}"
         ) from exc
+    if not isinstance(data, dict):
+        # Valid YAML, wrong shape: a scalar ("just a string\n") or a bare
+        # top-level list both parse cleanly but have no .get() — a truncated
+        # or mis-saved hand-edited ledger is a realistic way to get here, and
+        # this is exactly the failure mode the earlier YAMLError guard was
+        # meant to eliminate.
+        raise ValueError(
+            f"roster: whodunit ledger for book {book} must be a mapping at "
+            f"the top level, got {type(data).__name__} ({path})"
+        )
     names: list[str] = []
     for entry in data.get("alibi_grid") or []:
         if isinstance(entry, dict) and entry.get("suspect"):
@@ -200,7 +210,7 @@ def spine_worksheet(jobs: list[tuple[str, str]],
     return "\n".join(out)
 
 
-_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+_SLUG_RE = re.compile(r"\A[a-z0-9][a-z0-9-]*\Z")
 
 
 def _slug_error(kind: str, value: str) -> str | None:

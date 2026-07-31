@@ -347,15 +347,32 @@ def test_cli_strands_refuses_a_traversal_slug_reaching_the_lock_dir(tmp_path, te
     assert lock_path.read_text(encoding="utf-8") == "SEALED\n"
 
 
-def test_cli_refuses_a_traversal_book_id_before_creating_anything(tmp_path):
-    """CRITICAL fix (round 1): the book id reached _outline_text/_reports_dir
-    unvalidated — the reviewer showed `_reports_dir("../..")` creating
-    directories outside output/. Must refuse before anything is created."""
-    (tmp_path / ".penny").mkdir()
-    proc = _run(tmp_path, "glance", "../..")
+def test_cli_refuses_a_traversal_book_id_that_escapes_output(tmp_path, text):
+    """CRITICAL fix (round 1), test CORRECTED in round 2.
+
+    The original version of this test used book='../..', which the
+    PRE-FIX code already refused for an unrelated reason: _outline_text's
+    plain 'no such outline' check fires first (input/book-.../../outline.md
+    never exists), so returncode==2 and 'output/ was never created' both
+    passed even against the vulnerable code — only the wording assertion
+    ('invalid' in the message) actually depended on the fix. It pinned this
+    test's own prose, not the vulnerability.
+
+    The re-reviewer's real escape: book='01/../../input/book-01' resolves,
+    via _outline_text, to the EXACT SAME outline.md this fixture already
+    created (the traversal cancels itself out for the input side) — so the
+    pre-fix code happily reads it and proceeds — while _reports_dir resolves
+    the same book string to input/book-01/reports/ instead of
+    output/book-01/reports/, escaping the reports tree entirely and writing
+    there with exit 0. This version fails pre-fix for that real reason
+    (confirmed via `git stash` on the script fix) and asserts the escaped
+    location was never created, not just that 'output/' wasn't."""
+    root = _series(tmp_path, text)
+    proc = _run(root, "glance", "01/../../input/book-01")
     assert proc.returncode == 2
     assert "invalid" in (proc.stderr + proc.stdout).lower()
-    assert not (tmp_path / "output").exists()
+    assert not (root / "input" / "book-01" / "reports").exists()
+    assert not (root / "output").exists()
 
 
 def test_cli_strands_refuses_cleanly_when_who_has_no_value(tmp_path, text):
@@ -394,3 +411,66 @@ def test_cli_strands_names_a_malformed_ledger_and_exits_usage(tmp_path, text):
     assert proc.returncode == 2
     msg = (proc.stderr + proc.stdout).lower()
     assert "not valid yaml" in msg
+
+
+@pytest.mark.parametrize("body", ["just a string\n", "- one\n- two\n"])
+def test_roster_raises_value_error_on_a_ledger_that_parses_but_is_not_a_mapping(tmp_path, body):
+    """Important fix (round 2): the round-1 fix guarded yaml.safe_load itself
+    but not the very next line, `data.get("alibi_grid")` — a ledger truncated
+    to a bare scalar or saved as a top-level list is VALID yaml (so the
+    YAMLError guard never fires) but has no .get(), so it raised a raw
+    AttributeError. Covers both the scalar and the list shape."""
+    (tmp_path / ".penny").mkdir()
+    ledger_dir = tmp_path / "series" / "whodunit"
+    ledger_dir.mkdir(parents=True)
+    (ledger_dir / "book-01.yaml").write_text(body, encoding="utf-8")
+    with pytest.raises(ValueError, match="must be a mapping"):
+        outline_views.roster("01", root=tmp_path)
+
+
+@pytest.mark.parametrize("body", ["just a string\n", "- one\n- two\n"])
+def test_cli_strands_names_a_non_mapping_ledger_and_exits_usage(tmp_path, text, body):
+    """CLI-level companion: a ledger that parses but isn't a mapping must
+    surface as a named exit-2 refusal, not an AttributeError traceback."""
+    root = _series(tmp_path, text)
+    ledger_dir = root / "series" / "whodunit"
+    ledger_dir.mkdir(parents=True)
+    (ledger_dir / "book-01.yaml").write_text(body, encoding="utf-8")
+    proc = _run(root, "strands", "01")
+    assert proc.returncode == 2
+    msg = (proc.stderr + proc.stdout).lower()
+    assert "must be a mapping" in msg
+
+
+def test_cli_strands_refuses_a_ledger_slug_with_a_trailing_newline(tmp_path, text):
+    """Minor fix (round 2): re.MULTILINE-less `$` also matches immediately
+    before a trailing newline, so a slug of 'simon\\n' passed the old
+    `^[a-z0-9][a-z0-9-]*$` check even though it is not the plain 'simon' it
+    looks like — a soft edge on the one regex that IS the security boundary.
+    Tightened to \\A...\\Z, which has no such exception.
+
+    NOTE: --who values are `.strip()`-ped before validation, so a --who
+    argument can never carry an unstripped trailing newline through to
+    _slug_error — this test instead goes through the one code path that
+    reaches _slug_error UNSTRIPPED: a `suspect:` value read straight out of
+    the whodunit ledger by roster(). That is the realistic route the
+    round-2 finding named ('from a hand-edited ledger's suspect:/victim:
+    field')."""
+    root = _series(tmp_path, text)
+    ledger_dir = root / "series" / "whodunit"
+    ledger_dir.mkdir(parents=True)
+    (ledger_dir / "book-01.yaml").write_text(
+        'alibi_grid:\n'
+        '  - { suspect: "simon\\n", chapter: 1, alibi: x, holds: true }\n',
+        encoding="utf-8")
+    proc = _run(root, "strands", "01")
+    assert proc.returncode == 2
+    assert "invalid" in (proc.stderr + proc.stdout).lower()
+
+
+def test_cli_refuses_a_book_id_with_a_trailing_newline(tmp_path):
+    """Same \\A...\\Z fix, the book-id side."""
+    (tmp_path / ".penny").mkdir()
+    proc = _run(tmp_path, "glance", "01\n")
+    assert proc.returncode == 2
+    assert "invalid" in (proc.stderr + proc.stdout).lower()
