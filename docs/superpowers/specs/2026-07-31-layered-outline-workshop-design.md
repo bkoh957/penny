@@ -114,13 +114,25 @@ story order, and each beat is tagged with the strand or strands it belongs to.
 This replaces five artifacts that currently all claim to describe the story: three plot
 save points, `outline-skeleton.md`, and `outline.md`.
 
-### 3.2 The strand view is derived, never authored
+### 3.2 Three derived views, never authored
 
-A deterministic renderer prints the other view on demand: **one strand alone, top to
-bottom**, extracted from `story.md` by tag. No LLM, no second file, no possibility of
-drift — the same relationship `plot_stage.py readers-copy` already has to the outline.
+The showrunner never reads the source. They read views rendered from it on demand — no
+second file, no possibility of drift, the same relationship `plot_stage.py readers-copy`
+already has to the outline. Three lenses, each answering a different question:
 
-This is the view that catches Simon, and it is the reason the design is worth building:
+**Story at a glance.** Every chapter's title and summary, in order, and nothing else.
+This is the view for judging whether the book works, and it is the one that gets used
+every time rather than only when something is wrong. Measured on book 01 as a pure
+extraction from `outline.md`'s existing `### Chapter Summary` sections: **2,140 words
+against the outline's 14,170** — fifteen percent, eight minutes to read.
+
+**Spine map.** Which of the structural jobs have a real event and which come back empty.
+The view for judging whether the structure has holes.
+
+**Strand pages.** One character's line through the whole book, alone on a page.
+Deterministic: extracted by tag from `story.md`, or by mention-in-order from
+`outline.md`. The view for judging whether people behave like people, and the reason the
+design is worth building:
 
 ```
 SIMON  arranges the handover  →  wife found dead  →  says
@@ -140,6 +152,24 @@ and the two `sys.exit("plot_stage: no outline-skeleton for book …")` paths at 
 `:607`). It must read `story.md` before the cut and `outline.md` after it.
 
 This is a live defect today, not merely a future concern — see §8.
+
+### 3.4 `outline.md` is a machine input and does not shrink
+
+The showrunner's complaint that `outline.md` is unreadable — signal lost in noise — is
+correct and is **not** fixed by trimming it. Measured on book 01: 1,769 lines for 28
+chapters, of which eleven section headings repeat in every chapter (308 lines of pure
+furniture), plus `Primary anchor:` / `Compress:` / `Maggie knows:` / `Maggie does not
+know:` at 28 each, plus lines that are verbatim identical across most of the book — the
+same guardrail 23 times, the same "Maggie does not know the full Marion/Tara truth" 23
+times, the same "prior open questions remain live" 21 times. Roughly a third of the file
+is structure and boilerplate carrying no story.
+
+That repetition is **required**. `packet_assemble.py` slices one chapter out of
+`outline.md` and builds the drafter's packet from it, so every chapter block must be
+self-contained. The file's audience is the packet assembler and, through it, the drafter.
+
+The showrunner has been reading it only because nothing else existed. §3.2 is the fix:
+the file stays exactly as it is, and they stop reading it.
 
 ---
 
@@ -304,6 +334,7 @@ This must be fixed, or the skeleton deleted, before any read-back is run.
 
 ### 8.2 What is generated
 
+- **The story at a glance**, extracted from `outline.md`'s existing summaries (§3.2).
 - **Strand pages** for every significant character, extracted in order from `outline.md`.
 - **A spine map**: which of the 28 structural jobs `outline.md` answers, and which come
   back empty or weak. Expectation: several Act II jobs are blank — *Apply the First
@@ -311,6 +342,35 @@ This must be fixed, or the skeleton deleted, before any read-back is run.
 - **Findings** into the existing feedback ledger.
 
 Nothing is written to `outline.md` by machine. Nothing regenerates. No file is at risk.
+
+### 8.2.1 A derived `story.md` for book 01 — as a worksheet, never a source
+
+Book 01 also gets a `story.md` reconstructed backwards from `outline.md`. It buys two
+things: the stalker is far easier to place in a beat list than across 28 chapter blocks
+carrying wiring and clue obligations, and it tests the `story.md` format on a real book
+before book 02 commits to it — the cheapest validation available.
+
+**It carries no authority.** Editing it must never re-cut book 01's chapters; that is
+§1.1's forbidden move. Changes decided at the story level are hand-translated into
+`outline.md` edits, one chapter at a time. The worksheet is a thinking tool that is
+thrown away.
+
+Two things enforce that, because relying on memory will not hold:
+
+1. **Location states authority.** Book 02's authored `story.md` lives in `input/`, where
+   sources live. Book 01's derived one lives in `output/book-01/reports/`, where
+   generated artifacts live. The two are the same shape; only the folder says which is
+   which, and that is sufficient because no cutting path ever reads from `output/`.
+2. **No cut path exists for it.** The cut (§7) reads `input/book-NN/story.md` and nothing
+   else. A worksheet in `output/` is unreachable by it, by construction rather than by
+   convention.
+
+**The derivation is lossy, which is the second reason it cannot be a source.** Pulling
+strands out is mechanical — every beat naming Simon, in order. Mapping 28 chapters onto
+28 structural jobs is a judgement, and separating spine from texture is another. Book
+01's `story.md` is therefore an *interpretation* of the outline made by an agent reading
+it, not a representation of it. Sound for thinking with; disqualifying as a source of
+truth.
 
 ### 8.3 What is decided and by whom
 
@@ -352,8 +412,10 @@ will know whether these are the right four passes before committing the workshop
 
 ## 9. Build order
 
-1. **The strand view and spine map, as read-only diagnostics over `outline.md`.**
-   Unblocks book 01 this week; costs almost nothing; proves the central idea.
+1. **The three views as read-only diagnostics over `outline.md`** (§3.2), plus book 01's
+   derived worksheet (§8.2.1). Unblocks book 01 this week; costs almost nothing; proves
+   the central idea. Story-at-a-glance first — it is pure extraction, it is the view that
+   gets used every time, and it is already demonstrated working on book 01.
 2. **Fix `readers-copy`'s skeleton dependency** (§8.1) — a live defect regardless.
 3. **Book 01's repair**, working the findings from step 1.
 4. **The workshop rebuild** — `story.md`, the four passes, gates 1–3, the cut — informed
