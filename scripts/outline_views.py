@@ -64,7 +64,10 @@ def strand(text: str, slug: str) -> list[tuple[int, str]]:
     WHOLE-WORD matching is load-bearing: a substring match puts 'Simone' on
     Simon's page, which invents a hole rather than finding one.
     """
-    pat = re.compile(r"\b(?:" + "|".join(re.escape(t) for t in name_tokens(slug)) + r")\b",
+    tokens = name_tokens(slug)
+    if not tokens:
+        raise ValueError(f"strand: slug {slug!r} yields no name tokens")
+    pat = re.compile(r"\b(?:" + "|".join(re.escape(t) for t in tokens) + r")\b",
                      re.IGNORECASE)
     hits: list[tuple[int, str]] = []
     seen: set[tuple[int, str]] = set()

@@ -80,3 +80,17 @@ def test_render_strand_shows_chapter_numbers(text):
     out = outline_views.render_strand("simon", outline_views.strand(text, "simon"))
     assert "simon" in out.lower()
     assert "ch 01" in out
+
+
+def test_strand_raises_on_empty_slug(text):
+    """A degenerate slug yields no tokens and would match every line — fail loud."""
+    with pytest.raises(ValueError, match="strand: slug '' yields no name tokens"):
+        outline_views.strand(text, "")
+
+
+def test_strand_raises_on_hyphens_only_slug(text):
+    """Hyphens alone split to empty tokens — fail loud, not silently."""
+    with pytest.raises(ValueError, match="strand: slug '-' yields no name tokens"):
+        outline_views.strand(text, "-")
+    with pytest.raises(ValueError, match="strand: slug '--' yields no name tokens"):
+        outline_views.strand(text, "--")
