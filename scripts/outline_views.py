@@ -187,3 +187,88 @@ def spine_worksheet(jobs: list[tuple[str, str]],
         out.append(f"- {num:02d} — {title}" if title else f"- {num:02d}")
     out.append("")
     return "\n".join(out)
+
+
+def _reports_dir(book: str, root=None) -> Path:
+    from scripts import penny_paths
+    d = Path(penny_paths.output_path(f"book-{book}/reports", root=root))
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _outline_text(book: str, root=None) -> str:
+    from scripts import penny_paths
+    path = Path(penny_paths.input_path(f"book-{book}/outline.md", root=root))
+    if not path.is_file():
+        # NOT sys.exit(f"...") — sys.exit(str) sets process exit code 1, but
+        # this CLI's contract (and this module's tests) is 0/2 = clean/usage.
+        print(f"outline_views: no outline for book {book} ({path})", file=sys.stderr)
+        sys.exit(2)
+    return path.read_text(encoding="utf-8")
+
+
+def _main(argv: list[str]) -> int:
+    if len(argv) < 2:
+        print("usage: outline_views <glance|strands|spine> NN [--who a,b]",
+              file=sys.stderr)
+        return 2
+    cmd, book = argv[0], argv[1]
+    text = _outline_text(book)
+    dest_dir = _reports_dir(book)
+
+    # Every view below can raise ValueError from the view layer — a degenerate
+    # character slug (strand()) or a malformed/duplicate job marker
+    # (parse_jobs(), spine_worksheet()). All of those are showrunner-data
+    # problems, not engine bugs: turn each into one named line on stderr and
+    # exit 2, never a raw traceback in the writer's face.
+    try:
+        if cmd == "glance":
+            dest = dest_dir / "outline-glance.md"
+            dest.write_text(glance(text), encoding="utf-8")
+            print(dest)
+            return 0
+
+        if cmd == "strands":
+            who: list[str] = []
+            if "--who" in argv:
+                who = [s.strip() for s in argv[argv.index("--who") + 1].split(",") if s.strip()]
+            else:
+                who = roster(book)
+            if not who:
+                print(f"outline_views: no roster for book {book} — the whodunit "
+                      "ledger has no alibi_grid, so pass --who name,name",
+                      file=sys.stderr)
+                return 2
+            out_dir = dest_dir / "strands"
+            out_dir.mkdir(parents=True, exist_ok=True)
+            for slug in who:
+                dest = out_dir / f"{slug}.md"
+                dest.write_text(render_strand(slug, strand(text, slug)), encoding="utf-8")
+                print(dest)
+            return 0
+
+        if cmd == "spine":
+            from scripts import penny_genre
+            path = penny_genre.macro_structure()
+            if path is None:
+                print("outline_views: the active series declares no genre, or its "
+                      "genre.yaml has no macro_structure: key — the spine view "
+                      "cannot know what jobs to check", file=sys.stderr)
+                return 2
+            jobs = parse_jobs(Path(path).read_text(encoding="utf-8"))
+            chapters = [(n, t) for n, t, _b in iter_chapters(text)]
+            body = spine_worksheet(jobs, chapters)
+            dest = dest_dir / "spine-worksheet.md"
+            dest.write_text(body, encoding="utf-8")
+            print(dest)
+            return 0
+    except ValueError as exc:
+        print(f"outline_views: {exc}", file=sys.stderr)
+        return 2
+
+    print(f"outline_views: unknown view '{cmd}'", file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(_main(sys.argv[1:]))

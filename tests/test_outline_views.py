@@ -236,3 +236,70 @@ def test_spine_worksheet_slots_are_empty_not_filled(text):
         chapters_line_content = lines[chapters_line_idx].strip()
         assert chapters_line_content == "chapters:", \
             f"chapters: line for {job_id} has content after it: {chapters_line_content!r}"
+
+
+import os
+import subprocess
+import sys
+
+
+def _series(tmp_path, outline_text):
+    (tmp_path / ".penny").mkdir()
+    d = tmp_path / "input" / "book-01"
+    d.mkdir(parents=True)
+    (d / "outline.md").write_text(outline_text, encoding="utf-8")
+    return tmp_path
+
+
+def _run(cwd, *args):
+    # Extend the real environment rather than replacing it (tests/conftest.py's
+    # penny_root fixture does the same) — a stripped env can break subprocess
+    # execution on macOS.
+    env = dict(os.environ, PYTHONPATH=str(Path.cwd()))
+    return subprocess.run(
+        [sys.executable, str(Path.cwd() / "scripts" / "outline_views.py"), *args],
+        cwd=cwd, capture_output=True, text=True, env=env)
+
+
+def test_cli_glance_writes_a_report(tmp_path, text):
+    root = _series(tmp_path, text)
+    proc = _run(root, "glance", "01")
+    assert proc.returncode == 0, proc.stderr
+    out = root / "output" / "book-01" / "reports" / "outline-glance.md"
+    assert out.is_file()
+    assert "The Arrival" in out.read_text(encoding="utf-8")
+
+
+def test_cli_refuses_a_book_with_no_outline(tmp_path):
+    root = _series(tmp_path, "")
+    (root / "input" / "book-01" / "outline.md").unlink()
+    proc = _run(root, "glance", "01")
+    assert proc.returncode == 2
+    assert "no outline" in (proc.stderr + proc.stdout).lower()
+
+
+def test_cli_strands_honours_an_explicit_who(tmp_path, text):
+    root = _series(tmp_path, text)
+    proc = _run(root, "strands", "01", "--who", "simon")
+    assert proc.returncode == 0, proc.stderr
+    out = root / "output" / "book-01" / "reports" / "strands" / "simon.md"
+    assert out.is_file()
+
+
+def test_cli_strands_names_the_problem_when_it_has_no_roster(tmp_path, text):
+    """No ledger and no --who is a refusal by name, never an empty report."""
+    root = _series(tmp_path, text)
+    proc = _run(root, "strands", "01")
+    assert proc.returncode == 2
+    assert "roster" in (proc.stderr + proc.stdout).lower()
+
+
+def test_cli_strands_names_a_degenerate_slug_and_exits_usage(tmp_path, text):
+    """CARRY-FORWARD: strand() raises ValueError on a slug with no name tokens
+    (a placeholder like '-' from a hand-edited ledger). The CLI must turn
+    that into a named refusal on stderr and exit 2 — never a raw traceback."""
+    root = _series(tmp_path, text)
+    proc = _run(root, "strands", "01", "--who", "-")
+    assert proc.returncode == 2
+    msg = (proc.stderr + proc.stdout).lower()
+    assert "yields no name tokens" in msg
