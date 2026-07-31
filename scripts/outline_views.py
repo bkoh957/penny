@@ -164,3 +164,26 @@ def parse_jobs(text: str) -> list[tuple[str, str]]:
         seen[job_id] = title
 
     return jobs
+
+
+def spine_worksheet(jobs: list[tuple[str, str]],
+                    chapters: list[tuple[int, str]]) -> str:
+    """The structural-job worksheet: every job, unfilled, beside the book's
+    chapter list. WHICH chapter answers WHICH job is a judgement and belongs to
+    the spine-mapper agent — this half stays deterministic so the frame the
+    agent fills is never itself an opinion."""
+    if not jobs:
+        raise ValueError("spine_worksheet: no structural jobs — the active "
+                         "genre declares no macro_structure, or its file "
+                         "carries no <!-- job: --> markers")
+    out = ["# Spine worksheet", "",
+           "One line per structural job. Fill `chapters:` with the chapter "
+           "numbers that answer it, or leave it empty — an empty job is a hole.",
+           "", "## Jobs", ""]
+    for job_id, title in jobs:
+        out += [f"### {job_id}", f"*{title}*", "", "chapters:", ""]
+    out += ["## The book's chapters", ""]
+    for num, title in chapters:
+        out.append(f"- {num:02d} — {title}" if title else f"- {num:02d}")
+    out.append("")
+    return "\n".join(out)

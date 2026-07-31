@@ -168,3 +168,25 @@ def test_roster_reads_suspects_and_victim_from_the_ledger(tmp_path):
 def test_roster_returns_empty_list_when_ledger_is_missing(tmp_path):
     (tmp_path / ".penny").mkdir()
     assert outline_views.roster("01", root=tmp_path) == []
+
+
+def test_spine_worksheet_lists_every_job_with_an_unfilled_slot(text):
+    jobs = [("crime-and-first-contradiction", "Deliver the Crime"),
+            ("restore-world", "Restore the World")]
+    chapters = [(n, t) for n, t, _b in outline_views.iter_chapters(text)]
+    out = outline_views.spine_worksheet(jobs, chapters)
+    assert "crime-and-first-contradiction" in out
+    assert "Deliver the Crime" in out
+    assert "restore-world" in out
+
+
+def test_spine_worksheet_lists_the_books_chapters(text):
+    chapters = [(n, t) for n, t, _b in outline_views.iter_chapters(text)]
+    out = outline_views.spine_worksheet([("x", "X")], chapters)
+    assert "01 — The Arrival" in out
+    assert "04 — Tara" in out
+
+
+def test_spine_worksheet_refuses_an_empty_job_list(text):
+    with pytest.raises(ValueError, match="no structural jobs"):
+        outline_views.spine_worksheet([], [(1, "A")])
