@@ -190,3 +190,49 @@ def test_spine_worksheet_lists_the_books_chapters(text):
 def test_spine_worksheet_refuses_an_empty_job_list(text):
     with pytest.raises(ValueError, match="no structural jobs"):
         outline_views.spine_worksheet([], [(1, "A")])
+
+
+def test_spine_worksheet_slots_are_empty_not_filled(text):
+    """The 'chapters:' slot for each job must be empty—not auto-filled.
+
+    Deciding which chapter answers which job is the agent's work (Task 5),
+    not the frame's. A test that only checks for 'chapters:' substring would
+    pass against broken implementations that drop the line entirely or fill it
+    (e.g., 'chapters: 1'). This test pins the structure: chapters: exists,
+    followed by nothing but whitespace until the next job heading or section."""
+    jobs = [("job-1", "First Job"),
+            ("job-2", "Second Job")]
+    chapters = [(1, "Chapter One"), (2, "Chapter Two")]
+    out = outline_views.spine_worksheet(jobs, chapters)
+    lines = out.split('\n')
+
+    # Find each job's chapters: line and verify the lines after it are empty
+    # until the next section heading or job heading
+    for job_id, _title in jobs:
+        # Find the line containing this job's heading
+        job_heading_idx = None
+        for i, line in enumerate(lines):
+            if line.strip() == f"### {job_id}":
+                job_heading_idx = i
+                break
+        assert job_heading_idx is not None, f"Job heading not found: {job_id}"
+
+        # Find the chapters: line for this job (should be a few lines after heading)
+        chapters_line_idx = None
+        for i in range(job_heading_idx + 1, min(job_heading_idx + 10, len(lines))):
+            if lines[i].strip() == "chapters:":
+                chapters_line_idx = i
+                break
+        assert chapters_line_idx is not None, f"'chapters:' slot not found for {job_id}"
+
+        # Verify the line after chapters: is empty (or contains only whitespace)
+        # and nothing is auto-filled (like "1" or "chapters: 1")
+        if chapters_line_idx + 1 < len(lines):
+            next_line = lines[chapters_line_idx + 1]
+            assert next_line.strip() == "", \
+                f"chapters: slot for {job_id} is not empty; got: {next_line!r}"
+
+        # Verify the chapters: line itself is just "chapters:" with nothing after
+        chapters_line_content = lines[chapters_line_idx].strip()
+        assert chapters_line_content == "chapters:", \
+            f"chapters: line for {job_id} has content after it: {chapters_line_content!r}"
