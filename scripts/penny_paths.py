@@ -99,7 +99,19 @@ def _read_genre_decl(series_yaml: Path) -> str | None:
 
 
 def _declared_genre(root: Path | None = None) -> str | None:
-    """The series' declared genre, or None if series.yaml/genre absent (lenient — for config_path)."""
+    """The series' declared genre, or None if series.yaml/genre absent (lenient — for config_path).
+
+    Also lenient about there being no series root AT ALL (no `.penny/` anywhere
+    above cwd): leaf accessors like beat_sheet()/macro_structure() are called
+    with root=None from contexts that may not be inside any series — e.g. this
+    bare engine repo — and "no genre" must not become a hard crash just because
+    series_root()'s normal (and correct, for data/config resolution) behavior is
+    to hard-fail when no series is found at all.
+    """
+    if root is None:
+        cur = Path.cwd().resolve()
+        if not any((d / _MARKER).is_dir() for d in (cur, *cur.parents)):
+            return None
     series_yaml = _root(root) / "series.yaml"
     if not series_yaml.is_file():
         return None

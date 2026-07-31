@@ -94,3 +94,20 @@ def test_strand_raises_on_hyphens_only_slug(text):
         outline_views.strand(text, "-")
     with pytest.raises(ValueError, match="strand: slug '--' yields no name tokens"):
         outline_views.strand(text, "--")
+
+
+def test_parse_jobs_reads_ids_in_file_order():
+    from scripts import penny_genre
+    path = penny_genre.macro_structure()
+    if path is None:                      # engine repo has no declared genre
+        path = Path("genres/cozy-mystery/review-rubrics/macro-structure.md")
+    jobs = outline_views.parse_jobs(Path(path).read_text(encoding="utf-8"))
+    assert len(jobs) == 28
+    assert jobs[0] == ("establish-protected-world", "Establish the Protected World")
+    assert jobs[9][0] == "plant-fair-play-solution"
+    assert jobs[27] == ("restore-world", "Restore the World")
+
+
+def test_parse_jobs_ignores_a_heading_with_no_marker():
+    text = "## 1. Titled\n<!-- job: titled -->\n\n## 2. Unmarked\n\nbody\n"
+    assert outline_views.parse_jobs(text) == [("titled", "Titled")]

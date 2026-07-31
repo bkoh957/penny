@@ -18,7 +18,7 @@ import yaml
 
 MANIFEST_KEYS = ("genre", "conventions", "planning", "inspectors", "gates", "rubrics", "tracks")
 _PLANNING_KEYS = ("command", "artifact", "validator", "lock")
-_OPTIONAL_FILE_KEYS = ("beat_sheet", "fan_persona")
+_OPTIONAL_FILE_KEYS = ("beat_sheet", "fan_persona", "macro_structure")
 
 
 def validate_manifest(manifest: dict, genre_dir: Path, *, plugin_root: Path) -> list[str]:
@@ -123,9 +123,27 @@ def beat_sheet(root: Path | None = None) -> Path | None:
     return penny_paths.config_path(val, root=root)
 
 
+def macro_structure(root: Path | None = None) -> Path | None:
+    """Resolve the active genre's structural-job file THROUGH genre.yaml's
+    `macro_structure:` key — never a hardcoded filename. Cozy's 28 four-act jobs
+    are a cozy artifact; a thriller supplies its own, with its own ids.
+
+    Tolerates an undeclared genre by returning None, same as beat_sheet(): the
+    diagnostic views run over any outline, including one with no genre context.
+    A DECLARED-but-invalid genre still hard-fails via load_manifest.
+    """
+    from scripts import penny_paths
+    if penny_paths._declared_genre(root=root) is None:
+        return None
+    val = load_manifest(root=root).get("macro_structure")
+    if val is None:
+        return None
+    return penny_paths.config_path(val, root=root)
+
+
 def _main(argv: list[str]) -> int:
     if not argv:
-        print("usage: penny_genre <inspectors|gates|beat-sheet|planning-command|planning-artifact|planning-lock|planning-validator>",
+        print("usage: penny_genre <inspectors|gates|beat-sheet|macro-structure|planning-command|planning-artifact|planning-lock|planning-validator>",
               file=sys.stderr)
         return 2
     cmd = argv[0]
@@ -137,6 +155,10 @@ def _main(argv: list[str]) -> int:
         return 0
     if cmd == "beat-sheet":
         p = beat_sheet()
+        print("" if p is None else p)
+        return 0
+    if cmd == "macro-structure":
+        p = macro_structure()
         print("" if p is None else p)
         return 0
     if cmd.startswith("planning-"):

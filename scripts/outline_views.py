@@ -111,3 +111,18 @@ def roster(book: str, root=None) -> list[str]:
     if victim and str(victim) not in names:
         names.append(str(victim))
     return names
+
+
+_JOB_RE = re.compile(r"^##\s+\d+\.\s+(?P<title>.+?)\s*$\n<!--\s*job:\s*(?P<id>[a-z0-9-]+)\s*-->",
+                     re.MULTILINE)
+
+
+def parse_jobs(text: str) -> list[tuple[str, str]]:
+    """(job_id, title) for each marked structural job, in file order.
+
+    A job is addressed by its STABLE ID, never its ordinal position: 'job 11'
+    means nothing in a genre whose file has a different shape. An unmarked
+    heading is not a job — silently skipped, so a genre pack can carry prose
+    headings alongside its jobs.
+    """
+    return [(m.group("id"), m.group("title")) for m in _JOB_RE.finditer(text)]

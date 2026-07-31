@@ -43,6 +43,7 @@ must become involved.
 alone?*
 
 ## 1. Establish the Protected World
+<!-- job: establish-protected-world -->
 
 Open inside the life readers are being invited to inhabit. Show the protagonist's
 ordinary role, key relationships, routines, responsibilities, and distinctive way of
@@ -60,6 +61,7 @@ The world need not be peaceful. It does need to be legible. Readers should under
 - what part of this life could be lost.
 
 ## 2. Introduce Disturbance Before or Around the Death
+<!-- job: introduce-disturbance -->
 
 A smaller disruption often prepares the ground for murder:
 
@@ -76,6 +78,7 @@ This disturbance should connect the crime to the existing community rather than 
 murder feel imported solely to start the plot.
 
 ## 3. Deliver the Crime and Its First Contradiction
+<!-- job: crime-and-first-contradiction -->
 
 The central death should arrive early enough that the reader understands the book's main
 promise.
@@ -94,6 +97,7 @@ The contradiction need not be understood yet. Its purpose is to create investiga
 pressure.
 
 ## 4. Establish the Initial Suspect Field
+<!-- job: initial-suspect-field -->
 
 Introduce the people, relationships, and tensions from which the solution will emerge.
 
@@ -109,6 +113,7 @@ The eventual killer should normally be present or meaningfully established befor
 act closes.
 
 ## 5. Give the Sleuth a Compelling Reason to Investigate
+<!-- job: reason-to-investigate -->
 
 Curiosity alone is rarely enough. The protagonist should face a personal, social,
 practical, or moral necessity:
@@ -126,6 +131,7 @@ The reason should arise from the protagonist's existing life, not from generic a
 sleuth enthusiasm.
 
 ## 6. Act I Turning Point — Commitment
+<!-- job: act-i-commitment -->
 
 The act ends when the protagonist crosses from reaction into purposeful investigation.
 
@@ -172,6 +178,7 @@ and misleading interpretations.
 **Reader question:** *Which of these plausible stories explains the murder?*
 
 ## 7. Open the Victim's Hidden Life
+<!-- job: victims-hidden-life -->
 
 The sleuth moves beyond the victim's public identity and begins uncovering the private
 stories surrounding them.
@@ -187,6 +194,7 @@ Act II should reveal:
 The more the sleuth learns, the less simple the murder should appear.
 
 ## 8. Expand Through Suspect Encounters
+<!-- job: suspect-encounters -->
 
 Each major investigative sequence should add a distinct possible explanation of the
 crime.
@@ -205,6 +213,7 @@ strongest when information emerges through work, friendship, errands, events, go
 caregiving, or community obligations.
 
 ## 9. Build Real Red Herrings
+<!-- job: real-red-herrings -->
 
 Act II is the main home of plausible false stories.
 
@@ -220,6 +229,7 @@ The sleuth should often be partly right and interpretively wrong. They may ident
 lie, but misunderstand what the lie protects.
 
 ## 10. Plant the Fair-Play Solution
+<!-- job: plant-fair-play-solution -->
 
 The decisive solution should begin appearing before the midpoint, even if the reader and
 sleuth assign it the wrong meaning.
@@ -238,6 +248,7 @@ Useful clue forms include:
 Act II should make the correct answer possible without making it obvious.
 
 ## 11. Apply the First Meaningful Pressure
+<!-- job: first-meaningful-pressure -->
 
 The consequences of investigating should become visible before the midpoint.
 
@@ -256,6 +267,7 @@ Pressure may include:
 The pressure should arise from what the sleuth has done or discovered.
 
 ## 12. Build a Persuasive First Theory
+<!-- job: persuasive-first-theory -->
 
 By late Act II, the protagonist should believe they are beginning to understand the case.
 
@@ -271,6 +283,7 @@ A weak first theory produces a weak midpoint because there is nothing substantia
 reorient.
 
 ## 13. Midpoint Turning Point — The Case Changes Meaning
+<!-- job: midpoint-case-changes-meaning -->
 
 The midpoint should force a major reinterpretation.
 
@@ -331,6 +344,7 @@ and expose the personal cost of being wrong.
 **Reader question:** *Which explanation can still survive everything we now know?*
 
 ## 14. Restart the Investigation Under a New Theory
+<!-- job: restart-under-new-theory -->
 
 The midpoint should change how the sleuth reads earlier information.
 
@@ -347,6 +361,7 @@ These should not be repeated scenes. The question, stakes, knowledge, or power d
 must now be different.
 
 ## 15. Begin Eliminating False Stories
+<!-- job: eliminate-false-stories -->
 
 Act III is the contraction phase.
 
@@ -364,6 +379,7 @@ Each eliminated theory should leave behind something useful: a fact, relationshi
 constraint, motive refinement, or clue pointing toward the remaining explanation.
 
 ## 16. Reveal the Deeper Motive Structure
+<!-- job: deeper-motive-structure -->
 
 The murder should begin to feel emotionally and causally inevitable in retrospect.
 
@@ -384,6 +400,7 @@ This deeper layer should connect the murder to the book's character and communit
 not merely provide a more dramatic confession.
 
 ## 17. Let the Killer Shape the Investigation
+<!-- job: killer-shapes-investigation -->
 
 By Act III, the antagonistic force should no longer feel passive.
 
@@ -403,6 +420,7 @@ The killer need not become physically violent. What matters is that they respond
 intelligently to danger and try to preserve their version of events.
 
 ## 18. Make the Investigation Personally Costly
+<!-- job: personally-costly -->
 
 The sleuth's pursuit of truth should now threaten something established in Act I:
 
@@ -419,6 +437,7 @@ The cost should result partly from the sleuth's choices. A protagonist who suffe
 because the killer attacks them remains emotionally passive.
 
 ## 19. Create a Second Pressure Point
+<!-- job: second-pressure-point -->
 
 Near the later part of Act III, the killer or the false solution appears to regain
 control.
@@ -439,6 +458,7 @@ This beat should not merely delay the answer. It should expose the flaw in the s
 current reasoning.
 
 ## 20. Converge the Clues
+<!-- job: converge-clues -->
 
 Separate details should begin forming one pattern.
 
@@ -453,6 +473,7 @@ The sleuth may not yet understand the whole solution, but the story should show 
 The reader should feel the mystery tightening.
 
 ## 21. Act III Turning Point — Apparent Defeat and Final Contradiction
+<!-- job: act-iii-apparent-defeat -->
 
 The sleuth's preferred answer should collapse, become unprovable, or cause meaningful
 harm.
@@ -516,6 +537,7 @@ it, expose the killer, and make the truth public.
 truth do to the community?*
 
 ## 22. Trigger the Epiphany Through Established Knowledge
+<!-- job: epiphany-from-established-knowledge -->
 
 The sleuth sees the decisive pattern because ordinary life gives the final contradiction
 new meaning.
@@ -534,6 +556,7 @@ The epiphany should connect established clues. It should not introduce the missi
 through sudden memory, coincidence, or new evidence.
 
 ## 23. Reconstruct the True Story
+<!-- job: reconstruct-true-story -->
 
 The sleuth should be able to explain:
 
@@ -548,6 +571,7 @@ The sleuth should be able to explain:
 The reconstruction should account for the whole case, not merely identify the culprit.
 
 ## 24. Solve the Proof Problem
+<!-- job: solve-proof-problem -->
 
 Private certainty is not enough. The sleuth needs a way to verify or expose the truth.
 
@@ -566,6 +590,7 @@ The protagonist should act deliberately. The endgame should not depend solely on
 killer conveniently confessing.
 
 ## 25. Force the Final Action
+<!-- job: force-final-action -->
 
 The sleuth may confront the killer, lay a trap, announce false information, recreate part
 of the crime, protect a likely target, or bring competing stories into public conflict.
@@ -582,6 +607,7 @@ The strongest final action grows from:
 - the emotional conflict at the heart of the motive.
 
 ## 26. Expose the Killer
+<!-- job: expose-killer -->
 
 The climax should break the killer's controlling story.
 
@@ -604,6 +630,7 @@ The solution should feel:
 - emotionally connected to the deeper motive.
 
 ## 27. Allow Official and Social Truth to Land
+<!-- job: official-and-social-truth -->
 
 After exposure, the story should clarify what becomes provable, publicly known, legally
 actionable, and emotionally accepted.
@@ -623,6 +650,7 @@ Possible outcomes include:
 The ending should remain faithful to the tone and moral design of the series.
 
 ## 28. Restore the World
+<!-- job: restore-world -->
 
 The denouement should show the community absorbing the truth.
 

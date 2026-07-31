@@ -235,3 +235,16 @@ def test_optional_file_keys_must_exist_when_present(tmp_path):
     from scripts import penny_paths
     errs = pg.validate_manifest(manifest, gdir, plugin_root=penny_paths.plugin_root())
     assert any("beat_sheet" in e for e in errs)
+
+
+def test_cozy_manifest_declares_a_macro_structure():
+    from scripts import penny_genre
+    m = penny_genre.load_manifest("cozy-mystery")
+    assert m["macro_structure"] == "review-rubrics/macro-structure.md"
+
+
+def test_macro_structure_is_validated_as_a_file_key():
+    """A manifest naming a missing macro-structure file must fail loud, the same
+    way beat_sheet and fan_persona already do."""
+    from scripts import penny_genre
+    assert "macro_structure" in penny_genre._OPTIONAL_FILE_KEYS
