@@ -559,7 +559,7 @@ def _chapter_numbers(text: str) -> list[int]:
             for cm in [CHAPTER_RE.match(m.group(1))] if cm]
 
 
-def _readback_source(book: str, *, root=None) -> Path:
+def _readback_source(book: str, *, repo_root=None) -> Path:
     """The file the reader's copy is cut from.
 
     outline-skeleton.md is retired (spec 2026-07-31 §3.3): it was a thinner copy
@@ -569,7 +569,7 @@ def _readback_source(book: str, *, root=None) -> Path:
     canonical outline. Failing loud when neither exists preserves the module's
     "fail LOUD, not open" promise.
     """
-    root = _root(root)
+    root = _root(repo_root)
     skel = stage_paths(book, root)["chapters"]
     if skel.is_file():
         return skel
@@ -582,23 +582,23 @@ def _readback_source(book: str, *, root=None) -> Path:
 
 def readers_copy(book: str, *, repo_root=None) -> Path:
     root = _root(repo_root)
-    skel = _readback_source(book, root=root)
+    skel = _readback_source(book, repo_root=root)
     skel_text = skel.read_text(encoding="utf-8")
     reveal_ch = _reveal_chapter(book, root)
     # FINAL REVIEW FINDING 1: a reveal_chapter LARGER than the last chapter in
-    # the skeleton has nothing to truncate before — readers_copy_text would
+    # the source has nothing to truncate before — readers_copy_text would
     # silently emit every chapter, including the reveal chapter's own
     # culprit-naming summary, straight to the blind fan. The module docstring
     # promises "fail LOUD, not open"; a value in range but simply absent
     # coverage is caught elsewhere (readback/tension_check), but an
     # out-of-range value here specifically defeats the blind guarantee, so it
-    # fails loud at the one place both the skeleton and the ledger are in hand.
+    # fails loud at the one place both the source file and the ledger are in hand.
     if reveal_ch is not None:
         nums = _chapter_numbers(skel_text)
         if nums and reveal_ch > max(nums):
             sys.exit(
                 f"plot_stage: whodunit ledger reveal_chapter ({reveal_ch}) is "
-                f"beyond the last chapter in the skeleton ({max(nums)}) for "
+                f"beyond the last chapter in {skel} ({max(nums)}) for "
                 f"book {book} — the reader's copy would have nothing to "
                 "truncate and would leak the reveal chapter's own summary")
     dest = root / "output" / f"book-{book}" / "reports" / "outline-readers-copy.md"
@@ -621,7 +621,7 @@ def readers_copy_staged(book: str, *, repo_root=None) -> list[Path]:
     stages = reveal_stages(reveals)
     if not stages:
         return []
-    skel = _readback_source(book, root=root)
+    skel = _readback_source(book, repo_root=root)
     skel_text = skel.read_text(encoding="utf-8")
     nums = _chapter_numbers(skel_text)
     last = max(nums) if nums else 0
@@ -629,7 +629,7 @@ def readers_copy_staged(book: str, *, repo_root=None) -> list[Path]:
         if r["reveal_chapter"] > last:
             sys.exit(
                 f"plot_stage: reveal {r['id']!r} is at chapter "
-                f"{r['reveal_chapter']} but the skeleton's last chapter is "
+                f"{r['reveal_chapter']} but {skel}'s last chapter is "
                 f"{last} for book {book} — that stage cannot be cut")
     out_dir = root / "output" / f"book-{book}" / "reports"
     out_dir.mkdir(parents=True, exist_ok=True)

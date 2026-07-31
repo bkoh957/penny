@@ -435,6 +435,26 @@ def test_readers_copy_writes_report_file(tmp_path):
     assert p.is_file() and "q-" not in p.read_text(encoding="utf-8")
 
 
+def test_readers_copy_end_to_end_from_outline_when_no_skeleton(tmp_path):
+    """End-to-end wiring check (spec 2026-07-31 §3.3): a book whose skeleton
+    has been retired — ONLY outline.md remains, no outline-skeleton.md at all —
+    must still produce a reader's copy, and it must be cut from outline.md.
+    Every other readers_copy test in this file writes outline-skeleton.md, so
+    without this test a regression in the one-line _readback_source wiring at
+    this call site would pass the whole suite."""
+    (tmp_path / ".penny").mkdir()
+    d = tmp_path / "input/book-01"
+    d.mkdir(parents=True)
+    (d / "outline.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    assert not (d / "outline-skeleton.md").exists()
+    p = readers_copy("01", repo_root=tmp_path)
+    assert p == tmp_path / "output/book-01/reports/outline-readers-copy.md"
+    assert p.is_file()
+    out = p.read_text(encoding="utf-8")
+    assert "Maggie arrives" in out  # content unique to outline.md's fixture text
+    assert "q-" not in out  # solution/wiring still stripped
+
+
 # --- FINDING 1: the H3 subsection strip must not fail open ------------------
 
 def test_track_rows_dropped_under_lowercase_track_movement_heading():
@@ -953,6 +973,29 @@ def test_readers_copy_staged_writes_one_file_per_stage(tmp_path):
     assert "## Chapter 04" in s2
 
 
+def test_readers_copy_staged_end_to_end_from_outline_when_no_skeleton(tmp_path):
+    """End-to-end wiring check (spec 2026-07-31 §3.3): identical to
+    test_readers_copy_staged_writes_one_file_per_stage above, except the book
+    has ONLY outline.md — no outline-skeleton.md at all — which is exactly the
+    state the live book will be in once its drifted skeleton is deleted.
+    Every other readers_copy_staged test in this file writes
+    outline-skeleton.md, so without this test a regression in the one-line
+    _readback_source wiring at this call site would pass the whole suite."""
+    root = _series(tmp_path)
+    _write(root, "input/book-01/outline.md", _SKEL)
+    assert not (root / "input/book-01/outline-skeleton.md").exists()
+    _write(root, "series/whodunit/book-01.yaml",
+           "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n"
+           "reveals:\n- id: turn\n  reveal_chapter: 3\n  author_truth: The case turns.\n")
+    paths = readers_copy_staged("01", repo_root=root)
+    assert [p.name for p in paths] == ["outline-readers-copy-stage-1.md",
+                                       "outline-readers-copy-stage-2.md"]
+    s1 = paths[0].read_text(encoding="utf-8")
+    assert "## Chapter 02" in s1 and "## Chapter 03" not in s1
+    s2 = paths[1].read_text(encoding="utf-8")
+    assert "## Chapter 04" in s2
+
+
 def test_readers_copy_staged_is_cumulative_from_chapter_one(tmp_path):
     root = _series(tmp_path)
     _write(root, "input/book-01/outline-skeleton.md", _SKEL)
@@ -1070,7 +1113,7 @@ def test_readback_source_prefers_the_skeleton_when_present(tmp_path):
     d.mkdir(parents=True)
     (d / "outline-skeleton.md").write_text("## Chapter 01 — S\n", encoding="utf-8")
     (d / "outline.md").write_text("## Chapter 01 — O\n", encoding="utf-8")
-    assert plot_stage._readback_source("01", root=tmp_path).name == "outline-skeleton.md"
+    assert plot_stage._readback_source("01", repo_root=tmp_path).name == "outline-skeleton.md"
 
 
 def test_readback_source_falls_back_to_the_outline(tmp_path):
@@ -1081,7 +1124,7 @@ def test_readback_source_falls_back_to_the_outline(tmp_path):
     d = tmp_path / "input" / "book-01"
     d.mkdir(parents=True)
     (d / "outline.md").write_text("## Chapter 01 — O\n", encoding="utf-8")
-    assert plot_stage._readback_source("01", root=tmp_path).name == "outline.md"
+    assert plot_stage._readback_source("01", repo_root=tmp_path).name == "outline.md"
 
 
 def test_readback_source_fails_loud_when_neither_exists(tmp_path):
@@ -1089,4 +1132,4 @@ def test_readback_source_fails_loud_when_neither_exists(tmp_path):
     (tmp_path / ".penny").mkdir()
     (tmp_path / "input" / "book-01").mkdir(parents=True)
     with pytest.raises(SystemExit, match="no outline"):
-        plot_stage._readback_source("01", root=tmp_path)
+        plot_stage._readback_source("01", repo_root=tmp_path)
