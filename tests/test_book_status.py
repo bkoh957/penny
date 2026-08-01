@@ -234,3 +234,93 @@ def test_dotdot_escape_in_outline_source_is_rejected(tmp_path):
     assert r.run.ok is True
     assert r.passed.kind == "unknown"
     assert "outside" in r.reason.lower() or "escape" in r.reason.lower()
+
+
+def _chapters_dir(root):
+    d = root / "output" / "book-01" / "chapters"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def test_total_chapters_comes_from_the_outline_frontmatter(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    assert book_status.total_chapters("01", root) == 2
+
+
+def test_total_chapters_is_none_when_the_outline_does_not_declare_it(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root, "---\nbook: 01\n---\n\n## Chapter 01 — A\n")
+    assert book_status.total_chapters("01", root) is None
+
+
+def test_count_rows_are_unknown_when_total_chapters_is_unknown(tmp_path):
+    """A count with no denominator is a guess. Report that it cannot be
+    computed rather than inventing a total from whichever directory is fullest."""
+    root = _series(tmp_path)
+    _write_outline(root, "---\nbook: 01\n---\n\n## Chapter 01 — A\n")
+    for r in book_status.chapter_rows("01", root):
+        assert r.run.kind == "unknown" or r.passed.kind == "unknown"
+
+
+def test_drafts_row_counts_draft_files(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    d = _chapters_dir(root)
+    (d / "ch-01.draft.md").write_text("x\n", encoding="utf-8")
+    r = _row(book_status.chapter_rows("01", root), "drafts")
+    assert (r.run.done, r.run.total) == (1, 2)
+    assert r.run.ok is False
+
+
+def test_drafts_row_passes_only_when_every_chapter_has_one(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    d = _chapters_dir(root)
+    for n in ("01", "02"):
+        (d / f"ch-{n}.draft.md").write_text("x\n", encoding="utf-8")
+    assert _row(book_status.chapter_rows("01", root), "drafts").run.ok is True
+
+
+def test_gates_row_counts_only_passing_gates(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    d = _chapters_dir(root)
+    (d / "ch-01.gate.md").write_text("gate: PASS\n", encoding="utf-8")
+    (d / "ch-02.gate.md").write_text("gate: HOLD\n", encoding="utf-8")
+    r = _row(book_status.chapter_rows("01", root), "gates")
+    assert r.run.kind == "na"
+    assert (r.passed.done, r.passed.total) == (1, 2)
+
+
+def test_dev_cleared_counts_only_certs_bound_to_the_current_draft(tmp_path):
+    """The cert records cleared_draft_sha256 — a cert for a draft that has since
+    been edited is not a clearance for the draft on disk."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    d = _chapters_dir(root)
+    draft = d / "ch-01.draft.md"
+    draft.write_text("current text\n", encoding="utf-8")
+    (d / "ch-02.draft.md").write_text("other\n", encoding="utf-8")
+    locks = root / ".penny" / "locks"
+    locks.mkdir(parents=True, exist_ok=True)
+    good = hashlib.sha256(draft.read_bytes()).hexdigest()
+    (locks / "book-01.ch-01.dev-clear").write_text(
+        f"---\ncleared_draft_sha256: {good}\n---\n", encoding="utf-8")
+    (locks / "book-01.ch-02.dev-clear").write_text(
+        "---\ncleared_draft_sha256: " + ("0" * 64) + "\n---\n", encoding="utf-8")
+    r = _row(book_status.chapter_rows("01", root), "dev-cleared")
+    assert (r.passed.done, r.passed.total) == (1, 2)
+
+
+def test_packets_row_reports_stale_packets_as_not_passed(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    pk = root / "input" / "book-01" / "packets"
+    pk.mkdir(parents=True, exist_ok=True)
+    (pk / "ch-01.md").write_text(
+        "---\nbuilt_from_outline: deadbeef\n---\n\n### Required Beats\n- x\n",
+        encoding="utf-8")
+    r = _row(book_status.chapter_rows("01", root), "packets")
+    assert (r.run.done, r.run.total) == (1, 2)
+    assert r.passed.done == 0

@@ -19,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts import penny_paths
+from scripts.penny_meta import parse_frontmatter
 
 
 @dataclass
@@ -204,3 +205,100 @@ def book_rows(book: str, repo_root=None) -> list[Row]:
     book = str(book).zfill(2)
     return [_outline_row(book, root), _diagnostics_row(book, root),
             _feedback_row(book, root), _lock_row(book, root)]
+
+
+_UNKNOWN_TOTAL = "total_chapters not declared in the outline frontmatter"
+
+
+def total_chapters(book: str, repo_root=None) -> int | None:
+    """The denominator for every count, taken from the outline's frontmatter.
+
+    Deliberately NOT inferred from whichever directory happens to be fullest: a
+    count with a guessed denominator reads as fact and is a guess.
+    """
+    root = _root(repo_root)
+    p = _outline_path(str(book).zfill(2), root)
+    if not p.is_file():
+        return None
+    raw = parse_frontmatter(p.read_text(encoding="utf-8")).get("total_chapters")
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return None
+
+
+def _glob_chapters(d: Path, pattern: str) -> set[str]:
+    """Zero-padded chapter numbers matching e.g. 'ch-*.draft.md'."""
+    if not d.is_dir():
+        return set()
+    out = set()
+    for p in d.glob(pattern):
+        stem = p.name.split(".")[0]           # 'ch-07'
+        if stem.startswith("ch-") and stem[3:].isdigit():
+            out.add(stem[3:].zfill(2))
+    return out
+
+
+def chapter_rows(book: str, repo_root=None) -> list[Row]:
+    root = _root(repo_root)
+    book = str(book).zfill(2)
+    total = total_chapters(book, root)
+    chapters = Path(penny_paths.output_path(f"book-{book}/chapters", root=root))
+    packets_dir = Path(penny_paths.input_path(f"book-{book}/packets", root=root))
+    maps_dir = Path(penny_paths.input_path(f"book-{book}/maps", root=root))
+    locks = Path(penny_paths.penny_path("locks", root=root))
+
+    def c(done: int) -> Cell:
+        return unknown() if total is None else count(done, total)
+
+    reason = _UNKNOWN_TOTAL if total is None else ""
+
+    packets = _glob_chapters(packets_dir, "ch-*.md")
+    try:
+        from scripts.packet_assemble import stale_packets
+        stale = stale_packets(book, root)
+        fresh = len(packets - stale)
+        packet_passed = c(fresh)
+        packet_reason = reason or (f"{len(stale)} stale" if stale else "")
+    except Exception as exc:
+        packet_passed, packet_reason = unknown(), f"staleness could not be read: {exc}"
+
+    maps = _glob_chapters(maps_dir, "ch-*.md")
+    drafts = _glob_chapters(chapters, "ch-*.draft.md")
+    finals = _glob_chapters(chapters, "ch-*.final.md")
+
+    passing_gates = 0
+    for num in _glob_chapters(chapters, "ch-*.gate.md"):
+        body = (chapters / f"ch-{num}.gate.md").read_text(encoding="utf-8")
+        if any(l.strip() == "gate: PASS" for l in body.splitlines()):
+            passing_gates += 1
+
+    cleared = 0
+    for num in drafts:
+        cert = locks / f"book-{book}.ch-{num}.dev-clear"
+        draft = chapters / f"ch-{num}.draft.md"
+        if not cert.is_file():
+            continue
+        recorded = parse_frontmatter(
+            cert.read_text(encoding="utf-8")).get("cleared_draft_sha256")
+        if recorded and recorded == _sha(draft):
+            cleared += 1
+
+    return [
+        Row("packets", "packets", c(len(packets)), packet_passed,
+            f"/map-chapter {book} MM", f"input/book-{book}/packets/", packet_reason),
+        Row("maps", "maps", c(len(maps)), na(),
+            f"/map-chapter {book} MM", f"input/book-{book}/maps/", reason),
+        Row("drafts", "drafts", c(len(drafts)), na(),
+            f"/draft-chapter {book} MM",
+            f"output/book-{book}/chapters/ch-MM.draft.md", reason),
+        Row("gates", "gates", na(), c(passing_gates),
+            f"/review-chapter {book} MM",
+            f"output/book-{book}/chapters/ch-MM.gate.md", reason),
+        Row("dev-cleared", "dev cleared", na(), c(cleared),
+            f"preflight clear-dev {book} MM",
+            f".penny/locks/book-{book}.ch-MM.dev-clear", reason),
+        Row("finals", "finals", c(len(finals)), na(),
+            f"/finalize-chapter {book} MM",
+            f"output/book-{book}/chapters/ch-MM.final.md", reason),
+    ]
