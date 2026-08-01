@@ -13,13 +13,12 @@ from __future__ import annotations
 
 import hashlib
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts import penny_paths
-from scripts.penny_meta import parse_frontmatter
 
 
 @dataclass
@@ -150,7 +149,12 @@ def _lock_row(book: str, root) -> Row:
                   artefact=f".penny/locks/book-{book}.mystery.lock")
     if not p.is_file():
         return Row(run=no(), passed=no(), reason="not locked", **common)
-    fm = parse_frontmatter_or_lines(p.read_text(encoding="utf-8"))
+    try:
+        lock_text = p.read_text(encoding="utf-8")
+    except Exception as exc:
+        return Row(run=yes(), passed=unknown(),
+                   reason=f"lock could not be read: {exc}", **common)
+    fm = parse_frontmatter_or_lines(lock_text)
     recorded = fm.get("outline_sha256")
     source = fm.get("outline_source")
     if not recorded or not source:
@@ -160,12 +164,25 @@ def _lock_row(book: str, root) -> Row:
         return Row(run=yes(), passed=unknown(),
                    reason="staleness unknown — lock records no fingerprint; "
                           "re-mint to fix", **common)
-    src = Path(_root(root)) / source
+    root_path = _root(root).resolve()
+    src = (root_path / source).resolve()
+    # Ensure the resolved source stays within the series root
+    try:
+        src.relative_to(root_path)
+    except ValueError:
+        return Row(run=yes(), passed=unknown(),
+                   reason=f"staleness unknown — {source} is outside the series root",
+                   **common)
     if not src.is_file():
         return Row(run=yes(), passed=unknown(),
                    reason=f"staleness unknown — {source} no longer exists", **common)
-    if _sha(src) == recorded:
-        return Row(run=yes(), passed=yes(), reason=f"matches {source}", **common)
+    try:
+        if _sha(src) == recorded:
+            return Row(run=yes(), passed=yes(), reason=f"matches {source}", **common)
+    except Exception as exc:
+        return Row(run=yes(), passed=unknown(),
+                   reason=f"staleness unknown — {source} could not be read: {exc}",
+                   **common)
     return Row(run=yes(), passed=no(),
                reason=f"STALE — {source} has changed since the lock", **common)
 

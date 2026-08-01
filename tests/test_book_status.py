@@ -160,3 +160,77 @@ def test_every_row_carries_a_command_and_an_artefact(tmp_path):
     for r in book_status.book_rows("01", root):
         assert r.command, f"{r.id} has no command"
         assert r.artefact, f"{r.id} has no artefact"
+
+
+def test_unreadable_lock_file_reports_unknown_and_other_rows_render(tmp_path):
+    """A corrupted or partially-written lock file with invalid UTF-8 must not
+    crash book_rows(). The lock row should report unknown, and the other three
+    rows should render normally."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    # Write a lock file with invalid UTF-8
+    d = root / ".penny" / "locks"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "book-01.mystery.lock").write_bytes(b"book: 01\ninvalid: \xff\xfe\n")
+
+    rows = book_status.book_rows("01", root)
+    lock_row = _row(rows, "lock")
+
+    # Lock row should report unknown, not crash
+    assert lock_row.run.ok is True
+    assert lock_row.passed.kind == "unknown"
+    assert "could not be read" in lock_row.reason.lower() or "decode" in lock_row.reason.lower()
+
+    # Other three rows should still render normally
+    outline_row = _row(rows, "outline")
+    assert outline_row.run.ok is True
+    assert outline_row.passed.ok is True
+
+    diagnostics_row = _row(rows, "diagnostics")
+    assert diagnostics_row.run.ok is False  # no diagnostic views created
+
+    feedback_row = _row(rows, "feedback")
+    assert feedback_row.run.ok is False  # no feedback ledger
+
+
+def test_unreadable_outline_source_reports_unknown(tmp_path):
+    """If the source file the lock names cannot be read, report unknown."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    # Create a lock that points to a non-existent file
+    _write_lock(root, "book: 01\nvalidated: fairplay\n"
+                      "outline_source: input/book-01/nonexistent.md\n"
+                      "outline_sha256: " + ("0" * 64) + "\n")
+    r = _row(book_status.book_rows("01", root), "lock")
+    assert r.run.ok is True
+    assert r.passed.kind == "unknown"
+    assert "no longer exists" in r.reason.lower()
+
+
+def test_absolute_path_in_outline_source_is_rejected(tmp_path):
+    """An absolute path in outline_source escapes the series root and must be
+    rejected, not read."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    # Create a lock with absolute path (should be rejected for security)
+    _write_lock(root, "book: 01\nvalidated: fairplay\n"
+                      "outline_source: /etc/passwd\n"
+                      "outline_sha256: " + ("0" * 64) + "\n")
+    r = _row(book_status.book_rows("01", root), "lock")
+    assert r.run.ok is True
+    assert r.passed.kind == "unknown"
+    assert "outside" in r.reason.lower() or "escape" in r.reason.lower()
+
+
+def test_dotdot_escape_in_outline_source_is_rejected(tmp_path):
+    """A relative path with .. that escapes the series root must be rejected."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    # Create a lock with escaping relative path
+    _write_lock(root, "book: 01\nvalidated: fairplay\n"
+                      "outline_source: ../../etc/passwd\n"
+                      "outline_sha256: " + ("0" * 64) + "\n")
+    r = _row(book_status.book_rows("01", root), "lock")
+    assert r.run.ok is True
+    assert r.passed.kind == "unknown"
+    assert "outside" in r.reason.lower() or "escape" in r.reason.lower()
