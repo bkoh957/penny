@@ -233,6 +233,8 @@ def _glob_chapters(d: Path, pattern: str) -> set[str]:
         return set()
     out = set()
     for p in d.glob(pattern):
+        if not p.is_file():          # Filter out directories
+            continue
         stem = p.name.split(".")[0]           # 'ch-07'
         if stem.startswith("ch-") and stem[3:].isdigit():
             out.add(stem[3:].zfill(2))
@@ -268,21 +270,37 @@ def chapter_rows(book: str, repo_root=None) -> list[Row]:
     finals = _glob_chapters(chapters, "ch-*.final.md")
 
     passing_gates = 0
+    gates_reason = ""
     for num in _glob_chapters(chapters, "ch-*.gate.md"):
-        body = (chapters / f"ch-{num}.gate.md").read_text(encoding="utf-8")
+        try:
+            body = (chapters / f"ch-{num}.gate.md").read_text(encoding="utf-8")
+        except Exception as exc:
+            gates_reason = f"ch-{num} gate unreadable"
+            passing_gates = None
+            break
         if any(l.strip() == "gate: PASS" for l in body.splitlines()):
             passing_gates += 1
 
+    gates_passed = unknown() if passing_gates is None else c(passing_gates)
+
     cleared = 0
+    cleared_reason = ""
     for num in drafts:
         cert = locks / f"book-{book}.ch-{num}.dev-clear"
         draft = chapters / f"ch-{num}.draft.md"
         if not cert.is_file():
             continue
-        recorded = parse_frontmatter(
-            cert.read_text(encoding="utf-8")).get("cleared_draft_sha256")
+        try:
+            recorded = parse_frontmatter(
+                cert.read_text(encoding="utf-8")).get("cleared_draft_sha256")
+        except Exception as exc:
+            cleared_reason = f"ch-{num} dev-clear unreadable"
+            cleared = None
+            break
         if recorded and recorded == _sha(draft):
             cleared += 1
+
+    cleared_passed = unknown() if cleared is None else c(cleared)
 
     return [
         Row("packets", "packets", c(len(packets)), packet_passed,
@@ -292,12 +310,12 @@ def chapter_rows(book: str, repo_root=None) -> list[Row]:
         Row("drafts", "drafts", c(len(drafts)), na(),
             f"/draft-chapter {book} MM",
             f"output/book-{book}/chapters/ch-MM.draft.md", reason),
-        Row("gates", "gates", na(), c(passing_gates),
+        Row("gates", "gates", na(), gates_passed,
             f"/review-chapter {book} MM",
-            f"output/book-{book}/chapters/ch-MM.gate.md", reason),
-        Row("dev-cleared", "dev cleared", na(), c(cleared),
+            f"output/book-{book}/chapters/ch-MM.gate.md", gates_reason or reason),
+        Row("dev-cleared", "dev cleared", na(), cleared_passed,
             f"preflight clear-dev {book} MM",
-            f".penny/locks/book-{book}.ch-MM.dev-clear", reason),
+            f".penny/locks/book-{book}.ch-MM.dev-clear", cleared_reason or reason),
         Row("finals", "finals", c(len(finals)), na(),
             f"/finalize-chapter {book} MM",
             f"output/book-{book}/chapters/ch-MM.final.md", reason),

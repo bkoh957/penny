@@ -324,3 +324,63 @@ def test_packets_row_reports_stale_packets_as_not_passed(tmp_path):
     r = _row(book_status.chapter_rows("01", root), "packets")
     assert (r.run.done, r.run.total) == (1, 2)
     assert r.passed.done == 0
+
+
+def test_gate_file_with_invalid_utf8_reports_unknown_and_other_rows_render(tmp_path):
+    """A gate file with invalid UTF-8 raises UnicodeDecodeError out of
+    chapter_rows() and kills all six rows. Instead, the gates row should report
+    unknown and the other rows should render normally."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    d = _chapters_dir(root)
+    (d / "ch-01.gate.md").write_bytes(b"gate: PASS\n")
+    (d / "ch-02.gate.md").write_bytes(b"invalid: \xff\xfe\n")
+    rows = book_status.chapter_rows("01", root)
+    gates_row = _row(rows, "gates")
+    assert gates_row.passed.kind == "unknown"
+    assert "ch-02" in gates_row.reason.lower()
+    # Other rows must still render
+    assert _row(rows, "packets").run.kind in ("count", "unknown")
+    assert _row(rows, "drafts").run.kind in ("count", "unknown")
+
+
+def test_unreadable_dev_clear_cert_reports_unknown_and_other_rows_render(tmp_path):
+    """A dev-clear cert with invalid UTF-8 raises UnicodeDecodeError out of
+    chapter_rows() and kills all six rows. Instead, the dev-cleared row should
+    report unknown and the other rows should render normally."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    d = _chapters_dir(root)
+    (d / "ch-01.draft.md").write_text("text\n", encoding="utf-8")
+    (d / "ch-02.draft.md").write_text("text\n", encoding="utf-8")
+    locks = root / ".penny" / "locks"
+    locks.mkdir(parents=True, exist_ok=True)
+    (locks / "book-01.ch-01.dev-clear").write_bytes(b"valid\n")
+    (locks / "book-01.ch-02.dev-clear").write_bytes(b"invalid: \xff\xfe\n")
+    rows = book_status.chapter_rows("01", root)
+    devclear_row = _row(rows, "dev-cleared")
+    assert devclear_row.passed.kind == "unknown"
+    assert "ch-02" in devclear_row.reason.lower()
+    # Other rows must still render
+    assert _row(rows, "packets").run.kind in ("count", "unknown")
+    assert _row(rows, "gates").run.kind in ("na", "unknown")
+
+
+def test_directory_named_like_a_chapter_file_does_not_crash(tmp_path):
+    """A stray directory named ch-01.draft.md/ matches the glob and enters the
+    chapter set. When dev-cleared loop tries _sha(draft) on it, IsADirectoryError
+    is raised. Instead, _glob_chapters should filter by .is_file() and the
+    dev-cleared row should render normally."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    d = _chapters_dir(root)
+    (d / "ch-01.draft.md").mkdir()  # Directory, not file
+    (d / "ch-02.draft.md").write_text("text\n", encoding="utf-8")
+    rows = book_status.chapter_rows("01", root)
+    devclear_row = _row(rows, "dev-cleared")
+    # Should not crash and should report sensible counts
+    assert devclear_row.passed.kind in ("count", "unknown")
+    # Other rows must still render
+    drafts_row = _row(rows, "drafts")
+    assert drafts_row.run.done == 1  # Only the real file, not the directory
+    assert drafts_row.run.total == 2
