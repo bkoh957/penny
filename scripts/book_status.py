@@ -329,7 +329,7 @@ def tail_rows(book: str, repo_root=None) -> list[Row]:
         f"book-{book}/book-{book}.manuscript.md", root=root))
     approved = Path(penny_paths.penny_path(f"locks/book-{book}.approved", root=root))
     beta_dir = Path(penny_paths.output_path(f"book-{book}/beta-reports", root=root))
-    n_beta = len(list(beta_dir.glob("*.converged.md"))) if beta_dir.is_dir() else 0
+    n_beta = len([p for p in beta_dir.glob("*.converged.md") if p.is_file()]) if beta_dir.is_dir() else 0
     return [
         Row("manuscript", "manuscript",
             yes() if ms.is_file() else no(),
@@ -353,7 +353,10 @@ def all_rows(book: str, repo_root=None) -> list[Row]:
 def _is_run(row: Row) -> bool:
     c = row.run
     if c.kind == "na":
-        return True             # judged only on PASSED
+        # When RUN is na(), judge progress by the PASSED cell.
+        # A 0/28 PASSED count is not evidence that anything ran.
+        p = row.passed
+        return p.done > 0 if p.kind == "count" else p.ok
     if c.kind == "count":
         return c.done > 0
     return c.ok
@@ -362,7 +365,10 @@ def _is_run(row: Row) -> bool:
 def _is_passed(row: Row) -> bool:
     c = row.passed
     if c.kind == "na":
-        # When passed is na(), judge only on the run cell.
+        # When passed is na(), judge only on the run cell. If run is also na(),
+        # there is nothing to pass and nothing to judge — the outcome IS running it.
+        if row.run.kind == "na":
+            return True
         # A count row with na() passed is only passed when all are done.
         return row.run.ok
     if c.kind == "count":

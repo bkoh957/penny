@@ -484,3 +484,46 @@ def test_book_01_shape_selects_the_feedback_row(tmp_path):
         "items:\n  - {id: OF-1, state: open}\n", encoding="utf-8")
     _write_lock(root, "book: 01\nvalidated: fairplay\n")
     assert book_status.next_action(book_status.all_rows("01", root)).id == "feedback"
+
+
+def test_na_run_cell_with_0_passed_count_does_not_win_over_unstarted():
+    """A na()-RUN row with a 0/28 PASSED count must not be selected over an
+    unstarted row. gates and dev-cleared have this shape. Once an outline is
+    locked, their passed count becomes count(0, 28), but that is not evidence
+    that the step ran."""
+    rows = [
+        _r("packets", book_status.count(0, 28), book_status.na()),     # unstarted
+        _r("gates", book_status.na(), book_status.count(0, 28)),       # na run, 0 passed
+    ]
+    assert book_status.next_action(rows).id == "packets"
+
+
+def test_locked_outline_clean_feedback_no_drafts_selects_packets(tmp_path):
+    """The critical real-world shape: an outline that passes, diagnostics run,
+    feedback clean (all items closed), lock in place, but no chapter work
+    at all. The correct next action is 'packets', not 'gates'."""
+    root = _series(tmp_path)
+    _write_outline(root)
+
+    # Lock the outline
+    p_outline = root / "input" / "book-01" / "outline.md"
+    sha = hashlib.sha256(p_outline.read_bytes()).hexdigest()
+    _write_lock(root, f"book: 01\nvalidated: fairplay\n"
+                      f"outline_source: input/book-01/outline.md\n"
+                      f"outline_sha256: {sha}\n")
+
+    # Add clean feedback (all items closed)
+    reports = root / "output" / "book-01" / "reports"
+    reports.mkdir(parents=True, exist_ok=True)
+    (reports / "outline-glance.md").write_text("# g\n", encoding="utf-8")
+    (reports / "outline-feedback.yaml").write_text(
+        "items:\n  - {id: OF-1, state: solved}\n  - {id: OF-2, state: rejected}\n",
+        encoding="utf-8")
+
+    # No chapter work at all
+    # No packets, maps, drafts, finals, gates, or dev-clear certs
+
+    rows = book_status.all_rows("01", root)
+    next_row = book_status.next_action(rows)
+    assert next_row is not None, "Should have a next action"
+    assert next_row.id == "packets", f"Expected 'packets', got '{next_row.id}'"
