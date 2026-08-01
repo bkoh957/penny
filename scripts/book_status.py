@@ -77,6 +77,18 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _rel(p: Path, root: Path) -> str:
+    """Render an artefact path relative to the series root for display, so the
+    drill-down reads like the book-level rows rather than wrapping a deep
+    absolute path across the terminal. Falls back to the absolute path if `p`
+    isn't under `root` — should not happen for the paths built here, but a
+    display fallback is cheaper than a crash."""
+    try:
+        return str(p.relative_to(root))
+    except ValueError:
+        return str(p)
+
+
 def _outline_path(book: str, root) -> Path:
     return Path(penny_paths.input_path(f"book-{book}/outline.md", root=root))
 
@@ -106,7 +118,8 @@ def _diagnostics_row(book: str, root) -> Row:
     d = Path(penny_paths.output_path(f"book-{book}/reports", root=root))
     present = [n for n in _DIAGNOSTIC_VIEWS if (d / n).is_file()]
     strands = d / "strands"
-    n_strands = len(list(strands.glob("*.md"))) if strands.is_dir() else 0
+    n_strands = (len([p for p in strands.glob("*.md") if p.is_file()])
+                 if strands.is_dir() else 0)
     if n_strands:
         present.append(f"{n_strands} strands")
     return Row(id="diagnostics", label="diagnostics",
@@ -211,21 +224,40 @@ def book_rows(book: str, repo_root=None) -> list[Row]:
 _UNKNOWN_TOTAL = "total_chapters not declared in the outline frontmatter"
 
 
+def _total_chapters_with_reason(book: str, root) -> tuple[int | None, str]:
+    """The denominator for every count, plus WHY it's missing when it is.
+
+    A read failure and a missing key are different problems with different
+    fixes, so they must not share a reason: telling a writer to add a key that
+    is already there (because a bad byte elsewhere made the file unreadable)
+    sends them chasing the wrong thing. `reason` is '' exactly when `total` is
+    known.
+    """
+    p = _outline_path(book, root)
+    if not p.is_file():
+        return None, "no outline yet"
+    try:
+        text = p.read_text(encoding="utf-8")
+    except Exception as exc:                      # never a traceback
+        return None, f"outline could not be read: {exc}"
+    raw = parse_frontmatter(text).get("total_chapters")
+    try:
+        return int(raw), ""
+    except (TypeError, ValueError):
+        return None, _UNKNOWN_TOTAL
+
+
 def total_chapters(book: str, repo_root=None) -> int | None:
     """The denominator for every count, taken from the outline's frontmatter.
 
     Deliberately NOT inferred from whichever directory happens to be fullest: a
-    count with a guessed denominator reads as fact and is a guess.
+    count with a guessed denominator reads as fact and is a guess. Thin wrapper
+    over `_total_chapters_with_reason`, kept for existing callers/tests that
+    only want the int.
     """
     root = _root(repo_root)
-    p = _outline_path(str(book).zfill(2), root)
-    if not p.is_file():
-        return None
-    raw = parse_frontmatter(p.read_text(encoding="utf-8")).get("total_chapters")
-    try:
-        return int(raw)
-    except (TypeError, ValueError):
-        return None
+    total, _ = _total_chapters_with_reason(str(book).zfill(2), root)
+    return total
 
 
 def _glob_chapters(d: Path, pattern: str) -> set[str]:
@@ -245,7 +277,7 @@ def _glob_chapters(d: Path, pattern: str) -> set[str]:
 def chapter_rows(book: str, repo_root=None) -> list[Row]:
     root = _root(repo_root)
     book = str(book).zfill(2)
-    total = total_chapters(book, root)
+    total, total_reason = _total_chapters_with_reason(book, root)
     chapters = Path(penny_paths.output_path(f"book-{book}/chapters", root=root))
     packets_dir = Path(penny_paths.input_path(f"book-{book}/packets", root=root))
     maps_dir = Path(penny_paths.input_path(f"book-{book}/maps", root=root))
@@ -254,7 +286,7 @@ def chapter_rows(book: str, repo_root=None) -> list[Row]:
     def c(done: int) -> Cell:
         return unknown() if total is None else count(done, total)
 
-    reason = _UNKNOWN_TOTAL if total is None else ""
+    reason = total_reason if total is None else ""
 
     packets = _glob_chapters(packets_dir, "ch-*.md")
     try:
@@ -294,12 +326,12 @@ def chapter_rows(book: str, repo_root=None) -> list[Row]:
         try:
             recorded = parse_frontmatter(
                 cert.read_text(encoding="utf-8")).get("cleared_draft_sha256")
+            if recorded and recorded == _sha(draft):
+                cleared += 1
         except Exception as exc:
             cleared_reason = f"ch-{num} dev-clear unreadable"
             cleared = None
             break
-        if recorded and recorded == _sha(draft):
-            cleared += 1
 
     cleared_passed = unknown() if cleared is None else c(cleared)
 
@@ -432,7 +464,9 @@ def render(book: str, rows: list[Row], next_row, unknowns: list[Row]) -> str:
 
 def one_chapter_rows(book: str, chapter: str, repo_root=None) -> list[Row]:
     """The same six steps as the count rows, for one chapter."""
-    root = _root(repo_root)
+    # Resolved so artefact paths (built by penny_paths, which resolves
+    # internally) can be reliably rendered relative to it via _rel().
+    root = _root(repo_root).resolve()
     book, ch = str(book).zfill(2), str(chapter).zfill(2)
     chapters = Path(penny_paths.output_path(f"book-{book}/chapters", root=root))
     packet = Path(penny_paths.input_path(f"book-{book}/packets/ch-{ch}.md", root=root))
@@ -467,16 +501,16 @@ def one_chapter_rows(book: str, chapter: str, repo_root=None) -> list[Row]:
 
     return [
         Row("packet", "packet", b(packet), na(),
-            f"/map-chapter {book} {ch}", str(packet)),
-        Row("map", "map", b(mp), na(), f"/map-chapter {book} {ch}", str(mp)),
+            f"/map-chapter {book} {ch}", _rel(packet, root)),
+        Row("map", "map", b(mp), na(), f"/map-chapter {book} {ch}", _rel(mp, root)),
         Row("draft", "draft", b(draft), na(),
-            f"/draft-chapter {book} {ch}", str(draft)),
+            f"/draft-chapter {book} {ch}", _rel(draft, root)),
         Row("gate", "gate", b(gate), gate_pass,
-            f"/review-chapter {book} {ch}", str(gate), gate_reason),
+            f"/review-chapter {book} {ch}", _rel(gate, root), gate_reason),
         Row("dev-clear", "dev clear", b(cert), cleared,
-            f"preflight clear-dev {book} {ch}", str(cert), cleared_reason),
+            f"preflight clear-dev {book} {ch}", _rel(cert, root), cleared_reason),
         Row("final", "final", b(final), na(),
-            f"/finalize-chapter {book} {ch}", str(final)),
+            f"/finalize-chapter {book} {ch}", _rel(final, root)),
     ]
 
 

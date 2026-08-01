@@ -626,3 +626,86 @@ def test_cli_drills_into_one_chapter(tmp_path):
     proc = _run(root, "01", "01")
     assert proc.returncode == 0, proc.stderr
     assert "packet" in proc.stdout and "final" in proc.stdout
+
+
+# --- fix round 1: a bad byte in outline.md must never crash the report -----
+
+def test_total_chapters_is_none_when_the_outline_is_not_valid_utf8(tmp_path):
+    root = _series(tmp_path)
+    p = root / "input" / "book-01" / "outline.md"
+    p.write_bytes(b"---\nbook: 01\ntotal_chapters: 2\n---\n\n## Chapter 01\n\xff\xfe\n")
+    assert book_status.total_chapters("01", root) is None
+
+
+def test_unreadable_outline_gives_a_distinct_reason_not_the_missing_key_message(tmp_path):
+    """A failed read and a missing frontmatter key are different problems with
+    different fixes. Telling a writer to add total_chapters: when the key is
+    already there — it's just that one stray byte made the file unreadable —
+    sends them chasing the wrong thing."""
+    root = _series(tmp_path)
+    p = root / "input" / "book-01" / "outline.md"
+    p.write_bytes(b"---\nbook: 01\ntotal_chapters: 2\n---\n\n## Chapter 01\n\xff\xfe\n")
+    r = _row(book_status.chapter_rows("01", root), "maps")
+    assert r.run.kind == "unknown"
+    assert "could not be read" in r.reason.lower()
+    assert r.reason != book_status._UNKNOWN_TOTAL
+    assert "not declared" not in r.reason.lower()
+
+
+def test_cli_exits_zero_with_a_non_utf8_byte_in_the_outline(tmp_path):
+    """The book IS readable — it has one bad byte. That must never traceback
+    or turn a readable report into exit 1."""
+    root = _series(tmp_path)
+    p = root / "input" / "book-01" / "outline.md"
+    p.write_bytes(b"---\nbook: 01\ntotal_chapters: 2\n---\n\n## Chapter 01\n\xff\xfe\n")
+    proc = _run(root, "01")
+    assert proc.returncode == 0, proc.stderr
+    assert "Traceback" not in proc.stderr
+    assert "next:" in proc.stdout
+
+
+# --- fix round 1: one_chapter_rows failure paths, tested rather than only
+# defended by inspection -----------------------------------------------------
+
+def test_one_chapter_rows_gate_unreadable_reports_unknown_and_others_render(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    d = _chapters_dir(root)
+    (d / "ch-01.gate.md").write_bytes(b"gate: PASS\n\xff\xfe\n")
+    rows = book_status.one_chapter_rows("01", "01", root)
+    gate_row = _row(rows, "gate")
+    assert gate_row.passed.kind == "unknown"
+    assert "could not be read" in gate_row.reason.lower()
+    # other rows must still render
+    assert _row(rows, "packet").run.kind == "bool"
+    assert _row(rows, "draft").run.kind == "bool"
+    assert _row(rows, "final").run.kind == "bool"
+
+
+def test_one_chapter_rows_dev_clear_cert_unreadable_reports_unknown_and_others_render(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    d = _chapters_dir(root)
+    (d / "ch-01.draft.md").write_text("text\n", encoding="utf-8")
+    locks = root / ".penny" / "locks"
+    locks.mkdir(parents=True, exist_ok=True)
+    (locks / "book-01.ch-01.dev-clear").write_bytes(b"cleared_draft_sha256: \xff\xfe\n")
+    rows = book_status.one_chapter_rows("01", "01", root)
+    dc_row = _row(rows, "dev-clear")
+    assert dc_row.passed.kind == "unknown"
+    assert "could not be read" in dc_row.reason.lower()
+    # other rows must still render
+    assert _row(rows, "draft").run.ok is True
+    assert _row(rows, "gate").run.ok is False
+
+
+# --- fix round 1: drill-down artefact paths must be relative, like the
+# book-level rows, not absolute --------------------------------------------
+
+def test_one_chapter_rows_artefacts_are_relative_to_the_series_root(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    rows = book_status.one_chapter_rows("01", "01", root)
+    for r in rows:
+        assert not Path(r.artefact).is_absolute(), f"{r.id} artefact is absolute: {r.artefact}"
+    assert _row(rows, "draft").artefact == "output/book-01/chapters/ch-01.draft.md"
