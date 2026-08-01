@@ -527,3 +527,102 @@ def test_locked_outline_clean_feedback_no_drafts_selects_packets(tmp_path):
     next_row = book_status.next_action(rows)
     assert next_row is not None, "Should have a next action"
     assert next_row.id == "packets", f"Expected 'packets', got '{next_row.id}'"
+
+
+import subprocess
+import sys
+import os
+
+
+def test_render_cell_shapes():
+    assert book_status.render_cell(book_status.yes()) == "✓"
+    assert book_status.render_cell(book_status.no()) == "✗"
+    assert book_status.render_cell(book_status.na()) == "—"
+    assert book_status.render_cell(book_status.unknown()) == "?"
+    assert book_status.render_cell(book_status.count(3, 28)) == "3/28"
+
+
+def test_render_includes_every_row_its_command_and_its_artefact(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    rows = book_status.all_rows("01", root)
+    out = book_status.render("01", rows, book_status.next_action(rows),
+                             book_status.unknown_rows(rows))
+    for r in rows:
+        assert r.label in out
+        assert r.command in out
+    assert "next:" in out
+
+
+def test_render_names_unknown_rows_beneath_next(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    _write_lock(root, "book: 01\nvalidated: fairplay\n")   # legacy, no fingerprint
+    rows = book_status.all_rows("01", root)
+    out = book_status.render("01", rows, book_status.next_action(rows),
+                             book_status.unknown_rows(rows))
+    assert "mystery lock" in out
+    assert "unknown" in out.lower()
+
+
+def test_one_chapter_rows_cover_the_per_chapter_pipeline(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    d = _chapters_dir(root)
+    (d / "ch-01.draft.md").write_text("x\n", encoding="utf-8")
+    ids = [r.id for r in book_status.one_chapter_rows("01", "01", root)]
+    assert ids == ["packet", "map", "draft", "gate", "dev-clear", "final"]
+    assert _row(book_status.one_chapter_rows("01", "01", root), "draft").run.ok is True
+
+
+def _run(cwd, *args):
+    env = dict(os.environ, PYTHONPATH=str(Path.cwd()))
+    return subprocess.run(
+        [sys.executable, str(Path.cwd() / "scripts" / "book_status.py"), *args],
+        cwd=cwd, capture_output=True, text=True, env=env)
+
+
+def test_cli_exits_zero_even_when_every_row_fails(tmp_path):
+    """A report is not a gate. A book with everything undone is a SUCCESSFUL
+    run of book-status."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    proc = _run(root, "01")
+    assert proc.returncode == 0, proc.stderr
+    assert "next:" in proc.stdout
+
+
+def test_cli_refuses_a_book_with_no_outline(tmp_path):
+    root = _series(tmp_path)
+    proc = _run(root, "01")
+    assert proc.returncode == 2
+    assert "outline" in (proc.stdout + proc.stderr).lower()
+
+
+def test_cli_refuses_a_traversal_book_id(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    proc = _run(root, "01/../../etc")
+    assert proc.returncode == 2
+    assert "invalid" in (proc.stdout + proc.stderr).lower()
+
+
+def test_cli_writes_nothing(tmp_path):
+    """The module's central promise. Nothing is created — not even a reports dir."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    before = {p: p.stat().st_mtime_ns for p in root.rglob("*") if p.is_file()}
+    names_before = {str(p.relative_to(root)) for p in root.rglob("*")}
+    assert _run(root, "01").returncode == 0
+    names_after = {str(p.relative_to(root)) for p in root.rglob("*")}
+    after = {p: p.stat().st_mtime_ns for p in root.rglob("*") if p.is_file()}
+    assert names_before == names_after, "book-status created something"
+    assert before == after, "book-status modified something"
+
+
+def test_cli_drills_into_one_chapter(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    proc = _run(root, "01", "01")
+    assert proc.returncode == 0, proc.stderr
+    assert "packet" in proc.stdout and "final" in proc.stdout

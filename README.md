@@ -576,6 +576,7 @@ consensus axis (≥K-of-M via `beta_consensus_k`).
 | `/expand-outline <NN> [MM]` | book | requires sealed solution |
 | `/review-outline <NN> [--focus "…"]` | book | **advisory** |
 | `/diagnose-outline <NN>` | book | **read-only** — never writes `outline.md`, never touches a lock |
+| `/book-status <NN> [MM]` | book/chapter | **read-only** — where the book is: two statuses per step + next action |
 | `/map-chapter <NN> <MM>` | chapter | requires the lock |
 | `/draft-chapter <NN> <MM>` | chapter | requires the lock |
 | `/draft-chapter-lmstudio <NN> <MM> [model-id]` | chapter | requires the lock; LM Studio scene-shard route |

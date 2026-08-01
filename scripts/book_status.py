@@ -12,6 +12,7 @@ moved on.
 from __future__ import annotations
 
 import hashlib
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -398,3 +399,119 @@ def next_action(rows: list[Row]) -> "Row | None":
         if not _is_run(r):
             return r
     return None
+
+
+_BOOK_RE = re.compile(r"\A[0-9]{1,3}\Z")
+
+
+def render_cell(c: Cell) -> str:
+    if c.kind == "na":
+        return "—"
+    if c.kind == "unknown":
+        return "?"
+    if c.kind == "count":
+        return f"{c.done}/{c.total}"
+    return "✓" if c.ok else "✗"
+
+
+def render(book: str, rows: list[Row], next_row, unknowns: list[Row]) -> str:
+    out = [f"BOOK {book}", ""]
+    out.append(f"{'STEP':<16}{'RUN':>6}{'PASS':>7}   WHY / ARTEFACT")
+    out.append("─" * 72)
+    for r in rows:
+        out.append(f"{r.label:<16}{render_cell(r.run):>6}{render_cell(r.passed):>7}   "
+                   f"{r.reason or r.artefact}")
+        out.append(f"{'':<16}{'':>6}{'':>7}   {r.command}")
+    out.append("─" * 72)
+    out.append(f"next: {next_row.command if next_row else 'nothing — every step has passed'}"
+               + (f"   ({next_row.label})" if next_row else ""))
+    for u in unknowns:
+        out.append(f"  ? {u.label}: {u.reason}")
+    return "\n".join(out) + "\n"
+
+
+def one_chapter_rows(book: str, chapter: str, repo_root=None) -> list[Row]:
+    """The same six steps as the count rows, for one chapter."""
+    root = _root(repo_root)
+    book, ch = str(book).zfill(2), str(chapter).zfill(2)
+    chapters = Path(penny_paths.output_path(f"book-{book}/chapters", root=root))
+    packet = Path(penny_paths.input_path(f"book-{book}/packets/ch-{ch}.md", root=root))
+    mp = Path(penny_paths.input_path(f"book-{book}/maps/ch-{ch}.md", root=root))
+    draft = chapters / f"ch-{ch}.draft.md"
+    gate = chapters / f"ch-{ch}.gate.md"
+    final = chapters / f"ch-{ch}.final.md"
+    cert = Path(penny_paths.penny_path(
+        f"locks/book-{book}.ch-{ch}.dev-clear", root=root))
+
+    def b(p: Path) -> Cell:
+        return yes() if p.is_file() else no()
+
+    gate_pass, gate_reason = no(), ""
+    if gate.is_file():
+        try:
+            body = gate.read_text(encoding="utf-8")
+        except Exception as exc:                  # never a traceback
+            gate_pass, gate_reason = unknown(), f"gate could not be read: {exc}"
+        else:
+            gate_pass = yes() if any(l.strip() == "gate: PASS"
+                                     for l in body.splitlines()) else no()
+
+    cleared, cleared_reason = no(), ""
+    if cert.is_file() and draft.is_file():
+        try:
+            rec = parse_frontmatter(cert.read_text(encoding="utf-8")).get(
+                "cleared_draft_sha256")
+            cleared = yes() if rec and rec == _sha(draft) else no()
+        except Exception as exc:                  # never a traceback
+            cleared, cleared_reason = unknown(), f"dev-clear cert could not be read: {exc}"
+
+    return [
+        Row("packet", "packet", b(packet), na(),
+            f"/map-chapter {book} {ch}", str(packet)),
+        Row("map", "map", b(mp), na(), f"/map-chapter {book} {ch}", str(mp)),
+        Row("draft", "draft", b(draft), na(),
+            f"/draft-chapter {book} {ch}", str(draft)),
+        Row("gate", "gate", b(gate), gate_pass,
+            f"/review-chapter {book} {ch}", str(gate), gate_reason),
+        Row("dev-clear", "dev clear", b(cert), cleared,
+            f"preflight clear-dev {book} {ch}", str(cert), cleared_reason),
+        Row("final", "final", b(final), na(),
+            f"/finalize-chapter {book} {ch}", str(final)),
+    ]
+
+
+def _main(argv: list[str]) -> int:
+    if not argv or len(argv) > 2:
+        print("usage: book_status NN [MM]", file=sys.stderr)
+        return 2
+    book = argv[0]
+    if not _BOOK_RE.match(book):
+        print(f"book_status: invalid book id {book!r} — digits only",
+              file=sys.stderr)
+        return 2
+    book = book.zfill(2)
+    try:
+        root = penny_paths.series_root()
+    except SystemExit:
+        raise
+    if not _outline_path(book, root).is_file():
+        print(f"book_status: no outline for book {book} "
+              f"({_outline_path(book, root)})", file=sys.stderr)
+        return 2
+    if len(argv) == 2:
+        ch = argv[1]
+        if not _BOOK_RE.match(ch):
+            print(f"book_status: invalid chapter id {ch!r} — digits only",
+                  file=sys.stderr)
+            return 2
+        rows = one_chapter_rows(book, ch, root)
+        print(render(f"{book} ch {ch.zfill(2)}", rows,
+                     next_action(rows), unknown_rows(rows)))
+        return 0
+    rows = all_rows(book, root)
+    print(render(book, rows, next_action(rows), unknown_rows(rows)))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(_main(sys.argv[1:]))
