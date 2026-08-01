@@ -367,20 +367,29 @@ def test_unreadable_dev_clear_cert_reports_unknown_and_other_rows_render(tmp_pat
 
 
 def test_directory_named_like_a_chapter_file_does_not_crash(tmp_path):
-    """A stray directory named ch-01.draft.md/ matches the glob and enters the
-    chapter set. When dev-cleared loop tries _sha(draft) on it, IsADirectoryError
-    is raised. Instead, _glob_chapters should filter by .is_file() and the
-    dev-cleared row should render normally."""
+    """A stray directory named ch-01.draft.md/ must not crash chapter_rows when
+    the dev-cleared loop tries to process it. Pre-fix, glob() would match the
+    directory, add it to drafts, and then _sha(directory) raises IsADirectoryError
+    out of chapter_rows(). With .is_file() filter, the directory never enters
+    drafts, so the loop never tries to process it."""
     root = _series(tmp_path)
     _write_outline(root)
     d = _chapters_dir(root)
     (d / "ch-01.draft.md").mkdir()  # Directory, not file
     (d / "ch-02.draft.md").write_text("text\n", encoding="utf-8")
+    # Add dev-clear certs for both chapters so loop tries to process both
+    locks = root / ".penny" / "locks"
+    locks.mkdir(parents=True, exist_ok=True)
+    (locks / "book-01.ch-01.dev-clear").write_text(
+        "---\ncleared_draft_sha256: " + ("0" * 64) + "\n---\n", encoding="utf-8")
+    good_sha = hashlib.sha256((d / "ch-02.draft.md").read_bytes()).hexdigest()
+    (locks / "book-01.ch-02.dev-clear").write_text(
+        f"---\ncleared_draft_sha256: {good_sha}\n---\n", encoding="utf-8")
+    # Must not crash despite directory matching glob pattern
     rows = book_status.chapter_rows("01", root)
     devclear_row = _row(rows, "dev-cleared")
-    # Should not crash and should report sensible counts
     assert devclear_row.passed.kind in ("count", "unknown")
-    # Other rows must still render
+    # Only the real file should be in drafts, not the directory
     drafts_row = _row(rows, "drafts")
-    assert drafts_row.run.done == 1  # Only the real file, not the directory
+    assert drafts_row.run.done == 1  # Only ch-02, not ch-01 directory
     assert drafts_row.run.total == 2
