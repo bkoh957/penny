@@ -413,12 +413,39 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
             waived_lines.append(f"waived: {check} — {reason}")
         else:
             print(f"lock-mystery: note — waiver for '{check}' matched no finding; not recorded")
+    # The certificate must say WHAT it validated, not merely THAT it did
+    # (spec 2026-08-01 §5). Without this the lock is a sign-off carrying a date
+    # and no description of the thing signed off: book 01's was minted
+    # 2026-07-28 against an outline last edited 2026-07-30 and still passed
+    # every existence check downstream. The dev-clear cert already binds itself
+    # to `cleared_draft_sha256`; the lock was the odd one out.
+    #
+    # Record the SOURCE alongside the digest. `_first_file` prefers
+    # outline-skeleton.md over outline.md, so "the outline" is genuinely
+    # ambiguous — and a reader comparing this digest against a file the lock
+    # never looked at would get a confident wrong answer, which is worse than
+    # no answer at all.
+    #
+    # A book with NEITHER file records neither field. A consumer must then
+    # report "unknown", never "fresh": a certificate must not claim coverage it
+    # does not have (the same rule as the `skipped:` lines above).
+    fingerprint_lines: list[str] = []
+    if outline is not None:
+        opath = Path(outline)
+        try:
+            source = opath.resolve().relative_to(Path(repo_root).resolve()).as_posix()
+        except ValueError:                      # outside the series root
+            source = opath.as_posix()
+        fingerprint_lines.append(f"outline_source: {source}")
+        fingerprint_lines.append(
+            f"outline_sha256: {hashlib.sha256(opath.read_bytes()).hexdigest()}")
     # 4. all passed — mint the certificate (the LAST write).
     lp = lock_path(book, repo_root)
     lp.parent.mkdir(parents=True, exist_ok=True)
     lp.write_text(
         f"book: {book}\nvalidated: {validated}\n"
         f"locked_at: {datetime.now(timezone.utc).isoformat()}\n"
+        + "".join(line + "\n" for line in fingerprint_lines)
         + "".join(line + "\n" for line in waived_lines)
         + "".join(line + "\n" for line in skipped_lines),
         encoding="utf-8",

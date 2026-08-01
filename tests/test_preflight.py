@@ -773,3 +773,53 @@ def test_overload_check_skipped_and_recorded_without_a_resolvable_cap(tmp_path):
         "a certificate that stamps validated:...+tension while the overload check "
         "never ran is a certificate that lies")
     assert "obligations.max_per_chapter" in body
+
+
+# --- spec 2026-08-01 §5: the lock must say WHAT it validated ------------------
+# Before this, the certificate carried only book/validated/locked_at — a
+# sign-off with a date and no description of the thing signed off. Book 01's
+# lock was minted 2026-07-28 against an outline last edited 2026-07-30 and
+# still passed every existence check.
+
+def _sha_of(p):
+    import hashlib
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def test_lock_records_the_outline_it_validated(tmp_path):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    outline = tmp_path / "input" / "book-01" / "outline.md"
+    outline.parent.mkdir(parents=True, exist_ok=True)
+    outline.write_text("# Outline\n\n## Chapter 01 — A\n\nbody\n", encoding="utf-8")
+    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
+    body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
+    assert "outline_source: input/book-01/outline.md" in body
+    assert f"outline_sha256: {_sha_of(outline)}" in body
+
+
+def test_lock_names_the_skeleton_when_that_is_what_it_validated(tmp_path):
+    """_first_file prefers outline-skeleton.md, so "the outline" is ambiguous.
+    Recording the source is what stops a reader comparing the digest against a
+    file the lock never looked at and getting a confident wrong answer."""
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    d = tmp_path / "input" / "book-01"
+    d.mkdir(parents=True, exist_ok=True)
+    skel = d / "outline-skeleton.md"
+    skel.write_text("# Skeleton\n\n## Chapter 01 — A\n\nbody\n", encoding="utf-8")
+    (d / "outline.md").write_text("# Different\n\n## Chapter 01 — B\n\nother\n",
+                                  encoding="utf-8")
+    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
+    body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
+    assert "outline_source: input/book-01/outline-skeleton.md" in body
+    assert f"outline_sha256: {_sha_of(skel)}" in body
+
+
+def test_lock_omits_the_fingerprint_when_there_is_no_outline(tmp_path):
+    """A book with no outline file records NEITHER field, so a consumer reports
+    "unknown" rather than "fresh" — a certificate must never claim coverage it
+    does not have."""
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
+    body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
+    assert "outline_sha256:" not in body
+    assert "outline_source:" not in body
