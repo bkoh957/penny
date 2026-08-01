@@ -320,3 +320,75 @@ def chapter_rows(book: str, repo_root=None) -> list[Row]:
             f"/finalize-chapter {book} MM",
             f"output/book-{book}/chapters/ch-MM.final.md", reason),
     ]
+
+
+def tail_rows(book: str, repo_root=None) -> list[Row]:
+    root = _root(repo_root)
+    book = str(book).zfill(2)
+    ms = Path(penny_paths.output_path(
+        f"book-{book}/book-{book}.manuscript.md", root=root))
+    approved = Path(penny_paths.penny_path(f"locks/book-{book}.approved", root=root))
+    beta_dir = Path(penny_paths.output_path(f"book-{book}/beta-reports", root=root))
+    n_beta = len(list(beta_dir.glob("*.converged.md"))) if beta_dir.is_dir() else 0
+    return [
+        Row("manuscript", "manuscript",
+            yes() if ms.is_file() else no(),
+            yes() if approved.is_file() else no(),
+            f"/assemble-book {book}",
+            f"output/book-{book}/book-{book}.manuscript.md",
+            "approved" if approved.is_file() else
+            ("assembled, not approved" if ms.is_file() else "not assembled")),
+        Row("beta", "beta read", yes() if n_beta else no(), na(),
+            f"/beta-read output/book-{book}/book-{book}.manuscript.md",
+            f"output/book-{book}/beta-reports/",
+            f"{n_beta} personas" if n_beta else "not run"),
+    ]
+
+
+def all_rows(book: str, repo_root=None) -> list[Row]:
+    return (book_rows(book, repo_root) + chapter_rows(book, repo_root)
+            + tail_rows(book, repo_root))
+
+
+def _is_run(row: Row) -> bool:
+    c = row.run
+    if c.kind == "na":
+        return True             # judged only on PASSED
+    if c.kind == "count":
+        return c.done > 0
+    return c.ok
+
+
+def _is_passed(row: Row) -> bool:
+    c = row.passed
+    if c.kind == "na":
+        # When passed is na(), judge only on the run cell.
+        # A count row with na() passed is only passed when all are done.
+        return row.run.ok
+    if c.kind == "count":
+        return c.total > 0 and c.done == c.total
+    return c.ok
+
+
+def unknown_rows(rows: list[Row]) -> list[Row]:
+    return [r for r in rows if r.run.kind == "unknown" or r.passed.kind == "unknown"]
+
+
+def next_action(rows: list[Row]) -> "Row | None":
+    """First row that RAN but did not PASS; else the first not yet run.
+
+    Fixing a thing that ran badly outranks starting the next thing — which is
+    the whole difference from `plot_stage.py status`, whose per-stage view sends
+    book 01 back to rewrite its premise. Rows whose checks could not run are
+    skipped: guessing from a fact the engine admits it lacks is the failure
+    this replaces.
+    """
+    skip = {id(r) for r in unknown_rows(rows)}
+    candidates = [r for r in rows if id(r) not in skip]
+    for r in candidates:
+        if _is_run(r) and not _is_passed(r):
+            return r
+    for r in candidates:
+        if not _is_run(r):
+            return r
+    return None

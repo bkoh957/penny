@@ -393,3 +393,94 @@ def test_directory_named_like_a_chapter_file_does_not_crash(tmp_path):
     drafts_row = _row(rows, "drafts")
     assert drafts_row.run.done == 1  # Only ch-02, not ch-01 directory
     assert drafts_row.run.total == 2
+
+
+def _r(row_id, run, passed):
+    return book_status.Row(row_id, row_id, run, passed, "cmd", "path")
+
+
+def test_next_is_the_first_run_but_not_passed_row():
+    rows = [_r("a", book_status.yes(), book_status.yes()),
+            _r("b", book_status.yes(), book_status.no()),
+            _r("c", book_status.no(), book_status.no())]
+    assert book_status.next_action(rows).id == "b"
+
+
+def test_next_prefers_fixing_over_starting():
+    """A half-done thing outranks an unstarted one — that is the whole rule."""
+    rows = [_r("a", book_status.no(), book_status.no()),
+            _r("b", book_status.yes(), book_status.no())]
+    assert book_status.next_action(rows).id == "b"
+
+
+def test_next_falls_through_to_the_first_unrun_row():
+    rows = [_r("a", book_status.yes(), book_status.yes()),
+            _r("b", book_status.no(), book_status.no())]
+    assert book_status.next_action(rows).id == "b"
+
+
+def test_a_partly_done_count_row_is_run_but_not_passed():
+    rows = [_r("a", book_status.count(3, 28), book_status.na())]
+    assert book_status.next_action(rows).id == "a"
+
+
+def test_an_na_passed_cell_never_makes_a_row_fail():
+    rows = [_r("a", book_status.yes(), book_status.na()),
+            _r("b", book_status.no(), book_status.no())]
+    assert book_status.next_action(rows).id == "b"
+
+
+def test_an_na_run_cell_is_judged_only_on_passed():
+    rows = [_r("a", book_status.na(), book_status.count(0, 28))]
+    assert book_status.next_action(rows).id == "a"
+
+
+def test_unknown_rows_are_never_selected_as_next():
+    """Guessing a next action from a fact the engine admits it does not have is
+    exactly the failure this replaces."""
+    rows = [_r("a", book_status.yes(), book_status.unknown()),
+            _r("b", book_status.yes(), book_status.no())]
+    assert book_status.next_action(rows).id == "b"
+    assert [r.id for r in book_status.unknown_rows(rows)] == ["a"]
+
+
+def test_next_is_none_when_everything_has_passed():
+    rows = [_r("a", book_status.yes(), book_status.yes())]
+    assert book_status.next_action(rows) is None
+
+
+def test_manuscript_row_passes_only_with_an_approved_cert(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    (root / "output" / "book-01" / "book-01.manuscript.md").write_text(
+        "x\n", encoding="utf-8")
+    r = _row(book_status.tail_rows("01", root), "manuscript")
+    assert r.run.ok is True and r.passed.ok is False
+    (root / ".penny" / "locks").mkdir(parents=True, exist_ok=True)
+    (root / ".penny" / "locks" / "book-01.approved").write_text("x\n", encoding="utf-8")
+    assert _row(book_status.tail_rows("01", root), "manuscript").passed.ok is True
+
+
+def test_beta_row_runs_when_converged_reports_exist(tmp_path):
+    root = _series(tmp_path)
+    _write_outline(root)
+    d = root / "output" / "book-01" / "beta-reports"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "cosy-reader.converged.md").write_text("x\n", encoding="utf-8")
+    r = _row(book_status.tail_rows("01", root), "beta")
+    assert r.run.ok is True and r.passed.kind == "na"
+
+
+def test_book_01_shape_selects_the_feedback_row(tmp_path):
+    """The real case: an outline that passes, diagnostics run, a feedback ledger
+    with open items, and a lock. plot_stage.py says 'next: premise' for this
+    shape — go rewrite the premise of a book shaped by hand for weeks."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    reports = root / "output" / "book-01" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "outline-glance.md").write_text("# g\n", encoding="utf-8")
+    (reports / "outline-feedback.yaml").write_text(
+        "items:\n  - {id: OF-1, state: open}\n", encoding="utf-8")
+    _write_lock(root, "book: 01\nvalidated: fairplay\n")
+    assert book_status.next_action(book_status.all_rows("01", root)).id == "feedback"
