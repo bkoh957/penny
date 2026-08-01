@@ -67,6 +67,12 @@ class Row:
     command: str
     artefact: str
     reason: str = ""
+    # The action that advances this row FROM ITS CURRENT (ran-but-failed)
+    # state, when that differs from `command` (which creates the artefact).
+    # Empty by convention for every row except the two where re-running
+    # `command` is actively harmful (feedback: grows the backlog; manuscript:
+    # re-runs the cross-model final read). `render` prefers this when set.
+    fix_command: str = ""
 
 
 def _root(repo_root):
@@ -74,6 +80,8 @@ def _root(repo_root):
 
 
 def _sha(path: Path) -> str:
+    if not path.is_file():
+        raise ValueError(f"_sha: not a file: {path}")
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
@@ -132,27 +140,37 @@ def _diagnostics_row(book: str, root) -> Row:
 def _feedback_row(book: str, root) -> Row:
     p = Path(penny_paths.output_path(
         f"book-{book}/reports/outline-feedback.yaml", root=root))
+    rel = f"output/book-{book}/reports/outline-feedback.yaml"
     common = dict(id="feedback", label="outline feedback",
-                  command=f"/review-outline {book}",
-                  artefact=f"output/book-{book}/reports/outline-feedback.yaml")
+                  command=f"/review-outline {book}", artefact=rel)
     if not p.is_file():
         return Row(run=no(), passed=no(), reason="no feedback ledger", **common)
     try:
-        import yaml
-        data = yaml.safe_load(p.read_text(encoding="utf-8"))
-        if not isinstance(data, dict):
-            raise ValueError(f"ledger is {type(data).__name__}, not a mapping")
-        items = data.get("items") or []
+        # Reuse the ledger's own accessor rather than reimplementing the read
+        # (I2): outline_feedback.status_line() already checks the
+        # reviewed_outline_sha256 stamp before counting open items, and this
+        # row must not drift from that and contradict it on the same bytes.
+        # Function-local import: PyYAML is genuinely nested human-edited data
+        # (dependency-split rule) — never module-level in this file.
+        from scripts import outline_feedback
+        ledger = outline_feedback.load_ledger(book, repo_root=root)
+        items = ledger.get("items") or []
         if not isinstance(items, list):
             raise ValueError("items: is not a list")
-        open_n = sum(1 for i in items
-                     if isinstance(i, dict) and i.get("state") == "open")
+        cur_sha = outline_feedback.sha256_of(
+            outline_feedback.outline_src_path(book, repo_root=root))
+        if cur_sha != ledger.get("reviewed_outline_sha256", ""):
+            return Row(run=yes(), passed=no(),
+                       reason="STALE — outline changed since its last review",
+                       **common)
+        open_n = len(outline_feedback.open_items(ledger))
     except Exception as exc:
         return Row(run=yes(), passed=unknown(),
                    reason=f"ledger could not be read: {exc}", **common)
     if open_n:
         return Row(run=yes(), passed=no(),
-                   reason=f"{open_n} open of {len(items)}", **common)
+                   reason=f"{open_n} open of {len(items)}",
+                   fix_command=f"hand-edit state: in {rel}", **common)
     return Row(run=yes(), passed=yes(),
                reason=f"{len(items)} items, none open", **common)
 
@@ -180,17 +198,24 @@ def _lock_row(book: str, root) -> Row:
                    reason="staleness unknown — lock records no fingerprint; "
                           "re-mint to fix", **common)
     root_path = _root(root).resolve()
-    src = (root_path / source).resolve()
-    # Ensure the resolved source stays within the series root
     try:
-        src.relative_to(root_path)
-    except ValueError:
+        src = (root_path / source).resolve()
+        # Ensure the resolved source stays within the series root
+        try:
+            src.relative_to(root_path)
+        except ValueError:
+            return Row(run=yes(), passed=unknown(),
+                       reason=f"staleness unknown — {source} is outside the series root",
+                       **common)
+        if not src.is_file():
+            return Row(run=yes(), passed=unknown(),
+                       reason=f"staleness unknown — {source} no longer exists", **common)
+    except Exception as exc:                      # never a traceback — e.g. a NUL
+                                                    # byte in outline_source raises
+                                                    # ValueError out of Path.resolve()
         return Row(run=yes(), passed=unknown(),
-                   reason=f"staleness unknown — {source} is outside the series root",
+                   reason=f"staleness unknown — {source} could not be resolved: {exc}",
                    **common)
-    if not src.is_file():
-        return Row(run=yes(), passed=unknown(),
-                   reason=f"staleness unknown — {source} no longer exists", **common)
     try:
         if _sha(src) == recorded:
             return Row(run=yes(), passed=yes(), reason=f"matches {source}", **common)
@@ -296,7 +321,10 @@ def chapter_rows(book: str, repo_root=None) -> list[Row]:
         packet_passed = c(fresh)
         packet_reason = reason or (f"{len(stale)} stale" if stale else "")
     except Exception as exc:
-        packet_passed, packet_reason = unknown(), f"staleness could not be read: {exc}"
+        # If total_chapters is already unknown, that is the more useful thing
+        # to tell the showrunner — don't let this exception's message bury it.
+        packet_passed = unknown()
+        packet_reason = reason or f"staleness could not be read: {exc}"
 
     maps = _glob_chapters(maps_dir, "ch-*.md")
     drafts = _glob_chapters(chapters, "ch-*.draft.md")
@@ -370,7 +398,12 @@ def tail_rows(book: str, repo_root=None) -> list[Row]:
             f"/assemble-book {book}",
             f"output/book-{book}/book-{book}.manuscript.md",
             "approved" if approved.is_file() else
-            ("assembled, not approved" if ms.is_file() else "not assembled")),
+            ("assembled, not approved" if ms.is_file() else "not assembled"),
+            # Assembled-but-not-approved must fix forward with --approve, not
+            # re-run the bare command — that would redo the cross-model final
+            # read for no reason (I1).
+            fix_command=(f"/assemble-book {book} --approve"
+                         if ms.is_file() and not approved.is_file() else "")),
         Row("beta", "beta read", yes() if n_beta else no(), na(),
             f"/beta-read output/book-{book}/book-{book}.manuscript.md",
             f"output/book-{book}/beta-reports/",
@@ -455,7 +488,9 @@ def render(book: str, rows: list[Row], next_row, unknowns: list[Row]) -> str:
                    f"{r.reason or r.artefact}")
         out.append(f"{'':<16}{'':>6}{'':>7}   {r.command}")
     out.append("─" * 72)
-    out.append(f"next: {next_row.command if next_row else 'nothing — every step has passed'}"
+    next_cmd = (next_row.fix_command or next_row.command) if next_row \
+        else "nothing — every step has passed"
+    out.append(f"next: {next_cmd}"
                + (f"   ({next_row.label})" if next_row else ""))
     for u in unknowns:
         out.append(f"  ? {u.label}: {u.reason}")
@@ -524,10 +559,7 @@ def _main(argv: list[str]) -> int:
               file=sys.stderr)
         return 2
     book = book.zfill(2)
-    try:
-        root = penny_paths.series_root()
-    except SystemExit:
-        raise
+    root = penny_paths.series_root()
     if not _outline_path(book, root).is_file():
         print(f"book_status: no outline for book {book} "
               f"({_outline_path(book, root)})", file=sys.stderr)

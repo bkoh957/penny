@@ -88,7 +88,7 @@ Book-level rows always render. Chapter work renders as `x/28` counts (§6).
 |---|---|---|
 | outline | `input/book-NN/outline.md` exists | `outline_check.py` exits 0 |
 | diagnostics | `output/book-NN/reports/outline-glance.md` exists | `—` (name which of glance / strands / spine-map are present in the reason column) |
-| outline feedback | `outline-feedback.yaml` exists | zero items with `state: open` |
+| outline feedback | `outline-feedback.yaml` exists | the ledger's `reviewed_outline_sha256` stamp still matches the outline on disk **and** zero items with `state: open` (a stamp mismatch fails regardless of open-item count — see `outline_feedback.status_line`, which this row must not contradict) |
 | mystery lock | `.penny/locks/book-NN.mystery.lock` exists | lock exists **and is not stale** (§5) |
 | packets | count of `input/book-NN/packets/ch-*.md` | count whose `built_from_outline` still matches |
 | maps | count of `input/book-NN/maps/ch-*.md` | count where `map_check.py` exits 0 |
@@ -96,7 +96,7 @@ Book-level rows always render. Chapter work renders as `x/28` counts (§6).
 | gates | `—` | count of `ch-MM.gate.md` containing `gate: PASS` |
 | dev cleared | `—` | count of dev-clear certs whose `cleared_draft_sha256` matches the current draft |
 | finals | count of `ch-MM.final.md` | `—` |
-| manuscript | `output/book-NN/manuscript.md` exists | `.approved` cert exists |
+| manuscript | `output/book-NN/book-NN.manuscript.md` exists | `.approved` cert exists |
 | beta read | per-persona beta reports exist | `—` |
 
 Every row also carries **the command that advances it** and **the path to its artefact**,
@@ -175,6 +175,15 @@ Three clarifications the rule needs to be unambiguous:
 - **A `?` row — a check that could not run (§8) — is skipped for `next:` selection and
   named on its own line beneath it.** Guessing a next action from a fact the engine
   admits it does not have is exactly the failure this spec exists to remove.
+- **The row names the command that advances it *from its current state* — for a row
+  that ran and failed, that is the fix, not the re-run.** Most rows' create-command and
+  fix-command are the same thing (e.g. a stale mystery lock re-validates and rewrites on
+  `preflight lock-mystery`, so no distinct fix is needed). Two rows are the exception,
+  where re-running the create-command is actively harmful: outline feedback
+  RUN-but-not-PASSED must not print `/review-outline`, which appends a second review pass
+  and grows the backlog it is reporting — the fix is hand-editing `state:` in the ledger;
+  manuscript assembled-but-not-approved must not print the bare `/assemble-book`, which
+  re-runs the cross-model final read — the fix is `/assemble-book NN --approve`.
 
 `next:` is advisory. It never blocks and the command always exits 0 when it could read
 the book (§8).
@@ -185,7 +194,10 @@ the book (§8).
 
 - **Exit 0 whenever the book could be read**, whatever the rows say. This is a report, not
   a gate; a book with everything failing is a successful run of `/book-status`.
-  Exit 2 only for usage errors: no such book, not inside a series, unreadable outline.
+  Exit 2 for usage errors: no such book, an invalid book/chapter id. **Exit 1 when run
+  outside a series** — the house convention, set by `penny_paths.series_root()`'s
+  `sys.exit(msg)` and shared by every script in the engine; `/book-status` does not carve
+  out its own exit 2 for this one case.
 - **A row whose check cannot run reports why, in its reason column, and never guesses.**
   An unparseable length profile, an unreadable ledger, a missing genre — each renders as
   `?` with the reason named, exactly as §5 handles a legacy lock.
@@ -223,7 +235,8 @@ deterministic, so every row is directly testable.
   book 01 exercises.
 - One test asserts a malformed artefact degrades that row to `?` and leaves every other
   row intact — the §8 promise.
-- One test asserts exit 0 on a book where every row fails, and exit 2 outside a series.
+- One test asserts exit 0 on a book where every row fails, and exit 1 outside a series
+  (§8's ruling).
 
 ---
 

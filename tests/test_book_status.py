@@ -73,10 +73,12 @@ def test_diagnostics_row_has_nothing_to_pass(tmp_path):
 
 def test_feedback_row_fails_while_items_are_open(tmp_path):
     root = _series(tmp_path)
-    _write_outline(root)
+    p = _write_outline(root)
+    sha = hashlib.sha256(p.read_bytes()).hexdigest()
     reports = root / "output" / "book-01" / "reports"
     reports.mkdir(parents=True)
     (reports / "outline-feedback.yaml").write_text(
+        f"reviewed_outline_sha256: {sha}\n"
         "items:\n  - {id: OF-1, state: open}\n  - {id: OF-2, state: solved}\n",
         encoding="utf-8")
     r = _row(book_status.book_rows("01", root), "feedback")
@@ -87,13 +89,51 @@ def test_feedback_row_fails_while_items_are_open(tmp_path):
 
 def test_feedback_row_passes_when_every_item_is_dispositioned(tmp_path):
     root = _series(tmp_path)
+    p = _write_outline(root)
+    sha = hashlib.sha256(p.read_bytes()).hexdigest()
+    reports = root / "output" / "book-01" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "outline-feedback.yaml").write_text(
+        f"reviewed_outline_sha256: {sha}\n"
+        "items:\n  - {id: OF-1, state: solved}\n  - {id: OF-2, state: rejected}\n",
+        encoding="utf-8")
+    assert _row(book_status.book_rows("01", root), "feedback").passed.ok is True
+
+
+def test_feedback_row_fails_when_stamp_mismatches_even_with_zero_open_items(tmp_path):
+    """I2: the ledger's reviewed_outline_sha256 stamp must be honoured. A
+    ledger with zero open items but a stamp that does not match the outline
+    on disk must NOT report PASSED — the outline reviewed no longer exists."""
+    root = _series(tmp_path)
     _write_outline(root)
     reports = root / "output" / "book-01" / "reports"
     reports.mkdir(parents=True)
     (reports / "outline-feedback.yaml").write_text(
-        "items:\n  - {id: OF-1, state: solved}\n  - {id: OF-2, state: rejected}\n",
+        "reviewed_outline_sha256: " + ("0" * 64) + "\n"
+        "items:\n  - {id: OF-1, state: solved}\n",
         encoding="utf-8")
-    assert _row(book_status.book_rows("01", root), "feedback").passed.ok is True
+    r = _row(book_status.book_rows("01", root), "feedback")
+    assert r.run.ok is True
+    assert r.passed.ok is False
+    assert "stale" in r.reason.lower() or "changed" in r.reason.lower()
+
+
+def test_feedback_row_fix_command_names_the_ledger_not_review_outline(tmp_path):
+    """I1: the fix for an open backlog is hand-editing state:, not re-running
+    /review-outline, which would append a second pass and grow the backlog."""
+    root = _series(tmp_path)
+    p = _write_outline(root)
+    sha = hashlib.sha256(p.read_bytes()).hexdigest()
+    reports = root / "output" / "book-01" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "outline-feedback.yaml").write_text(
+        f"reviewed_outline_sha256: {sha}\n"
+        "items:\n  - {id: OF-1, state: open}\n",
+        encoding="utf-8")
+    r = _row(book_status.book_rows("01", root), "feedback")
+    assert r.fix_command
+    assert "review-outline" not in r.fix_command
+    assert "outline-feedback.yaml" in r.fix_command
 
 
 def _write_lock(root, body):
@@ -236,6 +276,29 @@ def test_dotdot_escape_in_outline_source_is_rejected(tmp_path):
     assert "outside" in r.reason.lower() or "escape" in r.reason.lower()
 
 
+def test_nul_byte_in_outline_source_reports_unknown_not_a_traceback(tmp_path):
+    """C1: a fifth unguarded read. `outline_source` containing an embedded NUL
+    byte makes Path.resolve() raise ValueError('lstat: embedded null character
+    in path') — this must degrade the lock row to unknown, not crash book_rows
+    (and therefore the whole report) with an uncaught exception."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    _write_lock(root, "book: 01\nvalidated: fairplay\n"
+                      "outline_source: input/book-01/x\x00y.md\n"
+                      "outline_sha256: " + ("0" * 64) + "\n")
+    r = _row(book_status.book_rows("01", root), "lock")
+    assert r.run.ok is True
+    assert r.passed.kind == "unknown"
+
+
+def test_sha_raises_a_named_error_for_a_non_file_path(tmp_path):
+    """Close the class permanently: _sha() itself should refuse a non-file
+    path with a named ValueError rather than letting an OSError (e.g.
+    IsADirectoryError) escape from whichever call site forgot to pre-filter."""
+    with pytest.raises(ValueError):
+        book_status._sha(tmp_path)
+
+
 def _chapters_dir(root):
     d = root / "output" / "book-01" / "chapters"
     d.mkdir(parents=True, exist_ok=True)
@@ -324,6 +387,25 @@ def test_packets_row_reports_stale_packets_as_not_passed(tmp_path):
     r = _row(book_status.chapter_rows("01", root), "packets")
     assert (r.run.done, r.run.total) == (1, 2)
     assert r.passed.done == 0
+
+
+def test_packets_row_prefers_the_total_unknown_reason_over_a_staleness_failure(
+        tmp_path, monkeypatch):
+    """M10: when total_chapters is undeclared AND stale_packets() itself
+    throws, the row must keep naming the more useful problem (no
+    total_chapters) rather than letting the staleness exception's message
+    overwrite it."""
+    root = _series(tmp_path)
+    _write_outline(root, "---\nbook: 01\n---\n\n## Chapter 01 — A\n")  # no total_chapters
+    import scripts.packet_assemble as pa
+
+    def boom(*a, **k):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(pa, "stale_packets", boom)
+    r = _row(book_status.chapter_rows("01", root), "packets")
+    assert r.passed.kind == "unknown"
+    assert r.reason == book_status._UNKNOWN_TOTAL
 
 
 def test_gate_file_with_invalid_utf8_reports_unknown_and_other_rows_render(tmp_path):
@@ -461,6 +543,33 @@ def test_manuscript_row_passes_only_with_an_approved_cert(tmp_path):
     assert _row(book_status.tail_rows("01", root), "manuscript").passed.ok is True
 
 
+def test_manuscript_row_fix_command_adds_approve_flag_not_a_re_assemble(tmp_path):
+    """I1: assembled-but-not-approved must fix forward with --approve, not
+    print the bare /assemble-book command, which would re-run the cross-model
+    final read for no reason."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    (root / "output" / "book-01" / "book-01.manuscript.md").write_text(
+        "x\n", encoding="utf-8")
+    r = _row(book_status.tail_rows("01", root), "manuscript")
+    assert r.fix_command
+    assert "--approve" in r.fix_command
+    assert r.fix_command != r.command
+
+
+def test_render_prefers_fix_command_over_command_when_both_are_set():
+    """The row body still shows `command` (every row's create action stays
+    visible); only the `next:` footer line — the one the showrunner actually
+    acts on — prefers fix_command."""
+    r = book_status.Row("x", "x", book_status.yes(), book_status.no(),
+                         "the-create-command", "path",
+                         fix_command="the-fix-command")
+    out = book_status.render("01", [r], r, [])
+    next_line = next(l for l in out.splitlines() if l.startswith("next:"))
+    assert "the-fix-command" in next_line
+    assert "the-create-command" not in next_line
+
+
 def test_beta_row_runs_when_converged_reports_exist(tmp_path):
     root = _series(tmp_path)
     _write_outline(root)
@@ -512,11 +621,12 @@ def test_locked_outline_clean_feedback_no_drafts_selects_packets(tmp_path):
                       f"outline_source: input/book-01/outline.md\n"
                       f"outline_sha256: {sha}\n")
 
-    # Add clean feedback (all items closed)
+    # Add clean feedback (all items closed), stamped against the current outline
     reports = root / "output" / "book-01" / "reports"
     reports.mkdir(parents=True, exist_ok=True)
     (reports / "outline-glance.md").write_text("# g\n", encoding="utf-8")
     (reports / "outline-feedback.yaml").write_text(
+        f"reviewed_outline_sha256: {sha}\n"
         "items:\n  - {id: OF-1, state: solved}\n  - {id: OF-2, state: rejected}\n",
         encoding="utf-8")
 
@@ -597,6 +707,16 @@ def test_cli_refuses_a_book_with_no_outline(tmp_path):
     proc = _run(root, "01")
     assert proc.returncode == 2
     assert "outline" in (proc.stdout + proc.stderr).lower()
+
+
+def test_cli_exits_one_outside_a_series(tmp_path):
+    """M1 ruling: the house convention wins. Every other engine script exits
+    1 via penny_paths.series_root()'s sys.exit(msg); book_status must match,
+    not carve out its own exit 2 for this case. tmp_path has no .penny/
+    marker anywhere above it, so this is genuinely outside a series."""
+    proc = _run(tmp_path, "01")
+    assert proc.returncode == 1
+    assert "series" in (proc.stdout + proc.stderr).lower()
 
 
 def test_cli_refuses_a_traversal_book_id(tmp_path):
