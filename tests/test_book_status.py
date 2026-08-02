@@ -136,6 +136,98 @@ def test_feedback_row_fix_command_names_the_ledger_not_review_outline(tmp_path):
     assert "outline-feedback.yaml" in r.fix_command
 
 
+def test_feedback_row_unparseable_ledger_reports_unknown_not_stale(tmp_path):
+    """N1: a genuinely unparseable ledger (bad indent) must land on the `?`
+    footer with a named reason — never claim STALE (the outline did not
+    change) and never fall through to /review-outline, which would
+    silently overwrite every hand-set state: on the next append."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    reports = root / "output" / "book-01" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "outline-feedback.yaml").write_text(
+        "reviewed_outline_sha256: abc\n"
+        "items:\n"
+        "  - {id: OF-1, state: open}\n"
+        "   bad_indent: true\n",
+        encoding="utf-8")
+    rows = book_status.book_rows("01", root)
+    r = _row(rows, "feedback")
+    assert r.passed.kind == "unknown"
+    assert r.reason
+    assert "stale" not in r.reason.lower()
+    # other rows still render
+    assert _row(rows, "outline").passed.ok is True
+    # excluded from next: selection
+    assert r in book_status.unknown_rows(rows)
+    nxt = book_status.next_action(rows)
+    assert nxt is None or nxt.id != "feedback"
+
+
+def test_feedback_row_ledger_is_a_list_reports_unknown_not_stale(tmp_path):
+    """N1: a ledger that parses cleanly but to a YAML list rather than a
+    mapping is exactly as unreadable as a syntax error — must not report
+    STALE, must land on the `?` footer, and must not be selected as next."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    reports = root / "output" / "book-01" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "outline-feedback.yaml").write_text(
+        "- id: OF-1\n  state: open\n", encoding="utf-8")
+    rows = book_status.book_rows("01", root)
+    r = _row(rows, "feedback")
+    assert r.passed.kind == "unknown"
+    assert r.reason
+    assert "stale" not in r.reason.lower()
+    assert _row(rows, "outline").passed.ok is True
+    assert r in book_status.unknown_rows(rows)
+    nxt = book_status.next_action(rows)
+    assert nxt is None or nxt.id != "feedback"
+
+
+def test_feedback_row_empty_stamp_with_open_items_is_not_stale(tmp_path):
+    """N2: /plot-book's fan-audit items append with --source, which
+    deliberately leaves reviewed_outline_sha256 empty because no review
+    panel ever read outline.md. Once /expand-outline later writes
+    outline.md, that empty stamp must NOT be read as a mismatch — the row
+    must keep counting open items and keep its fix_command, not flip to
+    STALE and lose the backlog."""
+    root = _series(tmp_path)
+    _write_outline(root)  # outline.md now exists, as it would post-expand
+    reports = root / "output" / "book-01" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "outline-feedback.yaml").write_text(
+        "reviewed_outline_sha256: ''\n"
+        "items:\n  - {id: OF-1, source: fan-audit, state: open}\n",
+        encoding="utf-8")
+    r = _row(book_status.book_rows("01", root), "feedback")
+    assert r.passed.kind != "unknown"
+    assert "stale" not in r.reason.lower()
+    assert r.passed.ok is False
+    assert "1 open" in r.reason
+    assert r.fix_command
+    assert "outline-feedback.yaml" in r.fix_command
+
+
+def test_feedback_row_shipped_i2_stale_case_still_fails(tmp_path):
+    """Regression guard: the shipped I2 behaviour — a NON-EMPTY stamp that
+    mismatches the outline on disk fails even with zero open items — must
+    not regress while fixing N1/N2."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    reports = root / "output" / "book-01" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "outline-feedback.yaml").write_text(
+        "reviewed_outline_sha256: " + ("0" * 64) + "\n"
+        "items:\n  - {id: OF-1, state: solved}\n",
+        encoding="utf-8")
+    r = _row(book_status.book_rows("01", root), "feedback")
+    assert r.run.ok is True
+    assert r.passed.kind != "unknown"
+    assert r.passed.ok is False
+    assert "stale" in r.reason.lower() or "changed" in r.reason.lower()
+
+
 def _write_lock(root, body):
     d = root / ".penny" / "locks"
     d.mkdir(parents=True, exist_ok=True)

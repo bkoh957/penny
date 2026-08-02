@@ -88,7 +88,7 @@ Book-level rows always render. Chapter work renders as `x/28` counts (§6).
 |---|---|---|
 | outline | `input/book-NN/outline.md` exists | `outline_check.py` exits 0 |
 | diagnostics | `output/book-NN/reports/outline-glance.md` exists | `—` (name which of glance / strands / spine-map are present in the reason column) |
-| outline feedback | `outline-feedback.yaml` exists | the ledger's `reviewed_outline_sha256` stamp still matches the outline on disk **and** zero items with `state: open` (a stamp mismatch fails regardless of open-item count — see `outline_feedback.status_line`, which this row must not contradict) |
+| outline feedback | `outline-feedback.yaml` exists | see below — three states, not one pass/fail |
 | mystery lock | `.penny/locks/book-NN.mystery.lock` exists | lock exists **and is not stale** (§5) |
 | packets | count of `input/book-NN/packets/ch-*.md` | count whose `built_from_outline` still matches |
 | maps | count of `input/book-NN/maps/ch-*.md` | count where `map_check.py` exits 0 |
@@ -104,6 +104,31 @@ so the view answers "what do I run next" without a second lookup.
 
 Counts are always `x/total_chapters`, read from the outline's frontmatter — never from
 whichever directory happens to be fullest.
+
+**The outline-feedback row is three states, not a pass/fail.** "Done" collapsed two
+different questions before this same failure was fixed for RUN/PASSED in general (§2);
+the feedback row had a second instance of it hiding inside its own PASSED cell, between
+"never reviewed by a panel" and "reviewed, then the outline moved on":
+
+- **Unreadable** — the ledger file exists but does not parse (bad YAML) or parses to
+  something other than a mapping (e.g. a bare list). → `?` (`unknown`), with a named
+  reason, on the `?` footer, excluded from `next:` selection. This must be detected
+  *before* the row hands the file to `outline_feedback.load_ledger()`: that accessor
+  returns a blank empty ledger (`reviewed_outline_sha256: ""`) for any unreadable file,
+  indistinguishable downstream from a ledger that was genuinely never
+  panel-reviewed — which would misreport a parse failure as a truthful staleness verdict
+  it cannot possibly have earned.
+- **Never panel-reviewed** — the ledger parses fine, but `reviewed_outline_sha256` is
+  empty or absent. → **not stale.** This is the ordinary shape while `/plot-book`'s
+  fan-audit is the only thing that has appended: it deliberately leaves the stamp blank
+  because no review panel has read `outline.md` (only `outline-skeleton.md`, or nothing
+  yet — see `commands/plot-book.md`'s `--source` handling). Open items are counted
+  exactly as the reviewed case, `fix_command` is preserved, and the reason names that no
+  panel review has run yet, so the row reads honestly without being falsely marked STALE
+  the moment `/expand-outline` later writes `outline.md`.
+- **Stale** — a **non-empty** `reviewed_outline_sha256` that no longer matches the
+  outline on disk. → fails, regardless of open-item count (this is the shipped I2
+  behaviour — see `outline_feedback.status_line`, which this row must not contradict).
 
 ---
 
@@ -200,7 +225,13 @@ the book (§8).
   out its own exit 2 for this one case.
 - **A row whose check cannot run reports why, in its reason column, and never guesses.**
   An unparseable length profile, an unreadable ledger, a missing genre — each renders as
-  `?` with the reason named, exactly as §5 handles a legacy lock.
+  `?` with the reason named, exactly as §5 handles a legacy lock. For the feedback
+  ledger specifically, "unreadable" means a genuine parse failure or a non-mapping
+  document (§4) — detected before the row ever calls `outline_feedback.load_ledger()`,
+  whose own empty-ledger fallback would otherwise turn that failure into a false
+  staleness verdict. A ledger that parses fine but was never panel-reviewed
+  (`reviewed_outline_sha256` empty) is a known, ordinary state (§4), not an unreadable
+  one, and must not render as `?`.
 - **Never a traceback.** A malformed feedback ledger, a corrupt lock, a packet with no
   stamp: each degrades to `?` plus a named reason for that row alone. One broken artefact
   must not cost the showrunner the other eleven rows.

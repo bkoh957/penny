@@ -145,34 +145,73 @@ def _feedback_row(book: str, root) -> Row:
                   command=f"/review-outline {book}", artefact=rel)
     if not p.is_file():
         return Row(run=no(), passed=no(), reason="no feedback ledger", **common)
+
+    # Detect a genuine parse failure OURSELVES, before handing the file to
+    # outline_feedback.load_ledger(): that accessor returns an EMPTY ledger
+    # (stamp "") for ANY unreadable file — bad indent, a YAML list instead of
+    # a mapping, whatever — which downstream would misread as "reviewed, then
+    # the outline changed" (false: the outline never changed) and would send
+    # the showrunner to /review-outline, which is destructive here: append ->
+    # load_ledger (blank on parse failure) -> write_ledger silently discards
+    # every hand-set `state:` because of the one bad byte. Function-local
+    # import: PyYAML is genuinely nested human-edited data (dependency-split
+    # rule) — never module-level in this file.
+    import yaml
     try:
-        # Reuse the ledger's own accessor rather than reimplementing the read
-        # (I2): outline_feedback.status_line() already checks the
-        # reviewed_outline_sha256 stamp before counting open items, and this
-        # row must not drift from that and contradict it on the same bytes.
-        # Function-local import: PyYAML is genuinely nested human-edited data
-        # (dependency-split rule) — never module-level in this file.
+        raw = yaml.safe_load(p.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return Row(run=yes(), passed=unknown(),
+                   reason=f"ledger could not be parsed: {exc}", **common)
+    if not isinstance(raw, dict):
+        return Row(run=yes(), passed=unknown(),
+                   reason="ledger does not parse to a mapping "
+                          f"(got {type(raw).__name__})", **common)
+
+    try:
+        # Reuse the ledger's own accessors rather than reimplementing the read
+        # (I2) for everything the parse-failure check above cannot express.
         from scripts import outline_feedback
         ledger = outline_feedback.load_ledger(book, repo_root=root)
         items = ledger.get("items") or []
         if not isinstance(items, list):
             raise ValueError("items: is not a list")
+        reviewed_sha = ledger.get("reviewed_outline_sha256", "")
+        if reviewed_sha is None:
+            reviewed_sha = ""
         cur_sha = outline_feedback.sha256_of(
             outline_feedback.outline_src_path(book, repo_root=root))
-        if cur_sha != ledger.get("reviewed_outline_sha256", ""):
-            return Row(run=yes(), passed=no(),
-                       reason="STALE — outline changed since its last review",
-                       **common)
         open_n = len(outline_feedback.open_items(ledger))
     except Exception as exc:
         return Row(run=yes(), passed=unknown(),
                    reason=f"ledger could not be read: {exc}", **common)
+
+    # A NON-EMPTY stamp that no longer matches the outline on disk is stale,
+    # regardless of open-item count (I2, still shipped below). An EMPTY stamp
+    # is not a mismatch to be read as staleness — it means no review panel has
+    # read outline.md at all, which is the normal /plot-book shape: fan-audit
+    # items append with --source and deliberately leave the stamp blank
+    # (commands/plot-book.md:212-218), because outline.md may not even exist
+    # yet when they're written. Falsely calling that "STALE" makes the
+    # feedback row's open-item backlog and fix_command vanish the moment
+    # /expand-outline later writes outline.md.
+    # NB: emptiness is tested against "" explicitly, not by truthiness — an
+    # unquoted all-digit sha (e.g. a run of zeros) parses through YAML as the
+    # int 0, which is falsy but is very much a present, non-empty stamp.
+    never_reviewed = reviewed_sha == ""
+    if not never_reviewed and cur_sha != reviewed_sha:
+        return Row(run=yes(), passed=no(),
+                   reason="STALE — outline changed since its last review",
+                   **common)
+
+    never_reviewed = (" (no panel review has run yet — fan-audit items only)"
+                       if never_reviewed else "")
     if open_n:
         return Row(run=yes(), passed=no(),
-                   reason=f"{open_n} open of {len(items)}",
+                   reason=f"{open_n} open of {len(items)}{never_reviewed}",
                    fix_command=f"hand-edit state: in {rel}", **common)
     return Row(run=yes(), passed=yes(),
-               reason=f"{len(items)} items, none open", **common)
+               reason=f"{len(items)} items, none open{never_reviewed}",
+               **common)
 
 
 def _lock_row(book: str, root) -> Row:
