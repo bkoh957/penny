@@ -149,12 +149,18 @@ from scripts.penny_meta import strip_frontmatter  # noqa: F401  (re-exported for
 SLUG = r"[a-z0-9][a-z0-9-]*"
 SLUG_RE = re.compile(rf"^{SLUG}$")
 
-# A tag is a sigil + slug standing as its own whitespace-delimited token.
+# A tag is a sigil + one whitespace-delimited token.
+#
 # The (?<!\S) guard is what keeps "-q-clear" (a close tag) distinct from
-# "- text" (a bullet): a bullet's hyphen is followed by a space, so the slug
-# sub-pattern cannot match it. Trailing (?=\s|$) stops "#job." from silently
-# parsing as the job "job" with the period dropped into nowhere.
-TAG_RE = re.compile(rf"(?<!\S)(?P<sigil>[@#+!-])(?P<slug>{SLUG})(?=\s|$)")
+# "- text" (a bullet): a bullet's hyphen is followed by a space, and \S+
+# cannot match a space.
+#
+# Capture is deliberately LOOSE (\S+) while validation is strict (SLUG_RE, in
+# story_cut.check_story). A tight capture would make "@Maggie" fail to
+# tokenise at all — the strand would vanish from the beat silently, and the
+# author would get a clean run with a missing character. Capturing it and
+# refusing it by name is the loud failure the engine promises.
+TAG_RE = re.compile(r"(?<!\S)(?P<sigil>[@#+!-])(?P<slug>\S+)")
 
 QUESTIONS_HEADING_RE = re.compile(r"^##\s+Questions\s*$", re.IGNORECASE)
 _HEADING_RE = re.compile(r"^##\s+")
@@ -476,9 +482,8 @@ def test_beats_without_chapter_when_plan_misses_a_beat():
 def test_unknown_strand_when_slug_contract_is_broken():
     story = GOOD_STORY.replace("@maggie", "@Maggie", 1)
     r = check_story(story, GOOD_PLAN, JOBS, CLUES)
-    # "@Maggie" cannot tokenise as a tag at all, so the beat loses its strand
-    # rather than carrying an illegal one; the plan must still be complete.
-    assert r["blocking"] == [] or "unknown-strand" in _ids(r["blocking"])
+    assert "unknown-strand" in _ids(r["blocking"])
+    assert "Maggie" in " ".join(r["blocking"])
 
 
 def test_a_beat_claimed_by_two_chapters_is_named():
