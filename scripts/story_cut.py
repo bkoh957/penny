@@ -7,6 +7,7 @@ agent and approved by the showrunner before this module ever runs (spec §5).
 No waivers exist at this level (spec §8). Fix the story or fix the cut plan.
 """
 import hashlib
+import re
 import sys
 from pathlib import Path
 
@@ -275,6 +276,78 @@ def _ledger(root, book):
     return clues, data, p
 
 
+_ID_LINE_RE = re.compile(r"^(?P<indent>[ \t]*)-\s*id:\s*(?P<id>[^\s#]+)")
+_CHAPTER_LINE_RE = re.compile(
+    r"^(?P<indent>[ \t]*)chapter:\s*(?P<value>[^\s#]+)(?P<trail>.*)$")
+_LIST_ITEM_RE = re.compile(r"^[ \t]*-\s")
+
+
+def _rewrite_clue_chapters(ledger_text: str, updates: dict) -> str:
+    """Rewrite only `clue_schedule[*].chapter` for ids in `updates` (id ->
+    new chapter number) — byte-identical everywhere else.
+
+    The whodunit ledger is a hand-authored showrunner artifact: comments,
+    anchors, quoting, and bare yes/no scalars all carry meaning that
+    `yaml.safe_load` → `yaml.safe_dump` silently destroys on write. So the
+    ledger is never round-tripped through PyYAML on write — only read with
+    `safe_load` (in `_ledger`). This is a line-walk instead: find each
+    `- id: <cid>` line, then the `chapter:` line that belongs to that same
+    entry — scanning forward until either a sibling list item at the id
+    line's own indentation, or a dedent past it, at which point the entry
+    has no `chapter:` key and one is inserted right after the `id:` line, at
+    one indent level deeper (matching its sibling keys). A found
+    `chapter:` line has only its value replaced — indentation and any
+    trailing inline comment are preserved verbatim.
+    """
+    if not updates:
+        return ledger_text
+    lines = ledger_text.splitlines(keepends=True)
+    out: list = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        m = _ID_LINE_RE.match(line.rstrip("\n"))
+        if not m or m.group("id") not in updates:
+            out.append(line)
+            i += 1
+            continue
+
+        cid = m.group("id")
+        dash_indent = m.group("indent")
+        out.append(line)
+        i += 1
+
+        chapter_idx = None
+        j = i
+        while j < len(lines):
+            body = lines[j].rstrip("\n")
+            stripped = body.strip()
+            if stripped:
+                cur_indent = body[:len(body) - len(body.lstrip(" \t"))]
+                if len(cur_indent) <= len(dash_indent):
+                    break
+                cm = _CHAPTER_LINE_RE.match(body)
+                if cm:
+                    chapter_idx = j
+                    break
+            j += 1
+
+        if chapter_idx is not None:
+            for k in range(i, chapter_idx):
+                out.append(lines[k])
+            body = lines[chapter_idx].rstrip("\n")
+            eol = lines[chapter_idx][len(body):]
+            cm = _CHAPTER_LINE_RE.match(body)
+            out.append(f"{cm.group('indent')}chapter: {updates[cid]}"
+                       f"{cm.group('trail')}{eol}")
+            i = chapter_idx + 1
+        else:
+            key_indent = dash_indent + "  "
+            out.append(f"{key_indent}chapter: {updates[cid]}\n")
+
+    return "".join(out)
+
+
 def main(argv=None) -> int:
     argv = sys.argv[1:] if argv is None else argv
     if len(argv) != 1:
@@ -301,6 +374,15 @@ def main(argv=None) -> int:
         if refusal:
             findings.append(refusal)
 
+    # A missing reveal_chapter must block, not silently emit vacuous guardrail
+    # prose ("do not resolve before chapter 00") into every chapter block.
+    if not ledger_data or ledger_data.get("reveal_chapter") is None:
+        findings.append(
+            "missing-reveal-chapter: the whodunit ledger has no "
+            "reveal_chapter set, so the chapter guardrails ('do not resolve "
+            f"the mystery before chapter NN') cannot be derived — set "
+            f"reveal_chapter in {ledger_p} before cutting")
+
     result = check_story(story_text, plan_text, job_ids, list(clues))
     findings.extend(result["blocking"])
     for note in result["notes"]:
@@ -312,7 +394,7 @@ def main(argv=None) -> int:
 
     guard_p = root / "config" / "series-guardrails.md"
     guardrails = guard_p.read_text(encoding="utf-8") if guard_p.is_file() else ""
-    reveal = int((ledger_data or {}).get("reveal_chapter") or 0)
+    reveal = int(ledger_data["reveal_chapter"])
 
     body = emit_outline(story_text, plan_text, parse_questions(story_text), clues,
                         reveal_chapter=reveal, guardrails=guardrails,
@@ -325,16 +407,21 @@ def main(argv=None) -> int:
 
     # Chapter numbers are derived, so the ledger's are too (spec §6). Safe
     # because lock-mystery runs after the cut — the ledger is still unsealed.
+    # The ledger is a hand-authored file (comments, anchors, quoting, bare
+    # yes/no scalars), so this rewrites its TEXT surgically rather than
+    # round-tripping it through yaml.safe_dump, which would silently destroy
+    # all of that (see _rewrite_clue_chapters).
     if ledger_data and ledger_data.get("clue_schedule"):
         beats = parse_story(story_text)
         chapters = parse_cut_plan(plan_text)
         home = {i: c["num"] for c in chapters for i in c["beats"]}
         where = {cid: home.get(n) for n, b in enumerate(beats, 1) for cid in b["clues"]}
-        for entry in ledger_data["clue_schedule"]:
-            if entry.get("id") in where and where[entry["id"]]:
-                entry["chapter"] = where[entry["id"]]
-        ledger_p.write_text(yaml.safe_dump(ledger_data, sort_keys=False,
-                                           allow_unicode=True), encoding="utf-8")
+        updates = {cid: chapter for cid, chapter in where.items() if chapter}
+        if updates:
+            ledger_text = ledger_p.read_text(encoding="utf-8")
+            new_text = _rewrite_clue_chapters(ledger_text, updates)
+            if new_text != ledger_text:
+                ledger_p.write_text(new_text, encoding="utf-8")
 
     print(f"story_cut: wrote {outline_p} ({len(parse_cut_plan(plan_text))} chapters)")
     return 0
