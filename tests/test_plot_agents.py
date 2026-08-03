@@ -27,11 +27,54 @@ def test_chapter_cutter_exists_and_weaver_is_retired():
     assert not (root / "agents" / "chapter-weaver.md").exists()
 
 
-def test_chapter_cutter_proposes_and_never_writes():
-    root = Path(__file__).resolve().parents[1]
-    text = (root / "agents" / "chapter-cutter.md").read_text(encoding="utf-8")
-    assert "cut-plan.md" in text
-    assert "writes nothing" in text.lower() or "never writes" in text.lower()
+# --- FINAL REVIEW, Important 8: retiring chapter-weaver dropped
+# test_chapter_weaver_contract — which pinned the emitted wiring fields, the
+# clue obligations, "never draft prose" and "**Independence" — and replaced it
+# with two bare existence assertions. The guarantees are restored here, adapted
+# to what chapter-cutter actually promises: it no longer emits wiring at all
+# (story_cut.py derives it), so the pins move to the cut plan's own row shapes
+# and to the checks downstream of them. ---
+
+def test_chapter_cutter_contract():
+    t = _text("chapter-cutter.md")
+    for phrase in (
+        # --- inputs and outputs, by name ---
+        "story.md",
+        "cut-plan.md",
+        "series/whodunit/book-NN.yaml",
+        "beat sheet",
+        # --- the cut plan's row shapes: story_cut.py's parse_cut_plan reads
+        # exactly these, so a drifted format silently loses beats or tracks ---
+        "**Beats:**",
+        "**Summary:**",
+        "**Compress:**",
+        # --- the refusals its own output can earn ---
+        "beats-without-chapter",
+        "duplicate-beat",
+        "obligations.max_per_chapter",
+        "starved-thread",
+        # --- posture: it proposes, the showrunner approves (was: the weaver's
+        # "never draft prose" + certificate rule) ---
+        "**Independence",
+        "You propose. You never write.",
+        "Never write prose.",
+        "Never write a ledger or a certificate.",
+    ):
+        assert phrase in t, phrase
+
+
+def test_chapter_cutter_never_claims_the_wiring_story_cut_derives():
+    # The weaver emitted **Because:**/**Opens:**/**Closes:**/**Carries:**/
+    # **Hook:** itself. The cutter must NOT — those are derived by
+    # story_cut.py from the story's own tags, and an agent told to write them
+    # would put a second, drifting author on the same fields. The agent may
+    # name them only to disclaim them, so pin the disclaimer, not the absence.
+    t = _text("chapter-cutter.md")
+    # One whitespace-tolerant sentence pin, not two disjoint tokens: separate
+    # assertions could each be satisfied by an unrelated sentence, silently
+    # weakening the guarantee (the same reasoning as the outline-fan pin).
+    assert re.search(r"Never\s+emit\s+outline\s+sections\s+—.*?wiring.*?"
+                     r"derived\s+by\s+`story_cut\.py`", t, re.S), t
 
 
 def test_outline_fan_contract():
