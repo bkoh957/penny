@@ -25,7 +25,7 @@ from scripts.penny_wiring import (CHAPTER_RE, FIELD_RE, HEADING_RE, LONG_FLAG_RE
                                    QID_RE, TYPE_FLAG_RE, split_id)
 
 STAGE_ORDER = ["premise", "ending", "turning-points", "counterplot",
-               "chapters", "weave", "readback"]
+               "chapters", "weave", "cut", "readback"]
 
 _DROP_FIELDS = {"Because", "Opens", "Closes", "Carries"}
 # Case-insensitive WORD-BOUNDARY match; heading text is lower()'d before
@@ -82,7 +82,8 @@ _UPSTREAM = {
     # reveal_chapter from it — a real upstream that must go stale on edit,
     # same as counterplot's mystery-solution.md.
     "chapters": ["turning-points", "counterplot", "whodunit"],
-    "weave": [],                       # done-ness is the skeleton's woven flag
+    "weave": [],                       # done-ness is story.md's woven flag
+    "cut": ["chapters", "whodunit"],
     "readback": ["chapters"],
 }
 
@@ -215,21 +216,26 @@ def _root(repo_root) -> Path:
 def stage_paths(book: str, root: Path) -> dict:
     plot = root / "input" / f"book-{book}" / "plot"
     out = root / "output" / f"book-{book}"
-    skel = root / "input" / f"book-{book}" / "outline-skeleton.md"
+    story = root / "input" / f"book-{book}" / "story.md"
+    outline = root / "input" / f"book-{book}" / "outline.md"
     # "whodunit" is a fingerprint upstream (FINDING 3), not a STAGE_ORDER
     # stage — stage_status() only ever indexes this dict with STAGE_ORDER
     # names for the row loop; "whodunit" is reached solely via _UPSTREAM
     # lookups, the same pattern "material" already uses for "premise".
     return {"material": plot / "material.md", "premise": plot / "premise.md",
             "ending": plot / "ending.md", "turning-points": plot / "turning-points.md",
-            "counterplot": out / "mystery-solution.md", "chapters": skel,
+            "counterplot": out / "mystery-solution.md",
+            # chapters and weave are one act now: strands and questions are
+            # tagged inline as the beats are written, so there is no second
+            # pass to bolt wiring on (spec 2026-08-03 §4).
+            "chapters": story, "weave": story, "cut": outline,
             # readback writes one report PER STAGE (outline-fan-stage-K.md), so
             # there is no single canonical filename any more — this entry's
             # ".parent" is the only part callers use (stage_status globs
             # "outline-fan*.md" under it); the "outline-fan.md" filename itself
             # is kept only as the human-readable hint in the "missing" detail
             # line printed when no report exists yet.
-            "weave": skel, "readback": out / "reports" / "outline-fan.md",
+            "readback": out / "reports" / "outline-fan.md",
             "whodunit": root / "series" / "whodunit" / f"book-{book}.yaml"}
 
 
@@ -262,7 +268,7 @@ def stage_status(book: str, *, repo_root=None) -> list:
             # The fan writes ONE REPORT PER STAGE (spec 2026-07-30 §5), so
             # there is no single canonical filename to stat. Readback is done
             # when at least one report exists AND every one of them is stamped
-            # against the current skeleton: a readback is only complete if
+            # against the current story: a readback is only complete if
             # every stage was read against the plan actually on disk. The glob
             # also keeps recognising a pre-staging `outline-fan.md`, so a
             # series read back before this change is not told to redo it.
@@ -571,22 +577,18 @@ def _chapter_numbers(text: str) -> list[int]:
 def _readback_source(book: str, *, repo_root=None) -> Path:
     """The file the reader's copy is cut from.
 
-    outline-skeleton.md is retired (spec 2026-07-31 §3.3): it was a thinner copy
-    of outline.md, and being a second description of one story is how book 01
-    drifted into two books with different reveal chapters. Prefer it while it
-    still exists so an in-flight book is not disturbed, then fall back to the
-    canonical outline. Failing loud when neither exists preserves the module's
-    "fail LOUD, not open" promise.
+    story.md before the cut, outline.md after it (spec 2026-08-03 §4). The
+    skeleton branch this function used to carry is gone with the file.
     """
     root = _root(repo_root)
-    skel = stage_paths(book, root)["chapters"]
-    if skel.is_file():
-        return skel
+    story = stage_paths(book, root)["chapters"]
+    if story.is_file():
+        return story
     outline = root / "input" / f"book-{book}" / "outline.md"
     if outline.is_file():
         return outline
-    sys.exit(f"plot_stage: no outline for book {book} — looked for {skel} "
-             f"and {outline}")
+    sys.exit(f"plot_stage: no story or outline for book {book} — looked for "
+             f"{story} and {outline}")
 
 
 def readers_copy(book: str, *, repo_root=None) -> Path:

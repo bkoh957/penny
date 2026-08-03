@@ -85,7 +85,7 @@ def test_reveals_malformed_exits_loud(tmp_path, bad, needle):
 
 def test_stage_order_is_the_spec_order():
     assert STAGE_ORDER == ["premise", "ending", "turning-points", "counterplot",
-                           "chapters", "weave", "readback"]
+                           "chapters", "weave", "cut", "readback"]
 
 
 def test_all_missing_next_is_premise(tmp_path):
@@ -117,7 +117,7 @@ def test_premise_stale_when_material_present_but_unstamped(tmp_path):
 
 def test_weave_needs_woven_flag(tmp_path):
     root = _series(tmp_path)
-    skel = _write(root, "input/book-01/outline-skeleton.md")
+    skel = _write(root, "input/book-01/story.md")
     rows = dict((n, s) for n, s, _ in stage_status("01", repo_root=root))
     assert rows["weave"] == "missing"
     skel.write_text("---\nwoven: true\n---\nbody\n", encoding="utf-8")
@@ -139,7 +139,7 @@ def test_chapters_stage_goes_stale_when_whodunit_ledger_edited(tmp_path):
     tp = _write(root, "input/book-01/plot/turning-points.md")
     sol = _write(root, "output/book-01/mystery-solution.md")
     wd = _write(root, "series/whodunit/book-01.yaml", "reveal_chapter: 5\n")
-    skel = _write(root, "input/book-01/outline-skeleton.md")
+    skel = _write(root, "input/book-01/story.md")
     stamp("01", skel, [tp, sol, wd], repo_root=root)
     rows = dict((n, s) for n, s, _ in stage_status("01", repo_root=root))
     assert rows["chapters"] == "done"
@@ -149,10 +149,10 @@ def test_chapters_stage_goes_stale_when_whodunit_ledger_edited(tmp_path):
 
 
 def test_stage_order_unaffected_by_whodunit_upstream_addition():
-    # STAGE_ORDER must stay the 7 real stages — whodunit is a fingerprint
+    # STAGE_ORDER must stay the 8 real stages — whodunit is a fingerprint
     # upstream, never a stage of its own.
     assert STAGE_ORDER == ["premise", "ending", "turning-points", "counterplot",
-                           "chapters", "weave", "readback"]
+                           "chapters", "weave", "cut", "readback"]
     assert "whodunit" not in STAGE_ORDER
 
 
@@ -169,7 +169,7 @@ def _chapters_ready(root, book="01"):
     tp = _write(root, f"input/book-{book}/plot/turning-points.md")
     sol = _write(root, f"output/book-{book}/mystery-solution.md")
     wd = _whodunit(root, book=book)
-    skel = _write(root, f"input/book-{book}/outline-skeleton.md",
+    skel = _write(root, f"input/book-{book}/story.md",
                   "---\nwoven: true\n---\n## Chapter 01 — A\n")
     stamp(book, end, [prem], repo_root=root)
     stamp(book, tp, [prem, end], repo_root=root)
@@ -288,7 +288,7 @@ def test_reveals_inserted_before_a_pre_existing_trailing_comment_leaves_chapters
     wd = _write(root, f"series/whodunit/book-{book}.yaml",
                 "book: '01'\ntotal_chapters: 30\nreveal_chapter: 26\n"
                 "# a trailing note\n")
-    skel = _write(root, f"input/book-{book}/outline-skeleton.md",
+    skel = _write(root, f"input/book-{book}/story.md",
                   "---\nwoven: true\n---\n## Chapter 01 — A\n")
     stamp(book, end, [prem], repo_root=root)
     stamp(book, tp, [prem, end], repo_root=root)
@@ -351,7 +351,7 @@ def test_declaring_reveals_in_the_middle_of_the_ledger_leaves_chapters_done(tmp_
                 "- id: c01-early-key-note\n"
                 "  chapter: 2\n"
                 "reveal_chapter: 26\n")
-    skel = _write(root, f"input/book-{book}/outline-skeleton.md",
+    skel = _write(root, f"input/book-{book}/story.md",
                   "---\nwoven: true\n---\n## Chapter 01 — A\n")
     stamp(book, end, [prem], repo_root=root)
     stamp(book, tp, [prem, end], repo_root=root)
@@ -454,7 +454,7 @@ def test_readers_copy_writes_report_file(tmp_path):
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True)
-    (d / "outline-skeleton.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    (d / "story.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
     p = readers_copy("01", repo_root=tmp_path)
     assert p == tmp_path / "output/book-01/reports/outline-readers-copy.md"
     assert p.is_file() and "q-" not in p.read_text(encoding="utf-8")
@@ -756,7 +756,7 @@ def test_readers_copy_reads_reveal_chapter_from_whodunit_ledger(tmp_path):
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True)
-    (d / "outline-skeleton.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    (d / "story.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
     wd = tmp_path / "series/whodunit"
     wd.mkdir(parents=True)
     (wd / "book-01.yaml").write_text("reveal_chapter: 5\nculprit: Mary\n", encoding="utf-8")
@@ -771,7 +771,7 @@ def test_readers_copy_with_no_ledger_emits_all_chapters(tmp_path):
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True)
-    (d / "outline-skeleton.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    (d / "story.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
     p = readers_copy("01", repo_root=tmp_path)
     out = p.read_text(encoding="utf-8")
     assert "## Chapter 06" in out
@@ -782,7 +782,7 @@ def _ledger_series(tmp_path, ledger_text):
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True)
-    (d / "outline-skeleton.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    (d / "story.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
     wd = tmp_path / "series/whodunit"
     wd.mkdir(parents=True)
     (wd / "book-01.yaml").write_text(ledger_text, encoding="utf-8")
@@ -985,7 +985,7 @@ def test_readers_copy_text_still_strips_wiring_at_every_cut():
 
 def test_readers_copy_staged_writes_one_file_per_stage(tmp_path):
     root = _series(tmp_path)
-    _write(root, "input/book-01/outline-skeleton.md", _SKEL)
+    _write(root, "input/book-01/story.md", _SKEL)
     _write(root, "series/whodunit/book-01.yaml",
            "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n"
            "reveals:\n- id: turn\n  reveal_chapter: 3\n  author_truth: The case turns.\n")
@@ -1023,7 +1023,7 @@ def test_readers_copy_staged_end_to_end_from_outline_when_no_skeleton(tmp_path):
 
 def test_readers_copy_staged_is_cumulative_from_chapter_one(tmp_path):
     root = _series(tmp_path)
-    _write(root, "input/book-01/outline-skeleton.md", _SKEL)
+    _write(root, "input/book-01/story.md", _SKEL)
     _write(root, "series/whodunit/book-01.yaml",
            "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n"
            "reveals:\n- id: turn\n  reveal_chapter: 3\n  author_truth: The case turns.\n")
@@ -1042,7 +1042,7 @@ def test_readers_copy_staged_returns_empty_without_reveals(tmp_path):
 def test_legacy_readers_copy_unchanged_without_reveals(tmp_path):
     """Regression pin — the legacy invariant (Global Constraints)."""
     root = _series(tmp_path)
-    _write(root, "input/book-01/outline-skeleton.md", _SKEL)
+    _write(root, "input/book-01/story.md", _SKEL)
     _write(root, "series/whodunit/book-01.yaml",
            "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n")
     dest = readers_copy("01", repo_root=root)
@@ -1058,7 +1058,7 @@ def _readback_ready(root, book="01"):
     "chapters" (final review FINDING 3 / C1) counts it as a real upstream —
     without it "chapters" itself reads "stale" and the docstring's claim would
     be false, even though every test below only asserts on "readback"."""
-    skel = _write(root, f"input/book-{book}/outline-skeleton.md",
+    skel = _write(root, f"input/book-{book}/story.md",
                   "---\nwoven: true\n---\n## Chapter 01 — A\n")
     prem = _write(root, f"input/book-{book}/plot/premise.md")
     end = _write(root, f"input/book-{book}/plot/ending.md")
@@ -1131,19 +1131,22 @@ def test_legacy_unstaged_fan_report_still_counts(tmp_path):
     assert _readback_state(root) == "done"
 
 
-def test_readback_source_prefers_the_skeleton_when_present(tmp_path):
+def test_readback_source_prefers_story_when_both_present(tmp_path):
+    """story.md (pre-cut) wins over outline.md (post-cut) when both exist —
+    the cut retires story.md in place of writing outline.md over it, but
+    until that migration happens a book may transiently have both."""
     from scripts import plot_stage
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input" / "book-01"
     d.mkdir(parents=True)
-    (d / "outline-skeleton.md").write_text("## Chapter 01 — S\n", encoding="utf-8")
+    (d / "story.md").write_text("## Chapter 01 — S\n", encoding="utf-8")
     (d / "outline.md").write_text("## Chapter 01 — O\n", encoding="utf-8")
-    assert plot_stage._readback_source("01", repo_root=tmp_path).name == "outline-skeleton.md"
+    assert plot_stage._readback_source("01", repo_root=tmp_path).name == "story.md"
 
 
 def test_readback_source_falls_back_to_the_outline(tmp_path):
-    """The skeleton is retired (spec 2026-07-31 §3.3). A book that has only
-    outline.md must still be readable — book 01's skeleton is a different book."""
+    """After the cut, story.md is gone and only outline.md remains — the
+    reader's copy must still be cuttable from it."""
     from scripts import plot_stage
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input" / "book-01"
@@ -1156,5 +1159,37 @@ def test_readback_source_fails_loud_when_neither_exists(tmp_path):
     from scripts import plot_stage
     (tmp_path / ".penny").mkdir()
     (tmp_path / "input" / "book-01").mkdir(parents=True)
-    with pytest.raises(SystemExit, match="no outline"):
+    with pytest.raises(SystemExit, match="no story or outline"):
         plot_stage._readback_source("01", repo_root=tmp_path)
+
+
+def test_chapters_and_weave_stages_point_at_story_md(tmp_path):
+    root = _series(tmp_path)
+    paths = stage_paths("01", root)
+    assert paths["chapters"].name == "story.md"
+    assert paths["weave"] == paths["chapters"]
+
+
+def test_cut_stage_produces_the_outline(tmp_path):
+    root = _series(tmp_path)
+    assert stage_paths("01", root)["cut"].name == "outline.md"
+    assert "cut" in STAGE_ORDER
+    assert STAGE_ORDER.index("cut") == STAGE_ORDER.index("weave") + 1
+
+
+def test_readback_reads_story_before_the_cut_and_outline_after(tmp_path):
+    from scripts.plot_stage import _readback_source
+    root = _series(tmp_path)
+    story = root / "input" / "book-01" / "story.md"
+    story.parent.mkdir(parents=True, exist_ok=True)
+    story.write_text("- a beat\n", encoding="utf-8")
+    assert _readback_source("01", repo_root=root) == story
+    story.unlink()
+    outline = root / "input" / "book-01" / "outline.md"
+    outline.write_text("## Chapter 01 — One\n", encoding="utf-8")
+    assert _readback_source("01", repo_root=root) == outline
+
+
+def test_no_stage_path_names_the_retired_skeleton(tmp_path):
+    root = _series(tmp_path)
+    assert all("skeleton" not in p.name for p in stage_paths("01", root).values())
