@@ -222,8 +222,9 @@ python3 $PENNY_ENGINE/scripts/plot_stage.py status 02   # or just ask
 | ending | **you** | `plot/ending.md` — who did it, the worst moment, the cost (= the mystery core) |
 | turning-points | **you** | `plot/turning-points.md` — the 6–9 tentpole scenes, placed against the genre beat sheet |
 | counterplot | machine → **you approve** | the whodunit ledger + sealed solution, via the existing `mystery-planner` |
-| chapters | machine | the wired chapter skeleton, interpolated between fixed turning points |
-| weave | machine | the secondary tracks braided through |
+| chapters | machine | `input/book-NN/story.md` — beats in story order between the fixed turning points, tagged `@strand`/`#job`/`+q`/`-q`/`!clue-id` as they're written |
+| weave | machine | nothing new — strands and questions were tagged inline while `chapters` wrote `story.md`; this stage only marks it woven |
+| cut | machine proposes → **you approve** | `input/book-NN/outline.md` — packet-format chapter blocks, expanded from the approved `cut-plan.md` |
 | readback | **you** | the blind fan's report + the proofreader's findings, then the lock |
 
 Three ideas do the work. **The ending is decided before the middle exists** — chapters are
@@ -239,6 +240,90 @@ inventing around them.
 
 **Staleness is fingerprinted.** Each generated file records the sha256 of what it was built
 from. Hand-edit the ending, rerun, and everything downstream is redone. Nothing drifts.
+
+### The source layer — `story.md`, and the cut
+
+Spec: `docs/superpowers/specs/2026-08-03-story-source-layer-design.md`. This replaced the
+old chapter-skeleton file, which was meant to be a small editable layer above `outline.md`
+but grew the same section headings in the same order and drifted out of sync with it —
+measured on book 01, 58KB of skeleton disagreeing with the outline it was supposed to
+summarize. `story.md` cannot drift the same way because it has nowhere to type the
+sections that drifted: it holds only beats, in story order, prose first, with trailing
+tags — four sigils and nothing else:
+
+| sigil | means |
+|---|---|
+| `@strand` | this beat belongs to a character's line |
+| `#job` | this beat answers a structural job from the active genre |
+| `+question` / `-question` | opens / closes a dramatic question |
+| `!clue-id` | a ledger clue is planted here |
+
+`##` headings are for your own reading and carry no meaning to the parser. Question prose
+lives once, in a single `## Questions` block anywhere in the file — repeating it at every
+`+`/`-` mention is exactly how the skeleton's boilerplate happened. Everything else a
+chapter block needs — Character Knowledge, Guardrails, wiring, Starting/Ending State,
+Chapter Purpose — is *derived*, not authored, because it's a consequence of the beats and
+the ledger, not a taste call.
+
+The `chapters` stage writes `story.md` directly; `weave` tags strands and questions inline
+as it does, so there's no separate weaving pass. The new `cut` stage turns it into
+`outline.md`, following the same propose/approve/emit pattern as `/map-chapter`:
+
+1. The **`chapter-cutter`** agent reads `story.md` and the genre beat sheet and proposes
+   which beats become which chapter, plus four fields no ledger can derive — chapter
+   title, chapter summary, the per-chapter Compress line, and the Track Movement rows.
+   It absorbs the retired `chapter-weaver`'s job (deciding boundaries is the same act as
+   weaving across them) and **writes nothing**.
+2. You approve, editing boundaries freely. The approved grouping is written to
+   `input/book-NN/cut-plan.md`.
+3. `scripts/story_cut.py NN` — deterministic, no LLM — expands the approved plan into
+   packet-format chapter blocks in `input/book-NN/outline.md`, deriving Required Beats,
+   Clues and Plants, wiring, Character Knowledge, Guardrails, and Starting/Ending State
+   from the beats and the ledger.
+
+`story_cut.py` fails loud, by name, on twelve findings, and never writes a partial
+outline — there are no waivers at this level; fix the story or the cut plan:
+
+| finding | condition |
+|---|---|
+| `unknown-strand` | an `@tag` fails the strand slug contract |
+| `unknown-job` | a `#tag` isn't in the active genre's job list |
+| `unknown-clue` | a `!tag` isn't in the whodunit ledger |
+| `unknown-question` | a `+`/`-` tag names an id absent from `## Questions` |
+| `unscheduled-clue` | a ledger clue is planted by no beat |
+| `orphan-question` | a `-q` closes a question no `+q` opened |
+| `beats-without-chapter` | the cut plan doesn't cover every beat |
+| `duplicate-beat` | a beat is claimed by more than one chapter |
+| `missing-reveal-chapter` | the ledger has no `reveal_chapter`, so guardrails can't be derived |
+| `clue-not-found-in-ledger-text` | a resolved clue id can't be located in the ledger's text (refuses rather than write a partial update) |
+| `outline-modified-since-cut` | the outline was hand-edited since the cut wrote it (see re-cutting, below) |
+| `cut-owned-outline` | `/expand-outline` was pointed at an outline the cut produced |
+
+**Clue chapter numbers don't exist until the cut runs**, so the ledger's `clue_schedule`
+can't name them up front. Instead you tag the *beat* with `!clue-id`, and the cut resolves
+it to whichever chapter that beat lands in and writes the number back into
+`series/whodunit/book-NN.yaml`. That write is **surgical** — it rewrites only the matched
+`chapter:` lines in place, preserving indentation, comments, and everything else
+byte-for-byte — never a `yaml.safe_load`/`safe_dump` round-trip, which would silently
+flatten the ledger's comments and anchors and re-quote its scalars. This is safe because
+`preflight lock-mystery` runs *after* the cut, so the ledger is still unsealed when the cut
+touches it.
+
+**Re-cutting is free** while `outline.md` still matches the `cut_output_sha256` stamp the
+cut wrote: move a chapter boundary in `cut-plan.md`, re-run `story_cut.py`, look again.
+The moment the outline has been hand-edited since, the cut refuses
+`outline-modified-since-cut` rather than overwrite that work — never overwrite hand-shaped
+chapters. `/expand-outline` enforces the same boundary from the other side: it refuses
+`cut-owned-outline` on any outline the cut produced, because expanding a stub in place
+there would let `story.md` and `outline.md` silently disagree again. It remains the right
+tool for an outline the cut never touched.
+
+The plot workshop's `readback` stage runs **after** the cut, against `outline.md` — never
+against `story.md`, which has no chapters yet for a reader's copy to be cut from.
+
+**Book 01 predates all of this.** It keeps its hand-authored, hand-repaired `outline.md`
+and never goes through `story.md` or the cut. **Book 02 is the first book with a
+`story.md`.**
 
 ### The outline-first front door
 
@@ -395,7 +480,9 @@ to the data the lock gates; a field would be a forgeable certificate.
 
 `/expand-outline` is the **context-rich exception** among generative roles: it reads the
 solution to schedule clue beats; the reveal-timing rule is enforced on the page by
-`inspector-fairplay`.
+`inspector-fairplay`. It refuses `cut-owned-outline` on any outline the cut produced (see
+"The source layer" above) — it's for stubs in an outline the cut never touched, such as
+book 01's.
 
 `/review-outline` runs an **independent Claude + Codex panel** over the whole outline
 (identical inputs) and appends prose feedback — **no scores** — as ID'd

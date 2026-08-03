@@ -17,6 +17,20 @@ TENSION_CHECK = Path("scripts/tension_check.py")
 CLAUDE_MD = Path("CLAUDE.md")
 README = Path("README.md")
 
+# story_cut.py's findings (spec 2026-08-03 §8) have no docstring roster to
+# derive from the way tension_check.py's do — check_story()/main() raise them
+# inline as f-strings, not from one contiguous block — so this list is
+# hand-verified against scripts/story_cut.py rather than parsed from it.
+# Verified exact as of the story-source-layer task: grep
+# `blocking.append(`/`return (` in scripts/story_cut.py and confirm the count
+# stays twelve before touching this tuple.
+STORY_CUT_FINDING_IDS = (
+    "unknown-strand", "unknown-job", "unknown-clue", "unknown-question",
+    "unscheduled-clue", "orphan-question", "beats-without-chapter",
+    "duplicate-beat", "outline-modified-since-cut", "missing-reveal-chapter",
+    "clue-not-found-in-ledger-text", "cut-owned-outline",
+)
+
 
 def _docstring_check_ids() -> list[str]:
     text = TENSION_CHECK.read_text(encoding="utf-8")
@@ -53,6 +67,16 @@ def test_readme_and_claude_md_roster_every_derived_check_id():
         text = path.read_text(encoding="utf-8")
         for check_id in ids:
             assert f"`{check_id}`" in text, f"{path}: missing `{check_id}`"
+
+
+def test_readme_and_claude_md_roster_every_story_cut_finding_id():
+    # Same drift the tension_check roster test above guards against, for the
+    # cut's findings (spec 2026-08-03 §8): a doc that names eleven of twelve
+    # reads as complete and isn't.
+    for path in (CLAUDE_MD, README):
+        text = path.read_text(encoding="utf-8")
+        for finding_id in STORY_CUT_FINDING_IDS:
+            assert f"`{finding_id}`" in text, f"{path}: missing `{finding_id}`"
 
 
 # --- FINAL REVIEW C1(b): the length-profile schema changed under series authors

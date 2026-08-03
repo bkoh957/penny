@@ -110,11 +110,13 @@ engine code.
   plotting workshop: save points under `input/book-NN/plot/` (`material.md` optional,
   then `premise.md`, `ending.md`, `turning-points.md`) hold the showrunner's own taste
   calls; `plot_stage.py status` names the next stage and what went stale (sha256
-  `built_from_*` fingerprints on each save point). The machine fills the chapter
-  skeleton and weaves it (wired `Because`/`Opens`/`Closes`/`Carries`/`Hook` fields —
-  see the outline template); the counterplot stage dispatches the existing
-  `mystery-planner` rather than duplicating it. It ends with a blind genre-fan
-  read-back (`plot_stage.py readers-copy` strips solution/wiring throughout, and
+  `built_from_*` fingerprints on each save point). Stages run `premise → ending →
+  turning-points → counterplot → chapters → weave → cut → readback`
+  (`scripts/plot_stage.py`'s `STAGE_ORDER`); `chapters` and `weave` both write
+  `input/book-NN/story.md` (the source layer, below) — the counterplot stage
+  dispatches the existing `mystery-planner` rather than duplicating it. It ends with
+  a blind genre-fan read-back (`plot_stage.py readers-copy` strips solution/wiring
+  throughout, and
   **truncates** the copy to chapters `1..reveal_chapter−1` — not merely a strip,
   because the reveal chapter's own summary prose names the culprit) presented
   beside `tension_check.py`'s findings, then mints the lock —
@@ -132,6 +134,42 @@ engine code.
   cozy-mystery's interactive planner, standalone (showrunner core → `mystery-planner`
   proposal → approve + lock) — for the puzzle alone, when the dramatic outline is
   already settled some other way.
+
+**The source layer (spec `docs/superpowers/specs/2026-08-03-story-source-layer-design.md`):**
+
+```
+story.md    input/book-NN/story.md      beats in story order, four sigils
+    │  chapter-cutter proposes, showrunner approves — cut-plan.md
+    ▼
+outline.md  input/book-NN/outline.md    packet format, generated  (locked)
+```
+
+`story.md` carries only what the author decides — what happens, in what order, to whom
+(`@strand`), which structural job a beat answers (`#job`), which questions open and close
+(`+q-id` / `-q-id`), and where a ledger clue is planted (`!clue-id`). Question prose lives
+once, in a `## Questions` block. Everything else in a chapter block — Character Knowledge,
+Guardrails, wiring, Starting/Ending State, Chapter Purpose — is **derived** by
+`scripts/story_cut.py` from the ledger, the genre and the tags. There is nowhere to type
+boilerplate, which is why `story.md` cannot drift into the duplicate the retired
+chapter-skeleton layer became. `story_cut.py` fails loud, by name, on twelve findings —
+`unknown-strand`, `unknown-job`, `unknown-clue`, `unknown-question`, `unscheduled-clue`,
+`orphan-question`, `beats-without-chapter`, `duplicate-beat`, `missing-reveal-chapter`,
+`clue-not-found-in-ledger-text`, `outline-modified-since-cut`, `cut-owned-outline` — no
+waivers at this level (spec §8): fix the story or the cut plan.
+
+Clue chapter numbers don't exist until the cut, so `story_cut.py` resolves each `!clue-id`
+to the chapter its beat lands in and writes the number back into
+`series/whodunit/book-NN.yaml`'s `clue_schedule` — **surgically**, rewriting only the
+matched `chapter:` lines in place, never a `yaml.safe_load`/`safe_dump` round-trip, which
+would silently flatten the ledger's comments, anchors, and quoting (spec §6). Safe because
+`preflight lock-mystery` runs after the cut, while the ledger is still unsealed.
+
+Re-cutting is free while `outline.md` still matches its `cut_output_sha256` stamp, and
+refuses `outline-modified-since-cut` the moment it does not. `/expand-outline` refuses a
+cut-produced outline the same way (`cut-owned-outline`) — it is for outlines the cut never
+touched (a legacy book such as book 01, which predates all of this and keeps its
+hand-edited outline). The plot workshop's `readback` stage runs after the cut, against
+`outline.md` — never against `story.md`, which carries no chapters to read back.
 
 **Per book, around the lock — three artifacts, one per chapter (design
 `docs/superpowers/specs/2026-07-18-packet-map-chapter-design.md` §2–§7,
@@ -213,7 +251,9 @@ and **non-blocking**.
 
 `/expand-outline NN [MM]` expands skeletal stubs in `input/book-NN/outline.md` into
 packet-format chapter blocks in place — never a `### Scene` section. It reads the solution
-to schedule clue beats, and must not schedule a reveal beat before `reveal_chapter`.
+to schedule clue beats, and must not schedule a reveal beat before `reveal_chapter`. It
+refuses `cut-owned-outline` on any outline the cut produced (see the source layer, above);
+it is for outlines the cut never touched — a legacy book such as book 01.
 
 `/review-outline NN [--focus "…"]` runs an **independent Claude + Codex panel** over the
 whole outline (identical inputs) and appends prose feedback — **no scores** —
