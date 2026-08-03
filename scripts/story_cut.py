@@ -6,8 +6,10 @@ agent and approved by the showrunner before this module ever runs (spec §5).
 
 No waivers exist at this level (spec §8). Fix the story or fix the cut plan.
 """
+import hashlib
 import sys
 
+from scripts.penny_meta import parse_frontmatter, strip_frontmatter
 from scripts.penny_story import (SLUG_RE, parse_cut_plan, parse_questions,
                                  parse_story)
 from scripts.penny_wiring import QID_RE
@@ -208,3 +210,36 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
             f"- **{k}:** {v}" for k, v in ch["tracks"].items()) + "\n")
 
     return "\n".join(out).rstrip() + "\n"
+
+
+def body_sha(text: str) -> str:
+    """sha256 of the outline body, frontmatter excluded.
+
+    Excluding frontmatter is what lets the stamp describe the prose without
+    describing itself — a hash that covered its own field could never match.
+    """
+    return hashlib.sha256(strip_frontmatter(text).encode("utf-8")).hexdigest()
+
+
+def stamp_outline(body: str, *, story_sha: str, cut_sha: str) -> str:
+    out_sha = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    return ("---\n"
+            f"built_from_story: {story_sha}\n"
+            f"built_from_cut: {cut_sha}\n"
+            f"cut_output_sha256: {out_sha}\n"
+            "---\n\n" + body)
+
+
+def recut_refusal(existing_outline_text: str) -> "str | None":
+    """None when re-cutting is safe; a named finding when it is not (spec §7)."""
+    meta = parse_frontmatter(existing_outline_text)
+    recorded = meta.get("cut_output_sha256")
+    if not recorded:
+        return ("outline-modified-since-cut: the outline carries no "
+                "cut_output_sha256, so it was not produced by the cut — "
+                "refusing to overwrite hand-authored chapter work")
+    if body_sha(existing_outline_text) != recorded:
+        return ("outline-modified-since-cut: the outline has been edited since "
+                "the cut wrote it — re-cutting would discard that work. Edit "
+                "story.md and cut a fresh book, or keep the hand edits")
+    return None
