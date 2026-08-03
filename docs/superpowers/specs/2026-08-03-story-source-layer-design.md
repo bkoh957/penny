@@ -103,6 +103,25 @@ arranging a form is what turned the skeleton into a duplicate.
 
 A beat with no tags is legal. A beat is prose first.
 
+### 3.1.1 Question prose lives in one block
+
+A `+q-id` tag carries only an id, but `outline.md`'s wiring lines carry **id — prose**
+(`- **Opens:** q-clear — how can Maggie clear herself without performing panic?`), and
+`penny_wiring.split_id` expects that shape. Repeating the prose at every mention is how
+boilerplate got into the skeleton, so it is written once, in a single `## Questions` block
+anywhere in the file:
+
+```markdown
+## Questions
+- q-clear — how can Maggie clear herself without performing panic?
+- q-main — who killed Lisa?
+```
+
+This is the one heading the parser does read, and it holds no beats. Question ids obey
+`penny_wiring.QID_RE` (`^q-[a-z0-9][a-z0-9-]*$`) so the emitted wiring is parseable by the
+checker that already validates it. A `+`/`-` tag naming an id absent from this block is
+the `unknown-question` refusal (§8).
+
 `@strand` ids obey `^[a-z0-9][a-z0-9-]*$` — the slug contract already imposed on
 `alibi_grid` suspects, and for the same reason: strand ids become filenames on the strand
 pages, so the constraint is a path-traversal guard, not a style rule.
@@ -250,6 +269,7 @@ outline:
 | `unknown-strand` | `@tag` fails the slug contract |
 | `unknown-job` | `#tag` not in the active genre's job list |
 | `unknown-clue` | `!tag` not in the whodunit ledger |
+| `unknown-question` | `+`/`-` tag names an id absent from `## Questions` (§3.1.1) |
 | `unscheduled-clue` | a ledger clue no beat plants |
 | `orphan-question` | `-q` closed without a matching `+q` |
 | `beats-without-chapter` | the cut plan does not cover every beat |
