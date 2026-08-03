@@ -242,6 +242,26 @@ def stamp_outline(body: str, *, story_sha: str, cut_sha: str) -> str:
             "---\n\n" + body)
 
 
+def expand_in_place_refusal(outline_text: str) -> "str | None":
+    """None when `/expand-outline` may write into this outline in place; a
+    named refusal when the outline was produced by the cut (spec 2026-08-03
+    §12 ruling).
+
+    A cut-produced outline is regenerated from story.md, never edited
+    upstream of it — expanding a stub in place there would silently make
+    story.md and outline.md disagree, the exact drift that retired the
+    outline's earlier staging layer in the first place. A legacy outline with no
+    `cut_output_sha256` stamp (hand-authored or scaffolded, e.g. book 01) was
+    never cut from a story.md and keeps working exactly as before.
+    """
+    if parse_frontmatter(outline_text).get("cut_output_sha256"):
+        return ("cut-owned-outline: this outline carries cut_output_sha256 — "
+                "it was produced by the cut from story.md and must not be "
+                "edited upstream of it. Edit story.md's beats and re-run the "
+                "cut instead of expanding in place.")
+    return None
+
+
 def recut_refusal(existing_outline_text: str) -> "str | None":
     """None when re-cutting is safe; a named finding when it is not (spec §7)."""
     meta = parse_frontmatter(existing_outline_text)

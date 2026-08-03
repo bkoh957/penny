@@ -1,6 +1,7 @@
 import pytest
 
-from scripts.story_cut import body_sha, recut_refusal, stamp_outline
+from scripts.story_cut import (body_sha, expand_in_place_refusal, recut_refusal,
+                               stamp_outline)
 
 
 def test_stamped_outline_round_trips_and_is_safe_to_recut():
@@ -32,3 +33,23 @@ def test_body_sha_ignores_frontmatter():
     a = stamp_outline("body\n", story_sha="a" * 64, cut_sha="b" * 64)
     b = stamp_outline("body\n", story_sha="c" * 64, cut_sha="d" * 64)
     assert body_sha(a) == body_sha(b)
+
+
+# --- /expand-outline vs. a cut-produced outline (spec 2026-08-03 §12 ruling) ---
+# /expand-outline is for outlines that were never cut, and refuses the ones
+# that were: expanding a stub in place inside a cut-produced outline.md would
+# silently make story.md and outline.md disagree — the drift that retired
+# outline-skeleton.md in the first place.
+
+def test_expand_in_place_refuses_a_cut_produced_outline_by_name():
+    stamped = stamp_outline("## Chapter 01 — One\n", story_sha="a" * 64,
+                            cut_sha="b" * 64)
+    finding = expand_in_place_refusal(stamped)
+    assert finding is not None
+    assert finding.startswith("cut-owned-outline:")
+
+
+def test_expand_in_place_accepts_an_outline_with_no_cut_stamp():
+    # Hand-authored or /scaffold-book-derived (book 01, for instance): never
+    # cut from a story.md, so expanding in place is exactly today's behaviour.
+    assert expand_in_place_refusal("## Chapter 01 — One\n") is None
