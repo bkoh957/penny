@@ -310,13 +310,15 @@ state; this command never asks you anything a file already answers.
 10. **Mint the lock:**
 
    On sign-off, stamp every stage's fan report (the fan writes one per protected
-   reveal, so this is a loop, not a single file):
+   reveal, so this is a loop, not a single file) against `outline.md` — the file
+   readback actually reads (the cut ran above; a hand-authored book like book
+   01 has no cut but has always had an outline.md):
 
    ```bash
    for f in output/book-$book/reports/outline-fan-stage-*.md; do
      [ -e "$f" ] || continue
      python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
-       "$f" --from input/book-$book/story.md
+       "$f" --from input/book-$book/outline.md
    done
    ```
 

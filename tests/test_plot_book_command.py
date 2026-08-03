@@ -68,7 +68,7 @@ def test_runbook_gives_literal_bash_for_every_stamp_call():
     # single literal path — but it is still literal bash with the exact --from
     # _UPSTREAM expects, which is what this test exists to pin.
     assert 'for f in output/book-$book/reports/outline-fan-stage-*.md; do' in t
-    assert '"$f" --from input/book-$book/story.md' in t
+    assert '"$f" --from input/book-$book/outline.md' in t
 
 
 def test_plot_book_runs_the_cut_after_approval():

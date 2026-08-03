@@ -454,7 +454,7 @@ def test_readers_copy_writes_report_file(tmp_path):
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True)
-    (d / "story.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    (d / "outline.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
     p = readers_copy("01", repo_root=tmp_path)
     assert p == tmp_path / "output/book-01/reports/outline-readers-copy.md"
     assert p.is_file() and "q-" not in p.read_text(encoding="utf-8")
@@ -756,7 +756,7 @@ def test_readers_copy_reads_reveal_chapter_from_whodunit_ledger(tmp_path):
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True)
-    (d / "story.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    (d / "outline.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
     wd = tmp_path / "series/whodunit"
     wd.mkdir(parents=True)
     (wd / "book-01.yaml").write_text("reveal_chapter: 5\nculprit: Mary\n", encoding="utf-8")
@@ -771,7 +771,7 @@ def test_readers_copy_with_no_ledger_emits_all_chapters(tmp_path):
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True)
-    (d / "story.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    (d / "outline.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
     p = readers_copy("01", repo_root=tmp_path)
     out = p.read_text(encoding="utf-8")
     assert "## Chapter 06" in out
@@ -782,7 +782,7 @@ def _ledger_series(tmp_path, ledger_text):
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True)
-    (d / "story.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
+    (d / "outline.md").write_text(WIRED_CLEAN.read_text(encoding="utf-8"), encoding="utf-8")
     wd = tmp_path / "series/whodunit"
     wd.mkdir(parents=True)
     (wd / "book-01.yaml").write_text(ledger_text, encoding="utf-8")
@@ -985,7 +985,7 @@ def test_readers_copy_text_still_strips_wiring_at_every_cut():
 
 def test_readers_copy_staged_writes_one_file_per_stage(tmp_path):
     root = _series(tmp_path)
-    _write(root, "input/book-01/story.md", _SKEL)
+    _write(root, "input/book-01/outline.md", _SKEL)
     _write(root, "series/whodunit/book-01.yaml",
            "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n"
            "reveals:\n- id: turn\n  reveal_chapter: 3\n  author_truth: The case turns.\n")
@@ -1023,7 +1023,7 @@ def test_readers_copy_staged_end_to_end_from_outline_when_no_skeleton(tmp_path):
 
 def test_readers_copy_staged_is_cumulative_from_chapter_one(tmp_path):
     root = _series(tmp_path)
-    _write(root, "input/book-01/story.md", _SKEL)
+    _write(root, "input/book-01/outline.md", _SKEL)
     _write(root, "series/whodunit/book-01.yaml",
            "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n"
            "reveals:\n- id: turn\n  reveal_chapter: 3\n  author_truth: The case turns.\n")
@@ -1042,7 +1042,7 @@ def test_readers_copy_staged_returns_empty_without_reveals(tmp_path):
 def test_legacy_readers_copy_unchanged_without_reveals(tmp_path):
     """Regression pin — the legacy invariant (Global Constraints)."""
     root = _series(tmp_path)
-    _write(root, "input/book-01/story.md", _SKEL)
+    _write(root, "input/book-01/outline.md", _SKEL)
     _write(root, "series/whodunit/book-01.yaml",
            "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n")
     dest = readers_copy("01", repo_root=root)
@@ -1054,22 +1054,32 @@ def _readback_ready(root, book="01"):
     """A book whose earlier stages are all done, so stage_status's verdict on
     readback is the only thing under test.
 
-    T7-deferred (final review): this must stamp the whodunit ledger too, since
-    "chapters" (final review FINDING 3 / C1) counts it as a real upstream —
-    without it "chapters" itself reads "stale" and the docstring's claim would
-    be false, even though every test below only asserts on "readback"."""
-    skel = _write(root, f"input/book-{book}/story.md",
-                  "---\nwoven: true\n---\n## Chapter 01 — A\n")
+    T10 fix: readback's upstream moved from "chapters" (story.md) to "cut"
+    (outline.md) — readback always reads outline.md now (_readback_source no
+    longer falls back to story.md), so its fingerprint is against outline.md,
+    the file it actually reads. This builds the whole chain through the cut
+    so outline.md carries the built_from_story/built_from_whodunit stamps
+    _stage_stale expects, then returns outline.md — the file every test
+    below stamps fan reports `--from`.
+
+    T7-deferred (final review): the whodunit ledger must be stamped too,
+    since "chapters" (final review FINDING 3 / C1) counts it as a real
+    upstream — without it "chapters" itself reads "stale"."""
+    story = _write(root, f"input/book-{book}/story.md",
+                   "---\nwoven: true\n---\n## Chapter 01 — A\n")
     prem = _write(root, f"input/book-{book}/plot/premise.md")
     end = _write(root, f"input/book-{book}/plot/ending.md")
     tp = _write(root, f"input/book-{book}/plot/turning-points.md")
     sol = _write(root, f"output/book-{book}/mystery-solution.md")
     wd = _whodunit(root, book=book)
+    outline = _write(root, f"input/book-{book}/outline.md",
+                     "## Chapter 01 — A\n")
     stamp(book, end, [prem], repo_root=root)
     stamp(book, tp, [prem, end], repo_root=root)
     stamp(book, sol, [end, tp], repo_root=root)
-    stamp(book, skel, [tp, sol, wd], repo_root=root)
-    return skel
+    stamp(book, story, [tp, sol, wd], repo_root=root)
+    stamp(book, outline, [story, wd], repo_root=root)
+    return outline
 
 
 def _readback_state(root, book="01"):
@@ -1084,37 +1094,36 @@ def test_readback_missing_when_no_fan_report(tmp_path):
 
 def test_readback_done_from_a_staged_fan_report(tmp_path):
     root = _series(tmp_path)
-    skel = _readback_ready(root)
+    outline = _readback_ready(root)
     fan = _write(root, "output/book-01/reports/outline-fan-stage-1.md")
-    stamp("01", fan, [skel], repo_root=root)
+    stamp("01", fan, [outline], repo_root=root)
     assert _readback_state(root) == "done"
 
 
 def test_readback_done_only_when_every_stage_report_is_stamped(tmp_path):
     root = _series(tmp_path)
-    skel = _readback_ready(root)
+    outline = _readback_ready(root)
     f1 = _write(root, "output/book-01/reports/outline-fan-stage-1.md")
     f2 = _write(root, "output/book-01/reports/outline-fan-stage-2.md")
-    stamp("01", f1, [skel], repo_root=root)
+    stamp("01", f1, [outline], repo_root=root)
     assert _readback_state(root) == "stale"   # f2 unstamped
-    stamp("01", f2, [skel], repo_root=root)
+    stamp("01", f2, [outline], repo_root=root)
     assert _readback_state(root) == "done"
 
 
-def test_readback_goes_stale_when_the_skeleton_changes(tmp_path):
+def test_readback_goes_stale_when_the_outline_changes(tmp_path):
     root = _series(tmp_path)
-    skel = _readback_ready(root)
+    outline = _readback_ready(root)
     fan = _write(root, "output/book-01/reports/outline-fan-stage-1.md")
-    stamp("01", fan, [skel], repo_root=root)
+    stamp("01", fan, [outline], repo_root=root)
     assert _readback_state(root) == "done"
-    skel.write_text("---\nwoven: true\n---\n## Chapter 01 — A\n## Chapter 02 — B\n",
-                    encoding="utf-8")
+    outline.write_text("## Chapter 01 — A\n## Chapter 02 — B\n", encoding="utf-8")
     assert _readback_state(root) == "stale"
 
 
 def test_readback_detail_names_the_offending_report(tmp_path):
     root = _series(tmp_path)
-    skel = _readback_ready(root)
+    _readback_ready(root)
     _write(root, "output/book-01/reports/outline-fan-stage-1.md")
     detail = dict((n, d) for n, _, d in stage_status("01", repo_root=root))["readback"]
     assert "outline-fan-stage-1" in detail
@@ -1125,34 +1134,53 @@ def test_legacy_unstaged_fan_report_still_counts(tmp_path):
     must keep recognising it — an existing series must not be told to redo its
     readback."""
     root = _series(tmp_path)
-    skel = _readback_ready(root)
+    outline = _readback_ready(root)
     fan = _write(root, "output/book-01/reports/outline-fan.md")
-    stamp("01", fan, [skel], repo_root=root)
+    stamp("01", fan, [outline], repo_root=root)
     assert _readback_state(root) == "done"
 
 
-def test_readback_source_prefers_story_when_both_present(tmp_path):
-    """story.md (pre-cut) wins over outline.md (post-cut) when both exist —
-    the cut retires story.md in place of writing outline.md over it, but
-    until that migration happens a book may transiently have both."""
+def test_readback_source_prefers_outline_when_both_present(tmp_path):
+    """outline.md wins over story.md whenever it exists — readback is always
+    chapter-indexed now (T10 fix). A book may transiently have both once
+    cut: story.md is never deleted, and re-cutting is meant to be cheap and
+    repeatable, so outline.md must win every time, not just once."""
     from scripts import plot_stage
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input" / "book-01"
     d.mkdir(parents=True)
-    (d / "story.md").write_text("## Chapter 01 — S\n", encoding="utf-8")
+    (d / "story.md").write_text("- a beat\n", encoding="utf-8")
     (d / "outline.md").write_text("## Chapter 01 — O\n", encoding="utf-8")
-    assert plot_stage._readback_source("01", repo_root=tmp_path).name == "story.md"
+    assert plot_stage._readback_source("01", repo_root=tmp_path).name == "outline.md"
 
 
-def test_readback_source_falls_back_to_the_outline(tmp_path):
-    """After the cut, story.md is gone and only outline.md remains — the
-    reader's copy must still be cuttable from it."""
+def test_readback_source_resolves_the_outline_when_only_it_exists(tmp_path):
+    """A hand-authored book (book 01) has no story.md at all — only
+    outline.md — and must still be readable."""
     from scripts import plot_stage
     (tmp_path / ".penny").mkdir()
     d = tmp_path / "input" / "book-01"
     d.mkdir(parents=True)
     (d / "outline.md").write_text("## Chapter 01 — O\n", encoding="utf-8")
     assert plot_stage._readback_source("01", repo_root=tmp_path).name == "outline.md"
+
+
+def test_readback_source_refuses_when_only_story_exists(tmp_path):
+    """FIX (T10, spec amendment): a book that has been plotted through
+    story.md but not yet cut must fail loud by name, not silently read
+    story.md — story.md is beat-indexed and carries no ## Chapter NN
+    headings, so readers_copy_text would find zero chapters in it. This is
+    the bug the coordinator flagged: with no reveals: block that used to
+    write a near-empty reader's copy at exit 0; with one it hard-blocked
+    every stage. Refusing here instead of in readers_copy/readers_copy_staged
+    catches both at the one call site they share."""
+    from scripts import plot_stage
+    (tmp_path / ".penny").mkdir()
+    d = tmp_path / "input" / "book-01"
+    d.mkdir(parents=True)
+    (d / "story.md").write_text("- a beat\n", encoding="utf-8")
+    with pytest.raises(SystemExit, match="has not been cut yet"):
+        plot_stage._readback_source("01", repo_root=tmp_path)
 
 
 def test_readback_source_fails_loud_when_neither_exists(tmp_path):
@@ -1177,14 +1205,18 @@ def test_cut_stage_produces_the_outline(tmp_path):
     assert STAGE_ORDER.index("cut") == STAGE_ORDER.index("weave") + 1
 
 
-def test_readback_reads_story_before_the_cut_and_outline_after(tmp_path):
+def test_readback_refuses_before_the_cut_and_reads_outline_after(tmp_path):
+    """SPEC AMENDMENT (T10 fix): readback used to be documented as reading
+    story.md before the cut and outline.md after — unimplementable, since
+    story.md has no chapters for readers_copy_text to find. The real rule:
+    refuse (by name) before the cut, read outline.md after it."""
     from scripts.plot_stage import _readback_source
     root = _series(tmp_path)
     story = root / "input" / "book-01" / "story.md"
     story.parent.mkdir(parents=True, exist_ok=True)
     story.write_text("- a beat\n", encoding="utf-8")
-    assert _readback_source("01", repo_root=root) == story
-    story.unlink()
+    with pytest.raises(SystemExit, match="has not been cut yet"):
+        _readback_source("01", repo_root=root)
     outline = root / "input" / "book-01" / "outline.md"
     outline.write_text("## Chapter 01 — One\n", encoding="utf-8")
     assert _readback_source("01", repo_root=root) == outline

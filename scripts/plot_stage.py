@@ -84,7 +84,12 @@ _UPSTREAM = {
     "chapters": ["turning-points", "counterplot", "whodunit"],
     "weave": [],                       # done-ness is story.md's woven flag
     "cut": ["chapters", "whodunit"],
-    "readback": ["chapters"],
+    # SPEC AMENDMENT (2026-08-03, T10 fix): readback always reads outline.md
+    # now (_readback_source below never falls back to story.md), so its
+    # fingerprint is against the file it actually reads — the cut's output —
+    # not against story.md. Was ["chapters"] until this fix; see
+    # _readback_source's docstring for why that was wrong.
+    "readback": ["cut"],
 }
 
 
@@ -577,15 +582,39 @@ def _chapter_numbers(text: str) -> list[int]:
 def _readback_source(book: str, *, repo_root=None) -> Path:
     """The file the reader's copy is cut from.
 
-    story.md before the cut, outline.md after it (spec 2026-08-03 §4).
+    Always `outline.md` — cut-produced or hand-authored (book 01), whichever
+    exists on disk. **Spec amendment to `2026-08-03-story-source-layer-design.md`
+    §4**, which said "story.md before the cut, outline.md after it": that text
+    was unimplementable as written. `story.md` is beat-indexed, not
+    chapter-indexed (spec §3) — it carries no `## Chapter NN` headings at all,
+    so `readers_copy_text`'s chapter extraction finds none in it. Making
+    readback beat-indexed is the four-pass workshop rebuild (spec §12),
+    explicitly out of scope here. The honest rule: the reader's copy is cut
+    from chapters, and chapters exist only after the cut.
+
+    Preferring `story.md` when both files existed (the pre-fix behaviour) was
+    silently wrong in both directions once this task sequenced readback after
+    a real cut stage: with no `reveals:` block, `readers_copy()` wrote a
+    near-empty reader's copy at exit 0 (zero chapters found, so the
+    out-of-range `reveal_chapter` guard — which depends on `nums` being
+    non-empty — never fired either); with one, `readers_copy_staged()` hit
+    `last=0 < reveal_chapter` and hard-exited for every declared reveal,
+    blocking the loop entirely. Both are worse than refusing loudly, so a
+    book that has `story.md` but no `outline.md` yet — not cut — now fails
+    loud below instead of silently reading the wrong file.
     """
     root = _root(repo_root)
-    story = stage_paths(book, root)["chapters"]
-    if story.is_file():
-        return story
     outline = root / "input" / f"book-{book}" / "outline.md"
     if outline.is_file():
         return outline
+    story = stage_paths(book, root)["chapters"]
+    if story.is_file():
+        sys.exit(
+            f"plot_stage: book {book} has not been cut yet — {story} exists "
+            f"but {outline} does not. The reader's copy is cut from "
+            "chapters, which exist only after the cut stage runs "
+            f"(python3 scripts/story_cut.py {book}); story.md's beats carry "
+            "no chapter structure for the reader's copy to be cut from.")
     sys.exit(f"plot_stage: no story or outline for book {book} — looked for "
              f"{story} and {outline}")
 
