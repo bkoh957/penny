@@ -240,6 +240,17 @@ This is safe because of ordering: `preflight lock-mystery` runs *after* the cut,
 ledger is still unsealed when the cut touches it. Once locked, nothing writes to it — the
 existing rule is unchanged.
 
+**The write is surgical, never a re-serialisation.** The ledger is read with PyYAML —
+lossless — but written by rewriting only the matched `chapter:` lines in place, preserving
+indentation and trailing comments. Everything else in the file comes out byte-identical.
+
+A `yaml.safe_load` → `yaml.safe_dump` round-trip was rejected: the ledger is a hand-authored
+showrunner artifact, and re-serialising it silently discards comments, flattens anchors into
+duplicated blocks, re-quotes scalars, and coerces a bare `no` or `off` in an alibi grid into
+a boolean. `sort_keys=False` preserves only top-level key order and prevents none of that.
+The engine may resolve a number the author could not know; it may not reformat their file to
+do it.
+
 ## 7. Re-cutting
 
 `outline.md`'s frontmatter gains `built_from_story: <sha256>`, `built_from_cut: <sha256>`,
