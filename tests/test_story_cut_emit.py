@@ -95,3 +95,104 @@ def test_compress_line_is_per_chapter_not_boilerplate():
     assert "Gallery logistics." in a
     assert "Procedure." in b
     assert a != b
+
+
+# --- Fix-report coverage: findings from the Task 4 review -----------------
+
+def test_carries_excludes_a_question_this_chapter_closes():
+    # Chapter 02 closes q-clear (beat 3). Close-and-carry in the same chapter
+    # is a shape the format never produces (0/28 in book-01's outline) — the
+    # bug was `_carried` alone deciding "carried", with no exclusion for
+    # questions this same chapter closes.
+    chapters = parse_wired_chapters(_emit())
+    ch2 = next(c for c in chapters if c["num"] == 2)
+    assert "q-clear" in ch2["closes"]
+    assert "q-clear" not in ch2["carries"]
+
+
+def test_carries_still_includes_a_question_this_chapter_opens():
+    # Chapter 01 opens q-clear (beat 2) and does not close it — the 28/28
+    # case the reviewer confirmed against book-01: an opened-and-not-yet-closed
+    # question still carries out of the chapter that opens it.
+    chapters = parse_wired_chapters(_emit())
+    ch1 = next(c for c in chapters if c["num"] == 1)
+    assert "q-clear" in [qid for qid, _ in ch1["opens"]]
+    assert "q-clear" in ch1["carries"]
+
+
+EMPTY_CHAPTER_STORY = """- Maggie chooses this life.
+  @maggie #establish-protected-world
+
+- The appointment was altered.
+  @maggie @simon #crime-and-first-contradiction
+
+- Tom rules it out.
+  @tom
+"""
+
+EMPTY_CHAPTER_PLAN = """## Chapter 01 — Opening
+
+- **Beats:** 1
+- **Summary:** Setup.
+- **Compress:** N/A.
+
+## Chapter 02 — Interlude
+
+- **Summary:** A breather chapter with no beats of its own.
+- **Compress:** N/A.
+
+## Chapter 03 — Payoff
+
+- **Beats:** 2-3
+- **Summary:** Payoff.
+- **Compress:** N/A.
+"""
+
+
+def test_strands_so_far_survives_an_empty_middle_chapter():
+    # Chapter 02 has no **Beats:** field at all (parse_cut_plan leaves
+    # ch["beats"] == []). The old `max(ch["beats"], default=0)` reset the
+    # accumulator to nothing for this chapter, under-reporting who the
+    # reader has met; the fix is a running high-water mark across chapters.
+    out = emit_outline(EMPTY_CHAPTER_STORY, EMPTY_CHAPTER_PLAN, {}, {},
+                       reveal_chapter=3, guardrails="No spoilers.", job_titles={})
+    ch2 = parse_packet_sections(chapter_block(out, 2))["Character Knowledge"]
+    assert "maggie" in ch2
+
+
+ORPHAN_STORY = """- Beat one.
+  @a
+
+- Beat two, never placed in any chapter.
+  @a +q-orphan
+"""
+
+ORPHAN_PLAN = """## Chapter 01 — Only Chapter
+
+- **Beats:** 1
+- **Summary:** Just the one beat.
+- **Compress:** N/A.
+"""
+
+
+def test_orphan_beat_question_is_never_read_as_carried():
+    # Beat 2 (which opens q-orphan) is claimed by no chapter, so
+    # beat_chapter.get(2, 0) == 0. The old code still recorded opened_by
+    # for it under the sentinel chapter 0, which made `opened_at <=
+    # upto_index` trivially true from chapter 1 onward — an orphan open read
+    # as carried everywhere. The fix skips questions whose owning chapter
+    # resolves to 0 entirely.
+    out = emit_outline(ORPHAN_STORY, ORPHAN_PLAN, {}, {},
+                       reveal_chapter=1, guardrails="No spoilers.", job_titles={})
+    assert "q-orphan" not in out
+
+
+def test_qline_does_not_truncate_prose_ending_in_a_dash():
+    # The old `.rstrip(" —")` stripped trailing dash/space characters from
+    # the whole rendered "qid — prose" string, so legitimate prose ending in
+    # an em dash (or a trailing space) got silently truncated.
+    questions = {"q-clear": "how can Maggie clear herself —"}
+    out = emit_outline(STORY, PLAN, questions, LEDGER,
+                       reveal_chapter=2, guardrails="Do not name the culprit early.",
+                       job_titles=JOB_TITLES)
+    assert "q-clear — how can Maggie clear herself —" in out

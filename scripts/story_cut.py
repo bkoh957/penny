@@ -95,7 +95,7 @@ def check_story(story_text: str, cut_plan_text: str,
     return {"blocking": blocking, "notes": notes}
 
 
-def _carried(chapters_beats, upto_index, opened_by, closed_by):
+def _carried(upto_index, opened_by, closed_by):
     """Question ids opened at or before this chapter and not yet closed."""
     live = []
     for qid, opened_at in opened_by.items():
@@ -116,19 +116,36 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
         for idx in ch["beats"]:
             beat_chapter[idx] = ch["num"]
     for n, beat in enumerate(beats, 1):
+        # A beat no chapter claims resolves to chapter 0. Chapter 0 is not a
+        # real chapter, so a question tagged on that beat must not enter
+        # opened_by/closed_by at all — left in, it would satisfy
+        # `opened_at <= upto_index` from chapter 1 onward and read as
+        # "carried" everywhere. check_story refuses this case upstream, but
+        # emit_outline must not depend on a caller running it first.
+        owner = beat_chapter.get(n, 0)
+        if owner == 0:
+            continue
         for qid in beat["opens"]:
-            opened_by.setdefault(qid, beat_chapter.get(n, 0))
+            opened_by.setdefault(qid, owner)
         for qid in beat["closes"]:
-            closed_by[qid] = beat_chapter.get(n, 0)
+            closed_by[qid] = owner
 
     def qline(qid):
-        return f"{qid} — {questions.get(qid, '')}".rstrip(" —")
+        prose = questions.get(qid, "")
+        return f"{qid} — {prose}" if prose else qid
 
     out = []
+    high_water = 0
+    seen_strands: set = set()
     for pos, ch in enumerate(chapters):
         mine = [beats[i - 1] for i in ch["beats"] if 1 <= i <= len(beats)]
-        strands_so_far = sorted({s for i in range(1, max(ch["beats"], default=0) + 1)
-                                 for s in (beats[i - 1]["strands"] if i <= len(beats) else [])})
+        # Accumulate a running high-water mark across chapters as we iterate,
+        # so a chapter with no beats of its own (or an out-of-order one)
+        # inherits every strand seen so far rather than resetting to none.
+        high_water = max(high_water, max(ch["beats"], default=0))
+        seen_strands |= {s for i in range(1, high_water + 1)
+                         for s in (beats[i - 1]["strands"] if i <= len(beats) else [])}
+        strands_so_far = sorted(seen_strands)
         opens = [q for b in mine for q in b["opens"]]
         closes = [q for b in mine for q in b["closes"]]
         jobs = []
@@ -142,7 +159,7 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
         out.append("### Chapter Purpose\n"
                    + "\n".join(f"- {job_titles.get(j, j)}" for j in jobs) + "\n")
 
-        carried = _carried(chapters, ch["num"], opened_by, closed_by)
+        carried = _carried(ch["num"], opened_by, closed_by)
         start = [f"- Chapter {ch['num']:02d} is forced by ch {chapters[pos - 1]['num']:02d}."] \
             if pos else ["- This chapter opens the book."]
         start += [f"- Carried in: {qline(q)}" for q in carried if q not in opens]
@@ -180,7 +197,11 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
             wiring.append(f"- **Because:** ch {chapters[pos - 1]['num']:02d}")
         wiring += [f"- **Opens:** {qline(q)}" for q in opens]
         wiring += [f"- **Closes:** {qline(q)}" for q in closes]
-        wiring += [f"- **Carries:** {q}" for q in carried]
+        # A question this chapter closes is never also "carried" by it — the
+        # format never produces close-and-carry in the same chapter (0/28 in
+        # book-01's outline); a question this chapter opens still carries
+        # (28/28 do), so only `closes` is excluded here, not `opens`.
+        wiring += [f"- **Carries:** {q}" for q in carried if q not in closes]
         out.append("### Chapter Structure\n" + "\n".join(wiring) + "\n")
 
         out.append("### Track Movement\n" + "\n".join(
