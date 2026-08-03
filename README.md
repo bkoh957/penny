@@ -296,7 +296,7 @@ outline — there are no waivers at this level; fix the story or the cut plan:
 | `duplicate-beat` | a beat is claimed by more than one chapter |
 | `missing-reveal-chapter` | the ledger has no `reveal_chapter`, so guardrails can't be derived |
 | `clue-not-found-in-ledger-text` | a resolved clue id can't be located in the ledger's text (refuses rather than write a partial update) |
-| `outline-modified-since-cut` | the outline was hand-edited since the cut wrote it (see re-cutting, below) |
+| `outline-modified-since-cut` | the outline was hand-edited since the cut wrote it, **or** it carries no `cut_output_sha256` at all — was never produced by a cut (see re-cutting, below) |
 | `cut-owned-outline` | `/expand-outline` was pointed at an outline the cut produced |
 
 **Clue chapter numbers don't exist until the cut runs**, so the ledger's `clue_schedule`
@@ -313,10 +313,20 @@ touches it.
 cut wrote: move a chapter boundary in `cut-plan.md`, re-run `story_cut.py`, look again.
 The moment the outline has been hand-edited since, the cut refuses
 `outline-modified-since-cut` rather than overwrite that work — never overwrite hand-shaped
-chapters. `/expand-outline` enforces the same boundary from the other side: it refuses
-`cut-owned-outline` on any outline the cut produced, because expanding a stub in place
-there would let `story.md` and `outline.md` silently disagree again. It remains the right
-tool for an outline the cut never touched.
+chapters.
+
+**An outline with no stamp at all refuses the same way, for a different reason.**
+`recut_refusal` doesn't treat a missing `cut_output_sha256` as "nothing to compare against,
+go ahead" — it's the other half of `outline-modified-since-cut`: no stamp means the cut
+never wrote this file, so cutting over it would destroy hand-authored or scaffolded
+chapter work. This is the exact protection book 01 relies on today — its `outline.md` has
+no stamp and is not eligible to be cut over. Absence of a stamp is a refusal, never a
+licence.
+
+`/expand-outline` enforces the mirror-image boundary: it refuses `cut-owned-outline` on
+any outline the cut *did* produce, because expanding a stub in place there would let
+`story.md` and `outline.md` silently disagree again. It remains the right tool for an
+outline the cut never touched — book 01's, precisely because it carries no stamp.
 
 The plot workshop's `readback` stage runs **after** the cut, against `outline.md` — never
 against `story.md`, which has no chapters yet for a reader's copy to be cut from.

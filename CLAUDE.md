@@ -165,11 +165,15 @@ would silently flatten the ledger's comments, anchors, and quoting (spec §6). S
 `preflight lock-mystery` runs after the cut, while the ledger is still unsealed.
 
 Re-cutting is free while `outline.md` still matches its `cut_output_sha256` stamp, and
-refuses `outline-modified-since-cut` the moment it does not. `/expand-outline` refuses a
-cut-produced outline the same way (`cut-owned-outline`) — it is for outlines the cut never
-touched (a legacy book such as book 01, which predates all of this and keeps its
-hand-edited outline). The plot workshop's `readback` stage runs after the cut, against
-`outline.md` — never against `story.md`, which carries no chapters to read back.
+refuses `outline-modified-since-cut` the moment it does not — the same finding also fires
+when the stamp is **absent altogether**, which is not a lesser case: an outline with no
+`cut_output_sha256` was never produced by a cut at all, and absence is a refusal, never a
+licence. This is the branch that protects book 01 — hand-authored/scaffolded, unstamped,
+and never cut over. `/expand-outline` refuses a cut-produced outline the same way
+(`cut-owned-outline`) — it is for outlines the cut never touched (a legacy book such as
+book 01, which predates all of this and keeps its hand-edited outline). The plot
+workshop's `readback` stage runs after the cut, against `outline.md` — never against
+`story.md`, which carries no chapters to read back.
 
 **Per book, around the lock — three artifacts, one per chapter (design
 `docs/superpowers/specs/2026-07-18-packet-map-chapter-design.md` §2–§7,
