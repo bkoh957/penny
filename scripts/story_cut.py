@@ -151,10 +151,65 @@ def _carried(upto_index, opened_by, closed_by):
     return sorted(live)
 
 
+# (ledger key, bullet label) — in the order the reference hand-authored outline
+# (book 01) lists them. `central_deception` and `true_motive` are two distinct
+# ledger keys (not one merged "central deception / motive" line as book 01's
+# outline reads by hand) — kept separate here since the emitter must not invent
+# a combined value neither key actually holds.
+_SOLUTION_FIELDS = (
+    ("culprit", "culprit"),
+    ("victim", "victim"),
+    ("central_deception", "central deception"),
+    ("true_motive", "true motive"),
+    ("murder_method", "murder method"),
+    ("murder_location", "murder location"),
+)
+
+
+def _solution_block(solution: dict) -> str:
+    """The `## Solution` block, derived from the whodunit ledger (spec §5.2).
+
+    Heading is deliberately UNLABELLED — `outline_check._SOLUTION_RE` accepts
+    a bare `## Solution` (label is optional) but blocks an empty label after a
+    colon, so a bare heading is the one shape that can never trip that half of
+    the predicate. A bullet whose ledger key is absent is omitted outright,
+    never emitted empty — an absent key is not the same claim as an empty one.
+    No `## Threads` block: nothing downstream requires it (spec §5.2 table).
+    """
+    lines = ["## Solution"]
+    for key, label in _SOLUTION_FIELDS:
+        value = solution.get(key)
+        if not value:
+            continue
+        # Ledger prose (central_deception) is often an authored multi-line
+        # YAML block scalar; a bullet's value must stay on one line.
+        text = " ".join(str(value).split())
+        lines.append(f"- {label}: {text}")
+
+    grid = solution.get("alibi_grid")
+    suspects: list = []
+    if isinstance(grid, list):
+        for entry in grid:
+            if isinstance(entry, dict) and entry.get("suspect"):
+                name = str(entry["suspect"]).strip()
+                if name and name not in suspects:
+                    suspects.append(name)
+    if suspects:
+        lines.append(f"- suspects: {', '.join(suspects)}")
+
+    return "\n".join(lines) + "\n"
+
+
 def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
                  ledger: dict, *, reveal_chapter: int, guardrails: str,
-                 job_titles: dict) -> str:
-    """Expand an approved cut plan into packet-format chapter blocks (spec §5.2)."""
+                 job_titles: dict, solution: dict) -> str:
+    """Expand an approved cut plan into packet-format chapter blocks (spec §5.2).
+
+    `solution` is the whodunit ledger dict (culprit, victim, central_deception,
+    true_motive, murder_method, murder_location, alibi_grid, …), resolved by
+    `main()` exactly as `reveal_chapter`/`guardrails`/`job_titles` already are —
+    this function still does no I/O and holds no genre or series knowledge.
+    """
     beats = parse_story(story_text)
     chapters = parse_cut_plan(cut_plan_text)
 
@@ -181,7 +236,7 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
         prose = questions.get(qid, "")
         return f"{qid} — {prose}" if prose else qid
 
-    out = []
+    out = [_solution_block(solution)]
     high_water = 0
     seen_strands: set = set()
     for pos, ch in enumerate(chapters):
@@ -622,7 +677,7 @@ def main(argv=None) -> int:
 
     body = emit_outline(story_text, plan_text, parse_questions(story_text), clues,
                         reveal_chapter=reveal, guardrails=guardrails,
-                        job_titles=job_titles)
+                        job_titles=job_titles, solution=ledger_data)
 
     # The ledger is written FIRST, so the whodunit fingerprint stamped into the
     # outline describes the ledger the cut leaves behind — stamping the

@@ -39,7 +39,7 @@ JOB_TITLES = {"establish-protected-world": "Establish the Protected World",
 def _emit():
     return emit_outline(STORY, PLAN, parse_questions(STORY), LEDGER,
                         reveal_chapter=2, guardrails="Do not name the culprit early.",
-                        job_titles=JOB_TITLES)
+                        job_titles=JOB_TITLES, solution={})
 
 
 def test_emits_one_block_per_chapter_that_the_wiring_parser_accepts():
@@ -169,7 +169,8 @@ def test_strands_so_far_survives_an_empty_middle_chapter():
     # accumulator to nothing for this chapter, under-reporting who the
     # reader has met; the fix is a running high-water mark across chapters.
     out = emit_outline(EMPTY_CHAPTER_STORY, EMPTY_CHAPTER_PLAN, {}, {},
-                       reveal_chapter=3, guardrails="No spoilers.", job_titles={})
+                       reveal_chapter=3, guardrails="No spoilers.", job_titles={},
+                       solution={})
     ch2 = parse_packet_sections(chapter_block(out, 2))["Character Knowledge"]
     assert "maggie" in ch2
 
@@ -197,7 +198,8 @@ def test_orphan_beat_question_is_never_read_as_carried():
     # as carried everywhere. The fix skips questions whose owning chapter
     # resolves to 0 entirely.
     out = emit_outline(ORPHAN_STORY, ORPHAN_PLAN, {}, {},
-                       reveal_chapter=1, guardrails="No spoilers.", job_titles={})
+                       reveal_chapter=1, guardrails="No spoilers.", job_titles={},
+                       solution={})
     assert "q-orphan" not in out
 
 
@@ -243,7 +245,8 @@ HOOK_PLAN = """## Chapter 01 — Opens
 
 def _hook_emit():
     return emit_outline(HOOK_STORY, HOOK_PLAN, parse_questions(HOOK_STORY), {},
-                        reveal_chapter=3, guardrails="g", job_titles={})
+                        reveal_chapter=3, guardrails="g", job_titles={},
+                        solution={})
 
 
 def test_a_chapter_that_only_carries_a_question_still_gets_a_hook():
@@ -274,5 +277,5 @@ def test_qline_does_not_truncate_prose_ending_in_a_dash():
     questions = {"q-clear": "how can Maggie clear herself —"}
     out = emit_outline(STORY, PLAN, questions, LEDGER,
                        reveal_chapter=2, guardrails="Do not name the culprit early.",
-                       job_titles=JOB_TITLES)
+                       job_titles=JOB_TITLES, solution={})
     assert "q-clear — how can Maggie clear herself —" in out

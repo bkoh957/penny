@@ -170,7 +170,8 @@ def test_tension_check_cannot_see_an_unclosed_question_on_a_cut_outline():
     story = _story_with_unclosed("q-seed", "q-forgotten")
     plan = GOOD_PLAN.replace("- **Beats:** 3", "- **Beats:** 3-4")
     outline = emit_outline(story, plan, parse_questions(story), {},
-                           reveal_chapter=2, guardrails="g", job_titles={})
+                           reveal_chapter=2, guardrails="g", job_titles={},
+                           solution={})
     assert "q-forgotten" in outline  # it really is in the emitted wiring
 
     import tempfile

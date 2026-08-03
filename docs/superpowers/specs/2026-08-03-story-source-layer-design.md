@@ -231,11 +231,22 @@ Plus the beat ranges themselves.
 | Starting State / Ending State | carried questions + the neighbouring chapters |
 | Chapter Purpose | the `#job` descriptions the chapter's beats carry |
 | Chapter Summary / Compress / Track Movement / title | `cut-plan.md` (§5.1) |
+| `## Solution` block | `series/whodunit/book-NN.yaml` — `culprit`, `victim`, `central_deception`, `true_motive`, `murder_method`, `murder_location`, and `suspects` from `alibi_grid`'s `suspect:` values |
 
 The emitted format is packet format, unchanged — `packet_assemble.py` slices one chapter
 block out and must keep working with no modification. The repetition in `outline.md` is
 required and is not reduced (`2026-07-31` §3.4); the file remains a machine input that the
 showrunner does not read.
+
+This table originally omitted the Solution block entirely, so `emit_outline` wrote chapter
+blocks and nothing else. `outline_check.py`'s `outline-solution` predicate — one `## Solution`
+block, required, label optional — then failed forever on every cut book, and `/book-status`
+showed the outline row red even with the mystery lock minted and packets already built. The
+block is emitted **unlabelled** (`## Solution`, no colon): `_SOLUTION_RE` accepts a bare
+heading, and inventing a label here would be a fifth piece of prose the engine has no
+business naming. It lands **before** the first `## Chapter` block, and a bullet whose ledger
+key is absent is omitted outright rather than written empty. No `## Threads` block accompanies
+it — nothing downstream requires one, and this fix is not the place to add it.
 
 ## 6. Clue resolution and the ledger write-back
 

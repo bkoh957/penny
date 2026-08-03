@@ -1,4 +1,5 @@
 # tests/test_story_cut_roundtrip.py
+import re
 from pathlib import Path
 
 from scripts.penny_wiring import (chapter_block, parse_packet_sections,
@@ -36,7 +37,8 @@ def test_emitted_blocks_carry_every_section_the_engine_parses():
     outline = FIXTURE.read_text(encoding="utf-8")
     story, plan = _story_and_plan_from(outline)
     emitted = emit_outline(story, plan, parse_questions(story), {},
-                           reveal_chapter=24, guardrails="g", job_titles={})
+                           reveal_chapter=24, guardrails="g", job_titles={},
+                           solution={})
     for ch in parse_wired_chapters(emitted):
         sections = parse_packet_sections(chapter_block(emitted, ch["num"]))
         for name in REQUIRED_SECTIONS:
@@ -47,7 +49,8 @@ def test_every_beat_survives_the_round_trip_in_order():
     outline = FIXTURE.read_text(encoding="utf-8")
     story, plan = _story_and_plan_from(outline)
     emitted = emit_outline(story, plan, parse_questions(story), {},
-                           reveal_chapter=24, guardrails="g", job_titles={})
+                           reveal_chapter=24, guardrails="g", job_titles={},
+                           solution={})
     original = [b for ch in parse_wired_chapters(outline)
                 for b in parse_required_beats(
                     parse_packet_sections(chapter_block(outline, ch["num"])))]
@@ -61,7 +64,8 @@ def test_chapter_count_and_titles_are_preserved():
     outline = FIXTURE.read_text(encoding="utf-8")
     story, plan = _story_and_plan_from(outline)
     emitted = emit_outline(story, plan, parse_questions(story), {},
-                           reveal_chapter=24, guardrails="g", job_titles={})
+                           reveal_chapter=24, guardrails="g", job_titles={},
+                           solution={})
     assert ([(c["num"], c["title"]) for c in parse_wired_chapters(emitted)]
             == [(c["num"], c["title"]) for c in parse_wired_chapters(outline)])
 
@@ -116,12 +120,28 @@ TAGGED_LEDGER = {"clue-erasure": "the erased line in the appointment book",
 
 TAGGED_QUESTIONS = parse_questions(TAGGED_STORY)
 
+# Deliberately carries no `true_motive` key at all — the covering test below
+# asserts the emitter omits that bullet rather than writing it empty.
+TAGGED_SOLUTION = {
+    "culprit": "mary",
+    "victim": "neil",
+    "central_deception": "Mary believed for a decade her father was murdered.",
+    "murder_method": "poison in the evening tea",
+    "murder_location": "the pottery studio kiln room",
+    "alibi_grid": [
+        {"suspect": "mary", "chapter": 7, "alibi": "dismissed as harmless grieving",
+         "holds": False},
+        {"suspect": "cal", "chapter": 11, "alibi": "independently accounted",
+         "holds": True},
+    ],
+}
+
 
 def _tagged_outline():
     from scripts.story_cut import emit_outline as emit
     return emit(TAGGED_STORY, TAGGED_PLAN, TAGGED_QUESTIONS, TAGGED_LEDGER,
                 reveal_chapter=5, guardrails="Stay in Maggie's POV.",
-                job_titles={})
+                job_titles={}, solution=TAGGED_SOLUTION)
 
 
 def test_the_emitted_outline_passes_tension_check_clean(tmp_path):
@@ -165,3 +185,47 @@ def test_a_tagged_cut_places_every_clue_in_the_chapter_its_beat_landed_in():
     # ...and nowhere else
     assert out.count("[clue-erasure]") == 1
     assert out.count("[rh-cal]") == 1
+
+
+# --- Solution-block coverage (spec §5.2 table gap): the cut emitted chapter
+# blocks but no `## Solution` block, so `outline_check`'s `outline-solution`
+# predicate failed on every cut book forever — /book-status showed the
+# outline row red even with the mystery locked and packets built. ---
+
+def test_solution_block_carries_culprit_victim_and_suspects():
+    out = _tagged_outline()
+    assert "## Solution" in out
+    # Before the first chapter block, not after it.
+    assert out.index("## Solution") < out.index("## Chapter 01")
+    assert "- culprit: mary" in out
+    assert "- victim: neil" in out
+    assert "- suspects: mary, cal" in out
+
+
+def test_solution_block_omits_a_bullet_whose_ledger_key_is_missing():
+    # TAGGED_SOLUTION carries no `true_motive` key at all. The old
+    # implementation this guards against would be one that writes
+    # "- true motive: " with nothing after the colon instead of skipping the
+    # bullet outright.
+    out = _tagged_outline()
+    assert "true motive" not in out
+    assert not re.search(r"^- [a-z ]+:\s*$", out, re.MULTILINE)
+
+
+def test_the_emitted_outline_passes_outline_check_cleanly(tmp_path):
+    """The assertion that actually closes the finding: /book-status's outline
+    row reads red-forever on a cut book because `outline_check.check_outline`
+    blocks on `outline-solution` with no `## Solution` block present. Run the
+    real checker over real emitted (and stamped) output, not a hand-written
+    fixture."""
+    from scripts.outline_check import check_outline
+    from scripts.story_cut import stamp_outline
+
+    body = _tagged_outline()
+    full = stamp_outline(body, story_sha="a" * 64, cut_sha="b" * 64,
+                         book="99", total_chapters=6)
+    outline = tmp_path / "outline.md"
+    outline.write_text(full, encoding="utf-8")
+
+    result = check_outline(outline)
+    assert result["blocking"] == []
