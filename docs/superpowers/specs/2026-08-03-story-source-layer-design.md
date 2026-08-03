@@ -155,8 +155,19 @@ Seven stages today: `premise → ending → turning-points → counterplot → c
 - `weave` folds into `chapters`. Strands and questions are tagged inline as the beats are
   written; there is no second pass to bolt wiring on.
 - A new `cut` stage produces `outline.md` (§5).
-- `readback` is unchanged in substance and reads `story.md` before the cut,
-  `outline.md` after it.
+- `readback` is unchanged in substance and **runs after the cut, against `outline.md`.**
+
+  **Correction, found in implementation.** This section first said the read-back would read
+  `story.md` before the cut and `outline.md` after it. That is unimplementable as written:
+  `readers_copy_text` is chapter-indexed, and a pre-cut `story.md` has no chapters at all.
+  Left as specified it fails two ways — silently writing a near-empty reader's copy at exit 0
+  when the ledger has no `reveals:` block, and hard-exiting on every reveal when it does.
+  The reader's copy is cut from chapters, and chapters exist only after the cut.
+
+  `_readback_source` therefore returns `outline.md` whenever it exists — covering a cut book
+  and a legacy hand-authored one alike — and **refuses by name** when only `story.md` exists,
+  rather than returning a file that cannot produce a valid copy. Making the read-back
+  beat-indexed instead would be the four-pass workshop rebuild, which §2 puts out of scope.
 
   **Correction to `2026-07-31` §3.3 and §8.1**, which recorded `readers-copy`'s
   hard-requirement on the skeleton as a live defect. It was fixed in the 2026-08 views
