@@ -93,3 +93,97 @@ def check_story(story_text: str, cut_plan_text: str,
                 f"story has only {len(beats)}")
 
     return {"blocking": blocking, "notes": notes}
+
+
+def _carried(chapters_beats, upto_index, opened_by, closed_by):
+    """Question ids opened at or before this chapter and not yet closed."""
+    live = []
+    for qid, opened_at in opened_by.items():
+        if opened_at <= upto_index and closed_by.get(qid, 10 ** 9) >= upto_index:
+            live.append(qid)
+    return sorted(live)
+
+
+def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
+                 ledger: dict, *, reveal_chapter: int, guardrails: str,
+                 job_titles: dict) -> str:
+    """Expand an approved cut plan into packet-format chapter blocks (spec §5.2)."""
+    beats = parse_story(story_text)
+    chapters = parse_cut_plan(cut_plan_text)
+
+    opened_by, closed_by, beat_chapter = {}, {}, {}
+    for ch in chapters:
+        for idx in ch["beats"]:
+            beat_chapter[idx] = ch["num"]
+    for n, beat in enumerate(beats, 1):
+        for qid in beat["opens"]:
+            opened_by.setdefault(qid, beat_chapter.get(n, 0))
+        for qid in beat["closes"]:
+            closed_by[qid] = beat_chapter.get(n, 0)
+
+    def qline(qid):
+        return f"{qid} — {questions.get(qid, '')}".rstrip(" —")
+
+    out = []
+    for pos, ch in enumerate(chapters):
+        mine = [beats[i - 1] for i in ch["beats"] if 1 <= i <= len(beats)]
+        strands_so_far = sorted({s for i in range(1, max(ch["beats"], default=0) + 1)
+                                 for s in (beats[i - 1]["strands"] if i <= len(beats) else [])})
+        opens = [q for b in mine for q in b["opens"]]
+        closes = [q for b in mine for q in b["closes"]]
+        jobs = []
+        for b in mine:
+            for j in b["jobs"]:
+                if j not in jobs:
+                    jobs.append(j)
+
+        out.append(f"## Chapter {ch['num']:02d} — {ch['title']}\n")
+        out.append("### Chapter Summary\n" + ch["summary"] + "\n")
+        out.append("### Chapter Purpose\n"
+                   + "\n".join(f"- {job_titles.get(j, j)}" for j in jobs) + "\n")
+
+        carried = _carried(chapters, ch["num"], opened_by, closed_by)
+        start = [f"- Chapter {ch['num']:02d} is forced by ch {chapters[pos - 1]['num']:02d}."] \
+            if pos else ["- This chapter opens the book."]
+        start += [f"- Carried in: {qline(q)}" for q in carried if q not in opens]
+        out.append("### Starting State\n" + "\n".join(start) + "\n")
+
+        end = [f"- {mine[-1]['text']}"] if mine else []
+        end += [f"- Closes: {qline(q)}" for q in closes]
+        end += [f"- Hook question remains: {qline(q)}" for q in opens if q not in closes]
+        out.append("### Ending State\n" + "\n".join(end) + "\n")
+
+        out.append("### Reader-Facing Shape\nPrimary anchor:\n"
+                   + (f"- {mine[0]['text']}\n" if mine else "")
+                   + "\nCompress:\n- " + ch["compress"] + "\n")
+
+        out.append("### Required Beats\n"
+                   + "\n".join(f"- {b['text']}" for b in mine) + "\n")
+
+        clues = [c for b in mine for c in b["clues"]]
+        out.append("### Clues and Plants\n" + ("\n".join(
+            f"- [{c}] {ledger.get(c, c)}" for c in clues)
+            or "- No ledger clue is scheduled for this chapter.") + "\n")
+
+        out.append("### Character Knowledge\nOn the page so far:\n"
+                   + "\n".join(f"- {s}" for s in strands_so_far) + "\n"
+                   + f"\nNot yet known:\n- The solution, until chapter "
+                     f"{reveal_chapter:02d}.\n")
+
+        out.append("### Guardrails\n- " + guardrails.strip()
+                   + f"\n- Do not resolve the mystery before chapter {reveal_chapter:02d}.\n")
+
+        wiring = []
+        if opens:
+            wiring.append(f"- **Hook:** {qline(opens[0])}")
+        if pos:
+            wiring.append(f"- **Because:** ch {chapters[pos - 1]['num']:02d}")
+        wiring += [f"- **Opens:** {qline(q)}" for q in opens]
+        wiring += [f"- **Closes:** {qline(q)}" for q in closes]
+        wiring += [f"- **Carries:** {q}" for q in carried]
+        out.append("### Chapter Structure\n" + "\n".join(wiring) + "\n")
+
+        out.append("### Track Movement\n" + "\n".join(
+            f"- **{k}:** {v}" for k, v in ch["tracks"].items()) + "\n")
+
+    return "\n".join(out).rstrip() + "\n"
