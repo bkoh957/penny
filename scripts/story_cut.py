@@ -276,76 +276,130 @@ def _ledger(root, book):
     return clues, data, p
 
 
-_ID_LINE_RE = re.compile(r"^(?P<indent>[ \t]*)-\s*id:\s*(?P<id>[^\s#]+)")
-_CHAPTER_LINE_RE = re.compile(
-    r"^(?P<indent>[ \t]*)chapter:\s*(?P<value>[^\s#]+)(?P<trail>.*)$")
-_LIST_ITEM_RE = re.compile(r"^[ \t]*-\s")
+_CLUE_SCHEDULE_RE = re.compile(r"^(?P<indent>[ \t]*)clue_schedule:\s*(?:#.*)?$")
+_ITEM_START_RE = re.compile(r"^(?P<indent>[ \t]*)-\s")
+# `id:`/`chapter:` may be the FIRST key on the dash's own line ("  - id: x")
+# or a later continuation line ("    id: x") — YAML mappings are unordered,
+# so either key can lead. Both alternatives are anchored at column 0 with no
+# other content before them, so a value that merely CONTAINS "id:" or
+# "chapter:" later in the line (e.g. inside a quoted description) never
+# matches: the key must be the first thing on the line, dash or no dash.
+_ID_ANY_RE = re.compile(r"^(?:[ \t]*-[ \t]*|[ \t]*)id:\s*(?P<id>[^\s#]+)")
+_CHAPTER_ANY_RE = re.compile(
+    r"^(?P<prefix>[ \t]*-[ \t]*|[ \t]*)chapter:\s*(?P<value>[^\s#]+)(?P<trail>.*)$")
 
 
-def _rewrite_clue_chapters(ledger_text: str, updates: dict) -> str:
+def _rewrite_clue_chapters(ledger_text: str, updates: dict) -> "tuple[str, list]":
     """Rewrite only `clue_schedule[*].chapter` for ids in `updates` (id ->
-    new chapter number) — byte-identical everywhere else.
+    new chapter number) — byte-identical everywhere else. Returns
+    `(new_text, missing_ids)`; `missing_ids` lists any update id that could
+    not be located in `clue_schedule`'s text at all, so a caller can refuse
+    rather than silently drop it.
 
     The whodunit ledger is a hand-authored showrunner artifact: comments,
     anchors, quoting, and bare yes/no scalars all carry meaning that
     `yaml.safe_load` → `yaml.safe_dump` silently destroys on write. So the
     ledger is never round-tripped through PyYAML on write — only read with
-    `safe_load` (in `_ledger`). This is a line-walk instead: find each
-    `- id: <cid>` line, then the `chapter:` line that belongs to that same
-    entry — scanning forward until either a sibling list item at the id
-    line's own indentation, or a dedent past it, at which point the entry
-    has no `chapter:` key and one is inserted right after the `id:` line, at
-    one indent level deeper (matching its sibling keys). A found
-    `chapter:` line has only its value replaced — indentation and any
-    trailing inline comment are preserved verbatim.
+    `safe_load` (in `_ledger`). This is a line-walk instead, and it operates
+    on each list ITEM'S SPAN, not on the shape of any one line: `id:` and
+    `chapter:` can appear in either order (or with other keys between them),
+    because YAML mappings are unordered — an entry legitimately may write
+    `chapter:` before `id:`. Only lines inside the `clue_schedule:` block are
+    ever considered, so a `chapter:` key belonging to some other structure in
+    the file is never touched.
+
+    A found `chapter:` line has only its value replaced — indentation, any
+    dash prefix, and any trailing inline comment are preserved verbatim. An
+    item with no `chapter:` key at all gets one inserted right after its
+    first line, at one indent level deeper than the dash (matching its
+    sibling keys).
     """
     if not updates:
-        return ledger_text
+        return ledger_text, []
+
     lines = ledger_text.splitlines(keepends=True)
-    out: list = []
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-        m = _ID_LINE_RE.match(line.rstrip("\n"))
-        if not m or m.group("id") not in updates:
-            out.append(line)
-            i += 1
+    n = len(lines)
+
+    heading_idx = heading_indent = None
+    for idx in range(n):
+        m = _CLUE_SCHEDULE_RE.match(lines[idx].rstrip("\n"))
+        if m:
+            heading_idx, heading_indent = idx, m.group("indent")
+            break
+    if heading_idx is None:
+        return ledger_text, sorted(updates)
+
+    start = heading_idx + 1
+    item_indent = None
+    end = n
+    for idx in range(start, n):
+        body = lines[idx].rstrip("\n")
+        if not body.strip():
             continue
+        cur_indent = body[:len(body) - len(body.lstrip(" \t"))]
+        if len(cur_indent) <= len(heading_indent):
+            end = idx
+            break
+        im = _ITEM_START_RE.match(body)
+        if item_indent is None:
+            if not im:
+                end = idx
+                break
+            item_indent = im.group("indent")
+        elif len(cur_indent) < len(item_indent):
+            end = idx
+            break
+    if item_indent is None:
+        return ledger_text, sorted(updates)
 
-        cid = m.group("id")
-        dash_indent = m.group("indent")
-        out.append(line)
-        i += 1
+    # Split [start, end) into item spans: each starts at a line whose first
+    # non-space character is '-' at exactly the block's item indent.
+    spans = []
+    span_start = None
+    for idx in range(start, end):
+        body = lines[idx].rstrip("\n")
+        if not body.strip():
+            continue
+        cur_indent = body[:len(body) - len(body.lstrip(" \t"))]
+        if len(cur_indent) == len(item_indent) and _ITEM_START_RE.match(body):
+            if span_start is not None:
+                spans.append((span_start, idx))
+            span_start = idx
+    if span_start is not None:
+        spans.append((span_start, end))
 
+    out = list(lines)
+    found: set = set()
+    # Process bottom-up: an inserted line shifts every index below it, and
+    # bottom-up processing means only spans already handled sit below any
+    # given insertion point, so earlier (smaller-index) spans' bounds never
+    # go stale mid-walk.
+    for s, e in reversed(spans):
+        item_id = None
         chapter_idx = None
-        j = i
-        while j < len(lines):
-            body = lines[j].rstrip("\n")
-            stripped = body.strip()
-            if stripped:
-                cur_indent = body[:len(body) - len(body.lstrip(" \t"))]
-                if len(cur_indent) <= len(dash_indent):
-                    break
-                cm = _CHAPTER_LINE_RE.match(body)
-                if cm:
-                    chapter_idx = j
-                    break
-            j += 1
-
+        for idx in range(s, e):
+            body = out[idx].rstrip("\n")
+            idm = _ID_ANY_RE.match(body)
+            if idm:
+                item_id = idm.group("id")
+            if chapter_idx is None and _CHAPTER_ANY_RE.match(body):
+                chapter_idx = idx
+        if item_id is None or item_id not in updates:
+            continue
+        found.add(item_id)
+        new_val = updates[item_id]
         if chapter_idx is not None:
-            for k in range(i, chapter_idx):
-                out.append(lines[k])
-            body = lines[chapter_idx].rstrip("\n")
-            eol = lines[chapter_idx][len(body):]
-            cm = _CHAPTER_LINE_RE.match(body)
-            out.append(f"{cm.group('indent')}chapter: {updates[cid]}"
-                       f"{cm.group('trail')}{eol}")
-            i = chapter_idx + 1
+            body = out[chapter_idx].rstrip("\n")
+            eol = out[chapter_idx][len(body):]
+            cm = _CHAPTER_ANY_RE.match(body)
+            out[chapter_idx] = (f"{cm.group('prefix')}chapter: {new_val}"
+                                f"{cm.group('trail')}{eol}")
         else:
-            key_indent = dash_indent + "  "
-            out.append(f"{key_indent}chapter: {updates[cid]}\n")
+            key_indent = item_indent + "  "
+            out.insert(s + 1, f"{key_indent}chapter: {new_val}\n")
 
-    return "".join(out)
+    missing = sorted(set(updates) - found)
+    return "".join(out), missing
 
 
 def main(argv=None) -> int:
@@ -387,6 +441,33 @@ def main(argv=None) -> int:
     findings.extend(result["blocking"])
     for note in result["notes"]:
         print(f"note: {note}")
+
+    # Chapter numbers are derived, so the ledger's are too (spec §6). Safe
+    # because lock-mystery runs after the cut — the ledger is still unsealed.
+    # The ledger is a hand-authored file (comments, anchors, quoting, bare
+    # yes/no scalars), so this rewrites its TEXT surgically rather than
+    # round-tripping it through yaml.safe_dump, which would silently destroy
+    # all of that (see _rewrite_clue_chapters). Computed and validated here,
+    # before anything is written: an id the text-level walk can't find (even
+    # though the loaded yaml knows about it) must be a finding, not a
+    # partial write discovered only after the outline already landed.
+    ledger_text = new_ledger_text = None
+    if ledger_data and ledger_data.get("clue_schedule"):
+        beats = parse_story(story_text)
+        chapters = parse_cut_plan(plan_text)
+        home = {i: c["num"] for c in chapters for i in c["beats"]}
+        where = {cid: home.get(n) for n, b in enumerate(beats, 1) for cid in b["clues"]}
+        updates = {cid: chapter for cid, chapter in where.items() if chapter}
+        if updates:
+            ledger_text = ledger_p.read_text(encoding="utf-8")
+            new_ledger_text, missing = _rewrite_clue_chapters(ledger_text, updates)
+            for cid in missing:
+                findings.append(
+                    f"clue-not-found-in-ledger-text: ledger clue [{cid}] "
+                    f"resolves a chapter but could not be located in "
+                    f"{ledger_p}'s clue_schedule text — refusing a partial "
+                    f"update")
+
     if findings:
         for f in findings:
             print(f)
@@ -405,23 +486,8 @@ def main(argv=None) -> int:
                       cut_sha=hashlib.sha256(plan_text.encode()).hexdigest()),
         encoding="utf-8")
 
-    # Chapter numbers are derived, so the ledger's are too (spec §6). Safe
-    # because lock-mystery runs after the cut — the ledger is still unsealed.
-    # The ledger is a hand-authored file (comments, anchors, quoting, bare
-    # yes/no scalars), so this rewrites its TEXT surgically rather than
-    # round-tripping it through yaml.safe_dump, which would silently destroy
-    # all of that (see _rewrite_clue_chapters).
-    if ledger_data and ledger_data.get("clue_schedule"):
-        beats = parse_story(story_text)
-        chapters = parse_cut_plan(plan_text)
-        home = {i: c["num"] for c in chapters for i in c["beats"]}
-        where = {cid: home.get(n) for n, b in enumerate(beats, 1) for cid in b["clues"]}
-        updates = {cid: chapter for cid, chapter in where.items() if chapter}
-        if updates:
-            ledger_text = ledger_p.read_text(encoding="utf-8")
-            new_text = _rewrite_clue_chapters(ledger_text, updates)
-            if new_text != ledger_text:
-                ledger_p.write_text(new_text, encoding="utf-8")
+    if new_ledger_text is not None and new_ledger_text != ledger_text:
+        ledger_p.write_text(new_ledger_text, encoding="utf-8")
 
     print(f"story_cut: wrote {outline_p} ({len(parse_cut_plan(plan_text))} chapters)")
     return 0
