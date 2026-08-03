@@ -8,7 +8,18 @@ No waivers exist at this level (spec §8). Fix the story or fix the cut plan.
 """
 import hashlib
 import sys
+from pathlib import Path
 
+# Allow `import scripts.*` when this file is run directly as
+# `python3 scripts/story_cut.py` (direct-run puts scripts/ on sys.path, not
+# the repo root) — same fix as map_check.py. Harmless under pytest, where
+# pytest.ini's pythonpath=. already puts the repo root on sys.path.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+import yaml  # ledger only — nested human-edited data (dependency-split rule)
+
+from scripts import penny_genre, penny_paths
+from scripts.outline_views import parse_jobs
 from scripts.penny_meta import parse_frontmatter, strip_frontmatter
 from scripts.penny_story import (SLUG_RE, parse_cut_plan, parse_questions,
                                  parse_story)
@@ -243,3 +254,91 @@ def recut_refusal(existing_outline_text: str) -> "str | None":
                 "the cut wrote it — re-cutting would discard that work. Edit "
                 "story.md and cut a fresh book, or keep the hand edits")
     return None
+
+
+def _job_ids_and_titles():
+    """(ids, id->title) from the active genre's macro-structure, or ([], {})."""
+    path = penny_genre.macro_structure()
+    if path is None or not path.is_file():
+        return [], {}
+    jobs = parse_jobs(path.read_text(encoding="utf-8"))
+    return [jid for jid, _ in jobs], {jid: title for jid, title in jobs}
+
+
+def _ledger(root, book):
+    p = root / "series" / "whodunit" / f"book-{book}.yaml"
+    if not p.is_file():
+        return {}, None, p
+    data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+    clues = {c["id"]: c.get("description", c["id"])
+             for c in (data.get("clue_schedule") or []) if c.get("id")}
+    return clues, data, p
+
+
+def main(argv=None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    if len(argv) != 1:
+        print("usage: story_cut.py <book>", file=sys.stderr)
+        return 2
+    book = argv[0]
+    root = penny_paths.series_root()
+    bookdir = root / "input" / f"book-{book}"
+    story_p, plan_p = bookdir / "story.md", bookdir / "cut-plan.md"
+    for p in (story_p, plan_p):
+        if not p.is_file():
+            print(f"story_cut: missing {p}", file=sys.stderr)
+            return 2
+
+    story_text = story_p.read_text(encoding="utf-8")
+    plan_text = plan_p.read_text(encoding="utf-8")
+    job_ids, job_titles = _job_ids_and_titles()
+    clues, ledger_data, ledger_p = _ledger(root, book)
+
+    outline_p = bookdir / "outline.md"
+    findings = []
+    if outline_p.is_file():
+        refusal = recut_refusal(outline_p.read_text(encoding="utf-8"))
+        if refusal:
+            findings.append(refusal)
+
+    result = check_story(story_text, plan_text, job_ids, list(clues))
+    findings.extend(result["blocking"])
+    for note in result["notes"]:
+        print(f"note: {note}")
+    if findings:
+        for f in findings:
+            print(f)
+        return 1
+
+    guard_p = root / "config" / "series-guardrails.md"
+    guardrails = guard_p.read_text(encoding="utf-8") if guard_p.is_file() else ""
+    reveal = int((ledger_data or {}).get("reveal_chapter") or 0)
+
+    body = emit_outline(story_text, plan_text, parse_questions(story_text), clues,
+                        reveal_chapter=reveal, guardrails=guardrails,
+                        job_titles=job_titles)
+    outline_p.write_text(
+        stamp_outline(body,
+                      story_sha=hashlib.sha256(story_text.encode()).hexdigest(),
+                      cut_sha=hashlib.sha256(plan_text.encode()).hexdigest()),
+        encoding="utf-8")
+
+    # Chapter numbers are derived, so the ledger's are too (spec §6). Safe
+    # because lock-mystery runs after the cut — the ledger is still unsealed.
+    if ledger_data and ledger_data.get("clue_schedule"):
+        beats = parse_story(story_text)
+        chapters = parse_cut_plan(plan_text)
+        home = {i: c["num"] for c in chapters for i in c["beats"]}
+        where = {cid: home.get(n) for n, b in enumerate(beats, 1) for cid in b["clues"]}
+        for entry in ledger_data["clue_schedule"]:
+            if entry.get("id") in where and where[entry["id"]]:
+                entry["chapter"] = where[entry["id"]]
+        ledger_p.write_text(yaml.safe_dump(ledger_data, sort_keys=False,
+                                           allow_unicode=True), encoding="utf-8")
+
+    print(f"story_cut: wrote {outline_p} ({len(parse_cut_plan(plan_text))} chapters)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
