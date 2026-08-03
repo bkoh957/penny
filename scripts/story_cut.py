@@ -392,7 +392,7 @@ _PLANT_ANY_RE = re.compile(
     r"^(?P<prefix>[ \t]*-[ \t]*|[ \t]*)plant_chapter:\s*(?P<value>[^\s#]+)(?P<trail>.*)$")
 
 # The INLINE FLOW-MAPPING item form — `  - { id: clue-x, plant_chapter: 5, … }`,
-# the shape tests/fixtures/cozy/series/whodunit/book-01.yaml actually uses. The
+# the shape this repo's own whodunit-ledger fixtures actually use. The
 # block form's line walk cannot see keys that never start a line, so this form
 # is matched whole and edited inside its braces (final review, Important 4).
 _FLOW_ITEM_RE = re.compile(r"^(?P<pre>[ \t]*-[ \t]*\{)(?P<body>[^}]*)(?P<post>\}.*)$")
