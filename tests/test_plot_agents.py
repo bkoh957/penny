@@ -19,14 +19,19 @@ def test_plot_proposer_contract():
         assert phrase in t, phrase
 
 
-def test_chapter_weaver_contract():
-    t = _text("chapter-weaver.md")
-    for phrase in ("**Because:**", "**Opens:**", "**Closes:**", "**Carries:**",
-                   "**Hook:**", "clue obligations",
-                   "woven: true", "plot_stage.py", "worse in kind",
-                   "never draft prose", "outline-skeleton.md",
-                   "clear any stale `woven: true`", "**Independence"):
-        assert phrase in t, phrase
+def test_chapter_cutter_exists_and_weaver_is_retired():
+    root = Path(__file__).resolve().parents[1]
+    cutter = root / "agents" / "chapter-cutter.md"
+    assert cutter.is_file()
+    assert "name: chapter-cutter" in cutter.read_text(encoding="utf-8")
+    assert not (root / "agents" / "chapter-weaver.md").exists()
+
+
+def test_chapter_cutter_proposes_and_never_writes():
+    root = Path(__file__).resolve().parents[1]
+    text = (root / "agents" / "chapter-cutter.md").read_text(encoding="utf-8")
+    assert "cut-plan.md" in text
+    assert "writes nothing" in text.lower() or "never writes" in text.lower()
 
 
 def test_outline_fan_contract():
