@@ -87,7 +87,7 @@ def check_story(story_text: str, cut_plan_text: str,
                 f"duplicate-beat: beat {n} is claimed by chapters {who} — one "
                 f"beat, one home")
     for idx in sorted(owners):
-        if idx > len(beats):
+        if idx < 1 or idx > len(beats):
             blocking.append(
                 f"beats-without-chapter: the cut plan claims beat {idx} but the "
                 f"story has only {len(beats)}")

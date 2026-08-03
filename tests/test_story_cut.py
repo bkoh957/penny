@@ -89,3 +89,24 @@ def test_a_beat_claimed_by_two_chapters_is_named():
     plan = GOOD_PLAN.replace("- **Beats:** 3", "- **Beats:** 2-3")
     r = check_story(GOOD_STORY, plan, JOBS, CLUES)
     assert "duplicate-beat" in _ids(r["blocking"])
+
+
+def test_beat_index_zero_is_named():
+    plan = GOOD_PLAN.replace("- **Beats:** 1-2", "- **Beats:** 0,1-2")
+    r = check_story(GOOD_STORY, plan, JOBS, CLUES)
+    assert "beats-without-chapter" in _ids(r["blocking"])
+    assert "0" in " ".join(r["blocking"])
+
+
+def test_same_beat_open_and_close_is_not_orphaned():
+    # Insert the same-beat open+close beat BEFORE "## Questions" — appending
+    # after it would land the new beat inside the Questions block itself,
+    # where parse_story stops collecting beats.
+    story = GOOD_STORY.replace(
+        "## Questions",
+        "- Same beat opens and closes.\n  @maggie +q-x -q-x\n\n## Questions")
+    story = story.replace(
+        "- q-clear — how can Maggie clear herself?",
+        "- q-clear — how can Maggie clear herself?\n- q-x — same-beat sanity check")
+    r = check_story(story, GOOD_PLAN, JOBS, CLUES)
+    assert "orphan-question" not in _ids(r["blocking"])
