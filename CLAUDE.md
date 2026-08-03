@@ -151,18 +151,31 @@ once, in a `## Questions` block. Everything else in a chapter block — Characte
 Guardrails, wiring, Starting/Ending State, Chapter Purpose — is **derived** by
 `scripts/story_cut.py` from the ledger, the genre and the tags. There is nowhere to type
 boilerplate, which is why `story.md` cannot drift into the duplicate the retired
-chapter-skeleton layer became. `story_cut.py` fails loud, by name, on twelve findings —
+chapter-skeleton layer became. `story_cut.py` fails loud, by name, on thirteen findings —
 `unknown-strand`, `unknown-job`, `unknown-clue`, `unknown-question`, `unscheduled-clue`,
-`orphan-question`, `beats-without-chapter`, `duplicate-beat`, `missing-reveal-chapter`,
-`clue-not-found-in-ledger-text`, `outline-modified-since-cut`, `cut-owned-outline` — no
-waivers at this level (spec §8): fix the story or the cut plan.
+`orphan-question`, `unclosed-question`, `beats-without-chapter`, `duplicate-beat`,
+`missing-reveal-chapter`, `clue-not-found-in-ledger-text`, `outline-modified-since-cut`,
+`cut-owned-outline` — no waivers at this level (spec §8): fix the story or the cut plan.
+
+`unclosed-question` is the converse of `orphan-question` and **the only place it can be
+caught**: the emitter carries every live question into every chapter through the last one,
+so downstream an abandoned question is indistinguishable from a deliberate series seed —
+`tension_check`'s `dropped-question` can never fire on a cut outline. The rule is *at most
+one*, not *none*, because one unclosed question is structural: every chapter must hook a
+question open at it (`broken-hook`), and the final chapter can only hook something the book
+has not closed. A second is a dropped thread wearing the seed's clothes.
 
 Clue chapter numbers don't exist until the cut, so `story_cut.py` resolves each `!clue-id`
 to the chapter its beat lands in and writes the number back into
-`series/whodunit/book-NN.yaml`'s `clue_schedule` — **surgically**, rewriting only the
-matched `chapter:` lines in place, never a `yaml.safe_load`/`safe_dump` round-trip, which
-would silently flatten the ledger's comments, anchors, and quoting (spec §6). Safe because
-`preflight lock-mystery` runs after the cut, while the ledger is still unsealed.
+`series/whodunit/book-NN.yaml` — into **`plant_chapter:`**, the key every consumer actually
+reads (`penny_whodunit._plant_chapter` → `clues_by_chapter` → `packet_assemble` and
+`tension_check`'s `overloaded-chapter`; `fairplay_check`; `lmstudio_draft_chapter`), across
+**both** `clue_schedule` and `red_herrings`, since both collections schedule obligations.
+The write is **surgical**: only the matched `plant_chapter:` values move, in either the
+block form or the inline flow-mapping form (`- { id: x, plant_chapter: 5, … }`), never a
+`yaml.safe_load`/`safe_dump` round-trip, which would silently flatten the ledger's
+comments, anchors, and quoting (spec §6). Safe because `preflight lock-mystery` runs after
+the cut, while the ledger is still unsealed.
 
 Re-cutting is free while `outline.md` still matches its `cut_output_sha256` stamp, and
 refuses `outline-modified-since-cut` the moment it does not — the same finding also fires

@@ -10,6 +10,7 @@ The expected check-id list is derived from scripts/tension_check.py's own
 module docstring rather than hand-typed here a second time, so this test
 cannot itself drift out of sync with the source the way the prose docs did.
 """
+import pathlib
 import re
 from pathlib import Path
 
@@ -21,15 +22,27 @@ README = Path("README.md")
 # derive from the way tension_check.py's do — check_story()/main() raise them
 # inline as f-strings, not from one contiguous block — so this list is
 # hand-verified against scripts/story_cut.py rather than parsed from it.
-# Verified exact as of the story-source-layer task: grep
+# Verified exact as of the story-source-layer final fix wave: grep
 # `blocking.append(`/`return (` in scripts/story_cut.py and confirm the count
-# stays twelve before touching this tuple.
+# stays thirteen before touching this tuple.
 STORY_CUT_FINDING_IDS = (
     "unknown-strand", "unknown-job", "unknown-clue", "unknown-question",
-    "unscheduled-clue", "orphan-question", "beats-without-chapter",
-    "duplicate-beat", "outline-modified-since-cut", "missing-reveal-chapter",
-    "clue-not-found-in-ledger-text", "cut-owned-outline",
+    "unscheduled-clue", "orphan-question", "unclosed-question",
+    "beats-without-chapter", "duplicate-beat", "outline-modified-since-cut",
+    "missing-reveal-chapter", "clue-not-found-in-ledger-text",
+    "cut-owned-outline",
 )
+
+
+def test_the_story_cut_roster_is_complete_and_sized():
+    # The roster above is hand-maintained (the findings are inline f-strings,
+    # not one docstring block), so pin BOTH its size and the fact that every id
+    # in it really is raised by the module — a stale roster that names twelve of
+    # thirteen reads as complete and isn't.
+    source = pathlib.Path("scripts/story_cut.py").read_text(encoding="utf-8")
+    assert len(STORY_CUT_FINDING_IDS) == 13, STORY_CUT_FINDING_IDS
+    for finding_id in STORY_CUT_FINDING_IDS:
+        assert f"{finding_id}: " in source, f"story_cut.py never raises {finding_id}"
 
 
 def _docstring_check_ids() -> list[str]:

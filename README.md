@@ -281,7 +281,7 @@ as it does, so there's no separate weaving pass. The new `cut` stage turns it in
    Clues and Plants, wiring, Character Knowledge, Guardrails, and Starting/Ending State
    from the beats and the ledger.
 
-`story_cut.py` fails loud, by name, on twelve findings, and never writes a partial
+`story_cut.py` fails loud, by name, on thirteen findings, and never writes a partial
 outline — there are no waivers at this level; fix the story or the cut plan:
 
 | finding | condition |
@@ -292,6 +292,7 @@ outline — there are no waivers at this level; fix the story or the cut plan:
 | `unknown-question` | a `+`/`-` tag names an id absent from `## Questions` |
 | `unscheduled-clue` | a ledger clue is planted by no beat |
 | `orphan-question` | a `-q` closes a question no `+q` opened |
+| `unclosed-question` | two or more questions are opened and closed by no beat (the converse of `orphan-question`) |
 | `beats-without-chapter` | the cut plan doesn't cover every beat |
 | `duplicate-beat` | a beat is claimed by more than one chapter |
 | `missing-reveal-chapter` | the ledger has no `reveal_chapter`, so guardrails can't be derived |
@@ -299,15 +300,26 @@ outline — there are no waivers at this level; fix the story or the cut plan:
 | `outline-modified-since-cut` | the outline was hand-edited since the cut wrote it, **or** it carries no `cut_output_sha256` at all — was never produced by a cut (see re-cutting, below) |
 | `cut-owned-outline` | `/expand-outline` was pointed at an outline the cut produced |
 
-**Clue chapter numbers don't exist until the cut runs**, so the ledger's `clue_schedule`
-can't name them up front. Instead you tag the *beat* with `!clue-id`, and the cut resolves
-it to whichever chapter that beat lands in and writes the number back into
-`series/whodunit/book-NN.yaml`. That write is **surgical** — it rewrites only the matched
-`chapter:` lines in place, preserving indentation, comments, and everything else
-byte-for-byte — never a `yaml.safe_load`/`safe_dump` round-trip, which would silently
-flatten the ledger's comments and anchors and re-quote its scalars. This is safe because
-`preflight lock-mystery` runs *after* the cut, so the ledger is still unsealed when the cut
-touches it.
+**Why `unclosed-question` allows one and refuses two.** The cut carries every live
+question into every chapter through the last one, so once the outline exists, a question
+the book simply forgot looks exactly like a series seed left open on purpose —
+`tension_check`'s `dropped-question` can never fire on a cut outline, which makes this the
+only place the mistake can be named. One unclosed question is not sloppiness but structure:
+every chapter has to hook a question that's open at it, and the last chapter can only hook
+something the book hasn't closed. Two or more means one of them was dropped.
+
+**Clue chapter numbers don't exist until the cut runs**, so the ledger can't name them up
+front. Instead you tag the *beat* with `!clue-id`, and the cut resolves it to whichever
+chapter that beat lands in and writes the number back into
+`series/whodunit/book-NN.yaml` — into **`plant_chapter:`**, the field every consumer reads
+(`packet_assemble`, `fairplay_check`, `tension_check`'s `overloaded-chapter`, the LM Studio
+drafter), in **both** `clue_schedule` and `red_herrings`. That write is **surgical** — it
+rewrites only the matched `plant_chapter:` values in place, in either the block form or the
+inline flow-mapping form (`- { id: clue-x, plant_chapter: 5, … }`), preserving indentation,
+comments, and everything else byte-for-byte — never a `yaml.safe_load`/`safe_dump`
+round-trip, which would silently flatten the ledger's comments and anchors and re-quote its
+scalars. This is safe because `preflight lock-mystery` runs *after* the cut, so the ledger
+is still unsealed when the cut touches it.
 
 **Re-cutting is free** while `outline.md` still matches the `cut_output_sha256` stamp the
 cut wrote: move a chapter boundary in `cut-plan.md`, re-run `story_cut.py`, look again.
