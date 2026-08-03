@@ -21,7 +21,7 @@ def _series(tmp_path, monkeypatch):
         "## Chapter 02 — Two\n\n- **Beats:** 2\n- **Summary:** s\n"
         "- **Compress:** c\n- **M:** m\n", encoding="utf-8")
     (tmp_path / "series" / "whodunit" / "book-02.yaml").write_text(
-        "reveal_chapter: 2\nclue_schedule:\n  - id: c-altered\n    chapter: 99\n"
+        "reveal_chapter: 2\nclue_schedule:\n  - id: c-altered\n    plant_chapter: 99\n"
         "    description: the handover appointment, changed\n", encoding="utf-8")
     monkeypatch.setattr(story_cut.penny_paths, "series_root", lambda *a, **k: tmp_path)
     monkeypatch.setattr(story_cut, "_job_ids_and_titles",
@@ -42,7 +42,117 @@ def test_cut_writes_resolved_chapter_numbers_back_into_the_ledger(tmp_path, monk
     root = _series(tmp_path, monkeypatch)
     story_cut.main(["02"])
     led = yaml.safe_load((root / "series" / "whodunit" / "book-02.yaml").read_text())
-    assert led["clue_schedule"][0]["chapter"] == 2
+    assert led["clue_schedule"][0]["plant_chapter"] == 2
+
+
+# --- FINAL REVIEW, Critical 1: the write-back targeted `chapter:`, a key NO
+# consumer reads. `penny_whodunit._plant_chapter` (and through it
+# `clues_by_chapter` -> packet_assemble + tension_check's overloaded-chapter),
+# `fairplay_check`, and `lmstudio_draft_chapter` ALL read `plant_chapter`. The
+# cut inserted `chapter: 2` above a stale `plant_chapter: 99`, so the chapter
+# block named a clue the packet reported as "None" and fairplay blocked the
+# lock. ---
+
+def test_the_written_key_is_the_one_every_consumer_reads(tmp_path, monkeypatch):
+    from scripts import penny_whodunit
+    root = _series(tmp_path, monkeypatch)
+    assert story_cut.main(["02"]) == 0
+    ledger_p = root / "series" / "whodunit" / "book-02.yaml"
+    # the real consumer entry point, not a re-read of the raw yaml
+    assert penny_whodunit.clues_by_chapter(ledger_p) == {2: ["c-altered"]}
+    # and no orphan `chapter:` key was left behind beside it
+    assert "\n    chapter:" not in ledger_p.read_text(encoding="utf-8")
+
+
+# --- FINAL REVIEW, Critical 1 (second half): `_ledger` read only
+# `clue_schedule`, so a `!rh-…` tag was refused `unknown-clue` even though
+# `clues_by_chapter` and `packet_assemble` both schedule `red_herrings` too. ---
+
+def _series_with_red_herring(tmp_path, monkeypatch):
+    root = _series(tmp_path, monkeypatch)
+    (root / "input" / "book-02" / "story.md").write_text(
+        "- Maggie chooses this life.\n  @maggie #establish-protected-world\n\n"
+        "- The appointment was altered.\n  @maggie !c-altered +q-clear !rh-decoy\n\n"
+        "## Questions\n- q-clear — how can Maggie clear herself?\n",
+        encoding="utf-8")
+    (root / "series" / "whodunit" / "book-02.yaml").write_text(
+        "reveal_chapter: 2\n"
+        "clue_schedule:\n  - id: c-altered\n    plant_chapter: 99\n"
+        "    description: the handover appointment, changed\n"
+        "red_herrings:\n  - id: rh-decoy\n    plant_chapter: 77\n"
+        "    misleads_toward: someone-else\n", encoding="utf-8")
+    return root
+
+
+def test_a_red_herring_tag_is_known_and_written_back(tmp_path, monkeypatch, capsys):
+    from scripts import penny_whodunit
+    root = _series_with_red_herring(tmp_path, monkeypatch)
+    assert story_cut.main(["02"]) == 0, capsys.readouterr().out
+    ledger_p = root / "series" / "whodunit" / "book-02.yaml"
+    assert penny_whodunit.clues_by_chapter(ledger_p) == {2: ["c-altered", "rh-decoy"]}
+
+
+def test_a_red_herring_renders_from_misleads_toward_in_the_chapter_block(
+        tmp_path, monkeypatch):
+    root = _series_with_red_herring(tmp_path, monkeypatch)
+    assert story_cut.main(["02"]) == 0
+    text = (root / "input" / "book-02" / "outline.md").read_text(encoding="utf-8")
+    assert "- [rh-decoy] someone-else" in text
+
+
+# --- FINAL REVIEW, Important 6: the emitted frontmatter omitted `book:` and
+# `total_chapters:`, so `book_status._total_chapters_with_reason` had nothing
+# to read and blanked every per-chapter row for every cut book — and
+# `tension_check`'s chapter-coverage silently fell back to `len(chapters)`,
+# where a gap can never be seen. The cut knows the count. ---
+
+def test_emitted_frontmatter_carries_book_and_total_chapters(tmp_path, monkeypatch):
+    from scripts.penny_meta import parse_frontmatter
+    root = _series(tmp_path, monkeypatch)
+    assert story_cut.main(["02"]) == 0
+    fm = parse_frontmatter(
+        (root / "input" / "book-02" / "outline.md").read_text(encoding="utf-8"))
+    assert fm["book"] == "02"
+    assert fm["total_chapters"] == "2"
+
+
+def test_book_status_reads_the_cut_outlines_chapter_count(tmp_path, monkeypatch):
+    # The actual consumer, not a re-read of the frontmatter we just wrote.
+    from scripts import book_status
+    root = _series(tmp_path, monkeypatch)
+    assert story_cut.main(["02"]) == 0
+    total, reason = book_status._total_chapters_with_reason("02", root)
+    assert total == 2, reason
+
+
+# --- FINAL REVIEW, Important 5: `plot_stage`'s cut stage demands
+# `built_from_story` AND `built_from_book-NN`, but the cut wrote only the
+# first and no runbook step stamped the second — so `plot_stage status`
+# reported `cut: stale (built_from_book-NN unstamped)` immediately after a
+# clean cut and `next:` pinned to `cut` forever. Exercised through a REAL cut,
+# never a hand-stamp. ---
+
+def test_plot_stage_reports_cut_done_right_after_a_real_cut(tmp_path, monkeypatch):
+    from scripts import plot_stage
+    root = _series(tmp_path, monkeypatch)
+    assert story_cut.main(["02"]) == 0
+    rows = dict((name, (state, detail))
+                for name, state, detail in plot_stage.stage_status("02", repo_root=root))
+    assert rows["cut"][0] == "done", rows["cut"][1]
+
+
+def test_the_cut_stamp_describes_the_ledger_the_cut_left_behind(tmp_path, monkeypatch):
+    # The cut REWRITES the ledger (plant_chapter resolution), so a fingerprint
+    # taken before that write would make the stage stale the instant it
+    # finished — the same bug wearing a different hat.
+    from scripts import plot_stage
+    root = _series(tmp_path, monkeypatch)
+    assert story_cut.main(["02"]) == 0
+    ledger_p = root / "series" / "whodunit" / "book-02.yaml"
+    assert "plant_chapter: 2" in ledger_p.read_text(encoding="utf-8")
+    fm = story_cut.parse_frontmatter(
+        (root / "input" / "book-02" / "outline.md").read_text(encoding="utf-8"))
+    assert fm["built_from_book-02"] == plot_stage._upstream_sha(ledger_p)
 
 
 def test_findings_exit_one_and_write_nothing(tmp_path, monkeypatch, capsys):
@@ -76,7 +186,7 @@ def test_second_cut_is_allowed_when_the_outline_is_untouched(tmp_path, monkeypat
 
 # --- Critical fix: the ledger write-back must never round-trip through
 # yaml.safe_dump — a hand-authored file's comments, bare scalars, and
-# quoting all have to survive. `_rewrite_clue_chapters` is a pure text
+# quoting all have to survive. `_rewrite_plant_chapters` is a pure text
 # line-walk; these tests exercise it directly so a regression to
 # yaml.safe_dump (or a broken indent/scan rule) fails loudly. ---
 
@@ -86,10 +196,10 @@ LEDGER_WITH_QUIRKS = (
     "spoiler_locked: no\n"
     "clue_schedule:\n"
     "  - id: c-altered\n"
-    "    chapter: 99  # scheduled provisionally\n"
+    "    plant_chapter: 99  # scheduled provisionally\n"
     '    description: "the handover appointment, changed"\n'
     "  - id: c-untouched\n"
-    "    chapter: 42\n"
+    "    plant_chapter: 42\n"
     "    description: a clue no beat plants\n"
     "  - id: c-new\n"
     "    description: a clue with no chapter key yet\n"
@@ -97,7 +207,7 @@ LEDGER_WITH_QUIRKS = (
 
 
 def test_rewrite_preserves_comments_bare_scalars_and_quoting():
-    out, missing = story_cut._rewrite_clue_chapters(LEDGER_WITH_QUIRKS, {"c-altered": 2})
+    out, missing = story_cut._rewrite_plant_chapters(LEDGER_WITH_QUIRKS, {"c-altered": 2})
     assert missing == []
     assert "# a showrunner note the yaml round trip must not eat" in out
     assert "spoiler_locked: no\n" in out
@@ -105,37 +215,37 @@ def test_rewrite_preserves_comments_bare_scalars_and_quoting():
 
 
 def test_rewrite_changes_only_the_intended_chapter_lines():
-    out, missing = story_cut._rewrite_clue_chapters(LEDGER_WITH_QUIRKS, {"c-altered": 2})
+    out, missing = story_cut._rewrite_plant_chapters(LEDGER_WITH_QUIRKS, {"c-altered": 2})
     assert missing == []
     before = LEDGER_WITH_QUIRKS.splitlines()
     after = out.splitlines()
     assert len(before) == len(after)
     diffs = [(b, a) for b, a in zip(before, after) if b != a]
     assert diffs == [
-        ("    chapter: 99  # scheduled provisionally",
-         "    chapter: 2  # scheduled provisionally"),
+        ("    plant_chapter: 99  # scheduled provisionally",
+         "    plant_chapter: 2  # scheduled provisionally"),
     ]
 
 
 def test_rewrite_inserts_a_missing_chapter_key_at_the_right_indentation():
-    out, missing = story_cut._rewrite_clue_chapters(LEDGER_WITH_QUIRKS, {"c-new": 5})
+    out, missing = story_cut._rewrite_plant_chapters(LEDGER_WITH_QUIRKS, {"c-new": 5})
     assert missing == []
     lines = out.splitlines()
     idx = lines.index("  - id: c-new")
-    assert lines[idx + 1] == "    chapter: 5"
+    assert lines[idx + 1] == "    plant_chapter: 5"
     # the entry's original (chapter-less) description line still follows
     assert lines[idx + 2] == "    description: a clue with no chapter key yet"
 
 
 def test_rewrite_leaves_an_unplanted_clues_chapter_untouched():
-    out, missing = story_cut._rewrite_clue_chapters(LEDGER_WITH_QUIRKS, {"c-altered": 2})
+    out, missing = story_cut._rewrite_plant_chapters(LEDGER_WITH_QUIRKS, {"c-altered": 2})
     assert missing == []
-    assert "    chapter: 42\n" in out
+    assert "    plant_chapter: 42\n" in out
     assert "c-untouched" in out
 
 
 def test_rewrite_is_a_no_op_with_no_updates():
-    assert story_cut._rewrite_clue_chapters(LEDGER_WITH_QUIRKS, {}) == (
+    assert story_cut._rewrite_plant_chapters(LEDGER_WITH_QUIRKS, {}) == (
         LEDGER_WITH_QUIRKS, [])
 
 
@@ -143,30 +253,30 @@ def test_rewrite_c_vase_and_c_vase_2_do_not_cross_match():
     """A prefix collision (`c-vase` is a prefix of `c-vase-2`) must resolve by
     exact id, not substring — updating one must never touch the other."""
     text = ("clue_schedule:\n"
-            "  - id: c-vase\n    chapter: 1\n"
-            "  - id: c-vase-2\n    chapter: 9\n")
-    out, missing = story_cut._rewrite_clue_chapters(text, {"c-vase": 5})
+            "  - id: c-vase\n    plant_chapter: 1\n"
+            "  - id: c-vase-2\n    plant_chapter: 9\n")
+    out, missing = story_cut._rewrite_plant_chapters(text, {"c-vase": 5})
     assert missing == []
     lines = out.splitlines()
-    assert lines[lines.index("  - id: c-vase") + 1] == "    chapter: 5"
-    assert lines[lines.index("  - id: c-vase-2") + 1] == "    chapter: 9"
+    assert lines[lines.index("  - id: c-vase") + 1] == "    plant_chapter: 5"
+    assert lines[lines.index("  - id: c-vase-2") + 1] == "    plant_chapter: 9"
 
 
 def test_rewrite_a_chapter_key_outside_clue_schedule_is_untouched():
-    text = ("chapter: 1\n"
+    text = ("plant_chapter: 1\n"
             "clue_schedule:\n"
-            "  - id: c-altered\n    chapter: 99\n")
-    out, missing = story_cut._rewrite_clue_chapters(text, {"c-altered": 2})
+            "  - id: c-altered\n    plant_chapter: 99\n")
+    out, missing = story_cut._rewrite_plant_chapters(text, {"c-altered": 2})
     assert missing == []
-    assert out.splitlines()[0] == "chapter: 1"
+    assert out.splitlines()[0] == "plant_chapter: 1"
 
 
 def test_rewrite_never_treats_an_id_inside_a_quoted_description_as_an_id():
     text = ('clue_schedule:\n'
             '  - id: c-altered\n'
             '    description: "not id: c-fake, just prose"\n'
-            '    chapter: 99\n')
-    out, missing = story_cut._rewrite_clue_chapters(text, {"c-fake": 3})
+            '    plant_chapter: 99\n')
+    out, missing = story_cut._rewrite_plant_chapters(text, {"c-fake": 3})
     # c-fake never appears as a real `id:` key anywhere, so it's unlocatable —
     # reported missing rather than silently matched against the description.
     assert missing == ["c-fake"]
@@ -174,66 +284,67 @@ def test_rewrite_never_treats_an_id_inside_a_quoted_description_as_an_id():
 
 
 def test_rewrite_handles_extra_spaces_after_the_dash():
-    text = "clue_schedule:\n  -    id: c-altered\n    chapter: 99\n"
-    out, missing = story_cut._rewrite_clue_chapters(text, {"c-altered": 2})
+    text = "clue_schedule:\n  -    id: c-altered\n    plant_chapter: 99\n"
+    out, missing = story_cut._rewrite_plant_chapters(text, {"c-altered": 2})
     assert missing == []
-    assert "chapter: 2" in out
+    assert "plant_chapter: 2" in out
 
 
 # --- Important fix (round 2): YAML mappings are unordered, so `id:` may
-# come AFTER `chapter:` in an entry — the old `- id: <cid>` line-shape match
+# come AFTER `plant_chapter:` in an entry — the old `- id: <cid>` line-shape match
 # silently skipped any such entry. Fixed by walking each list item's whole
-# SPAN and finding `id:`/`chapter:` wherever they land within it. ---
+# SPAN and finding `id:`/`plant_chapter:` wherever they land within it. ---
 
 LEDGER_REORDERED = (
     "reveal_chapter: 2\n"
     "clue_schedule:\n"
-    "  - chapter: 99\n"
+    "  - plant_chapter: 99\n"
     "    id: c-altered\n"
     "    description: the handover appointment, changed\n"
     "  - description: another clue entirely\n"
-    "    chapter: 7\n"
+    "    plant_chapter: 7\n"
     "    id: c-other\n"
 )
 
 
 def test_rewrite_updates_an_entry_whose_chapter_precedes_its_id():
-    out, missing = story_cut._rewrite_clue_chapters(LEDGER_REORDERED, {"c-altered": 2})
+    out, missing = story_cut._rewrite_plant_chapters(LEDGER_REORDERED, {"c-altered": 2})
     assert missing == []
     lines = out.splitlines()
     idx = lines.index("    id: c-altered")
-    assert lines[idx - 1] == "  - chapter: 2"
+    assert lines[idx - 1] == "  - plant_chapter: 2"
 
 
 def test_rewrite_updates_an_entry_ordered_description_chapter_id():
-    out, missing = story_cut._rewrite_clue_chapters(LEDGER_REORDERED, {"c-other": 3})
+    out, missing = story_cut._rewrite_plant_chapters(LEDGER_REORDERED, {"c-other": 3})
     assert missing == []
     lines = out.splitlines()
     idx = lines.index("    id: c-other")
-    assert lines[idx - 1] == "    chapter: 3"
+    assert lines[idx - 1] == "    plant_chapter: 3"
 
 
 def test_rewrite_reordered_shape_byte_identity_outside_changed_lines():
-    out, missing = story_cut._rewrite_clue_chapters(LEDGER_REORDERED, {"c-altered": 2})
+    out, missing = story_cut._rewrite_plant_chapters(LEDGER_REORDERED, {"c-altered": 2})
     assert missing == []
     before = LEDGER_REORDERED.splitlines()
     after = out.splitlines()
     assert len(before) == len(after)
     diffs = [(b, a) for b, a in zip(before, after) if b != a]
-    assert diffs == [("  - chapter: 99", "  - chapter: 2")]
+    assert diffs == [("  - plant_chapter: 99", "  - plant_chapter: 2")]
 
 
 def test_id_loaded_but_not_locatable_in_text_blocks_and_writes_nothing(
         tmp_path, monkeypatch, capsys):
     """A dropped update must never be silent: if `_ledger`'s yaml.safe_load
-    sees a clue id that the text-level walk can't find (here, a flow-style
-    `{id: ..., chapter: ...}` mapping our line-walk doesn't parse), that must
-    be a named blocking finding, and nothing gets written — not the outline,
-    not the ledger."""
+    sees a clue id that the text-level walk can't find — here the whole
+    collection is an inline flow SEQUENCE on the heading line, so there is no
+    `clue_schedule:` block for the walk to enter — that must be a named
+    blocking finding, and nothing gets written: not the outline, not the
+    ledger."""
     root = _series(tmp_path, monkeypatch)
     ledger_p = root / "series" / "whodunit" / "book-02.yaml"
-    original = ('reveal_chapter: 2\nclue_schedule:\n'
-                '  - {id: c-altered, chapter: 99, description: "x"}\n')
+    original = ('reveal_chapter: 2\n'
+                'clue_schedule: [{id: c-altered, plant_chapter: 99}]\n')
     ledger_p.write_text(original, encoding="utf-8")
     assert story_cut.main(["02"]) == 1
     assert not (root / "input" / "book-02" / "outline.md").exists()
@@ -241,6 +352,52 @@ def test_id_loaded_but_not_locatable_in_text_blocks_and_writes_nothing(
     assert "clue-not-found-in-ledger-text" in out
     assert "c-altered" in out
     assert ledger_p.read_text(encoding="utf-8") == original
+
+
+# --- FINAL REVIEW, Important 4: the line walk could not see a clue written as
+# an inline flow mapping — `  - { id: clue-x, plant_chapter: 5, … }` — which is
+# the shape tests/fixtures/cozy/series/whodunit/book-01.yaml uses throughout.
+# Every clue in that style was refused `clue-not-found-in-ledger-text`: loud,
+# but unusable against the repo's own fixtures. ---
+
+LEDGER_FLOW_MAPPING = (
+    "reveal_chapter: 2\n"
+    "clue_schedule:\n"
+    "  - { id: c-altered, plant_chapter: 99, pays_off_chapter: 20, necessary: true }\n"
+    "  - { id: c-untouched, plant_chapter: 42, necessary: false }\n"
+    "red_herrings:\n"
+    '  - { id: rh-one, plant_chapter: 9, misleads_toward: "someone", must_not_cheat: true }\n'
+    "  - { id: rh-nokey, misleads_toward: nobody }\n"
+)
+
+
+def test_rewrite_updates_a_flow_mapping_entry_in_place():
+    out, missing = story_cut._rewrite_plant_chapters(
+        LEDGER_FLOW_MAPPING, {"c-altered": 3})
+    assert missing == []
+    before, after = LEDGER_FLOW_MAPPING.splitlines(), out.splitlines()
+    assert len(before) == len(after)
+    diffs = [(b, a) for b, a in zip(before, after) if b != a]
+    assert diffs == [
+        ("  - { id: c-altered, plant_chapter: 99, pays_off_chapter: 20, necessary: true }",
+         "  - { id: c-altered, plant_chapter: 3, pays_off_chapter: 20, necessary: true }"),
+    ]
+
+
+def test_rewrite_updates_a_flow_mapping_red_herring():
+    out, missing = story_cut._rewrite_plant_chapters(LEDGER_FLOW_MAPPING, {"rh-one": 4})
+    assert missing == []
+    assert ('  - { id: rh-one, plant_chapter: 4, misleads_toward: "someone", '
+            'must_not_cheat: true }') in out
+    # the quoting and the sibling entries survive byte-for-byte
+    assert "  - { id: c-altered, plant_chapter: 99, pays_off_chapter: 20, necessary: true }" in out
+
+
+def test_rewrite_adds_plant_chapter_to_a_flow_mapping_that_lacks_it():
+    out, missing = story_cut._rewrite_plant_chapters(LEDGER_FLOW_MAPPING, {"rh-nokey": 6})
+    assert missing == []
+    assert "  - { id: rh-nokey, misleads_toward: nobody, plant_chapter: 6 }" in out
+    assert yaml.safe_load(out)["red_herrings"][1]["plant_chapter"] == 6
 
 
 def test_cut_survives_ledger_quirks_end_to_end(tmp_path, monkeypatch):
@@ -255,7 +412,7 @@ def test_cut_survives_ledger_quirks_end_to_end(tmp_path, monkeypatch):
         "spoiler_locked: no\n"
         "clue_schedule:\n"
         "  - id: c-altered\n"
-        "    chapter: 99  # scheduled provisionally\n"
+        "    plant_chapter: 99  # scheduled provisionally\n"
         '    description: "the handover appointment, changed"\n',
         encoding="utf-8")
     assert story_cut.main(["02"]) == 0
@@ -263,7 +420,7 @@ def test_cut_survives_ledger_quirks_end_to_end(tmp_path, monkeypatch):
     assert "# a showrunner note the yaml round trip must not eat" in text
     assert "spoiler_locked: no\n" in text
     assert '"the handover appointment, changed"' in text
-    assert "chapter: 2  # scheduled provisionally" in text
+    assert "plant_chapter: 2  # scheduled provisionally" in text
 
 
 # --- Important fix: a missing reveal_chapter must be a named blocking
@@ -273,14 +430,14 @@ def test_missing_reveal_chapter_blocks_and_writes_nothing(tmp_path, monkeypatch,
     root = _series(tmp_path, monkeypatch)
     ledger_p = root / "series" / "whodunit" / "book-02.yaml"
     ledger_p.write_text(
-        "clue_schedule:\n  - id: c-altered\n    chapter: 99\n"
+        "clue_schedule:\n  - id: c-altered\n    plant_chapter: 99\n"
         "    description: the handover appointment, changed\n", encoding="utf-8")
     assert story_cut.main(["02"]) == 1
     assert not (root / "input" / "book-02" / "outline.md").exists()
     assert "missing-reveal-chapter" in capsys.readouterr().out
     # nothing in the ledger changed either — the write-nothing rule is total
     assert ledger_p.read_text(encoding="utf-8") == (
-        "clue_schedule:\n  - id: c-altered\n    chapter: 99\n"
+        "clue_schedule:\n  - id: c-altered\n    plant_chapter: 99\n"
         "    description: the handover appointment, changed\n")
 
 
@@ -311,7 +468,7 @@ def _series_with_real_genre(tmp_path, monkeypatch):
         "## Chapter 02 — Two\n\n- **Beats:** 2\n- **Summary:** s\n"
         "- **Compress:** c\n- **M:** m\n", encoding="utf-8")
     (tmp_path / "series" / "whodunit" / "book-02.yaml").write_text(
-        "reveal_chapter: 2\nclue_schedule:\n  - id: c-altered\n    chapter: 99\n"
+        "reveal_chapter: 2\nclue_schedule:\n  - id: c-altered\n    plant_chapter: 99\n"
         "    description: the handover appointment, changed\n", encoding="utf-8")
     # cwd-based resolution only: penny_genre.macro_structure() and
     # penny_paths.series_root() both resolve relative to the process cwd, not

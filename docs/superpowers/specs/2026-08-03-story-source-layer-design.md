@@ -251,9 +251,23 @@ This is safe because of ordering: `preflight lock-mystery` runs *after* the cut,
 ledger is still unsealed when the cut touches it. Once locked, nothing writes to it — the
 existing rule is unchanged.
 
+**The key is `plant_chapter:`, in both `clue_schedule` and `red_herrings`.** This
+paragraph originally said "by chapter number" and left the field name to the
+implementation, which wrote a `chapter:` key nothing reads. The name is not the spec's to
+choose — it belongs to the consumers, and every one of them reads `plant_chapter`:
+`penny_whodunit._plant_chapter` (and through it `clues_by_chapter`, which feeds
+`packet_assemble` and `tension_check`'s `overloaded-chapter`), `fairplay_check`, and
+`lmstudio_draft_chapter`. Both collections are written, because `clues_by_chapter` and
+`packet_assemble` both schedule from both — a `!rh-…` tag is as real an obligation as a
+`!clue-…` one.
+
 **The write is surgical, never a re-serialisation.** The ledger is read with PyYAML —
-lossless — but written by rewriting only the matched `chapter:` lines in place, preserving
-indentation and trailing comments. Everything else in the file comes out byte-identical.
+lossless — but written by rewriting only the matched `plant_chapter:` values in place,
+preserving indentation and trailing comments. Both authored item shapes are supported: the
+block form (`- id: x` / `  plant_chapter: 5` on their own lines) and the **inline
+flow-mapping** form (`- { id: x, plant_chapter: 5, … }`), which is what this repo's own
+fixtures use — only the value inside the braces moves. Everything else in the file comes
+out byte-identical.
 
 A `yaml.safe_load` → `yaml.safe_dump` round-trip was rejected: the ledger is a hand-authored
 showrunner artifact, and re-serialising it silently discards comments, flattens anchors into

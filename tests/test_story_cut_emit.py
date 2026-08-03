@@ -63,7 +63,21 @@ def test_wiring_carries_opens_and_closes_with_question_prose():
 def test_because_chains_each_chapter_to_the_one_before():
     out = _emit()
     assert "- **Because:** ch 01" in out
-    assert out.count("- **Because:**") == 1  # chapter 01 has no antecedent
+    # EVERY chapter carries a Because — one per chapter, no exceptions. This
+    # test previously asserted `== 1` and so pinned the bug: chapter 01 had no
+    # Because line at all, which `tension_check` reports as
+    # `orphan-chapter: ch 01 has no Because line` on every cut book (final
+    # review, Critical 2).
+    assert out.count("- **Because:**") == len(parse_wired_chapters(out))
+
+
+def test_chapter_one_because_is_the_literal_tension_check_accepts():
+    # `_graph_checks` accepts exactly two forms — the literal `opening` (only
+    # on chapter 1) or `ch NN` naming an earlier chapter. Anything else is
+    # `orphan-chapter: … Because names no chapter`.
+    out = _emit()
+    assert "- **Because:** opening" in out
+    assert out.count("- **Because:** opening") == 1
 
 
 def test_clue_section_renders_the_ledger_description():
@@ -185,6 +199,72 @@ def test_orphan_beat_question_is_never_read_as_carried():
     out = emit_outline(ORPHAN_STORY, ORPHAN_PLAN, {}, {},
                        reveal_chapter=1, guardrails="No spoilers.", job_titles={})
     assert "q-orphan" not in out
+
+
+# --- FINAL REVIEW, Critical 2: the Hook was emitted only when a chapter
+# OPENED a question, so `tension_check` reported `broken-hook: ch NN Hook does
+# not lead with a question id` on every chapter that merely carried one — on a
+# real 11-chapter cut, nine of eleven. Every cut book therefore reached
+# `preflight lock-mystery` needing a blanket `--waive broken-hook`, which
+# disables the check for the whole book. ---
+
+HOOK_STORY = """- Beat one.
+  @a +q-live
+
+- Beat two — this chapter opens nothing of its own.
+  @a
+
+- Beat three closes it.
+  @a -q-live
+
+## Questions
+- q-live — will it hold?
+"""
+
+HOOK_PLAN = """## Chapter 01 — Opens
+
+- **Beats:** 1
+- **Summary:** s
+- **Compress:** c
+
+## Chapter 02 — Carries Only
+
+- **Beats:** 2
+- **Summary:** s
+- **Compress:** c
+
+## Chapter 03 — Closes
+
+- **Beats:** 3
+- **Summary:** s
+- **Compress:** c
+"""
+
+
+def _hook_emit():
+    return emit_outline(HOOK_STORY, HOOK_PLAN, parse_questions(HOOK_STORY), {},
+                        reveal_chapter=3, guardrails="g", job_titles={})
+
+
+def test_a_chapter_that_only_carries_a_question_still_gets_a_hook():
+    ch2 = next(c for c in parse_wired_chapters(_hook_emit()) if c["num"] == 2)
+    assert not ch2["opens"]
+    assert ch2["hook_q"] == "q-live"
+
+
+def test_the_hook_prefers_a_question_this_chapter_opens():
+    ch1 = next(c for c in parse_wired_chapters(_hook_emit()) if c["num"] == 1)
+    assert ch1["hook_q"] == "q-live"
+    assert "q-live" in [q for q, _ in ch1["opens"]]
+
+
+def test_the_hook_never_names_a_question_this_chapter_closes():
+    # `tension_check`'s third broken-hook branch: a hook naming a question
+    # already closed by this chapter is as broken as no hook at all. Chapter 03
+    # closes the only live question, so it has nothing legitimate to hook —
+    # emitting the closed one would be worse than emitting none.
+    ch3 = next(c for c in parse_wired_chapters(_hook_emit()) if c["num"] == 3)
+    assert ch3["hook_q"] != "q-live"
 
 
 def test_qline_does_not_truncate_prose_ending_in_a_dash():

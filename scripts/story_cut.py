@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml  # ledger only — nested human-edited data (dependency-split rule)
 
-from scripts import penny_genre, penny_paths
+from scripts import penny_genre, penny_paths, plot_stage
 from scripts.outline_views import parse_jobs
 from scripts.penny_meta import parse_frontmatter, strip_frontmatter
 from scripts.penny_story import (SLUG_RE, parse_cut_plan, parse_questions,
@@ -44,6 +44,7 @@ def check_story(story_text: str, cut_plan_text: str,
     known_jobs, known_clues = set(job_ids), set(clue_ids)
     planted: set = set()
     opened: set = set()
+    closed: set = set()
 
     for n, beat in enumerate(beats, 1):
         for slug in beat["strands"]:
@@ -79,6 +80,38 @@ def check_story(story_text: str, cut_plan_text: str,
                 blocking.append(
                     f"orphan-question: beat {n} closes {qid}, which no earlier "
                     f"beat opens")
+        for qid in beat["closes"]:
+            closed.add(qid)
+
+    # The converse of orphan-question, and the ONLY place it can be caught.
+    # `tension_check`'s dropped-question fires on a question that is neither
+    # closed nor carried, but the emitter carries every live question into
+    # every chapter through the last one — so downstream, an abandoned question
+    # is indistinguishable from a deliberate series seed and is caught by
+    # nothing at all (final review, Important 3).
+    #
+    # The rule is "at most one", not "none", because ONE unclosed question is
+    # structural, not sloppy: the wiring format requires every chapter to hook
+    # a question that is open at it (tension_check's broken-hook), and the final
+    # chapter can only hook something the book has not closed. The engine's own
+    # canonical clean outline (tests/fixtures/outlines/wired-clean.md) ends
+    # exactly this way — one seed carried past the end. A SECOND unclosed
+    # question is a dropped thread wearing the seed's clothes, and this is the
+    # last place anything can say so. No waivers at this level (spec §8): close
+    # it in a beat, or accept it as the seed and close the others.
+    unclosed = sorted(opened - closed)
+    if len(unclosed) > 1:
+        blocking.append(
+            f"unclosed-question: {', '.join(unclosed)} are all opened by a beat "
+            f"and closed by none — a book carries at most one question past its "
+            f"end (the seed its last chapter hooks); the rest read downstream as "
+            f"deliberate carries, so nothing else will catch them")
+    elif not unclosed and opened:
+        notes.append(
+            "every question the story opens is also closed, so the last "
+            "chapter has no live question to hook — tension_check will report "
+            "broken-hook on it. Leave one question open as the book's seed, or "
+            "expect that finding.")
 
     for cid in clue_ids:
         if cid not in planted:
@@ -205,17 +238,29 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
                    + f"\n- Do not resolve the mystery before chapter {reveal_chapter:02d}.\n")
 
         wiring = []
-        if opens:
-            wiring.append(f"- **Hook:** {qline(opens[0])}")
-        if pos:
-            wiring.append(f"- **Because:** ch {chapters[pos - 1]['num']:02d}")
-        wiring += [f"- **Opens:** {qline(q)}" for q in opens]
-        wiring += [f"- **Closes:** {qline(q)}" for q in closes]
         # A question this chapter closes is never also "carried" by it — the
         # format never produces close-and-carry in the same chapter (0/28 in
         # book-01's outline); a question this chapter opens still carries
         # (28/28 do), so only `closes` is excluded here, not `opens`.
-        wiring += [f"- **Carries:** {q}" for q in carried if q not in closes]
+        still_live = [q for q in carried if q not in closes]
+        # The Hook must name a question tension_check can see as OPEN at this
+        # chapter: opened at or before it (`open_ch[hook] <= num`) and not
+        # already closed (`closed_ch[hook] > num`). A chapter that opens
+        # nothing still has one — whatever it carries — so falling back to the
+        # first live carried question is what stops `broken-hook` firing on
+        # every chapter after the first (final review, Critical 2).
+        hook_q = opens[0] if opens else (still_live[0] if still_live else None)
+        if hook_q:
+            wiring.append(f"- **Hook:** {qline(hook_q)}")
+        # `tension_check`'s orphan-chapter accepts exactly two forms: the
+        # literal `opening` (chapter 1 only) or `ch NN` naming an earlier
+        # chapter. Chapter one got NEITHER before this — it had no Because line
+        # at all, so every cut book opened with an orphan-chapter finding.
+        wiring.append(f"- **Because:** ch {chapters[pos - 1]['num']:02d}"
+                      if pos else "- **Because:** opening")
+        wiring += [f"- **Opens:** {qline(q)}" for q in opens]
+        wiring += [f"- **Closes:** {qline(q)}" for q in closes]
+        wiring += [f"- **Carries:** {q}" for q in still_live]
         out.append("### Chapter Structure\n" + "\n".join(wiring) + "\n")
 
         out.append("### Track Movement\n" + "\n".join(
@@ -233,11 +278,32 @@ def body_sha(text: str) -> str:
     return hashlib.sha256(strip_frontmatter(text).encode("utf-8")).hexdigest()
 
 
-def stamp_outline(body: str, *, story_sha: str, cut_sha: str) -> str:
+def stamp_outline(body: str, *, story_sha: str, cut_sha: str, book: str,
+                  total_chapters: int, whodunit_sha: "str | None" = None) -> str:
+    """The cut-produced outline's frontmatter.
+
+    `book:` and `total_chapters:` are not decoration: `book_status.py`'s
+    `_total_chapters_with_reason` reads `total_chapters` and blanks every
+    per-chapter row without it, and `tension_check`'s chapter-coverage check
+    falls back to `len(chapters)` (so a gap can never be seen) without it. The
+    cut knows the count — it just cut them (final review, Important 6).
+
+    `built_from_book-NN` is the whodunit fingerprint `plot_stage`'s `cut` stage
+    demands (`_UPSTREAM["cut"] = ["chapters", "whodunit"]`). Written here rather
+    than by a `plot_stage stamp` call in the runbook because the cut is the one
+    thing that knows the cut actually happened; a runbook step can be skipped,
+    and the stamp would then claim a cut that never ran (final review,
+    Important 5).
+    """
     out_sha = hashlib.sha256(body.encode("utf-8")).hexdigest()
+    whodunit_line = (f"built_from_book-{book}: {whodunit_sha}\n"
+                     if whodunit_sha else "")
     return ("---\n"
+            f"book: {book}\n"
+            f"total_chapters: {total_chapters}\n"
             f"built_from_story: {story_sha}\n"
-            f"built_from_cut: {cut_sha}\n"
+            + whodunit_line
+            + f"built_from_cut: {cut_sha}\n"
             f"cut_output_sha256: {out_sha}\n"
             "---\n\n" + body)
 
@@ -286,35 +352,67 @@ def _job_ids_and_titles():
     return [jid for jid, _ in jobs], {jid: title for jid, title in jobs}
 
 
+#: The ledger collections that schedule a clue by chapter. BOTH are real
+#: obligations: `penny_whodunit.clues_by_chapter` and `packet_assemble` merge
+#: the two, so a `!rh-…` tag that only `clue_schedule` knew about was refused
+#: `unknown-clue` even though the packet would have scheduled it (final review
+#: C1, second half).
+_CLUE_COLLECTIONS = ("clue_schedule", "red_herrings")
+
+
 def _ledger(root, book):
     p = root / "series" / "whodunit" / f"book-{book}.yaml"
     if not p.is_file():
         return {}, None, p
     data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-    clues = {c["id"]: c.get("description", c["id"])
-             for c in (data.get("clue_schedule") or []) if c.get("id")}
+    clues = {}
+    for key in _CLUE_COLLECTIONS:
+        for c in (data.get(key) or []):
+            if isinstance(c, dict) and c.get("id"):
+                # Same fallback chain packet_assemble.py uses, so the outline's
+                # "Clues and Plants" line and the packet's read alike: a red
+                # herring carries `misleads_toward:` where a clue carries
+                # `description:`.
+                clues[c["id"]] = (c.get("description") or c.get("misleads_toward")
+                                  or c["id"])
     return clues, data, p
 
 
-_CLUE_SCHEDULE_RE = re.compile(r"^(?P<indent>[ \t]*)clue_schedule:\s*(?:#.*)?$")
+_COLLECTION_RE = re.compile(
+    rf"^(?P<indent>[ \t]*)(?:{'|'.join(_CLUE_COLLECTIONS)}):\s*(?:#.*)?$")
 _ITEM_START_RE = re.compile(r"^(?P<indent>[ \t]*)-\s")
-# `id:`/`chapter:` may be the FIRST key on the dash's own line ("  - id: x")
-# or a later continuation line ("    id: x") — YAML mappings are unordered,
-# so either key can lead. Both alternatives are anchored at column 0 with no
-# other content before them, so a value that merely CONTAINS "id:" or
-# "chapter:" later in the line (e.g. inside a quoted description) never
+# `id:`/`plant_chapter:` may be the FIRST key on the dash's own line
+# ("  - id: x") or a later continuation line ("    id: x") — YAML mappings are
+# unordered, so either key can lead. Both alternatives are anchored at column 0
+# with no other content before them, so a value that merely CONTAINS "id:" or
+# "plant_chapter:" later in the line (e.g. inside a quoted description) never
 # matches: the key must be the first thing on the line, dash or no dash.
 _ID_ANY_RE = re.compile(r"^(?:[ \t]*-[ \t]*|[ \t]*)id:\s*(?P<id>[^\s#]+)")
-_CHAPTER_ANY_RE = re.compile(
-    r"^(?P<prefix>[ \t]*-[ \t]*|[ \t]*)chapter:\s*(?P<value>[^\s#]+)(?P<trail>.*)$")
+_PLANT_ANY_RE = re.compile(
+    r"^(?P<prefix>[ \t]*-[ \t]*|[ \t]*)plant_chapter:\s*(?P<value>[^\s#]+)(?P<trail>.*)$")
+
+# The INLINE FLOW-MAPPING item form — `  - { id: clue-x, plant_chapter: 5, … }`,
+# the shape tests/fixtures/cozy/series/whodunit/book-01.yaml actually uses. The
+# block form's line walk cannot see keys that never start a line, so this form
+# is matched whole and edited inside its braces (final review, Important 4).
+_FLOW_ITEM_RE = re.compile(r"^(?P<pre>[ \t]*-[ \t]*\{)(?P<body>[^}]*)(?P<post>\}.*)$")
+_FLOW_ID_RE = re.compile(r"(?:^|,)\s*id\s*:\s*(?P<id>[^,}\s]+)")
+_FLOW_PLANT_RE = re.compile(r"(?P<lead>(?:^|,)\s*plant_chapter\s*:\s*)(?P<val>[^,\s]*)")
 
 
-def _rewrite_clue_chapters(ledger_text: str, updates: dict) -> "tuple[str, list]":
-    """Rewrite only `clue_schedule[*].chapter` for ids in `updates` (id ->
-    new chapter number) — byte-identical everywhere else. Returns
-    `(new_text, missing_ids)`; `missing_ids` lists any update id that could
-    not be located in `clue_schedule`'s text at all, so a caller can refuse
-    rather than silently drop it.
+def _rewrite_plant_chapters(ledger_text: str, updates: dict) -> "tuple[str, list]":
+    """Rewrite only `plant_chapter:` for ids in `updates` (id -> new chapter
+    number), across BOTH `clue_schedule` and `red_herrings` — byte-identical
+    everywhere else. Returns `(new_text, missing_ids)`; `missing_ids` lists any
+    update id that could not be located in either collection's text at all, so
+    a caller can refuse rather than silently drop it.
+
+    **`plant_chapter` is the key, not `chapter`.** Every consumer reads
+    `plant_chapter`: `penny_whodunit._plant_chapter` (and through it
+    `clues_by_chapter`, which feeds `packet_assemble` and `tension_check`'s
+    overloaded-chapter), `fairplay_check`, and `lmstudio_draft_chapter`. Writing
+    a `chapter:` key beside a stale `plant_chapter:` left the outline naming a
+    clue the packet reported as "None" and `fairplay_check` blocking the lock.
 
     The whodunit ledger is a hand-authored showrunner artifact: comments,
     anchors, quoting, and bare yes/no scalars all carry meaning that
@@ -322,33 +420,93 @@ def _rewrite_clue_chapters(ledger_text: str, updates: dict) -> "tuple[str, list]
     ledger is never round-tripped through PyYAML on write — only read with
     `safe_load` (in `_ledger`). This is a line-walk instead, and it operates
     on each list ITEM'S SPAN, not on the shape of any one line: `id:` and
-    `chapter:` can appear in either order (or with other keys between them),
-    because YAML mappings are unordered — an entry legitimately may write
-    `chapter:` before `id:`. Only lines inside the `clue_schedule:` block are
-    ever considered, so a `chapter:` key belonging to some other structure in
-    the file is never touched.
+    `plant_chapter:` can appear in either order (or with other keys between
+    them), because YAML mappings are unordered. Only lines inside a
+    `clue_schedule:`/`red_herrings:` block are ever considered, so a
+    `plant_chapter:` key belonging to some other structure in the file is
+    never touched — and `alibi_grid`'s own `chapter:` keys are out of reach by
+    construction.
 
-    A found `chapter:` line has only its value replaced — indentation, any
-    dash prefix, and any trailing inline comment are preserved verbatim. An
-    item with no `chapter:` key at all gets one inserted right after its
-    first line, at one indent level deeper than the dash (matching its
-    sibling keys).
+    Two item shapes are supported. In the BLOCK form a found `plant_chapter:`
+    line has only its value replaced — indentation, any dash prefix, and any
+    trailing inline comment are preserved verbatim; an item with no
+    `plant_chapter:` key gets one inserted right after its first line, at one
+    indent level deeper than the dash. In the INLINE FLOW-MAPPING form
+    (`- { id: x, plant_chapter: 5, … }`) only the value inside the braces is
+    replaced, the rest of the line surviving byte-for-byte; an entry with no
+    `plant_chapter` key gets one appended just inside the closing brace.
     """
     if not updates:
         return ledger_text, []
 
     lines = ledger_text.splitlines(keepends=True)
+    out = list(lines)
+    found: set = set()
+
+    # Collect every collection block's item spans first, then edit bottom-up
+    # across all of them: an inserted line shifts every index below it, so only
+    # already-handled spans may sit below any insertion point.
+    spans: list = []
+    for heading_idx in range(len(lines)):
+        m = _COLLECTION_RE.match(lines[heading_idx].rstrip("\n"))
+        if not m:
+            continue
+        spans += _item_spans(lines, heading_idx, m.group("indent"))
+
+    for s, e, item_indent in sorted(spans, reverse=True):
+        item_id = None
+        plant_idx = None
+        flow_idx = None
+        for idx in range(s, e):
+            body = out[idx].rstrip("\n")
+            fm = _FLOW_ITEM_RE.match(body)
+            if fm:
+                fid = _FLOW_ID_RE.search(fm.group("body"))
+                if fid:
+                    item_id, flow_idx = fid.group("id"), idx
+                continue
+            idm = _ID_ANY_RE.match(body)
+            if idm:
+                item_id = idm.group("id")
+            if plant_idx is None and _PLANT_ANY_RE.match(body):
+                plant_idx = idx
+        if item_id is None or item_id not in updates:
+            continue
+        found.add(item_id)
+        new_val = updates[item_id]
+        if flow_idx is not None:
+            body = out[flow_idx].rstrip("\n")
+            eol = out[flow_idx][len(body):]
+            fm = _FLOW_ITEM_RE.match(body)
+            inner = fm.group("body")
+            if _FLOW_PLANT_RE.search(inner):
+                inner = _FLOW_PLANT_RE.sub(
+                    lambda mm: f"{mm.group('lead')}{new_val}", inner, count=1)
+            else:
+                trimmed = inner.rstrip()
+                pad = inner[len(trimmed):] or " "
+                inner = (f"{trimmed}, plant_chapter: {new_val}{pad}"
+                         if trimmed else f" plant_chapter: {new_val} ")
+            out[flow_idx] = f"{fm.group('pre')}{inner}{fm.group('post')}{eol}"
+        elif plant_idx is not None:
+            body = out[plant_idx].rstrip("\n")
+            eol = out[plant_idx][len(body):]
+            pm = _PLANT_ANY_RE.match(body)
+            out[plant_idx] = (f"{pm.group('prefix')}plant_chapter: {new_val}"
+                              f"{pm.group('trail')}{eol}")
+        else:
+            out.insert(s + 1, f"{item_indent}  plant_chapter: {new_val}\n")
+
+    missing = sorted(set(updates) - found)
+    return "".join(out), missing
+
+
+def _item_spans(lines: list, heading_idx: int, heading_indent: str) -> list:
+    """`[(start, end, item_indent), …]` for the list items under one collection
+    heading. Extracted so both `clue_schedule` and `red_herrings` walk the same
+    code — a fork here is how the two collections drifted apart in the first
+    place."""
     n = len(lines)
-
-    heading_idx = heading_indent = None
-    for idx in range(n):
-        m = _CLUE_SCHEDULE_RE.match(lines[idx].rstrip("\n"))
-        if m:
-            heading_idx, heading_indent = idx, m.group("indent")
-            break
-    if heading_idx is None:
-        return ledger_text, sorted(updates)
-
     start = heading_idx + 1
     item_indent = None
     end = n
@@ -370,12 +528,9 @@ def _rewrite_clue_chapters(ledger_text: str, updates: dict) -> "tuple[str, list]
             end = idx
             break
     if item_indent is None:
-        return ledger_text, sorted(updates)
+        return []
 
-    # Split [start, end) into item spans: each starts at a line whose first
-    # non-space character is '-' at exactly the block's item indent.
-    spans = []
-    span_start = None
+    spans, span_start = [], None
     for idx in range(start, end):
         body = lines[idx].rstrip("\n")
         if not body.strip():
@@ -383,43 +538,11 @@ def _rewrite_clue_chapters(ledger_text: str, updates: dict) -> "tuple[str, list]
         cur_indent = body[:len(body) - len(body.lstrip(" \t"))]
         if len(cur_indent) == len(item_indent) and _ITEM_START_RE.match(body):
             if span_start is not None:
-                spans.append((span_start, idx))
+                spans.append((span_start, idx, item_indent))
             span_start = idx
     if span_start is not None:
-        spans.append((span_start, end))
-
-    out = list(lines)
-    found: set = set()
-    # Process bottom-up: an inserted line shifts every index below it, and
-    # bottom-up processing means only spans already handled sit below any
-    # given insertion point, so earlier (smaller-index) spans' bounds never
-    # go stale mid-walk.
-    for s, e in reversed(spans):
-        item_id = None
-        chapter_idx = None
-        for idx in range(s, e):
-            body = out[idx].rstrip("\n")
-            idm = _ID_ANY_RE.match(body)
-            if idm:
-                item_id = idm.group("id")
-            if chapter_idx is None and _CHAPTER_ANY_RE.match(body):
-                chapter_idx = idx
-        if item_id is None or item_id not in updates:
-            continue
-        found.add(item_id)
-        new_val = updates[item_id]
-        if chapter_idx is not None:
-            body = out[chapter_idx].rstrip("\n")
-            eol = out[chapter_idx][len(body):]
-            cm = _CHAPTER_ANY_RE.match(body)
-            out[chapter_idx] = (f"{cm.group('prefix')}chapter: {new_val}"
-                                f"{cm.group('trail')}{eol}")
-        else:
-            key_indent = item_indent + "  "
-            out.insert(s + 1, f"{key_indent}chapter: {new_val}\n")
-
-    missing = sorted(set(updates) - found)
-    return "".join(out), missing
+        spans.append((span_start, end, item_indent))
+    return spans
 
 
 def main(argv=None) -> int:
@@ -472,7 +595,7 @@ def main(argv=None) -> int:
     # though the loaded yaml knows about it) must be a finding, not a
     # partial write discovered only after the outline already landed.
     ledger_text = new_ledger_text = None
-    if ledger_data and ledger_data.get("clue_schedule"):
+    if ledger_data and any(ledger_data.get(k) for k in _CLUE_COLLECTIONS):
         beats = parse_story(story_text)
         chapters = parse_cut_plan(plan_text)
         home = {i: c["num"] for c in chapters for i in c["beats"]}
@@ -480,13 +603,13 @@ def main(argv=None) -> int:
         updates = {cid: chapter for cid, chapter in where.items() if chapter}
         if updates:
             ledger_text = ledger_p.read_text(encoding="utf-8")
-            new_ledger_text, missing = _rewrite_clue_chapters(ledger_text, updates)
+            new_ledger_text, missing = _rewrite_plant_chapters(ledger_text, updates)
             for cid in missing:
                 findings.append(
                     f"clue-not-found-in-ledger-text: ledger clue [{cid}] "
                     f"resolves a chapter but could not be located in "
-                    f"{ledger_p}'s clue_schedule text — refusing a partial "
-                    f"update")
+                    f"{ledger_p}'s clue_schedule/red_herrings text — refusing "
+                    f"a partial update")
 
     if findings:
         for f in findings:
@@ -500,14 +623,23 @@ def main(argv=None) -> int:
     body = emit_outline(story_text, plan_text, parse_questions(story_text), clues,
                         reveal_chapter=reveal, guardrails=guardrails,
                         job_titles=job_titles)
+
+    # The ledger is written FIRST, so the whodunit fingerprint stamped into the
+    # outline describes the ledger the cut leaves behind — stamping the
+    # pre-write bytes would make `plot_stage status` report the cut stale the
+    # instant it finished, which is the bug in a different disguise.
+    if new_ledger_text is not None and new_ledger_text != ledger_text:
+        ledger_p.write_text(new_ledger_text, encoding="utf-8")
+
+    whodunit_sha = plot_stage._upstream_sha(ledger_p) if ledger_p.is_file() else None
     outline_p.write_text(
         stamp_outline(body,
                       story_sha=hashlib.sha256(story_text.encode()).hexdigest(),
-                      cut_sha=hashlib.sha256(plan_text.encode()).hexdigest()),
+                      cut_sha=hashlib.sha256(plan_text.encode()).hexdigest(),
+                      book=book,
+                      total_chapters=len(parse_cut_plan(plan_text)),
+                      whodunit_sha=whodunit_sha),
         encoding="utf-8")
-
-    if new_ledger_text is not None and new_ledger_text != ledger_text:
-        ledger_p.write_text(new_ledger_text, encoding="utf-8")
 
     print(f"story_cut: wrote {outline_p} ({len(parse_cut_plan(plan_text))} chapters)")
     return 0
