@@ -197,7 +197,7 @@ def _cli_append(book, points_path, root, source=None):
     ledger_before = load_ledger(book, repo_root=root)
     if source:
         # FINAL REVIEW I6: --source marks a non-panel append (e.g. /plot-book's
-        # fan-audit, which reviews outline-skeleton.md, not outline.md — the
+        # fan-audit, which reviews story.md, not outline.md — the
         # file this sha normally stamps). Leave reviewed_outline_sha256
         # exactly as it was: a source that never reviewed outline.md must not
         # claim to have, either by re-stamping it to the current sha (which
@@ -222,7 +222,7 @@ def main(argv=None) -> int:
                                      "{source,text,recommendation?,chapters?,metrics?}")
     ap.add_argument("--source", default=None,
                      help="append: path of the artifact this pass actually reviewed "
-                          "(e.g. outline-skeleton.md, not outline.md); when given, "
+                          "(e.g. story.md, not outline.md); when given, "
                           "reviewed_outline_sha256 is left untouched rather than "
                           "re-stamped from outline.md")
     # NOTE: argparse usage errors (missing `book`, `cmd` outside choices) still exit 2

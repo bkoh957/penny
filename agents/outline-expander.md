@@ -24,8 +24,8 @@ Same for the questions you open/close/carry in the wiring footer: `q-vase — wh
 made this vase?`, never `who made the false Maggie vase?`.
 
 **Inputs:**
-- The chapter **stub** from `input/book-NN/outline-skeleton.md`: the `## Chapter NN — Title`
-  heading + a free-text blurb (1–6 sentences).
+- The chapter **stub** already in `input/book-NN/outline.md`: the `## Chapter NN — Title`
+  heading + a free-text blurb (1–6 sentences), before this agent expands it in place.
 - `config/voice-pack/voice-pack.md`, the active series' setting pack under
   `config/setting-pack/`, the active genre prose pack under `config/genre-pack/`, and
   `config/length-profile.md`.

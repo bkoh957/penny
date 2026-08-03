@@ -107,16 +107,16 @@ state; this command never asks you anything a file already answers.
    `config/run-config.md`, defaulting to `drafting_model` when unset) with both
    endpoints fixed and the clue schedule from the whodunit yaml. When this is a
    re-plot regenerating chapters that already exist, `chapter-weaver` clears any
-   stale `woven: true` from the skeleton's frontmatter as part of that write (its
+   stale `woven: true` from story.md's frontmatter as part of that write (its
    contract, not a step here — do not re-set `woven: true` yourself) — otherwise
    the weave stage would read as `done` over chapters that were never rewoven.
-   Then stamp the skeleton, including the whodunit ledger it drew the clue
+   Then stamp story.md, including the whodunit ledger it drew the clue
    schedule from (a real upstream — editing the ledger after this point must make
    the chapters stage go stale again):
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
-     input/book-$book/outline-skeleton.md \
+     input/book-$book/story.md \
      --from input/book-$book/plot/turning-points.md output/book-$book/mystery-solution.md \
      series/whodunit/book-$book.yaml
    ```
@@ -131,7 +131,7 @@ state; this command never asks you anything a file already answers.
 
    Dispatch `chapter-weaver` (weave pass; pass `model:` = `plot_model` from
    `config/run-config.md`, defaulting to `drafting_model` when unset) over the
-   filled skeleton. It sets `woven: true` and re-stamps. (The weave stage has no
+   filled story.md. It sets `woven: true` and re-stamps. (The weave stage has no
    `_UPSTREAM` of its own — `plot_stage.py` judges it done purely by the `woven`
    flag, so there is no separate `stamp` call here.)
 
@@ -209,10 +209,10 @@ state; this command never asks you anything a file already answers.
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/outline_feedback.py" append $book \
      --points output/book-$book/reports/.fan-audit-points.json \
-     --source input/book-$book/outline-skeleton.md
+     --source input/book-$book/story.md
    ```
 
-   `--source` matters here: at this stage the reviewed artifact is `outline-skeleton.md`,
+   `--source` matters here: at this stage the reviewed artifact is `story.md`,
    not `outline.md` (that file doesn't exist yet). Passing it leaves
    `reviewed_outline_sha256` untouched instead of either stamping it blank (which would
    later mislabel a freshly-written `outline.md` as "changed since review") or silently
@@ -230,7 +230,7 @@ state; this command never asks you anything a file already answers.
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/tension_check.py" \
-     input/book-$book/outline-skeleton.md \
+     input/book-$book/story.md \
      --beat-sheet "$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/penny_genre.py" beat-sheet)" \
      --turning-points input/book-$book/plot/turning-points.md \
      --whodunit series/whodunit/book-$book.yaml
@@ -245,7 +245,7 @@ state; this command never asks you anything a file already answers.
    open-question ledger, hook chain, chapter coverage).
 
    Present the audit, the open ledger items, and the tension findings side by side. The
-   showrunner either works the open items (editing `outline-skeleton.md` and the whodunit
+   showrunner either works the open items (editing `story.md` and the whodunit
    ledger, marking each `solved`/`rejected` by hand in
    `output/book-$book/reports/outline-feedback.yaml`) and comes back round this stage,
    or signs off. Nothing here blocks: the audit has no exit code and the fan holds no
@@ -260,7 +260,7 @@ state; this command never asks you anything a file already answers.
    for f in output/book-$book/reports/outline-fan-stage-*.md; do
      [ -e "$f" ] || continue
      python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
-       "$f" --from input/book-$book/outline-skeleton.md
+       "$f" --from input/book-$book/story.md
    done
    ```
 

@@ -455,15 +455,15 @@ def test_clear_dev_fails_when_report_missing_sha256_key(tmp_path):
 WIRED_BAD = SRC / "tests/fixtures/outlines/wired-orphan.md"
 
 
-def _add_wired_skeleton(tmp_path, fixture):
+def _add_wired_outline(tmp_path, fixture):
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True, exist_ok=True)
-    shutil.copy(fixture, d / "outline-skeleton.md")
+    shutil.copy(fixture, d / "outline.md")
 
 
 def test_lock_refused_on_unwaived_tension_finding(tmp_path):
     _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
-    _add_wired_skeleton(tmp_path, WIRED_BAD)
+    _add_wired_outline(tmp_path, WIRED_BAD)
     with pytest.raises(SystemExit):
         preflight.cmd_lock_mystery("01", repo_root=tmp_path)
     assert not preflight.lock_path("01", tmp_path).is_file()
@@ -471,7 +471,7 @@ def test_lock_refused_on_unwaived_tension_finding(tmp_path):
 
 def test_waived_finding_locks_and_records_reason(tmp_path):
     _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
-    _add_wired_skeleton(tmp_path, WIRED_BAD)
+    _add_wired_outline(tmp_path, WIRED_BAD)
     assert preflight.cmd_lock_mystery(
         "01", repo_root=tmp_path,
         waivers=['orphan-chapter:ch2 gap is the designed time-skip']) == 0
@@ -488,7 +488,7 @@ def test_waived_finding_locks_and_records_reason(tmp_path):
 def test_lock_refused_on_unwaived_curve_finding_when_genre_declared(tmp_path):
     _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
     shutil.copy(FIXTURE / "series.yaml", tmp_path / "series.yaml")
-    _add_wired_skeleton(tmp_path, SRC / "tests/fixtures/outlines/wired-starved-thread.md")
+    _add_wired_outline(tmp_path, SRC / "tests/fixtures/outlines/wired-starved-thread.md")
     with pytest.raises(SystemExit) as e:
         preflight.cmd_lock_mystery("01", repo_root=tmp_path)
     assert "starved-thread" in str(e.value)
@@ -514,7 +514,7 @@ def test_malformed_waiver_fails_loud(tmp_path):
 
 def test_phantom_waiver_note_prints_with_no_outline_at_all(tmp_path, capsys):
     _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
-    # no outline-skeleton.md / outline.md at all -> outline is None
+    # no outline.md at all -> outline is None
     assert preflight.cmd_lock_mystery(
         "01", repo_root=tmp_path,
         waivers=["dead-stretch:never fires, no outline exists"]) == 0
@@ -526,7 +526,7 @@ def test_phantom_waiver_note_prints_when_outline_present_but_unwired(tmp_path, c
     _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True, exist_ok=True)
-    (d / "outline-skeleton.md").write_text(
+    (d / "outline.md").write_text(
         "---\nbook: 01\ntotal_chapters: 1\n---\n\n## Chapter 01\nNo wiring here.\n",
         encoding="utf-8")
     assert preflight.cmd_lock_mystery(
@@ -739,7 +739,7 @@ def _scaffold_overloadable(tmp_path, *, declare_genre=True):
         shutil.copy(FIXTURE / "series.yaml", tmp_path / "series.yaml")
     d = tmp_path / "input/book-01"
     d.mkdir(parents=True, exist_ok=True)
-    (d / "outline-skeleton.md").write_text(_beat_heavy_wired_outline(), encoding="utf-8")
+    (d / "outline.md").write_text(_beat_heavy_wired_outline(), encoding="utf-8")
 
 
 def test_lock_refused_on_unwaived_overloaded_chapter(tmp_path):
@@ -797,21 +797,24 @@ def test_lock_records_the_outline_it_validated(tmp_path):
     assert f"outline_sha256: {_sha_of(outline)}" in body
 
 
-def test_lock_names_the_skeleton_when_that_is_what_it_validated(tmp_path):
-    """_first_file prefers outline-skeleton.md, so "the outline" is ambiguous.
-    Recording the source is what stops a reader comparing the digest against a
-    file the lock never looked at and getting a confident wrong answer."""
+def test_lock_ignores_a_stray_skeleton_file_and_uses_outline(tmp_path):
+    """outline-skeleton.md is retired: lock-mystery reads outline.md alone now,
+    with no preference/fallback between two files. A stray outline-skeleton.md
+    left over from before the retirement (e.g. an unmigrated series folder)
+    must be silently ignored, never read as if it were still "the outline" —
+    recording the wrong source would have a reader compare the digest against
+    a file the lock never looked at and get a confident wrong answer."""
     _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
     d = tmp_path / "input" / "book-01"
     d.mkdir(parents=True, exist_ok=True)
-    skel = d / "outline-skeleton.md"
-    skel.write_text("# Skeleton\n\n## Chapter 01 — A\n\nbody\n", encoding="utf-8")
-    (d / "outline.md").write_text("# Different\n\n## Chapter 01 — B\n\nother\n",
-                                  encoding="utf-8")
+    stray = d / "outline-skeleton.md"
+    stray.write_text("# Stray\n\n## Chapter 01 — A\n\nbody\n", encoding="utf-8")
+    outline = d / "outline.md"
+    outline.write_text("# Different\n\n## Chapter 01 — B\n\nother\n", encoding="utf-8")
     assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
     body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
-    assert "outline_source: input/book-01/outline-skeleton.md" in body
-    assert f"outline_sha256: {_sha_of(skel)}" in body
+    assert "outline_source: input/book-01/outline.md" in body
+    assert f"outline_sha256: {_sha_of(outline)}" in body
 
 
 def test_lock_omits_the_fingerprint_when_there_is_no_outline(tmp_path):

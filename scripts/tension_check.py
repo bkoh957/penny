@@ -49,7 +49,7 @@ Checks (ids are the waiver handles):
                      carrying Required Beats anywhere; an outline with none
                      (the legacy scenes/weights shape) is never checked.
 
-  python3 scripts/tension_check.py input/book-NN/outline-skeleton.md \
+  python3 scripts/tension_check.py input/book-NN/outline.md \
       [--beat-sheet P] [--turning-points P] [--whodunit P]
 """
 from __future__ import annotations
@@ -308,7 +308,7 @@ def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=Non
     # chapters at the seams are THE failure mode of that design, and nothing
     # before this compared the chapter set to total_chapters (outline_check.py
     # does this for the shape-only door, but /plot-book's machine-written
-    # skeleton only ever runs through tension_check.py). Model on
+    # outline only ever runs through tension_check.py). Model on
     # outline_check.py's outline-chapters-contiguous.
     nums = sorted(c["num"] for c in chapters)
     if nums != list(range(1, total + 1)):

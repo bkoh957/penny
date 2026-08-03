@@ -316,9 +316,9 @@ Every threshold comes from the genre's `beat-sheet.yaml` or your `config/length-
 it is skipped entirely, so outlines written before this existed stay valid and still lock.
 `overloaded-chapter` is the exception that reads **Required Beats**, not wiring, so it runs
 over any chapter block carrying a `### Required Beats` section (packet format — see
-"Chapter blocks are packet format" below) even when the wiring checks read
-`outline-skeleton.md`. A chapter with no Required Beats gives it nothing to do; an outline
-with none anywhere (the pre-packet/legacy scenes shape) is never overload-checked. Per-scene
+"Chapter blocks are packet format" below). A chapter with no Required Beats gives it
+nothing to do; an outline with none anywhere (the pre-packet/legacy scenes shape) is never
+overload-checked. Per-scene
 word pricing (band-mismatch, starved-scene) is a separate, later check —
 `map_check.py`, post-lock, per chapter, once a prose map exists (see "Map the chapter" below).
 And a check that *cannot* run (the genre beat sheet declares no `obligations.max_per_chapter`,
@@ -389,7 +389,7 @@ to the data the lock gates; a field would be a forgeable certificate.
 ### Optional pre-draft passes
 
 ```bash
-/expand-outline 01 [05]                  # outline-skeleton.md → scene-breakdown outline.md
+/expand-outline 01 [05]                  # expands stub chapter blocks in outline.md in place
 /review-outline 01 [--focus "<directive>"]
 ```
 

@@ -10,8 +10,8 @@ The file is beats in story order. Four sigils and nothing else carry meaning:
 `##` headings are for the author's reading and are ignored, with one exception:
 `## Questions` holds id-to-prose lines and no beats (spec §3.1.1). That
 asymmetry is deliberate — the moment a heading means something, the file has a
-form to arrange, and arranging a form is what turned outline-skeleton.md into a
-duplicate of outline.md (spec §1).
+form to arrange, and arranging a form is what turned the outline's retired
+staging layer into a duplicate of outline.md (spec §1).
 """
 import re
 

@@ -211,10 +211,9 @@ and **non-blocking**.
 
 ### Optional pre-draft passes
 
-`/expand-outline NN [MM]` expands skeletal stubs from `input/book-NN/outline-skeleton.md`
-into packet-format chapter blocks in `outline.md` — never a `### Scene` section. It reads
-the solution to schedule clue beats, and must not schedule a reveal beat before
-`reveal_chapter`.
+`/expand-outline NN [MM]` expands skeletal stubs in `input/book-NN/outline.md` into
+packet-format chapter blocks in place — never a `### Scene` section. It reads the solution
+to schedule clue beats, and must not schedule a reveal beat before `reveal_chapter`.
 
 `/review-outline NN [--focus "…"]` runs an **independent Claude + Codex panel** over the
 whole outline (identical inputs) and appends prose feedback — **no scores** —
@@ -252,8 +251,8 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
   wiring is SKIPPED entirely, so book 1 and any hand-authored/scaffolded outline
   still lock exactly as before. `overloaded-chapter` is the one check that reads
   **Required Beats rather than wiring** — it runs over any chapter block carrying a
-  `### Required Beats` section (packet format), even when the wiring checks read
-  `outline-skeleton.md`, and counts the chapter's **obligation load** (required beats +
+  `### Required Beats` section (packet format), and counts the chapter's **obligation
+  load** (required beats +
   clues planted + questions opened/closed + tracks advanced) against the genre beat
   sheet's `obligations.max_per_chapter`. A chapter with no Required Beats gives it
   nothing to do; an outline with none anywhere (the legacy scenes/weights shape) is

@@ -4,26 +4,29 @@
 > `input/book-NN/plot/material.md` and run `/plot-book NN` — its premise stage runs
 > this same salvage discipline (surface every rival, choose nothing silently) as part
 > of the staged, resumable plotting workshop. This portaprompt remains the manual path:
-> useful outside Penny, or when you want the salvage-and-skeleton pass on its own.
+> useful outside Penny, or when you want the salvage-and-story pass on its own.
 >
 > **How to use this file.** Nothing in Penny reads it. Open it, copy everything below the
 > horizontal rule, and paste it into whatever model you are ideating with — then paste
 > `genres/cozy-mystery/archetype.md` as a second block, and your chat transcript as a
 > third. The model lays out what the chat already produced — including every rival version
 > of a beat — makes you choose between them, and then emits two files you save into the
-> new series folder: `input/book-01/outline-skeleton.md` and
-> `input/book-01/ideas-carryover.md`.
+> new series folder: `input/book-01/story.md` and `input/book-01/ideas-carryover.md`.
 >
 > Do not paste the framework's text into this prompt. Two blocks, one source of truth.
 >
-> Afterwards, verify the skeleton rather than trusting it — the commands are at the end.
-> Then: `/scaffold-book 01 input/book-01/outline-skeleton.md`, then `/expand-outline 01`.
+> Afterwards, verify the story file rather than trusting it — the commands are at the end.
+> Then drop it in as `input/book-01/story.md` and continue with `/plot-book 01`: it picks
+> up the workshop from wherever its stage machinery says you are (typically the counterplot
+> stage, to turn the Solution draft in `ideas-carryover.md` into a real whodunit ledger,
+> then the cut, which groups these beats into chapters).
 
 ---
 
-You are helping a novelist consolidate scattered ideas into an **outline skeleton** for a
-cozy mystery novel. You will receive three things: these instructions, a framework
-document (the *Archetypal Cozy Mystery Framework*), and a chat transcript.
+You are helping a novelist consolidate scattered ideas into a **story** — beats in story
+order, the source layer beneath Penny's chapter outline — for a cozy mystery novel. You
+will receive three things: these instructions, a framework document (the *Archetypal Cozy
+Mystery Framework*), and a chat transcript.
 
 **The transcript is a collaboration, not a set of notes.** Most of this book was worked
 out inside it, between the novelist and another model. It therefore contains far more than
@@ -62,15 +65,20 @@ encouragement to skip ahead.
 6. **Never improve chosen material.** When the novelist picks a version, record it in
    substance as written. Do not tighten its prose, resolve its ambiguity, or make it more
    like the framework.
-7. **Never write `### Scene` blocks.** The skeleton is chapter-level. Penny's
-   `/expand-outline` inflates it to scene depth later, and it *skips any chapter that
-   already contains a scene heading* — so scenes you write here silently disable the
-   expander for exactly the chapters you liked best.
-8. **Never put clue plant/payoff chapter numbers anywhere.** The skeleton states the
-   *solution*; a separate file states the *schedule*. Two sources of truth for one fact
-   is how a book drifts from its own plan.
-9. **Every chapter number you write in prose must be derived from `total_chapters`,**
-   never from memory or from the framework's beat numbering. Count before you write.
+7. **Never write chapter headings.** The story file is beats in story order, nothing else —
+   no `## Chapter NN`, no scene breakdown. Grouping beats into chapters is the *cut*'s job,
+   a separate, later, showrunner-approved pass (`chapter-cutter` + `story_cut.py`) that
+   this prompt does not perform. A beat here may end up sharing a chapter with three others
+   or anchoring one alone; that is not your call to make.
+8. **Never put clue plant/payoff chapter numbers anywhere.** A beat's `!clue-id` tag says
+   *which* clue it plants or pays off, never *which chapter* — chapters don't exist yet.
+   The eventual chapter number lives in exactly one place, the whodunit ledger's
+   `clue_schedule`, once the cut assigns it. Two sources of truth for one fact is how a
+   book drifts from its own plan.
+9. **Every beat you write must be something that actually happens on the page** — an
+   event, not a summary of several. If the transcript compresses three moments into one
+   sentence, that is fine grounds for one beat with a single job tag; don't invent
+   sub-beats that were never distinguished in the source material.
 10. **The framework is a lens, not a checklist.** See "Using the framework" below.
 11. **One question at a time.** Never a numbered list of questions. Ask, wait, listen.
 
@@ -91,8 +99,8 @@ from. Mark each with a status:
 **CONTRADICTIONS** — pairs that cannot both be true. State both sides plainly. Do not
 guess which the novelist meant, and do not assume the later one wins.
 
-**GAPS** — what a cozy skeleton needs and the transcript never supplies at all. Organise
-by framework section, and consider at minimum:
+**GAPS** — what a cozy story needs and the transcript never supplies at all. Organise by
+framework section, and consider at minimum:
 
 - the enclosed world, its routines, and why a reader would want to return to it (§1)
 - the amateur sleuth, their craft or trade, and their **non-police reason to see the
@@ -103,8 +111,10 @@ by framework section, and consider at minimum:
 - the midpoint turn that changes the shape of the case (§10)
 - the killer's benign trait that was misread all along (§14)
 - the ordinary-task epiphany, arising from the sleuth's craft (§13)
-- `total_chapters`, the reveal chapter, the act breaks
-- the four tracks: Mystery, Personal, Romance/community, Business
+- roughly how long the book should run, and roughly where the reveal lands — provisional;
+  the whodunit ledger fixes these precisely, later
+- which characters carry a strand worth tracking across the book (Personal, Romance,
+  Business, and any other the novelist named)
 
 Fill in nothing. End Phase A with the count of each list, and ask whether to begin.
 
@@ -121,7 +131,7 @@ candidates, then unresolved ones, then gaps last.
 transcript's own words wherever you can, labelled `A` / `B` / `C`. Say where each came
 from. Then ask which is good. Nothing else.
 
-You may state a **structural consequence** of a choice — "B leaves the Personal track
+You may state a **structural consequence** of a choice — "B leaves the Personal strand
 without a want," "under C the sleuth's craft plays no part in the epiphany." That is
 analysis, and it is useful. You may **not** state an aesthetic preference between the
 novelist's own versions — "B is stronger," "A feels more cozy." That is taste, and taste
@@ -157,24 +167,22 @@ The core you must come away holding:
   they cannot simply tell the truth. At least one secret must be entirely innocent.
 - **key locations**
 - **the protagonist**, and — separately — **what she wants that has nothing to do with the
-  murder.** That want is the whole Personal track. A sleuth who only wants to solve the
+  murder.** That want is the whole Personal strand. A sleuth who only wants to solve the
   case has no book around the case.
-- **the four tracks' promises**, and where each pays off
-- **`total_chapters`**, the reveal chapter, the act breaks
-- **the beat→chapter allocation** (below)
+- **each strand's promise**, and roughly where it pays off
+- **a provisional length and reveal point** — not binding; the whodunit ledger fixes these
+- **a first-pass clue list** — what gets planted, roughly what it points toward or misleads
+  toward, in the novelist's own words. Chapter placement is not decided here.
 
-### Beats are not chapters
+### Beats don't belong to chapters yet
 
-The framework's §17 is a **beat sheet**. It has 27 entries. This is a coincidence of
-enumeration and not a chapter count.
-
-Ask the novelist how many chapters the book runs. Then propose an allocation of beats to
-chapters — several beats may share a chapter, one beat may span three, and **some chapters
-will carry no beat at all.** Those are not wasted chapters. In a cozy they are where the
-food, the gossip, the animals and the community rituals live, and they are a reason the
-reader came.
-
-Never assume `total_chapters` is 27 because the sheet has 27 beats.
+The framework's §17 is a **beat sheet** describing the investigation's *shape* — how the
+field of suspects expands then contracts (see "Using the framework" below). It is not a
+chapter count, and a beat in this story file is not a chapter either. Grouping beats into
+chapters is the *cut*'s job, done later from the finished story file by a showrunner
+working with the `chapter-cutter` agent. Your job here stops at the ordered sequence of
+what happens and, where a beat clearly serves one of the framework's named structural
+jobs, tagging it as such.
 
 ### Using the framework
 
@@ -195,9 +203,9 @@ Restate, in the novelist's own words wherever possible:
 1. **THE CORE** — culprit, victim, central deception, moral engine.
 2. **THE CAST** — sleuth, sounding board, police figure, suspects and what each lie
    protects.
-3. **THE SHAPE** — `total_chapters`, reveal chapter, act breaks, midpoint turn, the
-   beat→chapter allocation.
-4. **THE TRACKS** — the four strands, their promises and payoffs.
+3. **THE SHAPE** — a provisional length and reveal point, act breaks, the midpoint turn.
+   (Chapter grouping happens later, at the cut — not here.)
+4. **THE STRANDS** — each named strand's promise and payoff.
 5. **ARCHETYPE DEVIATIONS** — where this book departs from the framework, and (if the
    novelist said) why.
 6. **ROADS NOT TAKEN** — every version the novelist rejected, one line each, with what it
@@ -216,87 +224,102 @@ but their filenames.
 No `[GAP: …]` marker, no bracketed placeholder, and no "TBD" may appear in either file.
 If one would, stop and ask instead.
 
-### File 1 — `input/book-01/outline-skeleton.md`
+### File 1 — `input/book-01/story.md`
 
-Exactly this shape. `book` and `total_chapters` must be bare integers — `total_chapters:
-27`, never `27 chapters`. Chapter headings must run contiguously from `01` to
-`total_chapters` with no gaps, duplicates, or extras. No chapter body may be empty.
+Beats in story order, one per bullet. Four sigils and nothing else carry meaning inside a
+beat — everything else is prose, and prose is all a reader (or a downstream tool) sees
+once the tags are stripped:
+
+- `@strand` — a character whose line this beat carries forward (e.g. `@maggie`, `@tom`).
+  One or more per beat.
+- `#job` — the structural job this beat answers, from the framework's `<!-- job: … -->`
+  markers (`establish-protected-world`, `crime-and-first-contradiction`,
+  `plant-fair-play-solution`, `midpoint-case-changes-meaning`, `expose-killer`, and so on —
+  see `genres/cozy-mystery/review-rubrics/macro-structure.md` for the full list). Optional;
+  most beats answer none, and that is fine.
+- `+q-id` / `-q-id` — opens or closes a question. Every id used anywhere must be defined
+  once, with its prose, in the `## Questions` block at the end — never inline.
+- `!clue-id` — plants or pays off a ledger clue. Provisional here (the real ids are minted
+  when the whodunit ledger is built); keep them stable once chosen so the cut can find them.
+
+`##` headings elsewhere (`## Act I`, and so on) are for the novelist's own reading only —
+Penny ignores them. Never write a `## Chapter` heading (rule 7).
 
 ````markdown
 ---
 book: 01
 title: <Book title>
 series: <Series title>
-total_chapters: <N>
 ---
 
-# <Book title>
+## Act I
 
-## Solution: the-central-mystery
-- culprit: <name, and their relationship to the sleuth and the victim>
-- victim: <name and role in the community>
-- central deception / motive: <one or two prose sentences. Include the moral engine —
-  what the culprit believed, and how they were both right and catastrophically wrong.
-  No chapter numbers.>
-- suspects: <name>, <name>, <name>, <name>
-- key locations: <place>, <place>, <place>
+- <One event, in prose, that actually happens on the page.>
+  @<character> #<job-id, if this beat answers one>
 
-## Threads
-- A-murder — <the promise this strand opens and where it pays off>
-- B-romance — <…>
-- C-internal — <…>
-- <craft-or-business> — <…>
-- <any further strand> — <…>
+- <Another beat. A beat may open a question it doesn't close, plant a clue,
+  or do neither — most beats just move the story.>
+  @<character> @<character> +q-<slug> !c-<slug>
 
-## Chapter 01 — <Title>
+- <A later beat that closes a question opened above.>
+  -q-<slug>
 
-### Chapter Summary
-<A paragraph of prose. What happens, and what it costs.>
+## Act II
 
-### Chapter Structure
-- **Start / Desire:** <What the protagonist wants as the chapter opens.>
-- **Pressure / Obstacle:** <What blocks or complicates that want.>
-- **Turn / Change:** <What is materially different by the end.>
-- **Texture / Pleasure Layer:** <Humour, setting, food, animals, community ritual.>
-- **Hook:** <The unresolved question that earns the next chapter.>
+<…more beats, still one per bullet, still in story order…>
 
-### Track Movement
-- **M:** <Mystery advancement — or "None" if this is a rest chapter.>
-- **P:** <Personal/internal.>
-- **R:** <Romance/community.>
-- **B:** <Business/craft.>
-
-## Chapter 02 — <Title>
-
-<…and so on, contiguously, to Chapter NN.>
+## Questions
+- q-<slug> — <the prose of the question this id stands for, written once, here>
+- q-<another slug> — <…>
 ````
 
 ### File 2 — `input/book-01/ideas-carryover.md`
 
-Everything of value in the transcript that the skeleton has no slot for, so it is not
+Everything of value in the transcript that the story file has no slot for, so it is not
 lost: concrete beats, images, snatches of dialogue, jokes, sensory texture, names,
 half-formed scenes, and the archetype deviations recorded in Phase C. Unstructured is
-fine; grouped by chapter where obvious is better.
+fine; grouped loosely where obvious is better.
 
-It must also carry a **`## Roads not taken`** section: the rejected variants from Phase C,
-each with a line on what it would have changed. A rejected version of a beat is not
-waste — it is a solved problem the novelist may want back in book two, and the transcript
-will be gone.
+It must also carry:
 
-Nothing reads this file automatically — it is a holding pen the novelist points
-`/expand-outline` at by hand.
+- **`## Solution (draft, for the whodunit ledger)`** — culprit, victim, central deception
+  and moral engine, suspects with their motive/opportunity/secret/mask, key locations, and
+  the provisional length and reveal point from Phase C. This is prose for a human (or the
+  `mystery-planner` agent) to turn into `series/whodunit/book-01.yaml` and
+  `output/book-01/mystery-solution.md` — nothing here is machine-read automatically, and
+  none of it belongs inside `story.md` itself.
+- **`## Clue candidates`** — the first-pass clue list from Phase B: each provisional
+  `!clue-id` used in `story.md`, what it actually means, and what it misleads toward if
+  it's a red herring. Reconcile these into the ledger's `clue_schedule`/`red_herrings`
+  when the whodunit is built.
+- **`## Roads not taken`** — the rejected variants from Phase C, each with a line on what
+  it would have changed. A rejected version of a beat is not waste — it is a solved
+  problem the novelist may want back in book two, and the transcript will be gone.
+
+Nothing reads this file automatically — it is a holding pen the novelist and the
+`mystery-planner` agent draw from by hand.
 
 ### Then tell the novelist to verify, not to trust you
 
 ```bash
 # from the series root; <penny-repo> is the engine checkout
-python3 <penny-repo>/scripts/outline_check.py input/book-01/outline-skeleton.md
-grep -c '^### Scene ' input/book-01/outline-skeleton.md   # must print 0
+grep -c '^## Chapter ' input/book-01/story.md   # must print 0 — no chapter headings yet
+python3 -c "
+import sys; sys.path.insert(0, '<penny-repo>')
+from scripts.penny_story import parse_story, parse_questions
+text = open('input/book-01/story.md', encoding='utf-8').read()
+beats, qs = parse_story(text), parse_questions(text)
+print(f'{len(beats)} beats, {len(qs)} questions defined')
+opened = {q for b in beats for q in b['opens']}
+closed = {q for b in beats for q in b['closes']}
+print('closes with no earlier open:', sorted(closed - opened))
+print('question ids used but never defined in ## Questions:', sorted((opened | closed) - qs.keys()))
+"
 ```
 
-`outline_check.py` names what it rejects and exits nonzero: missing or non-integer
-`book`/`total_chapters`, a missing `## Solution` block, chapter headings that are not a
-contiguous `1..total_chapters`, or a chapter with an empty body. It checks **shape only**.
-It cannot tell whether the mystery is fair, whether the solution is deducible, or whether
-the book is any good. Those are checked later, by `fairplay_check.py` against the derived
-whodunit yaml, and by `/review-outline`'s independent panel.
+This is a shape check only — id hygiene, no orphaned closes, no chapter headings. It
+cannot tell whether the mystery is fair, whether a clue id will match the ledger once
+built, or whether the book is any good. Those are checked later: `story_cut.py` once a
+cut plan exists (unknown-clue / unknown-job / unscheduled-clue), `fairplay_check.py`
+against the built whodunit yaml, and `/review-outline`'s independent panel once the
+outline exists.

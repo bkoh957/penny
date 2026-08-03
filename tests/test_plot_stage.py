@@ -1033,7 +1033,7 @@ def test_readers_copy_staged_is_cumulative_from_chapter_one(tmp_path):
 
 def test_readers_copy_staged_returns_empty_without_reveals(tmp_path):
     root = _series(tmp_path)
-    _write(root, "input/book-01/outline-skeleton.md", _SKEL)
+    _write(root, "input/book-01/story.md", _SKEL)
     _write(root, "series/whodunit/book-01.yaml",
            "book: '01'\ntotal_chapters: 4\nreveal_chapter: 4\n")
     assert readers_copy_staged("01", repo_root=root) == []

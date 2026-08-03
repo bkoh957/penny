@@ -317,9 +317,7 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
     from scripts import penny_genre
     from scripts.tension_check import check_tension
     waiver_map = _parse_waivers(waivers)
-    outline = _first_file(
-        repo_root / "input" / f"book-{book}" / "outline-skeleton.md",
-        repo_root / "input" / f"book-{book}" / "outline.md")
+    outline = _first_file(repo_root / "input" / f"book-{book}" / "outline.md")
     # FINAL REVIEW FINDING 5: resolve THROUGH genre.yaml's `beat_sheet:` key
     # (penny_genre.beat_sheet(), which is itself overlay-resolved and tolerant
     # of an undeclared genre) rather than a hardcoded "beat-sheet.yaml" — a
@@ -373,22 +371,6 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
                 # skipped for lack of a resolvable beat sheet.
                 print("lock-mystery: note — no beat sheet resolved; curve/beat "
                       "checks (dead-stretch, starved-thread, off-mark-beat) skipped")
-    # The REQUIRED BEATS live in the expanded outline (input/book-NN/outline.md),
-    # which /expand-outline writes; the WIRING lives in the skeleton the workshop
-    # writes, and `outline` above resolves to the skeleton first. The skeleton
-    # carries no `### Required Beats` blocks at all, so overloaded-chapter — the
-    # ninth check, its --waive handle, and its certificate line — was
-    # unreachable on the only path that produces beats (final review I4). Run it
-    # over the beat-level outline whenever that is a different file.
-    expanded = repo_root / "input" / f"book-{book}" / "outline.md"
-    if expanded.is_file() and (outline is None or expanded != Path(outline)):
-        from scripts.penny_wiring import parse_wired_chapters
-        from scripts.tension_check import check_overload
-        ores = check_overload(
-            parse_wired_chapters(expanded.read_text(encoding="utf-8")),
-            beat_sheet_path=beat_sheet_path, whodunit_path=led)
-        findings += ores["blocking"]
-        notes += ores["notes"]
     for n in notes:
         # A check that COULD NOT RUN is never silent, and never a crash: it is
         # named here and recorded on the certificate below, so the lock cannot
@@ -419,12 +401,6 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
     # 2026-07-28 against an outline last edited 2026-07-30 and still passed
     # every existence check downstream. The dev-clear cert already binds itself
     # to `cleared_draft_sha256`; the lock was the odd one out.
-    #
-    # Record the SOURCE alongside the digest. `_first_file` prefers
-    # outline-skeleton.md over outline.md, so "the outline" is genuinely
-    # ambiguous — and a reader comparing this digest against a file the lock
-    # never looked at would get a confident wrong answer, which is worse than
-    # no answer at all.
     #
     # A book with NEITHER file records neither field. A consumer must then
     # report "unknown", never "fresh": a certificate must not claim coverage it

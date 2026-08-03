@@ -577,8 +577,7 @@ def _chapter_numbers(text: str) -> list[int]:
 def _readback_source(book: str, *, repo_root=None) -> Path:
     """The file the reader's copy is cut from.
 
-    story.md before the cut, outline.md after it (spec 2026-08-03 §4). The
-    skeleton branch this function used to carry is gone with the file.
+    story.md before the cut, outline.md after it (spec 2026-08-03 §4).
     """
     root = _root(repo_root)
     story = stage_paths(book, root)["chapters"]
@@ -593,8 +592,8 @@ def _readback_source(book: str, *, repo_root=None) -> Path:
 
 def readers_copy(book: str, *, repo_root=None) -> Path:
     root = _root(repo_root)
-    skel = _readback_source(book, repo_root=root)
-    skel_text = skel.read_text(encoding="utf-8")
+    source = _readback_source(book, repo_root=root)
+    source_text = source.read_text(encoding="utf-8")
     reveal_ch = _reveal_chapter(book, root)
     # FINAL REVIEW FINDING 1: a reveal_chapter LARGER than the last chapter in
     # the source has nothing to truncate before — readers_copy_text would
@@ -605,17 +604,17 @@ def readers_copy(book: str, *, repo_root=None) -> Path:
     # out-of-range value here specifically defeats the blind guarantee, so it
     # fails loud at the one place both the source file and the ledger are in hand.
     if reveal_ch is not None:
-        nums = _chapter_numbers(skel_text)
+        nums = _chapter_numbers(source_text)
         if nums and reveal_ch > max(nums):
             sys.exit(
                 f"plot_stage: whodunit ledger reveal_chapter ({reveal_ch}) is "
-                f"beyond the last chapter in {skel} ({max(nums)}) for "
+                f"beyond the last chapter in {source} ({max(nums)}) for "
                 f"book {book} — the reader's copy would have nothing to "
                 "truncate and would leak the reveal chapter's own summary")
     dest = root / "output" / f"book-{book}" / "reports" / "outline-readers-copy.md"
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(
-        readers_copy_text(skel_text, reveal_chapter=reveal_ch),
+        readers_copy_text(source_text, reveal_chapter=reveal_ch),
         encoding="utf-8")
     return dest
 
@@ -632,22 +631,22 @@ def readers_copy_staged(book: str, *, repo_root=None) -> list[Path]:
     stages = reveal_stages(reveals)
     if not stages:
         return []
-    skel = _readback_source(book, repo_root=root)
-    skel_text = skel.read_text(encoding="utf-8")
-    nums = _chapter_numbers(skel_text)
+    source = _readback_source(book, repo_root=root)
+    source_text = source.read_text(encoding="utf-8")
+    nums = _chapter_numbers(source_text)
     last = max(nums) if nums else 0
     for r in reveals:
         if r["reveal_chapter"] > last:
             sys.exit(
                 f"plot_stage: reveal {r['id']!r} is at chapter "
-                f"{r['reveal_chapter']} but {skel}'s last chapter is "
+                f"{r['reveal_chapter']} but {source}'s last chapter is "
                 f"{last} for book {book} — that stage cannot be cut")
     out_dir = root / "output" / f"book-{book}" / "reports"
     out_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
     for i, bound in enumerate(stages, start=1):
         dest = out_dir / f"outline-readers-copy-stage-{i}.md"
-        dest.write_text(readers_copy_text(skel_text, last_chapter=bound),
+        dest.write_text(readers_copy_text(source_text, last_chapter=bound),
                         encoding="utf-8")
         written.append(dest)
     return written

@@ -175,7 +175,7 @@ def test_cli_append_writes_ledger_and_view(tmp_path):
 
 def test_cli_append_with_source_leaves_reviewed_sha_untouched(tmp_path):
     """FINAL REVIEW I6: at /plot-book's fan-audit stage the reviewed artifact is
-    outline-skeleton.md, not outline.md (which may not exist yet). --source
+    story.md, not outline.md (which may not exist yet). --source
     marks the append as non-panel: reviewed_outline_sha256 must not be
     restamped from outline.md at all, whether that means clearing an earned
     staleness warning (book 01) or falsely inventing one (a fresh book)."""
@@ -186,7 +186,7 @@ def test_cli_append_with_source_leaves_reviewed_sha_untouched(tmp_path):
                        encoding="utf-8")
 
     rc = of.main(["append", "01", "--points", str(points), "--root", str(tmp_path),
-                  "--source", "input/book-01/outline-skeleton.md"])
+                  "--source", "input/book-01/story.md"])
     assert rc == 0
 
     ledger = of.load_ledger("01", repo_root=tmp_path)

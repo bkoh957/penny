@@ -272,9 +272,10 @@ def test_a_legacy_lock_reports_unknown_never_fresh_and_never_stale(tmp_path):
 
 
 def test_lock_row_compares_against_the_source_the_lock_names(tmp_path):
-    """lock-mystery prefers outline-skeleton.md, so the lock records WHICH file
-    it validated. Comparing against outline.md regardless would report a
-    confident wrong answer."""
+    """book_status compares against whatever outline_source the cert names, not
+    a hardcoded outline.md — e.g. a lock minted before outline-skeleton.md's
+    retirement may still name it as the source it validated. Comparing against
+    outline.md regardless would report a confident wrong answer."""
     root = _series(tmp_path)
     _write_outline(root)
     skel = root / "input" / "book-01" / "outline-skeleton.md"
