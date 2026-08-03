@@ -405,7 +405,7 @@ fenced ```yaml blocks. `ledger_approval: review` makes `/finalize-chapter` pause
 diff review (resume with `--commit`); `auto` commits end-to-end. Likewise `book_approval`
 for `/assemble-book`. Note `panel_size: 1` (fast mode) means a put-down can never reach
 `beta_consensus_k: 2` consensus — expected, not a bug. Optional `plot_model:` routes
-`/plot-book`'s `plot-proposer` and `chapter-weaver` (defaults to `drafting_model`); the
+`/plot-book`'s `plot-proposer` and `chapter-cutter` (defaults to `drafting_model`); the
 `outline-fan` prefers any reachable model other than `plot_model`; proceeding on
 `plot_model` when none is reachable is not a degradation and gets no note.
 

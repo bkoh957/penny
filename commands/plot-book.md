@@ -182,6 +182,15 @@ state; this command never asks you anything a file already answers.
       fix `story.md` or `cut-plan.md` and run it again; there are no waivers
       at this level. Exit 2 is a usage or missing-file error.
 
+      **No `stamp` call follows this one.** The cut writes its own stage
+      stamps — `built_from_story` and `built_from_book-NN`, exactly what
+      `plot_stage.py`'s `cut` stage checks — into the outline's frontmatter,
+      alongside `book:`, `total_chapters:`, `built_from_cut:` and
+      `cut_output_sha256:`. It stamps them itself because a runbook step can
+      be skipped, and a stamp written by hand would claim a cut that never
+      ran. `plot_stage.py status $book` should report `stage cut: done`
+      immediately; if it says `stale`, the cut did not finish.
+
    Re-cutting is safe while `outline.md` is exactly what the cut wrote — move
    a boundary in `cut-plan.md`, re-run, look again. Once `outline.md` has been
    hand-edited, the cut refuses `outline-modified-since-cut` rather than

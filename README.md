@@ -735,8 +735,9 @@ writes `ch-MM.gate.md` and prints `GATE: PASS|HOLD`. **Exit 0 means the gate *ev
    its packet — scene divisions, targets, beat/clue coverage; proposes only, you approve),
    book-scaffolder, line/copy editors, beta readers, cross-model final reader — plus the
    workshop's three: `plot-proposer` (surfaces your material and proposes rivals, never
-   chooses the core), `chapter-weaver` (interpolates and braids, never drafts prose), and
-   `outline-fan` (the blind genre-fan reader).
+   chooses the core), `chapter-cutter` (proposes where the chapters fall, from story.md's
+   beats; proposes only, never writes and never drafts prose — it absorbed the retired
+   `chapter-weaver`), and `outline-fan` (the blind genre-fan reader).
 
 3. **Swappable data — genre packs and the series folder.** `genres/<g>/` holds `genre.yaml`
    (inspector roster, gates, planning command, tracks, plus the optional `beat_sheet:`,
