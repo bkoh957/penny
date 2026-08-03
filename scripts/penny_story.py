@@ -108,3 +108,47 @@ def parse_questions(text: str) -> dict[str, str]:
         if m:
             out[m.group("id")] = m.group("prose")
     return out
+
+
+_CUT_CHAPTER_RE = re.compile(r"^##\s+Chapter\s+(?P<num>\d+)\s*[—-]\s*(?P<title>.+?)\s*$")
+_CUT_FIELD_RE = re.compile(r"^\s*-\s+\*\*(?P<key>Beats|Summary|Compress):\*\*\s*(?P<val>.*)$")
+_CUT_TRACK_RE = re.compile(r"^\s*-\s+\*\*(?P<letter>[A-Z]):\*\*\s*(?P<val>.*)$")
+_RANGE_RE = re.compile(r"^(\d+)\s*-\s*(\d+)$")
+
+
+def _expand_beats(spec: str) -> list[int]:
+    out = []
+    for part in (p.strip() for p in spec.split(",") if p.strip()):
+        m = _RANGE_RE.match(part)
+        if m:
+            lo, hi = int(m.group(1)), int(m.group(2))
+            out.extend(range(lo, hi + 1))
+        elif part.isdigit():
+            out.append(int(part))
+    return out
+
+
+def parse_cut_plan(text: str) -> list[dict]:
+    """The showrunner-approved grouping (spec §5.1)."""
+    chapters, current = [], None
+    for raw in text.splitlines():
+        m = _CUT_CHAPTER_RE.match(raw)
+        if m:
+            current = {"num": int(m.group("num")), "title": m.group("title"),
+                       "beats": [], "summary": "", "compress": "", "tracks": {}}
+            chapters.append(current)
+            continue
+        if current is None:
+            continue
+        fm = _CUT_FIELD_RE.match(raw)
+        if fm:
+            key, val = fm.group("key"), fm.group("val").strip()
+            if key == "Beats":
+                current["beats"] = _expand_beats(val)
+            else:
+                current[key.lower()] = val
+            continue
+        tm = _CUT_TRACK_RE.match(raw)
+        if tm:
+            current["tracks"][tm.group("letter")] = tm.group("val").strip()
+    return chapters

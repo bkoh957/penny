@@ -1,4 +1,5 @@
 from scripts.penny_story import parse_story, parse_questions
+from scripts.penny_story import parse_cut_plan
 
 STORY = """---
 stage: story
@@ -72,3 +73,46 @@ def test_untagged_beat_is_legal():
     beats = parse_story("- Just a thing that happens.\n")
     assert beats[0]["text"] == "Just a thing that happens."
     assert beats[0]["strands"] == []
+
+
+CUT_PLAN = """---
+book: 02
+---
+
+## Chapter 01 — The Life Maggie Chose
+
+- **Beats:** 1-3
+- **Summary:** Maggie's chosen life, and the body that ends it.
+- **Compress:** Gallery logistics and the drive out.
+- **M:** The murder enters a world we have just been shown.
+- **P:** Maggie is happy, which is what she has to lose.
+
+## Chapter 02 — The Woman Who Found Her
+
+- **Beats:** 4, 6-7
+- **Summary:** Faye's account, and the altered appointment.
+- **Compress:** Repeated introductions.
+- **M:** The appointment contradiction lands.
+"""
+
+
+def test_parse_cut_plan_expands_ranges_and_lists():
+    chapters = parse_cut_plan(CUT_PLAN)
+    assert [c["num"] for c in chapters] == [1, 2]
+    assert chapters[0]["beats"] == [1, 2, 3]
+    assert chapters[1]["beats"] == [4, 6, 7]
+
+
+def test_parse_cut_plan_reads_title_summary_compress():
+    c = parse_cut_plan(CUT_PLAN)[0]
+    assert c["title"] == "The Life Maggie Chose"
+    assert c["summary"] == "Maggie's chosen life, and the body that ends it."
+    assert c["compress"] == "Gallery logistics and the drive out."
+
+
+def test_parse_cut_plan_reads_track_rows_keyed_by_letter():
+    chapters = parse_cut_plan(CUT_PLAN)
+    assert chapters[0]["tracks"] == {
+        "M": "The murder enters a world we have just been shown.",
+        "P": "Maggie is happy, which is what she has to lose."}
+    assert list(chapters[1]["tracks"]) == ["M"]
