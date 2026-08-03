@@ -69,3 +69,14 @@ def test_runbook_gives_literal_bash_for_every_stamp_call():
     # _UPSTREAM expects, which is what this test exists to pin.
     assert 'for f in output/book-$book/reports/outline-fan-stage-*.md; do' in t
     assert '"$f" --from input/book-$book/story.md' in t
+
+
+def test_plot_book_runs_the_cut_after_approval():
+    """The cut stage dispatches chapter-cutter, takes the showrunner's approved
+    plan, and only then runs the deterministic emitter — no waivers exist at
+    this level, so a finding means fixing story.md or cut-plan.md and
+    re-running, never a recorded exception."""
+    t = CMD.read_text(encoding="utf-8")
+    assert "chapter-cutter" in t
+    assert "scripts/story_cut.py" in t
+    assert "cut-plan.md" in t

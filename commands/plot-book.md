@@ -37,6 +37,7 @@ state; this command never asks you anything a file already answers.
    | counterplot | PLOT-COUNTERPLOT | yes — showrunner approves the yaml |
    | chapters | PLOT-CHAPTERS | no |
    | weave | PLOT-WEAVE | no |
+   | cut | PLOT-CUT | no |
    | readback | PLOT-READBACK | yes — showrunner signs off → lock |
 
 4. **Stages premise / ending / turning-points:** dispatch the `plot-proposer`
@@ -100,19 +101,29 @@ state; this command never asks you anything a file already answers.
 
    **No lock here** — the lock is stage readback's last act (validate once,
    then freeze). Do not run `lock-mystery` at this stage; it runs exactly
-   once, at step 9.
+   once, at step 10.
 
-6. **Stage chapters:** for each gap between consecutive turning points, dispatch
-   `chapter-weaver` (fill pass; pass `model:` = `plot_model` from
-   `config/run-config.md`, defaulting to `drafting_model` when unset) with both
-   endpoints fixed and the clue schedule from the whodunit yaml. When this is a
-   re-plot regenerating chapters that already exist, `chapter-weaver` clears any
-   stale `woven: true` from story.md's frontmatter as part of that write (its
-   contract, not a step here — do not re-set `woven: true` yourself) — otherwise
-   the weave stage would read as `done` over chapters that were never rewoven.
-   Then stamp story.md, including the whodunit ledger it drew the clue
-   schedule from (a real upstream — editing the ledger after this point must make
-   the chapters stage go stale again):
+6. **Stage chapters:** write `input/book-$book/story.md` directly — beats in
+   story order between the turning points, one per bullet, prose first, tags
+   trailing (`@strand`, `#job`, `+question`/`-question`, `!clue-id` — spec
+   `2026-08-03-story-source-layer-design.md` §3). Draw the clue schedule from
+   `series/whodunit/book-$book.yaml` and tag each clue's `!clue-id` onto the
+   beat that plants it.
+
+   This folds what used to be two dispatches of the now-retired
+   `chapter-weaver` into one: strands and questions are tagged inline as each
+   beat is written, so there is no second pass left to bolt wiring onto.
+   `chapter-weaver`'s other half — deciding where chapter boundaries fall and
+   emitting Track Movement rows — is absorbed by `chapter-cutter`, at the cut
+   stage below, not here.
+
+   When this is a re-plot regenerating a story that already exists, clear any
+   stale `woven: true` from story.md's frontmatter yourself before rewriting
+   the beats — otherwise the weave stage below would read as `done` over a
+   story that was never rewoven. Once every beat is tagged, set
+   `woven: true` in the frontmatter, then stamp story.md, including the
+   whodunit ledger it drew the clue schedule from (a real upstream — editing
+   the ledger after this point must make the chapters stage go stale again):
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/plot_stage.py" stamp $book \
@@ -129,14 +140,55 @@ state; this command never asks you anything a file already answers.
    echo "book=$book stage=PLOT-WEAVE" > .penny/current-stage
    ```
 
-   Dispatch `chapter-weaver` (weave pass; pass `model:` = `plot_model` from
-   `config/run-config.md`, defaulting to `drafting_model` when unset) over the
-   filled story.md. It sets `woven: true` and re-stamps. (The weave stage has no
-   `_UPSTREAM` of its own — `plot_stage.py` judges it done purely by the `woven`
-   flag, so there is no separate `stamp` call here.)
+   Nothing left to do here — the tags went onto the page while story.md was
+   written above, and the `woven: true` frontmatter field set in that same
+   step is what marks this stage done. (The weave stage has no `_UPSTREAM` of
+   its own — `plot_stage.py` judges it done purely by the `woven` flag, so
+   there is no separate `stamp` call here.)
 
-8. **Stage readback:** a LOOP, not a single pass — read, findings, work them, re-read,
-   then lock.
+   Continue directly to cut.
+
+8. **Stage cut:**
+
+   ```bash
+   echo "book=$book stage=PLOT-CUT" > .penny/current-stage
+   ```
+
+   The chapter boundary is a judgment; the expansion into a full outline block
+   is not (spec `2026-08-03-story-source-layer-design.md` §5) — so this stage
+   follows the packet/map pattern already in the engine: an agent proposes,
+   the showrunner approves, and only the approved artifact is consumed.
+
+   1. Dispatch the **`chapter-cutter`** sub-agent (pass `model:` = `plot_model`
+      from `config/run-config.md`, defaulting to `drafting_model` when unset)
+      with `input/book-$book/story.md`. Context-rich like the other planning
+      agents — it reads the sealed solution so a turn lands on the right beat
+      — it proposes which beats become which chapter, plus the four authored
+      fields (title, summary, compress line, per-chapter track rows). **It
+      proposes only and writes nothing.**
+   2. Present the proposal. The showrunner edits boundaries, titles,
+      summaries, compress lines and track rows. Save the **approved** plan —
+      and only the approved plan — to `input/book-$book/cut-plan.md`. A
+      generated file that wrote itself into this location would look approved
+      without being approved.
+   3. Run the cut:
+
+      ```bash
+      python3 "${CLAUDE_PLUGIN_ROOT}/scripts/story_cut.py" "$book"
+      ```
+
+      Exit 0 wrote `input/book-$book/outline.md`, expanding the approved cut
+      plan into packet-format chapter blocks. Exit 1 printed named findings —
+      fix `story.md` or `cut-plan.md` and run it again; there are no waivers
+      at this level. Exit 2 is a usage or missing-file error.
+
+   Re-cutting is safe while `outline.md` is exactly what the cut wrote — move
+   a boundary in `cut-plan.md`, re-run, look again. Once `outline.md` has been
+   hand-edited, the cut refuses `outline-modified-since-cut` rather than
+   discarding that work.
+
+9. **Stage readback:** a LOOP, not a single pass — read, findings, work them, re-read,
+   then lock. The cut above has already run, so `input/book-$book/outline.md` exists.
 
    ```bash
    echo "book=$book stage=PLOT-READBACK" > .penny/current-stage
@@ -146,7 +198,7 @@ state; this command never asks you anything a file already answers.
    # counts EVERY outline-fan*.md under this glob: a report left over from a
    # previous shape — a legacy single-file read, or a stage that no longer
    # exists because a reveal was removed — would either deadlock readback
-   # (the stamp loop in step 9 only ever writes outline-fan-stage-*.md, never
+   # (the stamp loop in step 10 only ever writes outline-fan-stage-*.md, never
    # the legacy outline-fan.md) or be silently miscounted as coverage for a
    # stage that isn't being read this pass (final review I2).
    rm -f output/book-$book/reports/outline-fan*.md
@@ -171,7 +223,7 @@ state; this command never asks you anything a file already answers.
    not pass a fan its own earlier reports.
 
    If the read cannot be dispatched as a sub-agent at all, **skip it** and carry that to
-   the certificate at step 9 with
+   the certificate at step 10 with
    `--note-skipped 'fan-read: <why>'`. An inline read is worse than no read: it returns
    a confident report that reassures.
 
@@ -209,13 +261,13 @@ state; this command never asks you anything a file already answers.
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/outline_feedback.py" append $book \
      --points output/book-$book/reports/.fan-audit-points.json \
-     --source input/book-$book/story.md
+     --source input/book-$book/outline.md
    ```
 
-   `--source` matters here: at this stage the reviewed artifact is `story.md`,
-   not `outline.md` (that file doesn't exist yet). Passing it leaves
-   `reviewed_outline_sha256` untouched instead of either stamping it blank (which would
-   later mislabel a freshly-written `outline.md` as "changed since review") or silently
+   `--source` still matters here, even though `outline.md` now exists (the cut
+   stage above just wrote it): the fan-audit reviewed the readers'-copy render, not
+   a full independent panel pass over the outline. Passing `--source` leaves
+   `reviewed_outline_sha256` untouched instead of either stamping it blank or silently
    re-stamping it to current (which would clear a staleness warning no panel review
    earned) — final review I6.
 
@@ -226,11 +278,14 @@ state; this command never asks you anything a file already answers.
    put_down_risk`; `dead-thread` → `finding, stage, closed_question,
    still_serviced_in`.
 
-   Then run the proofreader:
+   Then run the proofreader — against `outline.md`, not `story.md`: `tension_check.py`
+   parses chapter wiring (`Because:`/`Opens:`/`Closes:`/`Carries:`/`Hook:`) out of
+   `## Chapter NN` blocks, a shape only the cut's output carries — `story.md`'s flat
+   beats have neither chapters nor wiring fields:
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/tension_check.py" \
-     input/book-$book/story.md \
+     input/book-$book/outline.md \
      --beat-sheet "$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/penny_genre.py" beat-sheet)" \
      --turning-points input/book-$book/plot/turning-points.md \
      --whodunit series/whodunit/book-$book.yaml
@@ -245,13 +300,14 @@ state; this command never asks you anything a file already answers.
    open-question ledger, hook chain, chapter coverage).
 
    Present the audit, the open ledger items, and the tension findings side by side. The
-   showrunner either works the open items (editing `story.md` and the whodunit
+   showrunner either works the open items (editing `story.md` and re-running the
+   cut, or hand-editing `outline.md` directly, plus the whodunit
    ledger, marking each `solved`/`rejected` by hand in
    `output/book-$book/reports/outline-feedback.yaml`) and comes back round this stage,
    or signs off. Nothing here blocks: the audit has no exit code and the fan holds no
    gate. The showrunner's sign-off is the decision point, as before.
 
-9. **Mint the lock:**
+10. **Mint the lock:**
 
    On sign-off, stamp every stage's fan report (the fan writes one per protected
    reveal, so this is a loop, not a single file):
