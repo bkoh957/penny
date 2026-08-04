@@ -253,9 +253,14 @@ def test_orphan_direction_names_a_strand_no_beat_uses():
     assert any(f.startswith("orphan-direction:") and "@susan" in f for f in out)
 
 
-def test_orphan_direction_names_a_job_no_beat_carries():
+def test_a_job_the_genre_does_not_declare_is_unknown_job_in_a_directive():
     out = _findings("\n## Chapter Direction\n- Give it room. #restore-world\n")
     assert any("unknown-job:" in f for f in out)
+
+
+def test_a_typoed_strand_in_a_directive_is_refused_by_name():
+    out = _findings("\n## Chapter Direction\n- Watch her. @Maggie\n")
+    assert any(f.startswith("unknown-strand:") for f in out)
 
 
 def test_orphan_direction_fires_for_a_declared_job_no_beat_carries():
