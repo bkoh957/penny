@@ -38,6 +38,17 @@ _HEADING_RE = re.compile(r"^##\s+")
 _BULLET_RE = re.compile(r"^-\s+(?P<rest>.*)$")
 _QUESTION_LINE_RE = re.compile(rf"^-\s+(?P<id>q-{SLUG})\s*[—-]\s*(?P<prose>.+?)\s*$")
 
+# Headings whose bullets are NOT beats. A directive bullet read as a beat would
+# shift every later beat index, so the cut plan's `Beats: 22-25` would silently
+# claim the wrong beats (spec 2026-08-04 §3).
+_INERT_HEADINGS = {"questions", "chapter direction", "guardrails"}
+
+
+def _heading_name(raw):
+    """Lowercased text of a `## ` heading, or None if the line is not one."""
+    m = _HEADING_RE.match(raw)
+    return raw[m.end():].strip().lower() if m else None
+
 _SIGIL_KEY = {"@": "strands", "#": "jobs", "+": "opens", "-": "closes", "!": "clues"}
 
 
@@ -63,7 +74,7 @@ def parse_story(text: str) -> list[dict]:
     lines = text.splitlines()
     offset = len(text.splitlines()) - len(strip_frontmatter(text).splitlines())
     beats, current, prose = [], None, []
-    in_questions = False
+    inert = False
 
     for i, raw in enumerate(lines):
         if i < offset:
@@ -72,9 +83,9 @@ def parse_story(text: str) -> list[dict]:
             if current is not None:
                 beats.append(_finish(current, prose))
                 current, prose = None, []
-            in_questions = bool(QUESTIONS_HEADING_RE.match(raw))
+            inert = _heading_name(raw) in _INERT_HEADINGS
             continue
-        if in_questions:
+        if inert:
             continue
         m = _BULLET_RE.match(raw)
         if m:
@@ -107,6 +118,43 @@ def parse_questions(text: str) -> dict[str, str]:
         m = _QUESTION_LINE_RE.match(raw)
         if m:
             out[m.group("id")] = m.group("prose")
+    return out
+
+
+def parse_directives(text: str, heading: str) -> list[dict]:
+    """Scoped direction lines from one `##` block (spec 2026-08-04 §3).
+
+    Same shape as a beat, harvested by the same TAG_RE, so a directive scopes
+    with @strand and #job and needs no second syntax. Chapter numbers cannot
+    scope a directive — they do not exist until after the cut.
+    """
+    want = heading.strip().lower()
+    out, current, prose, in_block = [], None, [], False
+
+    for i, raw in enumerate(text.splitlines()):
+        if _HEADING_RE.match(raw):
+            if current is not None:
+                out.append(_finish(current, prose))
+                current, prose = None, []
+            in_block = _heading_name(raw) == want
+            continue
+        if not in_block:
+            continue
+        m = _BULLET_RE.match(raw)
+        if m:
+            if current is not None:
+                out.append(_finish(current, prose))
+            current = _blank_beat(i + 1)
+            prose = [_harvest(current, m.group("rest"))]
+        elif current is not None:
+            if not raw.strip():
+                out.append(_finish(current, prose))
+                current, prose = None, []
+            else:
+                prose.append(_harvest(current, raw.strip()))
+
+    if current is not None:
+        out.append(_finish(current, prose))
     return out
 
 

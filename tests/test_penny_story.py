@@ -1,4 +1,4 @@
-from scripts.penny_story import parse_story, parse_questions
+from scripts.penny_story import parse_story, parse_questions, parse_directives
 from scripts.penny_story import parse_cut_plan
 
 STORY = """---
@@ -116,3 +116,52 @@ def test_parse_cut_plan_reads_track_rows_keyed_by_letter():
         "M": "The murder enters a world we have just been shown.",
         "P": "Maggie is happy, which is what she has to lose."}
     assert list(chapters[1]["tracks"]) == ["M"]
+
+
+STORY_WITH_BLOCKS = """- Maggie chooses this life.
+  @maggie #establish-protected-world
+
+- The appointment was altered.
+  @maggie @simon +q-clear
+
+## Chapter Direction
+
+- These two belong in one chapter. #establish-protected-world
+
+## Guardrails
+
+- Don't flatten Marion into a cackling villain; her usefulness is her camouflage.
+  @tara-marion
+- Keep the community on the page in the endgame.
+
+## Questions
+- q-clear — how can Maggie clear herself?
+"""
+
+
+def test_directive_bullets_are_not_beats():
+    beats = parse_story(STORY_WITH_BLOCKS)
+    assert [b["text"] for b in beats] == [
+        "Maggie chooses this life.",
+        "The appointment was altered.",
+    ]
+
+
+def test_parse_directives_reads_guardrails_with_continuation_lines():
+    notes = parse_directives(STORY_WITH_BLOCKS, "Guardrails")
+    assert len(notes) == 2
+    assert notes[0]["text"] == (
+        "Don't flatten Marion into a cackling villain; "
+        "her usefulness is her camouflage.")
+    assert notes[0]["strands"] == ["tara-marion"]
+    assert notes[1]["strands"] == [] and notes[1]["jobs"] == []
+
+
+def test_parse_directives_reads_chapter_direction_and_is_case_insensitive():
+    notes = parse_directives(STORY_WITH_BLOCKS, "chapter direction")
+    assert [n["text"] for n in notes] == ["These two belong in one chapter."]
+    assert notes[0]["jobs"] == ["establish-protected-world"]
+
+
+def test_parse_directives_returns_empty_when_the_block_is_absent():
+    assert parse_directives("- A beat. @maggie\n", "Guardrails") == []
