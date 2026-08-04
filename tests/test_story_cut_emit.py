@@ -279,3 +279,80 @@ def test_qline_does_not_truncate_prose_ending_in_a_dash():
                        reveal_chapter=2, guardrails="Do not name the culprit early.",
                        job_titles=JOB_TITLES, solution={})
     assert "q-clear — how can Maggie clear herself —" in out
+
+
+# --- Task 3: distribute authored guardrails into the chapters they scope --
+
+STORY_NOTED = """- Maggie chooses this life.
+  @maggie #establish-protected-world
+
+- The appointment was altered.
+  @maggie @simon #crime-and-first-contradiction +q-clear !c-altered
+
+- Tom rules it out.
+  @tom -q-clear
+
+## Chapter Direction
+
+- These two belong together. #establish-protected-world
+
+## Guardrails
+
+- Simon is evasive, never sinister. @simon
+- The crime must land on an ordinary morning.
+  #crime-and-first-contradiction
+- Keep the town warm even here.
+
+## Questions
+- q-clear — how can Maggie clear herself?
+"""
+
+
+def _emit_noted():
+    return emit_outline(STORY_NOTED, PLAN, parse_questions(STORY_NOTED), LEDGER,
+                        reveal_chapter=2, guardrails="Do not name the culprit early.",
+                        job_titles=JOB_TITLES, solution={})
+
+
+def _guardrails(out, num):
+    return parse_packet_sections(chapter_block(out, num))["Guardrails"]
+
+
+def test_strand_scoped_guardrail_lands_only_where_that_strand_acts():
+    out = _emit_noted()
+    assert "Simon is evasive, never sinister." in _guardrails(out, 1)
+    # Chapter 02 is Tom's beat alone. A running strand high-water mark would
+    # leak Simon's note into it; this chapter's own beats must not.
+    assert "Simon is evasive" not in _guardrails(out, 2)
+
+
+def test_job_scoped_guardrail_lands_on_the_chapter_carrying_the_job():
+    out = _emit_noted()
+    assert "ordinary morning" in _guardrails(out, 1)
+    assert "ordinary morning" not in _guardrails(out, 2)
+
+
+def test_untagged_guardrail_lands_in_every_chapter():
+    out = _emit_noted()
+    for num in (1, 2):
+        assert "Keep the town warm even here." in _guardrails(out, num)
+
+
+def test_series_guardrail_and_reveal_line_still_follow_the_authored_ones():
+    body = _guardrails(_emit_noted(), 2)
+    assert "Do not name the culprit early." in body
+    assert "Do not resolve the mystery before chapter 02." in body
+    assert body.index("Keep the town warm") < body.index("Do not name the culprit")
+
+
+def test_chapter_direction_never_reaches_the_outline():
+    assert "belong together" not in _emit_noted()
+
+
+def test_a_story_with_no_directive_blocks_keeps_the_old_guardrails_shape():
+    # STORY carries no ## Guardrails block, so the section must be exactly the
+    # two lines it held before this feature — nothing added, nothing reordered.
+    assert _guardrails(_emit(), 1).strip().splitlines() == [
+        "- Do not name the culprit early.",
+        "- Do not resolve the mystery before chapter 02.",
+    ]

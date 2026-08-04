@@ -244,6 +244,7 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
     """
     beats = parse_story(story_text)
     chapters = parse_cut_plan(cut_plan_text)
+    notes = parse_directives(story_text, "Guardrails")
 
     opened_by, closed_by, beat_chapter = {}, {}, {}
     for ch in chapters:
@@ -321,7 +322,19 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
                    + f"\nNot yet known:\n- The solution, until chapter "
                      f"{reveal_chapter:02d}.\n")
 
-        out.append("### Guardrails\n- " + guardrails.strip()
+        # Scoped to THIS chapter's own beats, never to `seen_strands` — that
+        # is a running high-water mark for Character Knowledge, and reusing it
+        # would follow a character's note into chapters she is absent from.
+        mine_strands = {s for b in mine for s in b["strands"]}
+        mine_jobs = {j for b in mine for j in b["jobs"]}
+        authored = [d["text"] for d in notes
+                    if (not d["strands"] and not d["jobs"])
+                    or (set(d["strands"]) & mine_strands)
+                    or (set(d["jobs"]) & mine_jobs)]
+
+        out.append("### Guardrails\n"
+                   + "".join(f"- {a}\n" for a in authored)
+                   + "- " + guardrails.strip()
                    + f"\n- Do not resolve the mystery before chapter {reveal_chapter:02d}.\n")
 
         wiring = []
