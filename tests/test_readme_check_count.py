@@ -23,25 +23,27 @@ README = Path("README.md")
 # roster to derive from the way tension_check.py's do — check_story()/main()
 # raise them inline as f-strings, not from one contiguous block — so this
 # list is hand-verified against scripts/story_cut.py rather than parsed from
-# it. Verified exact as of the chapter-direction-and-guardrails wave: grep
-# `blocking.append(`/`return (` in scripts/story_cut.py and confirm the count
-# stays fifteen before touching this tuple.
+# it. Verified exact as of the chapter-direction-and-guardrails FINAL FIX wave
+# (which added `wiring-shaped-directive`): grep `blocking.append(`/`return (`
+# in scripts/story_cut.py and confirm the count stays sixteen before touching
+# this tuple.
 STORY_CUT_FINDING_IDS = (
     "unknown-strand", "unknown-job", "unknown-clue", "unknown-question",
     "unscheduled-clue", "orphan-question", "unclosed-question",
     "beats-without-chapter", "duplicate-beat", "outline-modified-since-cut",
     "missing-reveal-chapter", "clue-not-found-in-ledger-text",
     "cut-owned-outline", "orphan-direction", "misplaced-schedule-tag",
+    "wiring-shaped-directive",
 )
 
 
 def test_the_story_cut_roster_is_complete_and_sized():
     # The roster above is hand-maintained (the findings are inline f-strings,
     # not one docstring block), so pin BOTH its size and the fact that every id
-    # in it really is raised by the module — a stale roster that names fourteen
-    # of fifteen reads as complete and isn't.
+    # in it really is raised by the module — a stale roster that names fifteen
+    # of sixteen reads as complete and isn't.
     source = pathlib.Path("scripts/story_cut.py").read_text(encoding="utf-8")
-    assert len(STORY_CUT_FINDING_IDS) == 15, STORY_CUT_FINDING_IDS
+    assert len(STORY_CUT_FINDING_IDS) == 16, STORY_CUT_FINDING_IDS
     for finding_id in STORY_CUT_FINDING_IDS:
         assert f"{finding_id}: " in source, f"story_cut.py never raises {finding_id}"
 

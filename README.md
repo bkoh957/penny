@@ -281,7 +281,7 @@ as it does, so there's no separate weaving pass. The new `cut` stage turns it in
    Clues and Plants, wiring, Character Knowledge, Guardrails, and Starting/Ending State
    from the beats and the ledger.
 
-`story_cut.py` fails loud, by name, on fifteen findings, and never writes a partial
+`story_cut.py` fails loud, by name, on sixteen findings, and never writes a partial
 outline — there are no waivers at this level; fix the story or the cut plan:
 
 | finding | condition |
@@ -301,6 +301,7 @@ outline — there are no waivers at this level; fix the story or the cut plan:
 | `cut-owned-outline` | `/expand-outline` was pointed at an outline the cut produced |
 | `orphan-direction` | a `## Chapter Direction`/`## Guardrails` line is scoped to an `@strand` or `#job` no beat carries — it would render nowhere and be read by no one |
 | `misplaced-schedule-tag` | a `## Chapter Direction`/`## Guardrails` line carries a `+q`/`-q`/`!clue` tag — those blocks scope with `@strand`/`#job` only, never schedule anything |
+| `wiring-shaped-directive` | a `## Chapter Direction`/`## Guardrails` line is shaped like a wiring field (`- **Closes:** …`) or a Track Movement row (`- **M:** …`) — emitted verbatim it would forge a line the cut never wrote, and downstream checks would fire on it |
 
 **Why `unclosed-question` allows one and refuses two.** The cut carries every live
 question into every chapter through the last one, so once the outline exists, a question

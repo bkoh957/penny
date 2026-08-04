@@ -24,7 +24,14 @@ from scripts.outline_views import parse_jobs
 from scripts.penny_meta import parse_frontmatter, strip_frontmatter
 from scripts.penny_story import (SLUG_RE, parse_cut_plan, parse_directives,
                                  parse_questions, parse_story)
-from scripts.penny_wiring import QID_RE
+from scripts.penny_wiring import FIELD_RE, QID_RE, TRACK_RE
+
+#: (sigil, directive key) for the three tags that schedule something. Beats
+#: schedule; direction does not (spec 2026-08-04 §3), and the message has to
+#: name the token it objected to — the tag capture is deliberately loose, and
+#: guardrail prose is English sentences, so "-- never arch" harvests as a close
+#: tag with slug "-" (final review, Minor 6).
+_SCHEDULE_SIGILS = (("+", "opens"), ("-", "closes"), ("!", "clues"))
 
 
 def check_story(story_text: str, cut_plan_text: str,
@@ -109,11 +116,30 @@ def check_story(story_text: str, cut_plan_text: str,
                         f"orphan-direction: {where} is scoped to #{slug}, "
                         f"which no beat carries — the note would be rendered "
                         f"nowhere and read by no one")
-            if d["opens"] or d["closes"] or d["clues"]:
+            tokens = [f"'{sigil}{slug}'"
+                      for sigil, key in _SCHEDULE_SIGILS for slug in d[key]]
+            if tokens:
                 blocking.append(
-                    f"misplaced-schedule-tag: {where} carries a +q/-q/!clue "
-                    f"tag, which schedules nothing here — direction scopes "
-                    f"with @strand and #job only")
+                    f"misplaced-schedule-tag: {where} carries "
+                    f"{', '.join(tokens)}, which schedules nothing here — "
+                    f"direction scopes with @strand and #job only")
+            # The emitter writes an authored guardrail as `- {text}` straight
+            # into the chapter block, and penny_wiring matches FIELD_RE/TRACK_RE
+            # against EVERY line of that block, not only the wiring section. So
+            # a note reading `- **Closes:** q-bogus` becomes a wiring field the
+            # cut never wrote, and tension_check fires phantom-answer on a
+            # chapter whose footer says no such thing — with nothing to tell the
+            # author why. The deterministic layer's own output must not be
+            # forgeable from authored prose (final review, Important 2).
+            emitted = f"- {d['text']}"
+            if FIELD_RE.match(emitted) or TRACK_RE.match(emitted):
+                blocking.append(
+                    f"wiring-shaped-directive: {where} reads '{emitted}', which "
+                    f"the outline parser would read as a wiring field or a "
+                    f"Track Movement row rather than as prose — the cut writes "
+                    f"those itself. Reword the note so it does not begin with "
+                    f"**Because:**/**Opens:**/**Closes:**/**Carries:**/"
+                    f"**Hook:** or **<letter>:**")
 
     # The converse of orphan-question, and the ONLY place it can be caught.
     # `tension_check`'s dropped-question fires on a question that is neither

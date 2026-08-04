@@ -97,14 +97,20 @@ because it must survive to the *next* re-cut, not because the outline needs it.
 
 ### 4.2 `## Guardrails` — for the drafter, and it survives the cut
 
-`emit_outline` builds each chapter's `### Guardrails` section from, in order:
+`emit_outline` builds each chapter's `### Guardrails` section from:
 
-1. every book-wide (untagged) authored guardrail;
-2. every authored guardrail whose `@strand` appears in one of **that chapter's own
-   beats**;
-3. every authored guardrail whose `#job` appears in one of that chapter's own beats;
-4. the existing series-wide guardrail string (unchanged, from config);
-5. the existing `Do not resolve the mystery before chapter NN.` line (unchanged).
+1. every authored guardrail that applies to this chapter — book-wide (untagged), or
+   scoped to an `@strand` or `#job` appearing in one of **that chapter's own beats** —
+   **in the order the author wrote them in `story.md`**;
+2. the existing series-wide guardrail string (unchanged, from config);
+3. the existing `Do not resolve the mystery before chapter NN.` line (unchanged).
+
+**Authoring order, not a scope ranking.** An earlier draft of this section enumerated
+book-wide notes first, then strand-scoped, then job-scoped. That was wrong and the
+implementation was right (final review, Minor 3): the author already controls the order by
+writing it, a note's scope is not a claim about its importance, and "the order you wrote
+them in" is the simpler rule to hold in your head while editing the block. Only the two
+derived lines have a fixed position — last, and in that order.
 
 **Its own beats, not the running strand high-water mark.** `emit_outline` already keeps
 `seen_strands` accumulating across chapters, for Character Knowledge. Reusing it here
@@ -117,9 +123,24 @@ The distribution is arithmetic over the author's tags. **No LLM sits in the emit
 so the cut remains deterministic and re-runnable, as §5.2 of the source-layer spec
 requires.
 
+### 4.3 Consequence: a book-wide guardrail widens every packet's continuity slice
+
+Recorded because it is a real per-chapter context cost, not a surprise to discover later.
+`scripts/packet_assemble.py` hands the **whole chapter block** to its continuity slicer,
+which word-matches continuity entry names to decide what the packet carries. A book-wide
+guardrail naming two characters therefore pulls those two entries — **plus their one-hop
+`links`** — into the packet of *every* chapter, including chapters they never appear in.
+
+That is the ledger-slice budget the design §4.2 memory rule exists to protect, so the
+practical guidance is: keep book-wide notes about *craft* ("keep the community on the page
+in the endgame"), and scope notes that *name a character* to that character with `@strand`
+so they land only where she acts. No code change follows from this — the slicer is doing
+exactly what it should with the text it is given — but an author who writes six book-wide
+notes full of proper nouns has quietly enlarged every chapter's context, and should know it.
+
 ## 5. Refusals
 
-Two new findings, in the existing vocabulary, **with no waivers** — the same rule the
+Three new findings, in the existing vocabulary, **with no waivers** — the same rule the
 rest of this layer follows (source-layer spec §8): fix the story, don't excuse it.
 
 - **`orphan-direction`** — a note tagged `@susan` when no beat tags `@susan`, or tagged
@@ -129,14 +150,27 @@ rest of this layer follows (source-layer spec §8): fix the story, don't excuse 
   because the author believes it is in force. Applies to both blocks.
 - **`misplaced-schedule-tag`** — a `+q`, `-q` or `!clue` tag on a line in either block.
   Scheduling is a property of beats. A clue tag here would look like a plant and would
-  never be planted.
+  never be planted. The message **quotes the harvested sigil+slug**: the tag capture is
+  deliberately loose and guardrail prose is English sentences, so `-- never arch` harvests
+  as a close tag with slug `-`, and without the token in the message the author cannot see
+  which characters caused it (final review, Minor 6).
+- **`wiring-shaped-directive`** — a line in either block whose prose, once emitted as
+  `- {text}`, matches `penny_wiring`'s `FIELD_RE` (`- **Because:**` / `**Opens:**` /
+  `**Closes:**` / `**Carries:**` / `**Hook:**`) or `TRACK_RE` (`- **M:**`). The emitter
+  writes authored guardrails verbatim into the chapter block, and `penny_wiring` matches
+  those patterns against **every line of the block**, not only the wiring section — so
+  `- **Closes:** q-bogus` in `## Guardrails` passes every other check and then makes
+  `tension_check` fire `phantom-answer` on a chapter whose wiring footer never said any
+  such thing, with nothing to tell the author why. The deterministic layer's own output
+  must not be forgeable from authored prose (final review, Important 2). Applies to both
+  blocks: one shape rule, one place to learn it.
 
 `unknown-strand` and `unknown-job` (both already defined) extend to cover lines in these
 blocks, so a typo'd tag is refused by name rather than silently scoping to nothing —
 which is the loose-capture / strict-validation contract the source-layer spec §3 already
 sets for beats.
 
-This takes the module from 13 named findings to 15.
+This takes the module from 13 named findings to 16.
 
 ## 6. Compatibility
 
@@ -169,6 +203,15 @@ No stamp work is needed. `stamp_outline` already records `story_sha` over the wh
 9. **`unknown-strand` / `unknown-job`** fire on typo'd tags in these blocks.
 10. **Agent contract.** `agents/chapter-cutter.md` declares `## Chapter Direction` among
     its inputs (pinned like the existing cutter-contract test).
+11. **Authoring order.** On a chapter carrying an untagged note *and* a scoped note, the
+    emitted order matches the order they were authored in — the assertion must be made on
+    a chapter where a scoped note competes for the front of the list, or it cannot tell
+    authoring order from the ranking §4.2 used to enumerate.
+12. **`wiring-shaped-directive`** fires by name for each `FIELD_RE` field and for a
+    `TRACK_RE` row, in both blocks, while ordinary bold emphasis in a note stays legal.
+13. **Frontmatter is not the body.** A `##` heading occurring inside frontmatter (a legal
+    YAML comment at column 0) opens no directive block and no questions block — all three
+    parsers walk the same frontmatter-skipped view.
 
 ## 8. Deliberately excluded
 

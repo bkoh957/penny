@@ -237,3 +237,77 @@ def test_a_scoped_directive_matching_a_used_tag_is_clean():
     out = _findings("\n## Guardrails\n- Never soften her. @maggie\n"
                     "- Book-wide, untagged.\n")
     assert not [f for f in out if "direction" in f or "schedule-tag" in f]
+
+
+# --- FINAL REVIEW, Minor 6: the tag capture is deliberately loose, and
+# guardrail prose is English sentences, so it bites here far more often than on
+# beats. The message must name the token it objected to — `unknown-job`'s
+# already does. ---
+
+def test_misplaced_schedule_tag_quotes_the_offending_token():
+    # "-- never" harvests as a close tag with slug "-". Without the token in
+    # the message the author is told a guardrail carries a +q/-q/!clue tag and
+    # cannot see which characters caused it.
+    out = _findings("\n## Guardrails\n- Never soften her -- never arch. @maggie\n")
+    hits = [f for f in out if f.startswith("misplaced-schedule-tag:")]
+    assert hits
+    assert "'--'" in hits[0], hits[0]
+
+
+def test_misplaced_schedule_tag_quotes_a_real_clue_tag_too():
+    out = _findings("\n## Guardrails\n- A note. !c-altered\n")
+    hits = [f for f in out if f.startswith("misplaced-schedule-tag:")]
+    assert hits and "'!c-altered'" in hits[0], hits
+
+
+# --- FINAL REVIEW, Important 2: the emitter writes `- {text}` verbatim into the
+# chapter block, and penny_wiring matches FIELD_RE/TRACK_RE against EVERY line
+# of that block — not only the wiring section. So authored guardrail prose
+# shaped like a wiring field forges the deterministic layer's own output:
+# `- **Closes:** q-bogus` passed check_story clean and made tension_check fire
+# phantom-answer on a chapter whose wiring footer never said any such thing. ---
+
+def test_a_guardrail_shaped_like_a_wiring_field_is_refused():
+    out = _findings("\n## Guardrails\n- **Closes:** q-clear\n")
+    assert any(f.startswith("wiring-shaped-directive:") for f in out), out
+
+
+def test_a_guardrail_shaped_like_a_track_row_is_refused():
+    out = _findings("\n## Guardrails\n- **M:** Keep the murder track warm.\n")
+    assert any(f.startswith("wiring-shaped-directive:") for f in out), out
+
+
+def test_every_wiring_field_name_is_refused_in_a_directive():
+    for field in ("Because", "Opens", "Closes", "Carries", "Hook"):
+        out = _findings(f"\n## Guardrails\n- **{field}:** q-clear\n")
+        assert any(f.startswith("wiring-shaped-directive:") for f in out), field
+
+
+def test_chapter_direction_lines_are_held_to_the_same_shape_rule():
+    out = _findings("\n## Chapter Direction\n- **Hook:** q-clear\n")
+    assert any(f.startswith("wiring-shaped-directive:") for f in out), out
+
+
+def test_ordinary_bold_prose_in_a_guardrail_is_not_wiring_shaped():
+    # The refusal is about the wiring FIELD shape, not about bold text — an
+    # author emphasising a word must stay legal.
+    out = _findings("\n## Guardrails\n- **Never** soften her. @maggie\n")
+    assert not [f for f in out if f.startswith("wiring-shaped-directive:")], out
+
+
+def test_the_forged_wiring_line_really_would_parse_as_wiring():
+    # Why the refusal has to exist: proof that the emitted block is read by
+    # penny_wiring as if the wiring footer had said it.
+    from scripts.penny_story import parse_questions
+    from scripts.penny_wiring import parse_wired_chapters
+    from scripts.story_cut import emit_outline
+
+    story = GOOD_STORY.replace(
+        "## Questions", "## Guardrails\n- **Closes:** q-ghost\n\n## Questions")
+    out = emit_outline(story, GOOD_PLAN, parse_questions(story), {},
+                       reveal_chapter=2, guardrails="g", job_titles={},
+                       solution={})
+    assert any("q-ghost" in c["closes"] for c in parse_wired_chapters(out))
+    # ...and check_story refuses the story before it can ever be emitted.
+    assert any(f.startswith("wiring-shaped-directive:")
+               for f in check_story(story, GOOD_PLAN, JOBS, CLUES)["blocking"])

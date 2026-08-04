@@ -345,6 +345,21 @@ def test_series_guardrail_and_reveal_line_still_follow_the_authored_ones():
     assert body.index("Keep the town warm") < body.index("Do not name the culprit")
 
 
+def test_authored_guardrails_keep_the_order_the_author_wrote_them_in():
+    # FINAL REVIEW, Minor 3: the ordering test only exercised chapter 02, where
+    # no scoped note competes for the front of the list, so it could not tell
+    # authoring order from the spec's old book-wide-first enumeration. Chapter
+    # 01 carries all three — a strand-scoped note, a job-scoped note, and an
+    # untagged one, authored in that order — so the order is observable here
+    # and nowhere else. Authoring order is the rule: the author controls it by
+    # writing it (spec §4.2, amended).
+    body = _guardrails(_emit_noted(), 1)
+    assert (body.index("Simon is evasive")
+            < body.index("ordinary morning")
+            < body.index("Keep the town warm")
+            < body.index("Do not name the culprit"))
+
+
 def test_chapter_direction_never_reaches_the_outline():
     assert "belong together" not in _emit_noted()
 

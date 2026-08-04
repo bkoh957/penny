@@ -165,3 +165,85 @@ def test_parse_directives_reads_chapter_direction_and_is_case_insensitive():
 
 def test_parse_directives_returns_empty_when_the_block_is_absent():
     assert parse_directives("- A beat. @maggie\n", "Guardrails") == []
+
+
+# --- FINAL REVIEW, Important 1: parse_story skipped frontmatter and
+# parse_directives/parse_questions did not, so a `##` heading occurring INSIDE
+# frontmatter (legal in a YAML block scalar) opened a directive block that
+# nothing could close — `---` is not a `##` heading — and every beat in the body
+# was read as both a beat and a book-wide directive. All three parsers now walk
+# the same frontmatter-skipped view of the file. ---
+
+# A `## …` line at column 0 inside frontmatter is a YAML COMMENT — perfectly
+# legal, and indistinguishable from a markdown heading to a line-walking parser
+# that never skipped the frontmatter.
+FRONTMATTER_TRAP = """---
+stage: story
+book: 02
+## Guardrails
+---
+
+- Maggie chooses this life.
+  @maggie #establish-protected-world
+
+- The appointment was altered.
+  @maggie +q-clear
+
+## Questions
+- q-clear — how can Maggie clear herself?
+"""
+
+
+def test_a_guardrails_heading_inside_frontmatter_opens_no_directive_block():
+    # Nothing closes it — `---` is not a `##` heading — so before the fix every
+    # beat in the body was read as a book-wide guardrail as well as a beat, and
+    # the whole story was emitted verbatim into every chapter's Guardrails.
+    assert parse_directives(FRONTMATTER_TRAP, "Guardrails") == []
+
+
+def test_beats_are_unaffected_by_a_heading_inside_frontmatter():
+    assert [b["text"] for b in parse_story(FRONTMATTER_TRAP)] == [
+        "Maggie chooses this life.",
+        "The appointment was altered.",
+    ]
+
+
+QUESTIONS_FRONTMATTER_TRAP = """---
+stage: story
+## Questions
+---
+
+- q-main — a beat whose prose happens to lead with an id-shaped token.
+  @maggie
+
+## Questions
+- q-clear — how can Maggie clear herself?
+"""
+
+
+def test_a_questions_heading_inside_frontmatter_is_not_the_questions_block():
+    # Same offset gap, same shape: the frontmatter comment opened the questions
+    # block, so body bullets before the first real heading were harvested as
+    # question prose.
+    assert parse_questions(QUESTIONS_FRONTMATTER_TRAP) == {
+        "q-clear": "how can Maggie clear herself?"}
+
+
+# --- FINAL REVIEW, Minor 4: parse_story dropped entries with neither prose nor
+# tags; parse_directives did not, so a lone `- ` in the Guardrails block became
+# a directive with text == "" and was emitted as a bare `- ` bullet in every
+# chapter. One fold, one filter. ---
+
+LONE_BULLET = (
+    "- A beat. @maggie\n"
+    "\n"
+    "## Guardrails\n"
+    "\n"
+    "- \n"
+    "- A real note.\n"
+)
+
+
+def test_an_empty_directive_bullet_is_dropped():
+    notes = parse_directives(LONE_BULLET, "Guardrails")
+    assert [n["text"] for n in notes] == ["A real note."]

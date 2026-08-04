@@ -156,12 +156,16 @@ Everything else in a chapter block — Character Knowledge,
 Guardrails, wiring, Starting/Ending State, Chapter Purpose — is **derived** by
 `scripts/story_cut.py` from the ledger, the genre and the tags. There is nowhere to type
 boilerplate, which is why `story.md` cannot drift into the duplicate the retired
-chapter-skeleton layer became. `story_cut.py` fails loud, by name, on fifteen findings —
+chapter-skeleton layer became. `story_cut.py` fails loud, by name, on sixteen findings —
 `unknown-strand`, `unknown-job`, `unknown-clue`, `unknown-question`, `unscheduled-clue`,
 `orphan-question`, `unclosed-question`, `beats-without-chapter`, `duplicate-beat`,
 `missing-reveal-chapter`, `clue-not-found-in-ledger-text`, `outline-modified-since-cut`,
-`cut-owned-outline`, `orphan-direction`, `misplaced-schedule-tag` — no waivers at this
-level (spec §8): fix the story or the cut plan.
+`cut-owned-outline`, `orphan-direction`, `misplaced-schedule-tag`,
+`wiring-shaped-directive` — no waivers at this level (spec §8): fix the story or the cut
+plan. Authored guardrails are emitted **in authoring order**, ahead of the derived
+series-guardrail and reveal-chapter lines; a note shaped like a wiring field or a Track
+Movement row is refused rather than emitted, since the emitted block is parsed line by
+line and authored prose must not be able to forge the cut's own output.
 
 `unclosed-question` is the converse of `orphan-question` and **the only place it can be
 caught**: the emitter carries every live question into every chapter through the last one,

@@ -69,47 +69,74 @@ def _finish(beat, prose_parts):
     return beat
 
 
-def parse_story(text: str) -> list[dict]:
-    """Beats in story order. Tags are stripped from each beat's `text`."""
-    lines = text.splitlines()
-    offset = len(text.splitlines()) - len(strip_frontmatter(text).splitlines())
-    beats, current, prose = [], None, []
-    inert = False
+def _body_lines(text: str) -> list:
+    """`[(index, line), …]` for the body, frontmatter skipped.
 
-    for i, raw in enumerate(lines):
-        if i < offset:
-            continue
+    Every parser in this module walks THIS view, never `text.splitlines()`
+    directly. A `## …` line at column 0 inside frontmatter is a legal YAML
+    comment, and a parser that reads it as a markdown heading opens a block
+    nothing can close — `---` is not a heading (final review, Important 1).
+
+    Indices still count from the top of the FULL text, so a reported `line`
+    number matches what the author sees in their editor.
+    """
+    lines = text.splitlines()
+    offset = len(lines) - len(strip_frontmatter(text).splitlines())
+    return list(enumerate(lines))[offset:]
+
+
+def _fold(text: str, active) -> list[dict]:
+    """The one bullet/continuation fold — beats and directives share it.
+
+    `active(heading)` decides, from a `##` heading's lowercased name (or None,
+    for the region before any heading), whether the bullets that follow are
+    collected. Both callers had their own copy of this loop once, and the two
+    copies drifted: only one skipped frontmatter, and only one dropped empty
+    entries (final review, Important 1 and Minor 4). One loop, one behaviour.
+
+    An entry with neither prose nor tags is dropped — a lone `- ` is not a beat
+    and is not a directive.
+    """
+    entries, current, prose = [], None, []
+    collecting = active(None)
+
+    for i, raw in _body_lines(text):
         if _HEADING_RE.match(raw):
             if current is not None:
-                beats.append(_finish(current, prose))
+                entries.append(_finish(current, prose))
                 current, prose = None, []
-            inert = _heading_name(raw) in _INERT_HEADINGS
+            collecting = active(_heading_name(raw))
             continue
-        if inert:
+        if not collecting:
             continue
         m = _BULLET_RE.match(raw)
         if m:
             if current is not None:
-                beats.append(_finish(current, prose))
+                entries.append(_finish(current, prose))
             current = _blank_beat(i + 1)
             prose = [_harvest(current, m.group("rest"))]
         elif current is not None:
             if not raw.strip():
-                beats.append(_finish(current, prose))
+                entries.append(_finish(current, prose))
                 current, prose = None, []
             else:
                 prose.append(_harvest(current, raw.strip()))
 
     if current is not None:
-        beats.append(_finish(current, prose))
-    return [b for b in beats if b["text"] or any(
-        b[k] for k in ("strands", "jobs", "opens", "closes", "clues"))]
+        entries.append(_finish(current, prose))
+    return [e for e in entries if e["text"] or any(
+        e[k] for k in ("strands", "jobs", "opens", "closes", "clues"))]
+
+
+def parse_story(text: str) -> list[dict]:
+    """Beats in story order. Tags are stripped from each beat's `text`."""
+    return _fold(text, lambda h: h not in _INERT_HEADINGS)
 
 
 def parse_questions(text: str) -> dict[str, str]:
     """id -> prose, from the single `## Questions` block (spec §3.1.1)."""
     out, in_block = {}, False
-    for raw in text.splitlines():
+    for _, raw in _body_lines(text):
         if _HEADING_RE.match(raw):
             in_block = bool(QUESTIONS_HEADING_RE.match(raw))
             continue
@@ -129,33 +156,7 @@ def parse_directives(text: str, heading: str) -> list[dict]:
     scope a directive — they do not exist until after the cut.
     """
     want = heading.strip().lower()
-    out, current, prose, in_block = [], None, [], False
-
-    for i, raw in enumerate(text.splitlines()):
-        if _HEADING_RE.match(raw):
-            if current is not None:
-                out.append(_finish(current, prose))
-                current, prose = None, []
-            in_block = _heading_name(raw) == want
-            continue
-        if not in_block:
-            continue
-        m = _BULLET_RE.match(raw)
-        if m:
-            if current is not None:
-                out.append(_finish(current, prose))
-            current = _blank_beat(i + 1)
-            prose = [_harvest(current, m.group("rest"))]
-        elif current is not None:
-            if not raw.strip():
-                out.append(_finish(current, prose))
-                current, prose = None, []
-            else:
-                prose.append(_harvest(current, raw.strip()))
-
-    if current is not None:
-        out.append(_finish(current, prose))
-    return out
+    return _fold(text, lambda h: h == want)
 
 
 _CUT_CHAPTER_RE = re.compile(r"^##\s+Chapter\s+(?P<num>\d+)\s*[—-]\s*(?P<title>.+?)\s*$")
