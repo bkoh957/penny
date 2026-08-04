@@ -184,3 +184,56 @@ def test_tension_check_cannot_see_an_unclosed_question_on_a_cut_outline():
     assert not [b for b in result["blocking"] if b.startswith("dropped-question")]
     # ...while check_story, which CAN see it, refuses by name.
     assert "unclosed-question" in _ids(check_story(story, plan, JOBS, CLUES)["blocking"])
+
+
+_JOBS = ["establish-protected-world", "act-iii-apparent-defeat"]
+_CLUES = ["c-altered"]
+
+_BASE = """- Maggie chooses this life.
+  @maggie #establish-protected-world
+
+- The firing fails in front of the town.
+  @maggie #act-iii-apparent-defeat +q-clear -q-clear
+
+## Questions
+- q-clear — how can Maggie clear herself?
+"""
+
+
+def _findings(extra):
+    return check_story(_BASE + extra, "", _JOBS, _CLUES)["blocking"]
+
+
+def test_orphan_direction_names_a_strand_no_beat_uses():
+    out = _findings("\n## Guardrails\n- Never soften her. @susan\n")
+    assert any(f.startswith("orphan-direction:") and "@susan" in f for f in out)
+
+
+def test_a_job_the_genre_does_not_declare_is_unknown_job_in_a_directive():
+    out = _findings("\n## Chapter Direction\n- Give it room. #restore-world\n")
+    assert any("unknown-job:" in f for f in out)
+
+
+def test_a_typoed_strand_in_a_directive_is_refused_by_name():
+    out = _findings("\n## Chapter Direction\n- Watch her. @Maggie\n")
+    assert any(f.startswith("unknown-strand:") for f in out)
+
+
+def test_orphan_direction_fires_for_a_declared_job_no_beat_carries():
+    out = check_story(
+        _BASE + "\n## Guardrails\n- Give it room. #restore-world\n",
+        "", _JOBS + ["restore-world"], _CLUES)["blocking"]
+    assert any(f.startswith("orphan-direction:") and "#restore-world" in f
+               for f in out)
+
+
+def test_misplaced_schedule_tag_refuses_clue_and_question_tags():
+    for tag in ("!c-altered", "+q-clear", "-q-clear"):
+        out = _findings(f"\n## Guardrails\n- A note. {tag}\n")
+        assert any(f.startswith("misplaced-schedule-tag:") for f in out), tag
+
+
+def test_a_scoped_directive_matching_a_used_tag_is_clean():
+    out = _findings("\n## Guardrails\n- Never soften her. @maggie\n"
+                    "- Book-wide, untagged.\n")
+    assert not [f for f in out if "direction" in f or "schedule-tag" in f]

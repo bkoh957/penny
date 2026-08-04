@@ -22,8 +22,8 @@ import yaml  # ledger only — nested human-edited data (dependency-split rule)
 from scripts import penny_genre, penny_paths, plot_stage
 from scripts.outline_views import parse_jobs
 from scripts.penny_meta import parse_frontmatter, strip_frontmatter
-from scripts.penny_story import (SLUG_RE, parse_cut_plan, parse_questions,
-                                 parse_story)
+from scripts.penny_story import (SLUG_RE, parse_cut_plan, parse_directives,
+                                 parse_questions, parse_story)
 from scripts.penny_wiring import QID_RE
 
 
@@ -82,6 +82,38 @@ def check_story(story_text: str, cut_plan_text: str,
                     f"beat opens")
         for qid in beat["closes"]:
             closed.add(qid)
+
+    used_strands = {s for b in beats for s in b["strands"]}
+    used_jobs = {j for b in beats for j in b["jobs"]}
+
+    for heading in ("Chapter Direction", "Guardrails"):
+        for d in parse_directives(story_text, heading):
+            where = f"{heading} line {d['line']}"
+            for slug in d["strands"]:
+                if not SLUG_RE.match(slug):
+                    blocking.append(
+                        f"unknown-strand: {where} tags @{slug}, which breaks "
+                        f"the slug contract ^[a-z0-9][a-z0-9-]*$")
+                elif slug not in used_strands:
+                    blocking.append(
+                        f"orphan-direction: {where} is scoped to @{slug}, "
+                        f"which no beat tags — the note would be rendered "
+                        f"nowhere and read by no one")
+            for slug in d["jobs"]:
+                if slug not in known_jobs:
+                    blocking.append(
+                        f"unknown-job: {where} tags #{slug}, which the active "
+                        f"genre's macro-structure does not declare")
+                elif slug not in used_jobs:
+                    blocking.append(
+                        f"orphan-direction: {where} is scoped to #{slug}, "
+                        f"which no beat carries — the note would be rendered "
+                        f"nowhere and read by no one")
+            if d["opens"] or d["closes"] or d["clues"]:
+                blocking.append(
+                    f"misplaced-schedule-tag: {where} carries a +q/-q/!clue "
+                    f"tag, which schedules nothing here — direction scopes "
+                    f"with @strand and #job only")
 
     # The converse of orphan-question, and the ONLY place it can be caught.
     # `tension_check`'s dropped-question fires on a question that is neither
