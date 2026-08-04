@@ -147,15 +147,21 @@ outline.md  input/book-NN/outline.md    packet format, generated  (locked)
 `story.md` carries only what the author decides — what happens, in what order, to whom
 (`@strand`), which structural job a beat answers (`#job`), which questions open and close
 (`+q-id` / `-q-id`), and where a ledger clue is planted (`!clue-id`). Question prose lives
-once, in a `## Questions` block. Everything else in a chapter block — Character Knowledge,
+once, in a `## Questions` block. Two further blocks are optional and scope with the same
+sigils: `## Chapter Direction` (structural notes the `chapter-cutter` reads and the cut
+never emits) and `## Guardrails` (prose notes carried into each chapter's Guardrails
+section, scoped to that chapter's own beats — spec
+`docs/superpowers/specs/2026-08-04-chapter-direction-and-guardrails-design.md`).
+Everything else in a chapter block — Character Knowledge,
 Guardrails, wiring, Starting/Ending State, Chapter Purpose — is **derived** by
 `scripts/story_cut.py` from the ledger, the genre and the tags. There is nowhere to type
 boilerplate, which is why `story.md` cannot drift into the duplicate the retired
-chapter-skeleton layer became. `story_cut.py` fails loud, by name, on thirteen findings —
+chapter-skeleton layer became. `story_cut.py` fails loud, by name, on fifteen findings —
 `unknown-strand`, `unknown-job`, `unknown-clue`, `unknown-question`, `unscheduled-clue`,
 `orphan-question`, `unclosed-question`, `beats-without-chapter`, `duplicate-beat`,
 `missing-reveal-chapter`, `clue-not-found-in-ledger-text`, `outline-modified-since-cut`,
-`cut-owned-outline` — no waivers at this level (spec §8): fix the story or the cut plan.
+`cut-owned-outline`, `orphan-direction`, `misplaced-schedule-tag` — no waivers at this
+level (spec §8): fix the story or the cut plan.
 
 `unclosed-question` is the converse of `orphan-question` and **the only place it can be
 caught**: the emitter carries every live question into every chapter through the last one,

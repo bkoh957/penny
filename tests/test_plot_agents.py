@@ -43,6 +43,8 @@ def test_chapter_cutter_contract():
         "cut-plan.md",
         "series/whodunit/book-NN.yaml",
         "beat sheet",
+        # --- direction is an input it must actually read (spec 2026-08-04 §4.1) ---
+        "## Chapter Direction",
         # --- the cut plan's row shapes: story_cut.py's parse_cut_plan reads
         # exactly these, so a drifted format silently loses beats or tracks ---
         "**Beats:**",
@@ -75,6 +77,12 @@ def test_chapter_cutter_never_claims_the_wiring_story_cut_derives():
     # weakening the guarantee (the same reasoning as the outline-fan pin).
     assert re.search(r"Never\s+emit\s+outline\s+sections\s+—.*?wiring.*?"
                      r"derived\s+by\s+`story_cut\.py`", t, re.S), t
+
+
+def test_chapter_cutter_is_told_direction_is_advisory_not_a_gate():
+    t = _text("chapter-cutter.md")
+    assert "Chapter Direction" in t
+    assert "propose" in t.lower()
 
 
 def test_outline_fan_contract():

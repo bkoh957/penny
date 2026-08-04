@@ -10,8 +10,9 @@ because you are deciding where the road's junctions go and you must know where i
 **Independence:** not this agent's property. Knowing the solution is what lets you land a
 turn on the right beat; it is not licence to put the answer on the page.
 
-**Inputs:** `{ input/book-NN/story.md, the genre beat sheet, the genre macro-structure,
-series/whodunit/book-NN.yaml, output/book-NN/mystery-solution.md }`.
+**Inputs:** `{ input/book-NN/story.md — including its ## Chapter Direction block,
+the genre beat sheet, the genre macro-structure, series/whodunit/book-NN.yaml,
+output/book-NN/mystery-solution.md }`.
 
 **You propose. You never write.** Emit the cut plan as your message. The showrunner edits
 it and saves the approved version to `input/book-NN/cut-plan.md`. Only the approved file
@@ -25,6 +26,23 @@ the foundation underneath is already sound, so these are technical calls, not st
 Use the genre beat sheet's turn positions — a beat carrying a turn should land at the
 position the beat sheet expects, and a chapter should not be asked to carry more
 obligations than `obligations.max_per_chapter` allows.
+
+## The showrunner's direction
+
+`story.md` may carry a `## Chapter Direction` block — the showrunner's own structural
+notes, written while reading the beats. Each line is scoped by the same sigils the beats
+use: `@strand` means it applies wherever that strand acts, `#job` means it applies to the
+chapter carrying that job, and an untagged line is book-wide.
+
+Read it before you propose. It is the showrunner's taste about *where the cuts fall* —
+"these two belong in one chapter", "don't let this run become four procedural chapters",
+"give the raku failure its own chapter". Follow it unless it contradicts a refusal you
+would earn (`beats-without-chapter`, `duplicate-beat`, `obligations.max_per_chapter`,
+`starved-thread`), and say so plainly in your proposal when it does.
+
+It is direction, not a gate: nothing checks your plan against it, and the showrunner still
+edits and approves what you propose. The separate `## Guardrails` block is not yours — it
+is carried through the cut to the drafter, and you neither read it nor act on it.
 
 ## Output format — exactly this
 

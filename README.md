@@ -281,7 +281,7 @@ as it does, so there's no separate weaving pass. The new `cut` stage turns it in
    Clues and Plants, wiring, Character Knowledge, Guardrails, and Starting/Ending State
    from the beats and the ledger.
 
-`story_cut.py` fails loud, by name, on thirteen findings, and never writes a partial
+`story_cut.py` fails loud, by name, on fifteen findings, and never writes a partial
 outline — there are no waivers at this level; fix the story or the cut plan:
 
 | finding | condition |
@@ -299,6 +299,8 @@ outline — there are no waivers at this level; fix the story or the cut plan:
 | `clue-not-found-in-ledger-text` | a resolved clue id can't be located in the ledger's text (refuses rather than write a partial update) |
 | `outline-modified-since-cut` | the outline was hand-edited since the cut wrote it, **or** it carries no `cut_output_sha256` at all — was never produced by a cut (see re-cutting, below) |
 | `cut-owned-outline` | `/expand-outline` was pointed at an outline the cut produced |
+| `orphan-direction` | a `## Chapter Direction`/`## Guardrails` line is scoped to an `@strand` or `#job` no beat carries — it would render nowhere and be read by no one |
+| `misplaced-schedule-tag` | a `## Chapter Direction`/`## Guardrails` line carries a `+q`/`-q`/`!clue` tag — those blocks scope with `@strand`/`#job` only, never schedule anything |
 
 **Why `unclosed-question` allows one and refuses two.** The cut carries every live
 question into every chapter through the last one, so once the outline exists, a question
