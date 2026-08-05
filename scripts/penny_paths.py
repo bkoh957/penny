@@ -140,7 +140,8 @@ def genre_dir(g: str | None = None, root: Path | None = None) -> Path:
 
 def _main(argv: list[str]) -> int:
     if not argv:
-        print("usage: penny_paths resolve <config|series|input|output|penny> <rel> | active", file=sys.stderr)
+        print("usage: penny_paths resolve <config|series|input|output|penny> <rel>"
+              " | resolve-dir <rel> [glob] | active", file=sys.stderr)
         return 2
     if argv[0] == "active":
         print(active())
@@ -154,7 +155,14 @@ def _main(argv: list[str]) -> int:
             return 2
         print(fn(rel))
         return 0
-    print("usage: penny_paths resolve <kind> <rel> | active", file=sys.stderr)
+    if argv[0] == "resolve-dir" and len(argv) in (2, 3):
+        rel = argv[1]
+        pattern = argv[2] if len(argv) == 3 else "*.md"
+        for p in config_dir_files(rel, pattern=pattern):
+            print(p)
+        return 0
+    print("usage: penny_paths resolve <config|series|input|output|penny> <rel>"
+          " | resolve-dir <rel> [glob] | active", file=sys.stderr)
     return 2
 
 

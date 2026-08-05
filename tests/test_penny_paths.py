@@ -194,3 +194,36 @@ def test_config_dir_files_higher_tier_shadows_same_filename(tmp_path, monkeypatc
 
     got = [p for p in pp.config_dir_files("review-rubrics", root=s) if p.name == "character-voice.md"]
     assert got == [series_ov / "character-voice.md"]
+
+
+# --- resolve-dir CLI verb: lists an overlay directory's union from the shell ---
+
+def test_resolve_dir_prints_one_path_per_line(tmp_path, monkeypatch, capsys):
+    (tmp_path / ".penny").mkdir()
+    (tmp_path / "config" / "story-craft").mkdir(parents=True)
+    (tmp_path / "config" / "story-craft" / "series-note.md").write_text(
+        "x", encoding="utf-8")
+    monkeypatch.setattr(pp, "series_root", lambda *a, **k: tmp_path)
+
+    assert pp._main(["resolve-dir", "story-craft"]) == 0
+    lines = [l for l in capsys.readouterr().out.splitlines() if l.strip()]
+    assert str(tmp_path / "config" / "story-craft" / "series-note.md") in lines
+    assert all(Path(l).is_file() for l in lines)
+
+
+def test_resolve_dir_takes_a_glob(tmp_path, monkeypatch, capsys):
+    (tmp_path / ".penny").mkdir()
+    (tmp_path / "config" / "story-craft").mkdir(parents=True)
+    (tmp_path / "config" / "story-craft" / "note.md").write_text(
+        "x", encoding="utf-8")
+    (tmp_path / "config" / "story-craft" / "data.yaml").write_text(
+        "k: v", encoding="utf-8")
+    monkeypatch.setattr(pp, "series_root", lambda *a, **k: tmp_path)
+
+    assert pp._main(["resolve-dir", "story-craft", "*.yaml"]) == 0
+    lines = [l for l in capsys.readouterr().out.splitlines() if l.strip()]
+    assert [Path(l).name for l in lines] == ["data.yaml"]
+
+
+def test_resolve_dir_usage_error(capsys):
+    assert pp._main(["resolve-dir"]) == 2
