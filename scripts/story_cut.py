@@ -709,10 +709,45 @@ def _item_spans(lines: list, heading_idx: int, heading_indent: str) -> list:
     return spans
 
 
+def _check(book: str) -> int:
+    """Validate story.md alone — no cut plan, no writes (spec 2026-08-06 §5).
+
+    `beats-without-chapter` is filtered out because with no cut plan it fires
+    once per beat, which is what a story mid-writing looks like, not a defect.
+    Same call /book-status already made when it gave that finding to the `cut
+    plan` row rather than the `story` row.
+    """
+    root = penny_paths.series_root()
+    story_p = root / "input" / f"book-{book}" / "story.md"
+    if not story_p.is_file():
+        print(f"story_cut: missing {story_p}", file=sys.stderr)
+        return 2
+
+    job_ids, _ = _job_ids_and_titles()
+    clues, _, _ = _ledger(root, book)
+    result = check_story(story_p.read_text(encoding="utf-8"), "",
+                         job_ids, list(clues))
+
+    findings = [f for f in result["blocking"]
+                if not f.startswith("beats-without-chapter")]
+    for f in findings:
+        print(f)
+    if result["notes"]:
+        print("\nAdvisory — nothing blocks on these:")
+        for note in result["notes"]:
+            print(f"  {note}")
+    if not findings:
+        print(f"story_cut: {story_p} has no blocking findings")
+    return 1 if findings else 0
+
+
 def main(argv=None) -> int:
     argv = sys.argv[1:] if argv is None else argv
+    if len(argv) == 2 and argv[0] == "check":
+        return _check(argv[1])
     if len(argv) != 1:
-        print("usage: story_cut.py <book>", file=sys.stderr)
+        print("usage: story_cut.py <book> | story_cut.py check <book>",
+              file=sys.stderr)
         return 2
     book = argv[0]
     root = penny_paths.series_root()

@@ -487,3 +487,60 @@ def test_job_ids_resolve_through_the_real_genre_lookup(tmp_path, monkeypatch):
     # _job_ids_and_titles() genuinely resolved through penny_genre and
     # outline_views.parse_jobs, not through the shared fixture's patch.
     assert "Establish the Protected World" in text
+
+
+def test_check_exits_zero_on_a_clean_story(tmp_path, monkeypatch, capsys):
+    _series(tmp_path, monkeypatch)
+    assert story_cut.main(["check", "02"]) == 0
+    assert "beats-without-chapter" not in capsys.readouterr().out
+
+
+def test_check_suppresses_beats_without_chapter_but_not_other_findings(
+        tmp_path, monkeypatch, capsys):
+    root = _series(tmp_path, monkeypatch)
+    (root / "input" / "book-02" / "story.md").write_text(
+        "- Maggie chooses this life.\n  @maggie #establish-protected-world\n\n"
+        "- The appointment was altered.\n  @maggie !c-unknown-id\n",
+        encoding="utf-8")
+    assert story_cut.main(["check", "02"]) == 1
+    out = capsys.readouterr().out
+    assert "unknown-clue" in out
+    assert "beats-without-chapter" not in out
+
+
+def test_check_prints_advisories_under_their_own_heading_and_still_exits_zero(
+        tmp_path, monkeypatch, capsys):
+    root = _series(tmp_path, monkeypatch)
+    (root / "input" / "book-02" / "story.md").write_text(
+        "- Plant the contradiction here.\n  @maggie\n\n"
+        "- Maggie finds Lisa dead.\n  @maggie !c-altered\n\n"
+        "## Questions\n- q-clear — how can Maggie clear herself?\n",
+        encoding="utf-8")
+    assert story_cut.main(["check", "02"]) == 0
+    out = capsys.readouterr().out
+    assert "Advisory" in out
+    assert "directive-shaped-beat" in out
+
+
+def test_check_needs_no_cut_plan(tmp_path, monkeypatch):
+    root = _series(tmp_path, monkeypatch)
+    (root / "input" / "book-02" / "cut-plan.md").unlink()
+    assert story_cut.main(["check", "02"]) == 0
+
+
+def test_check_reports_a_missing_story(tmp_path, monkeypatch, capsys):
+    root = _series(tmp_path, monkeypatch)
+    (root / "input" / "book-02" / "story.md").unlink()
+    assert story_cut.main(["check", "02"]) == 2
+
+
+def test_usage_line_names_both_forms(capsys):
+    assert story_cut.main([]) == 2
+    assert "check" in capsys.readouterr().err
+
+
+def test_bare_check_is_not_mistaken_for_a_book_number(tmp_path, monkeypatch, capsys):
+    """`story_cut.py check` with no book resolves book-check, which has no
+    story — a clean exit 2, never a traceback."""
+    _series(tmp_path, monkeypatch)
+    assert story_cut.main(["check"]) == 2
