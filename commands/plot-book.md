@@ -104,11 +104,41 @@ state; this command never asks you anything a file already answers.
    once, at step 10.
 
 6. **Stage chapters:** write `input/book-$book/story.md` directly — beats in
-   story order between the turning points, one per bullet, prose first, tags
-   trailing (`@strand`, `#job`, `+question`/`-question`, `!clue-id` — spec
-   `2026-08-03-story-source-layer-design.md` §3). Draw the clue schedule from
-   `series/whodunit/book-$book.yaml` and tag each clue's `!clue-id` onto the
-   beat that plants it.
+   story order between the turning points, one per bullet, tags trailing
+   (`@strand`, `#job`, `+question`/`-question`, `!clue-id` — spec
+   `2026-08-03-story-source-layer-design.md` §3).
+
+   **Read the craft document before you write a single beat:**
+
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/penny_paths.py" resolve-dir story-craft
+   ```
+
+   Read every path it prints. That union — the engine's
+   `config/story-craft/writing-beats.md` plus anything the genre or series adds
+   — is what a beat is. The short version, which does not replace reading it:
+   a beat is a change on the page, **one visible change per beat**, and a note
+   addressed to the writer ("plant this", "do not reveal that", "keep it
+   subtext") is not a beat — it belongs in `## Guardrails`, or in
+   `## Chapter Direction` if it is about where chapters fall.
+
+   Draw the clue schedule from `series/whodunit/book-$book.yaml` and tag each
+   clue's `!clue-id` onto the beat that plants it.
+
+   Open the file with this header, so an agent that arrives later — in this
+   session or in another model entirely — finds the craft document from the
+   file itself:
+
+   ```markdown
+   # Story — book NN
+
+   Beats in story order. Chapters do not exist here; the cut decides them.
+   Four sigils carry meaning — `@strand` `#job` `+q-id`/`-q-id` `!clue-id`.
+   Everything else is for your reading.
+
+   What a beat is: config/story-craft/writing-beats.md (read it before editing).
+   Check this file with: story_cut.py check NN
+   ```
 
    This folds what used to be two dispatches of the now-retired
    `chapter-weaver` into one: strands and questions are tagged inline as each

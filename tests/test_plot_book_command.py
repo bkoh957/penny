@@ -80,3 +80,22 @@ def test_plot_book_runs_the_cut_after_approval():
     assert "chapter-cutter" in t
     assert "scripts/story_cut.py" in t
     assert "cut-plan.md" in t
+
+
+def test_stage_chapters_points_at_the_craft_document():
+    t = CMD.read_text(encoding="utf-8")
+    assert "config/story-craft" in t
+    assert "resolve-dir story-craft" in t
+
+
+def test_stage_chapters_no_longer_defines_a_beat_by_its_syntax_alone():
+    """The old clause described only the tag layout, which is what produced
+    correctly-tagged architecture notes instead of beats (spec §1)."""
+    t = CMD.read_text(encoding="utf-8")
+    assert "one per bullet, prose first, tags\n   trailing" not in t
+    assert "one visible change" in t
+
+
+def test_a_new_story_gets_a_self_describing_header():
+    t = CMD.read_text(encoding="utf-8")
+    assert "writing-beats.md" in t
