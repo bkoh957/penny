@@ -175,8 +175,8 @@ on the page, one visible change per beat; a note addressed to the writer belongs
 `/plot-book`'s chapters stage reads that union before writing a beat, and the
 **`story-author`** agent works a named range of beats with the showrunner — it may
 mint `@strand` slugs (shape-checked only) but never a `!clue-id` (a ledger fact) or a
-`#job` (a genre fact) — the missing-authority gap is exactly how book 01's 18 invented
-ids went missing.
+`#job` (a genre fact) — that missing authority is exactly how book 01 ended up with
+18 invented ids that no ledger clue or genre job backs.
 `story_cut.py check NN` validates a story with no cut plan, suppressing
 `beats-without-chapter` (with no plan it fires once per beat) and printing the one
 advisory, **`directive-shaped-beat`** — a beat opening with an imperative such as
