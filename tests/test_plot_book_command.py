@@ -96,6 +96,28 @@ def test_stage_chapters_no_longer_defines_a_beat_by_its_syntax_alone():
     assert "one visible change" in t
 
 
+def _story_header_block(t: str) -> str:
+    """The literal ```markdown``` fence the runbook tells the author to write
+    into a new story.md — the portable header, isolated from the rest of the
+    runbook's own prose so assertions about it can't accidentally pass
+    because some OTHER paragraph happens to mention the same words."""
+    start = t.index("```markdown\n   # Story")
+    end = t.index("```", start + len("```markdown"))
+    return t[start:end]
+
+
 def test_a_new_story_gets_a_self_describing_header():
     t = CMD.read_text(encoding="utf-8")
     assert "writing-beats.md" in t
+
+
+def test_the_header_resolves_the_craft_document_rather_than_naming_a_bare_path():
+    """FINDING 3 (final review): under a series root, bare
+    `config/story-craft/writing-beats.md` does not exist — the file ships in
+    the plugin. The header must tell the reader how to RESOLVE the craft
+    document (the same `resolve-dir story-craft` invocation the runbook uses
+    on itself two paragraphs earlier), not point at a path that only exists
+    inside the plugin repo."""
+    block = _story_header_block(CMD.read_text(encoding="utf-8"))
+    assert "resolve-dir story-craft" in block
+    assert "config/story-craft/writing-beats.md" not in block

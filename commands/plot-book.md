@@ -136,7 +136,8 @@ state; this command never asks you anything a file already answers.
    Four sigils carry meaning — `@strand` `#job` `+q-id`/`-q-id` `!clue-id`.
    Everything else is for your reading.
 
-   What a beat is: config/story-craft/writing-beats.md (read it before editing).
+   What a beat is: `penny_paths.py resolve-dir story-craft` names it — read
+   every path it prints, before editing.
    Check this file with: story_cut.py check NN
    ```
 
