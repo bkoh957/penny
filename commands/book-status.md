@@ -19,8 +19,9 @@ is safe to run at any time, on any book, including one mid-draft.
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/book_status.py" "$book" ${2:+"$2"}
    ```
 
-   Exit 2 means a usage problem — no such book, an invalid id, or no outline to
-   report on. Show the message; there is nothing to work around.
+   Exit 2 means a usage problem — no such book, an invalid id, or a book with
+   neither a `story.md` nor an `outline.md` to report on. Show the message;
+   there is nothing to work around.
 
 3. **Present it as printed.** Do not summarise the table away or re-order it.
    The two columns mean different things: **RUN** is "the artefact exists",

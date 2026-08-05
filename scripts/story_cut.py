@@ -469,9 +469,14 @@ def recut_refusal(existing_outline_text: str) -> "str | None":
     return None
 
 
-def _job_ids_and_titles():
-    """(ids, id->title) from the active genre's macro-structure, or ([], {})."""
-    path = penny_genre.macro_structure()
+def _job_ids_and_titles(root=None):
+    """(ids, id->title) from the active genre's macro-structure, or ([], {}).
+
+    `root` is threaded through because `book_status.py` calls this with an
+    injected series root: it reports on a book without being run from inside
+    it, and resolving the genre from cwd would read some other series' pack.
+    """
+    path = penny_genre.macro_structure(root=root)
     if path is None or not path.is_file():
         return [], {}
     jobs = parse_jobs(path.read_text(encoding="utf-8"))

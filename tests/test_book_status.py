@@ -922,3 +922,254 @@ def test_one_chapter_rows_artefacts_are_relative_to_the_series_root(tmp_path):
     for r in rows:
         assert not Path(r.artefact).is_absolute(), f"{r.id} artefact is absolute: {r.artefact}"
     assert _row(rows, "draft").artefact == "output/book-01/chapters/ch-01.draft.md"
+
+
+# --- the story layer (spec 2026-08-03): three rows above the outline, because
+# since the source layer the outline is a build product and the table was
+# reporting on the output while the author worked on the input ---------------
+
+STORY = """---
+book: 01
+---
+
+# Story — book 01
+
+- Maggie chooses this life. @maggie #establish-protected-world +q-clear
+- The vase is wrong. @maggie #crime-and-first-contradiction -q-clear !c-vase
+
+## Questions
+- q-clear — how can Maggie clear herself?
+"""
+
+CUT_PLAN = """## Chapter 01 — One
+
+- **Beats:** 1
+- **Summary:** s
+- **Compress:** c
+
+## Chapter 02 — Two
+
+- **Beats:** 2
+- **Summary:** s
+- **Compress:** c
+"""
+
+LEDGER = """reveal_chapter: 2
+culprit: marion
+clue_schedule:
+  - id: c-vase
+    plant_chapter: 1
+    description: the wrong vase
+"""
+
+
+def _source_layer(root, story=STORY, plan=None, ledger=LEDGER, genre="cozy-mystery"):
+    """A series folder that is ON the source layer: a story.md, a genre the
+    engine can resolve jobs from, and a whodunit ledger to resolve clue ids."""
+    if genre is not None:
+        (root / "series.yaml").write_text(f"genre: {genre}\n", encoding="utf-8")
+    if ledger is not None:
+        d = root / "series" / "whodunit"
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "book-01.yaml").write_text(ledger, encoding="utf-8")
+    p = root / "input" / "book-01" / "story.md"
+    p.write_text(story, encoding="utf-8")
+    if plan is not None:
+        (root / "input" / "book-01" / "cut-plan.md").write_text(plan, encoding="utf-8")
+    return p
+
+
+def _write_cut_outline(root, story_text, plan_text=CUT_PLAN, body="# Outline\n\nbody.\n"):
+    """An outline stamped by the real emitter, so these tests break if the
+    stamp format moves."""
+    from scripts import story_cut
+    text = story_cut.stamp_outline(
+        body,
+        story_sha=hashlib.sha256(story_text.encode("utf-8")).hexdigest(),
+        cut_sha=hashlib.sha256(plan_text.encode("utf-8")).hexdigest(),
+        book="01", total_chapters=2, whodunit_sha=None)
+    p = root / "input" / "book-01" / "outline.md"
+    p.write_text(text, encoding="utf-8")
+    return p
+
+
+def _ids(rows):
+    return [r.id for r in rows]
+
+
+def test_a_book_with_no_story_md_gets_no_story_layer_rows(tmp_path):
+    """Presence on disk is the switch — no adoption flag. A hand-authored book
+    is not on the source layer and rows about it would be noise."""
+    root = _series(tmp_path)
+    _write_outline(root)
+    ids = _ids(book_status.book_rows("01", root))
+    assert "story" not in ids and "cut-plan" not in ids and "cut" not in ids
+
+
+def test_story_layer_rows_come_before_the_outline_row(tmp_path):
+    """Row order IS the mechanism: next_action prefers the first ran-but-failed
+    row, so the source must sit above the build product."""
+    root = _series(tmp_path)
+    _source_layer(root, plan=CUT_PLAN)
+    ids = _ids(book_status.book_rows("01", root))
+    assert ids.index("story") < ids.index("outline")
+    assert ids.index("cut-plan") < ids.index("outline")
+    assert ids.index("cut") < ids.index("outline")
+
+
+def test_story_row_passes_for_a_story_with_no_findings(tmp_path):
+    root = _series(tmp_path)
+    _source_layer(root, plan=CUT_PLAN)
+    r = _row(book_status.book_rows("01", root), "story")
+    assert r.run.ok is True and r.passed.ok is True
+    assert "2 beats" in r.reason
+
+
+def test_story_row_fails_and_counts_findings(tmp_path):
+    root = _series(tmp_path)
+    _source_layer(root, story=STORY.replace("#establish-protected-world",
+                                            "#invented-job"), plan=CUT_PLAN)
+    r = _row(book_status.book_rows("01", root), "story")
+    assert r.run.ok is True and r.passed.ok is False
+    assert "1 finding" in r.reason
+
+
+def test_story_row_ignores_beats_without_chapter(tmp_path):
+    """That finding is the cut plan's business, not the story's. With no cut
+    plan it fires for every beat and would make every live story look broken."""
+    root = _series(tmp_path)
+    _source_layer(root, plan=None)
+    r = _row(book_status.book_rows("01", root), "story")
+    assert r.passed.ok is True
+
+
+def test_story_row_is_unknown_when_the_genre_cannot_be_resolved(tmp_path):
+    """No series.yaml means no job list, so every #job would read as unknown-job.
+    A report that guesses is worse than one that admits."""
+    root = _series(tmp_path)
+    _source_layer(root, plan=CUT_PLAN, genre=None)
+    r = _row(book_status.book_rows("01", root), "story")
+    assert r.passed.kind == "unknown"
+    assert "genre" in r.reason.lower()
+
+
+def test_story_row_is_unknown_when_the_whodunit_ledger_is_missing(tmp_path):
+    root = _series(tmp_path)
+    _source_layer(root, plan=CUT_PLAN, ledger=None)
+    r = _row(book_status.book_rows("01", root), "story")
+    assert r.passed.kind == "unknown"
+    assert "ledger" in r.reason.lower()
+
+
+def test_cut_plan_row_is_not_run_without_a_cut_plan(tmp_path):
+    root = _series(tmp_path)
+    _source_layer(root, plan=None)
+    r = _row(book_status.book_rows("01", root), "cut-plan")
+    assert r.run.ok is False
+
+
+def test_cut_plan_row_fails_when_a_beat_is_in_no_chapter(tmp_path):
+    root = _series(tmp_path)
+    _source_layer(root, plan=CUT_PLAN.split("## Chapter 02")[0])
+    r = _row(book_status.book_rows("01", root), "cut-plan")
+    assert r.run.ok is True and r.passed.ok is False
+    assert "beat" in r.reason.lower()
+
+
+def test_cut_row_passes_when_the_outline_was_cut_from_this_story(tmp_path):
+    root = _series(tmp_path)
+    p = _source_layer(root, plan=CUT_PLAN)
+    _write_cut_outline(root, p.read_text(encoding="utf-8"))
+    r = _row(book_status.book_rows("01", root), "cut")
+    assert r.run.ok is True and r.passed.ok is True
+
+
+def test_cut_row_fails_when_story_md_changed_since_the_cut(tmp_path):
+    """The quiet failure this whole row exists for: outline valid, lock valid,
+    everything downstream green, and the author has moved on upstream."""
+    root = _series(tmp_path)
+    p = _source_layer(root, plan=CUT_PLAN)
+    _write_cut_outline(root, p.read_text(encoding="utf-8"))
+    p.write_text(STORY + "\n- One more beat. @maggie\n", encoding="utf-8")
+    r = _row(book_status.book_rows("01", root), "cut")
+    assert r.run.ok is True and r.passed.ok is False
+    assert "story.md" in r.reason
+
+
+def test_cut_row_fails_when_the_outline_was_not_produced_by_the_cut(tmp_path):
+    """Book 01's shape mid-migration: a legacy outline with no built_from_story.
+    Not unknown — it is a known fact that this outline is not the story's output."""
+    root = _series(tmp_path)
+    _source_layer(root, plan=CUT_PLAN)
+    _write_outline(root)
+    r = _row(book_status.book_rows("01", root), "cut")
+    assert r.run.ok is True and r.passed.ok is False
+    assert "built_from_story" in r.reason
+
+
+def test_cut_row_is_not_run_when_there_is_no_outline(tmp_path):
+    root = _series(tmp_path)
+    _source_layer(root, plan=CUT_PLAN)
+    r = _row(book_status.book_rows("01", root), "cut")
+    assert r.run.ok is False
+
+
+def test_next_action_prefers_a_moved_story_over_a_stale_feedback_ledger(tmp_path):
+    """The bug in one test: book 02 mid-edit. Feedback is STALE and would win
+    the next: line, sending the showrunner to re-run a panel over an outline
+    the story has already left behind."""
+    root = _series(tmp_path)
+    p = _source_layer(root, plan=CUT_PLAN)
+    _write_cut_outline(root, p.read_text(encoding="utf-8"))
+    p.write_text(STORY + "\n- One more beat. @maggie\n", encoding="utf-8")
+    reports = root / "output" / "book-01" / "reports"
+    reports.mkdir(parents=True, exist_ok=True)
+    (reports / "outline-feedback.yaml").write_text(
+        "reviewed_outline_sha256: deadbeef\n"
+        "items:\n  - {id: OF-1, state: open}\n", encoding="utf-8")
+    assert book_status.next_action(book_status.all_rows("01", root)).id == "cut"
+
+
+def test_cut_row_offers_no_runnable_recut_command(tmp_path):
+    """Re-cutting rewrites the ledger and restales every packet. The row states
+    the discrepancy and its cost; it must not hand over a copy-pasteable
+    command that hides the prerequisite."""
+    root = _series(tmp_path)
+    p = _source_layer(root, plan=CUT_PLAN)
+    _write_cut_outline(root, p.read_text(encoding="utf-8"))
+    p.write_text(STORY + "\n- One more beat. @maggie\n", encoding="utf-8")
+    r = _row(book_status.book_rows("01", root), "cut")
+    out = book_status.render("01", [r], r, [])
+    next_line = next(l for l in out.splitlines() if l.startswith("next:"))
+    assert "story_cut.py" not in next_line and "/plot-book" not in next_line
+    assert "re-cut" in next_line.lower()
+
+
+def test_cut_row_names_the_lock_as_a_cost_when_one_exists(tmp_path):
+    """Cascade the row must not hide: re-cutting needs the ledger unsealed."""
+    root = _series(tmp_path)
+    p = _source_layer(root, plan=CUT_PLAN)
+    _write_cut_outline(root, p.read_text(encoding="utf-8"))
+    p.write_text(STORY + "\n- One more beat. @maggie\n", encoding="utf-8")
+    _write_lock(root, "book: 01\nvalidated: fairplay\n")
+    r = _row(book_status.book_rows("01", root), "cut")
+    assert "lock" in (r.fix_command or "").lower()
+
+
+def test_main_reports_a_book_that_has_a_story_but_no_outline_yet(tmp_path, monkeypatch, capsys):
+    """Two real shapes have a story.md and no outline: book 02 between
+    /plot-book writing story.md and the first cut, and book 01 the moment its
+    legacy outline is deleted to migrate. Refusing here would make the
+    documented migration step turn the table off."""
+    root = _series(tmp_path)
+    _source_layer(root, plan=CUT_PLAN)
+    monkeypatch.chdir(root)
+    assert book_status._main(["01"]) == 0
+    assert "story" in capsys.readouterr().out
+
+
+def test_main_still_refuses_a_book_with_neither_story_nor_outline(tmp_path, monkeypatch, capsys):
+    root = _series(tmp_path)
+    monkeypatch.chdir(root)
+    assert book_status._main(["01"]) == 2
+    assert "nothing to report" in capsys.readouterr().err.lower()

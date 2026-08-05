@@ -278,11 +278,179 @@ def parse_frontmatter_or_lines(text: str) -> dict:
     return out
 
 
+def _story_path(book: str, root) -> Path:
+    return Path(penny_paths.input_path(f"book-{book}/story.md", root=root))
+
+
+def _cut_plan_path(book: str, root) -> Path:
+    return Path(penny_paths.input_path(f"book-{book}/cut-plan.md", root=root))
+
+
+def _story_row(book: str, root) -> Row:
+    """Findings over story.md — the layer the author actually edits.
+
+    Reuses `story_cut.check_story`, the same function the cut itself refuses
+    on, so this row can never disagree with what the cut will do. Anything it
+    cannot resolve (genre, ledger) is `unknown`, never a fail: without the job
+    list every #job reads as unknown-job, and a table that guesses is worse
+    than one that admits.
+
+    Function-local import throughout: story_cut pulls in PyYAML at module
+    level, and this file keeps PyYAML off its import surface (dependency-split
+    rule).
+    """
+    rel = f"input/book-{book}/story.md"
+    common = dict(id="story", label="story",
+                  command=f"/plot-book {book}", artefact=rel)
+    from scripts import story_cut
+
+    try:
+        job_ids, _ = story_cut._job_ids_and_titles(root=root)
+    except Exception as exc:
+        return Row(run=yes(), passed=unknown(),
+                   reason=f"the genre's job list could not be read: {exc}", **common)
+    if not job_ids:
+        return Row(run=yes(), passed=unknown(),
+                   reason="the active genre's macro-structure could not be "
+                          "resolved — every #job would read as unknown-job",
+                   **common)
+    try:
+        clues, _data, ledger_p = story_cut._ledger(root, book)
+    except Exception as exc:
+        return Row(run=yes(), passed=unknown(),
+                   reason=f"the whodunit ledger could not be read: {exc}", **common)
+    if not ledger_p.is_file():
+        return Row(run=yes(), passed=unknown(),
+                   reason="the whodunit ledger is missing — every !clue would "
+                          "read as unknown-clue", **common)
+
+    text = _story_path(book, root).read_text(encoding="utf-8")
+    result = story_cut.check_story(text, "", job_ids, list(clues))
+    # beats-without-chapter is the cut plan's question, not the story's. It
+    # fires for EVERY beat when the plan is absent, which is the normal state
+    # of a story being written — counting it here would make every live book
+    # look broken.
+    findings = [f for f in result["blocking"]
+                if not f.startswith("beats-without-chapter")]
+    if findings:
+        n = len(findings)
+        return Row(run=yes(), passed=no(),
+                   reason=f"{n} finding{'s' if n != 1 else ''} — fix before cutting",
+                   fix_command=f"fix the findings in {rel}", **common)
+    return Row(run=yes(), passed=yes(),
+               reason=f"{len(story_cut.parse_story(text))} beats, no findings",
+               **common)
+
+
+def _cut_plan_row(book: str, root) -> Row:
+    """Whether the chapter-cutter's grouping exists and covers every beat."""
+    p = _cut_plan_path(book, root)
+    rel = f"input/book-{book}/cut-plan.md"
+    common = dict(id="cut-plan", label="cut plan",
+                  command=f"/plot-book {book}", artefact=rel)
+    if not p.is_file():
+        return Row(run=no(), passed=no(),
+                   reason="no cut plan — the chapter-cutter has not proposed one",
+                   **common)
+    from scripts import story_cut
+    plan_text = p.read_text(encoding="utf-8")
+    story_text = _story_path(book, root).read_text(encoding="utf-8")
+    # Empty job/clue lists on purpose: this row asks only whether every beat
+    # landed in a chapter, and beats-without-chapter needs neither. Keeping it
+    # independent of the genre means a book with an unresolvable genre still
+    # gets a truthful cut-plan row.
+    result = story_cut.check_story(story_text, plan_text, [], [])
+    orphans = [f for f in result["blocking"]
+               if f.startswith("beats-without-chapter")]
+    if orphans:
+        return Row(run=yes(), passed=no(), reason=orphans[0],
+                   fix_command=f"every beat must land in a chapter — edit {rel}",
+                   **common)
+    return Row(run=yes(), passed=yes(),
+               reason=f"{len(story_cut.parse_cut_plan(plan_text))} chapters",
+               **common)
+
+
+def _recut_cost(book: str, root) -> str:
+    """What re-cutting costs, named rather than commanded.
+
+    This row deliberately hands over no runnable command. Re-cutting rewrites
+    `plant_chapter:` in the whodunit ledger, so it needs the ledger UNSEALED,
+    and it restales every packet built from the current outline. A
+    copy-pasteable command would hide both prerequisites behind one word, and
+    "the status table told me to" is not a reason to delete a certificate.
+    """
+    costs = []
+    lock = Path(penny_paths.penny_path(
+        f"locks/book-{book}.mystery.lock", root=root))
+    if lock.is_file():
+        costs.append("the mystery lock must be deleted first "
+                     "(the cut rewrites the ledger)")
+    n = len(_glob_chapters(
+        Path(penny_paths.input_path(f"book-{book}/packets", root=root)), "ch-*.md"))
+    if n:
+        costs.append(f"{n} packet{'s' if n != 1 else ''} will go stale")
+    tail = ("; " + "; ".join(costs)) if costs else ""
+    return f"re-cut needed — story.md has moved past outline.md{tail}"
+
+
+def _cut_row(book: str, root) -> Row:
+    """Whether outline.md is still the output of the story on disk.
+
+    The outline already records this: `story_cut.stamp_outline` writes
+    `built_from_story: <sha of story.md>` into its frontmatter. Nothing read it
+    until now, which is why a book being edited upstream looked green.
+    """
+    outline_p = _outline_path(book, root)
+    rel = f"input/book-{book}/outline.md"
+    common = dict(id="cut", label="cut", command=f"/plot-book {book}",
+                  artefact=rel)
+    if not outline_p.is_file():
+        return Row(run=no(), passed=no(), reason="not cut yet", **common)
+
+    stamped = parse_frontmatter(
+        outline_p.read_text(encoding="utf-8")).get("built_from_story")
+    if not stamped:
+        # A KNOWN fact, not an unknown: this outline is not the story's output.
+        # It is the legacy/hand-authored shape (book 01 mid-migration), and
+        # deleting it is what makes the first cut legal — the showrunner's
+        # explicit act, never an engine override.
+        return Row(run=yes(), passed=no(),
+                   reason="outline.md carries no built_from_story — it was not "
+                          "produced by the cut",
+                   fix_command="this outline predates the cut; deleting it is "
+                               "what makes the first cut legal",
+                   **common)
+
+    current = hashlib.sha256(
+        _story_path(book, root).read_text(encoding="utf-8").encode("utf-8")
+    ).hexdigest()
+    if str(stamped) == current:
+        return Row(run=yes(), passed=yes(),
+                   reason=f"matches input/book-{book}/story.md", **common)
+    return Row(run=yes(), passed=no(),
+               reason="OUT OF DATE — story.md changed since the cut",
+               fix_command=_recut_cost(book, root), **common)
+
+
 def book_rows(book: str, repo_root=None) -> list[Row]:
     root = _root(repo_root)
     book = str(book).zfill(2)
-    return [_outline_row(book, root), _diagnostics_row(book, root),
-            _feedback_row(book, root), _lock_row(book, root)]
+    # The source layer sits ABOVE the outline, because since spec 2026-08-03
+    # the outline is a build product: story.md is what the author edits. Row
+    # order is the whole mechanism — next_action prefers the first
+    # ran-but-failed row, so a book being edited upstream can no longer be
+    # advised from its own output.
+    #
+    # Presence on disk is the switch, not a flag: a book with no story.md is
+    # not on the source layer and rows about it would be noise. This mirrors
+    # the cut's own rule (recut_refusal runs only `if outline_p.is_file()`).
+    source_layer = []
+    if _story_path(book, root).is_file():
+        source_layer = [_story_row(book, root), _cut_plan_row(book, root),
+                        _cut_row(book, root)]
+    return source_layer + [_outline_row(book, root), _diagnostics_row(book, root),
+                           _feedback_row(book, root), _lock_row(book, root)]
 
 
 _UNKNOWN_TOTAL = "total_chapters not declared in the outline frontmatter"
@@ -599,9 +767,15 @@ def _main(argv: list[str]) -> int:
         return 2
     book = book.zfill(2)
     root = penny_paths.series_root()
-    if not _outline_path(book, root).is_file():
-        print(f"book_status: no outline for book {book} "
-              f"({_outline_path(book, root)})", file=sys.stderr)
+    # A story.md with no outline is not an error — it is book 02 between
+    # /plot-book writing the story and the first cut, and it is book 01 the
+    # moment its legacy outline is deleted to migrate. Refusing on the outline
+    # alone would turn the table off exactly at the documented migration step.
+    if not (_outline_path(book, root).is_file()
+            or _story_path(book, root).is_file()):
+        print(f"book_status: nothing to report for book {book} — neither "
+              f"{_story_path(book, root)} nor {_outline_path(book, root)}",
+              file=sys.stderr)
         return 2
     if len(argv) == 2:
         ch = argv[1]
