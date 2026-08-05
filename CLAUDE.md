@@ -66,9 +66,9 @@ pure stdlib — see the dependency split below.
 2. **Orchestration — `commands/*.md` + `agents/*.md`.** Slash commands
    are step-by-step runbooks that shell out to `scripts/` (referenced from runbooks as
    `${CLAUDE_PLUGIN_ROOT}/scripts/...` so they resolve regardless of which series folder
-   is the cwd) and dispatch sub-agents. Agents are role-scoped (drafter, the 5 isolated
-   inspectors, the context-rich developmental-editor, line/copy editors, beta-reader,
-   etc.).
+   is the cwd) and dispatch sub-agents. Agents are role-scoped (drafter, the story-author,
+   the 5 isolated inspectors, the context-rich developmental-editor, line/copy editors,
+   beta-reader, etc.).
 3. **Swappable data — genre packs + the active series folder.** `genres/<g>/` holds
    `genre.yaml` (inspector roster, gates, planning command, tracks), conventions, and
    genre rubrics. The series folder holds `config/` overrides (packs, rubrics,
@@ -166,6 +166,22 @@ plan. Authored guardrails are emitted **in authoring order**, ahead of the deriv
 series-guardrail and reveal-chapter lines; a note shaped like a wiring field or a Track
 Movement row is refused rather than emitted, since the emitted block is parsed line by
 line and authored prose must not be able to forge the cut's own output.
+
+What a beat *is* — as opposed to how it is tagged — lives in the config overlay at
+`config/story-craft/`, read as a **directory** so a genre pack can add to it without
+copying it (spec `2026-08-06-dramatic-beat-authoring-design.md`). A beat is a change
+on the page, one visible change per beat; a note addressed to the writer belongs in
+`## Guardrails`, and a note about where chapters fall in `## Chapter Direction`.
+`/plot-book`'s chapters stage reads that union before writing a beat, and the
+**`story-author`** agent works a named range of beats with the showrunner — it may
+mint `@strand` slugs (shape-checked only) but never a `!clue-id` (a ledger fact) or a
+`#job` (a genre fact), which is the authority book 01's 18 invented ids went missing.
+`story_cut.py check NN` validates a story with no cut plan, suppressing
+`beats-without-chapter` (with no plan it fires once per beat) and printing the one
+advisory, **`directive-shaped-beat`** — a beat opening with an imperative such as
+*Plant* or *Do not*. It rides the existing non-blocking `notes` channel, never
+`blocking`: the sixteen findings stay sixteen, and an advisory that could block would
+just be a seventeenth with a softer name.
 
 `unclosed-question` is the converse of `orphan-question` and **the only place it can be
 caught**: the emitter carries every live question into every chapter through the last one,

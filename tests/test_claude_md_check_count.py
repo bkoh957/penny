@@ -20,3 +20,16 @@ def test_claude_md_names_nine_tension_checks_including_overloaded_chapter():
 def test_claude_md_documents_penny_length():
     text = CLAUDE_MD.read_text(encoding="utf-8")
     assert "scripts/penny_length.py" in text
+
+
+def test_claude_md_documents_the_check_subcommand_and_the_advisory():
+    text = CLAUDE_MD.read_text(encoding="utf-8")
+    assert "story_cut.py check" in text
+    assert "directive-shaped-beat" in text
+    assert "sixteen findings" in text          # unchanged — no finding added
+
+
+def test_claude_md_names_the_craft_document_and_the_authoring_agent():
+    text = CLAUDE_MD.read_text(encoding="utf-8")
+    assert "config/story-craft/" in text
+    assert "story-author" in text
