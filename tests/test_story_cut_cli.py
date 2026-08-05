@@ -522,6 +522,69 @@ def test_check_prints_advisories_under_their_own_heading_and_still_exits_zero(
     assert "directive-shaped-beat" in out
 
 
+def test_check_suppresses_unknown_clue_when_the_ledger_is_missing(
+        tmp_path, monkeypatch, capsys):
+    """The counterplot stage writes the ledger AFTER the chapters stage
+    drafts the beats — a story with clue tags and no ledger yet is the
+    normal mid-workshop state, not a defect. `_check` must not report a wall
+    of unknown-clue findings it cannot trust (finding 1)."""
+    root = _series(tmp_path, monkeypatch)
+    ledger_p = root / "series" / "whodunit" / "book-02.yaml"
+    ledger_p.unlink()
+    assert story_cut.main(["check", "02"]) == 0
+    out = capsys.readouterr().out
+    assert "unknown-clue:" not in out
+    assert "unscheduled-clue:" not in out
+    assert "could not run" in out
+    assert str(ledger_p) in out
+
+
+def test_check_still_reports_a_genuine_unknown_clue_once_the_ledger_exists(
+        tmp_path, monkeypatch, capsys):
+    """The suppression in the test above must not blind the check once a
+    ledger IS present — a clue id that is genuinely absent from it still
+    needs to be caught."""
+    root = _series(tmp_path, monkeypatch)
+    (root / "input" / "book-02" / "story.md").write_text(
+        "- Maggie chooses this life.\n  @maggie #establish-protected-world\n\n"
+        "- The appointment was altered.\n  @maggie !c-unknown-id\n",
+        encoding="utf-8")
+    assert story_cut.main(["check", "02"]) == 1
+    out = capsys.readouterr().out
+    assert "unknown-clue: beat 2 tags !c-unknown-id" in out
+    assert "could not run" not in out
+
+
+def test_check_suppresses_unknown_job_when_the_job_list_is_unresolved(
+        tmp_path, monkeypatch, capsys):
+    root = _series(tmp_path, monkeypatch)
+    monkeypatch.setattr(story_cut, "_job_ids_and_titles", lambda: ([], {}))
+    assert story_cut.main(["check", "02"]) == 0
+    out = capsys.readouterr().out
+    assert "unknown-job:" not in out
+    assert "could not run" in out
+
+
+def test_check_still_exits_one_on_a_genuine_finding_with_both_preconditions_unresolved(
+        tmp_path, monkeypatch, capsys):
+    """Suppressing the unknown-clue/unknown-job guesses must not swallow a
+    finding of a different kind — the exit code still reflects genuine
+    problems even while both preconditions are unresolvable."""
+    root = _series(tmp_path, monkeypatch)
+    (root / "series" / "whodunit" / "book-02.yaml").unlink()
+    monkeypatch.setattr(story_cut, "_job_ids_and_titles", lambda: ([], {}))
+    (root / "input" / "book-02" / "story.md").write_text(
+        "- Maggie chooses this life.\n  @Bad-Slug\n\n"
+        "- The appointment was altered.\n  @maggie !c-altered +q-clear\n\n"
+        "## Questions\n- q-clear — how can Maggie clear herself?\n",
+        encoding="utf-8")
+    assert story_cut.main(["check", "02"]) == 1
+    out = capsys.readouterr().out
+    assert "unknown-strand" in out
+    assert "unknown-clue:" not in out
+    assert "unknown-job:" not in out
+
+
 def test_check_needs_no_cut_plan(tmp_path, monkeypatch):
     root = _series(tmp_path, monkeypatch)
     (root / "input" / "book-02" / "cut-plan.md").unlink()

@@ -716,6 +716,16 @@ def _check(book: str) -> int:
     once per beat, which is what a story mid-writing looks like, not a defect.
     Same call /book-status already made when it gave that finding to the `cut
     plan` row rather than the `story` row.
+
+    Same rule as `book_status.py`'s `_story_row`: a table that guesses is
+    worse than one that admits. Without a resolvable job list every #job
+    would read as unknown-job; without the whodunit ledger every !clue-id
+    would read as unknown-clue and every ledger clue would read as
+    unscheduled — both are the NORMAL mid-workshop state, since the
+    counterplot stage writes the ledger only after the chapters stage drafts
+    the beats. So those findings are suppressed here (not in `check_story`,
+    whose injected-ids design stays deliberate) and replaced with a named
+    note saying the check could not run and why.
     """
     root = penny_paths.series_root()
     story_p = root / "input" / f"book-{book}" / "story.md"
@@ -724,17 +734,32 @@ def _check(book: str) -> int:
         return 2
 
     job_ids, _ = _job_ids_and_titles()
-    clues, _, _ = _ledger(root, book)
+    clues, _, ledger_p = _ledger(root, book)
     result = check_story(story_p.read_text(encoding="utf-8"), "",
                          job_ids, list(clues))
 
     findings = [f for f in result["blocking"]
                 if not f.startswith("beats-without-chapter")]
+    notes = list(result["notes"])
+
+    if not job_ids:
+        findings = [f for f in findings if not f.startswith("unknown-job:")]
+        notes.append(
+            "unknown-job could not run — the active genre's macro-structure "
+            "could not be resolved")
+    if not clues:
+        findings = [f for f in findings
+                    if not (f.startswith("unknown-clue:")
+                            or f.startswith("unscheduled-clue:"))]
+        notes.append(
+            f"unknown-clue/unscheduled-clue could not run — the whodunit "
+            f"ledger is missing or empty ({ledger_p})")
+
     for f in findings:
         print(f)
-    if result["notes"]:
+    if notes:
         print("\nAdvisory — nothing blocks on these:")
-        for note in result["notes"]:
+        for note in notes:
             print(f"  {note}")
     if not findings:
         print(f"story_cut: {story_p} has no blocking findings")
