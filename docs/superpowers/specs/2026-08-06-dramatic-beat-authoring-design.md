@@ -190,8 +190,14 @@ would fire on innocent lines.
 **The advisory must not enter `check_story`'s `blocking` list, and must not become a cut
 refusal.** Sixteen findings that fail loud by name with no waivers is a property worth
 keeping clean; an advisory that can block is a seventeenth finding with a softer name.
-Implementation: a separate `advisory` key in `check_story`'s returned dict, which existing
-callers (`book_status`, the cut) ignore.
+
+Implementation: the **existing `notes` channel**, not a new key. `check_story` already
+returns `{"blocking": [...], "notes": [...]}`, and `notes` already carries exactly this
+kind of observation (today, the one about a story that closes every question it opens).
+`main` already prints it as `note: <text>` and nothing treats it as a finding. A parallel
+`advisory` key would be a second non-blocking channel with the same semantics as the
+first — the duplication this engine keeps refusing elsewhere. Consequence, and it is the
+right one: a cut also prints the advisories, non-blocking, on its way through.
 
 `/book-status`'s story row continues to count blocking findings only. Advisories are for
 the authoring loop, not the pipeline table.
