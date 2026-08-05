@@ -24,10 +24,6 @@ range and nowhere else.
 Read `config/story-craft/writing-beats.md` before you write anything. It is the
 definition of a beat, and it is not restated here — one copy, one source.
 
-The short version, so you know what you are being held to: a beat is a change on
-the page, one visible change per beat, and a note addressed to the writer belongs
-in `## Guardrails` rather than in a bullet.
-
 ## Authority
 
 What you own, and what you must ask for. Drawn from what `story_cut.py` actually
