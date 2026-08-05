@@ -1,180 +1,174 @@
 # Handoff — Penny (fiction-series engine) / story
-Saved: 2026-08-05 | Type: build
+Saved: 2026-08-06 | Type: build
 
-> **Stream note.** The five older streams (`HANDOFF.md` LM Studio, `HANDOFF-plot.md`
-> workshop, `HANDOFF-briefs.md` packet/map, `HANDOFF-readback.md`, `HANDOFF-views.md`)
-> were deleted this session — all superseded, and the plot stream's deferred designs
-> (brief renderer, adversarial predict-the-twist loop) live in
-> `docs/superpowers/specs/2026-07-12-plot-book-workshop-design.md`, not in the handoff.
-> Recoverable from git if ever needed. **This is the only stream.**
+> **Stream note.** This is the only stream. Five older ones were deleted 2026-08-05 as
+> superseded (recoverable from git); the plot stream's deferred designs live in
+> `docs/superpowers/specs/2026-07-12-plot-book-workshop-design.md`, not here.
 
 ## What we're building
 
 The showrunner plots in `input/book-NN/story.md` — beats in story order, four sigils —
 and a deterministic cut turns it into the generated `outline.md`. Book 01 is migrating
-onto that layer. Three things happened this session.
+onto that layer.
 
-**1. Book 01 got its first `## Chapter Direction` and `## Guardrails` blocks** — 8
-boundary notes for the `chapter-cutter`, 15 prose guardrails, scoped by `@strand` and
-`#job`. Verified to add no findings and to leave beat numbering unchanged.
+**This session shipped the missing half of that layer: what a beat *is*.** The engine had
+specified `story.md`'s syntax completely and its craft not at all, so an editing agent
+aimed at the only stated criteria — four sigils, prose first — and produced correctly-tagged
+*architecture notes* ("Plant only the visible contradiction… Do not reveal the witness's
+certainty") instead of dramatic beats. Five artefacts now fix that, all on `main` and
+pushed:
 
-**2. `/book-status` learned about the story layer.** It was built 2026-08-02, one day
-before the source layer, so its top row was `outline` — a build product. A book being
-edited upstream looked green and got advised from its own output.
+- **`config/story-craft/writing-beats.md`** — the craft document. A beat is a change on
+  the page; **one visible change per beat**; three tells that you've written architecture
+  instead (abstraction as subject, non-action verb, addressed-to-the-writer); and a
+  **routing rule** that files each misplaced note rather than deleting it — prose notes to
+  `## Guardrails`, boundary notes to `## Chapter Direction`, question prose to
+  `## Questions`. Read as an overlay **directory**, so a genre pack can add to it without
+  copying it.
+- **`agents/story-author.md`** — the authoring role. Its reason to exist beyond the craft
+  doc is **authority**: `@strand` slugs are the author's to mint (shape-checked only), but
+  `!clue-id` is a ledger fact and `#job` is a genre fact, and the agent must name what it
+  needs and stop. That missing sentence is exactly how book 01 collected 18 invented ids.
+- **`story_cut.py check NN`** — validates a story with no cut plan. Suppresses
+  `beats-without-chapter` (with no plan it fires once per beat), and suppresses
+  `unknown-clue`/`unknown-job` with a named note when the ledger or genre can't be resolved
+  at all, because that is the normal mid-workshop state and a checker that guesses is worse
+  than one that admits.
+- **`directive-shaped-beat`** — the one advisory, on `check_story`'s existing non-blocking
+  `notes` channel. Tests **grammar, not drama**: a beat opening with an imperative
+  (*Plant, Keep, Save, Do not, Reveal…*). The other two tells stay human judgment, for the
+  same reason there is no solution-blindness script.
+- **`penny_paths.py resolve-dir <rel> [glob]`** — prints an overlay directory's union, so a
+  runbook or an agent in any model can list the craft docs from the shell.
 
-**3. Everything was committed and pushed**, both repos, after 24 beats of the
-showrunner's editing had been sitting uncommitted for a day.
+`/plot-book` step 6 now reads that union before writing a beat, and opens a new `story.md`
+with a header that names how to resolve the craft document — the portable half, for when
+you're editing in another model.
 
-**Specs:** `docs/superpowers/specs/2026-08-03-story-source-layer-design.md`,
-`docs/superpowers/specs/2026-08-04-chapter-direction-and-guardrails-design.md`,
-`docs/superpowers/specs/2026-08-01-book-status-design.md`
+**Specs:** `docs/superpowers/specs/2026-08-06-dramatic-beat-authoring-design.md` (this
+session), `2026-08-03-story-source-layer-design.md`,
+`2026-08-04-chapter-direction-and-guardrails-design.md`,
+`2026-08-01-book-status-design.md`
+**Plan:** `docs/superpowers/plans/2026-08-06-dramatic-beat-authoring.md` — all 7 tasks
+complete, whole-branch review clean after one fix wave.
 
 ## Git state
 
-- **Engine** (`~/myTools/penny`): `main` at `48ce499`, pushed, **clean**.
-  `d3cccab` docs pass, `48ce499` the story-layer rows.
-- **Series** (`~/myBooks/pelicanscrook-series`): `main` at `decf0c7`, pushed, **clean**.
-  `c729cf3` story.md (148 beats + the two blocks), `decf0c7` bible/town-history/Hermes.
-- Tests: **929 passing** (`python3 -m pytest`). Was 911 at session start; +18 for the
-  new rows.
+- **Engine** (`~/myTools/penny`): `main` at `27f91d4`, pushed, **clean**.
+  16 commits this session, `976fea1` (spec) through `27f91d4`.
+- **Series** (`~/myBooks/pelicanscrook-series`): `main` at `decf0c7`. **Two files
+  uncommitted** — `input/book-01/story.md` and `input/series/town-and-character-history.md`.
+  Not touched this session; that is the showrunner's own in-progress editing.
+- Tests: **962 passing** (`python3 -m pytest`). Was 929 at session start.
 
 ## Next actions
 
-**Run `python3 ~/myTools/penny/scripts/book_status.py 01` from the series root first.**
-Its `next:` line is now trustworthy — it says `fix the findings in
-input/book-01/story.md`, which is right.
-
-**Book 01's `story.md` has 16 findings.** Re-run before acting; the showrunner edits
-between sessions and this list moves (13 → 15 → 16 over two days):
+**The command replaces the old snippet.** From the series root:
 
 ```bash
-cd ~/myBooks/pelicanscrook-series && python3 -c "
-import sys; sys.path.insert(0,'/Users/beeko/myTools/penny')
-from scripts.story_cut import check_story, _job_ids_and_titles
-import yaml
-t=open('input/book-01/story.md').read()
-d=yaml.safe_load(open('series/whodunit/book-01.yaml'))
-clues=[it['id'] for c in ('clue_schedule','red_herrings') for it in (d.get(c) or [])]
-jobs,_=_job_ids_and_titles()
-r=check_story(t,'',jobs,clues)
-for f in r['blocking']:
-    if not f.startswith('beats-without-chapter'): print(' *',f)
-"
+cd ~/myBooks/pelicanscrook-series
+python3 ~/myTools/penny/scripts/story_cut.py check 01
 ```
 
-**Ignore every `beats-without-chapter` line** — that is the empty cut-plan argument, i.e.
-what "chapters don't exist yet" looks like. Noise, not a defect. (The `cut plan` row in
-`/book-status` is what owns that finding now.)
+That is now the way to validate a story alone. The ten-line Python snippet this file used
+to carry is gone — delete it from muscle memory.
 
-As of this save the 16 group into three jobs:
+**Book 01 as of this save: 19 blocking findings + 2 advisories.** Re-run before acting;
+the showrunner edits between sessions and this list moves.
 
-1. **Twelve `unknown-clue`** — invented while editing, no ledger entry yet:
-   `c02a-false-maggie-prior-meeting`, `c02b-first-elspeth-threat`,
-   `rh-pruitt-blue-cottage`, `rh-cal-old-key`, `c09a-marion-access-system`,
-   `c08a-backyard-firing-knowledge`, `c10b-tara-imitates-lisa`,
-   `c10c-tara-imitation-pattern`, `c10a-youth-prize-lie`, `rh-elspeth-tara-grief`,
-   `c13a-marion-nephew-pressure`, `c13b-dot-glad-photo-tin`. Each needs an entry in
-   `series/whodunit/book-01.yaml` under `clue_schedule` or `red_herrings`. **Do not
-   author `plant_chapter:` values** — the cut resolves and writes them. Give each a
-   `description:`, because that is what the packet renders.
-2. **Three `unknown-job`** — `#proof-pressure` (beats 16, 62) and
-   `#killer-lookalike-pressure` (beat 61) are not among the cozy genre's 28 structural
-   jobs. Either map them onto real jobs from
-   `genres/cozy-mystery/review-rubrics/macro-structure.md`, or decide the genre pack
-   needs a new job — that is a genre decision, not a story one.
-3. **One `unclosed-question`** — seven to close: `q-clear`, `q-lisa-enemies`, `q-love`,
-   `q-marion-why`, `q-next`, `q-surf-commission`, `q-tara`. `q-next` is the one a last
-   chapter may hook.
+The migration order is **spec `2026-08-06` §8, and the order is load-bearing**:
 
-**Then the cut.** `chapter-cutter` proposes `input/book-01/cut-plan.md`, showrunner
-approves, `python3 scripts/story_cut.py 01` emits a fresh `outline.md`.
+1. **Split and file** — `story.md`'s compound bullets become one-change beats, and the
+   directive-shaped ones move into `## Guardrails` (or `## Chapter Direction` if they are
+   about where chapters fall). The two advisories name where to start: beats 6 and 7 both
+   open with "Plant". This is the `story-author` agent's first real job.
+2. **Resolve the 19 findings** — 14 `unknown-clue` need ledger entries in
+   `series/whodunit/book-01.yaml` with a `description:` and **no `plant_chapter:`** (the cut
+   resolves that); 4 `unknown-job` are `#proof-pressure` (beats 16, 63) and
+   `#killer-lookalike-pressure` (beats 61, 62), which must map onto declared cozy jobs from
+   `genres/cozy-mystery/review-rubrics/macro-structure.md` or be escalated as a genre
+   decision; the `unclosed-question` lists seven where at most one may survive — `q-next` is
+   the one a last chapter may hook.
+3. **Then** delete `input/book-01/outline.md`, `outline-skeleton.md`, and the stale mystery
+   lock. Both outline files are committed and recoverable; the lock must go because the cut
+   rewrites `plant_chapter:`, which is only safe while the ledger is unsealed.
+4. **Then** cut — `chapter-cutter` proposes, showrunner approves `cut-plan.md`,
+   `python3 scripts/story_cut.py 01`.
+5. `reveals:` **13 and 25** (not 15/27 — those are skeleton numbers), then
+   `preflight.py lock-mystery 01`.
 
-**Delete `input/book-01/outline.md` and `outline-skeleton.md` before cutting.**
-`story_cut.py` only calls `recut_refusal` inside `if outline_p.is_file()`. The no-stamp
-refusal exists to stop the cut overwriting an outline it did not produce — with no
-outline present there is nothing to refuse. Both files are committed, so recoverable.
-
-**Close out:** write `reveals:` (**13 and 25**, not 15/27 — those are skeleton numbers),
-delete the stale lock, `preflight.py lock-mystery 01`.
+**Why 1–2 must precede 4:** splitting changes the beat count, which changes every chapter's
+obligation load, which is exactly what the cut and `obligations.max_per_chapter` are
+deciding on. Cut first and you cut twice. Expect 148 beats to become 200+.
 
 ## Decisions made this session
 
-- **The `cut` row hands over no runnable command.** Re-cutting rewrites the ledger's
-  `plant_chapter:` values (needs the ledger unsealed) and restales every packet. A
-  copy-pasteable command would hide both prerequisites behind one word — a status table
-  is not a reason to delete a lock. The row names the costs from what is on disk instead.
-- **Presence on disk is the switch for the story rows, not a flag.** No `story.md`, no
-  rows. Same rule the cut itself uses. Side effect worth knowing: every pre-existing
-  `next_action` test passed untouched, because the old fixtures have no story files.
-- **Row order is the whole mechanism.** `next_action` already prefers the first
-  ran-but-failed row, so putting the source above the build product fixed the `next:`
-  line with no change to `next_action` at all.
-- **`beats-without-chapter` belongs to the `cut plan` row, not the `story` row.** It
-  fires for every beat when no plan exists, which is the normal state of a story being
-  written; counting it in the story row would make every live book look broken.
-- **A `cut` row with no `built_from_story` is a fail, not an unknown.** It is a known
-  fact that the outline is not the story's output (book 01's shape). `unknown` is for
-  checks that could not run.
-- **`_job_ids_and_titles` gained a `root=` parameter** — `book_status` reports on a book
-  without being run from inside it, and resolving the genre from cwd would read some
-  other series' pack.
-- **Authored guardrails scope with `@strand`/`#job`, never chapter numbers** (carried
-  over): chapter numbers don't exist until the cut, so any chapter-shaped scoping is
-  invalidated by the next re-cut.
+- **Craft and authority are two documents, because they answer to different things.**
+  Craft is taste; authority is the engine's data model. No amount of craft guidance
+  produces "you don't own these ids", which is what the 18 findings needed.
+- **The advisory rides the existing `notes` channel, not a new `advisory` key.**
+  `check_story` already had a non-blocking channel carrying exactly this kind of
+  observation. A second one with identical semantics is the duplication this engine keeps
+  refusing. Consequence, accepted: a cut also prints advisories on its way through.
+- **Only one of the three tells ships as code.** "Surfaces" and "reads as" appear in
+  perfectly good beats; a checker for them would fire on innocent lines. Grammar is
+  checkable, drama is not.
+- **`config/story-craft/` is a directory read, never `config_path`.** A single-file read
+  takes the first hit, so a genre pack wanting to add two lines would have to copy the whole
+  engine document — the shadowing bug, in prose form.
+- **The craft document's examples use invented names** (Odette, Renna, Dez, Priya, The
+  Tannery). The first draft used the cozy series' own cast, which couples a shipped engine
+  default to one series' data. Placeholders were rejected: a craft doc teaching what a beat
+  is only works with concrete before/after prose.
+- **`check` admits when it cannot run.** Suppressing `unknown-clue` with a named note when
+  there is no ledger follows `book_status.py`'s precedent — the mid-workshop state is a
+  story drafted before the counterplot stage writes the ledger, and blaming the author's
+  story for that is a wall of false findings.
+- Carried over: **authored guardrails scope with `@strand`/`#job`, never chapter numbers**,
+  because chapter numbers don't exist until the cut.
 
 ## User preferences expressed this session
 
-- **Answer the question that was asked.** "Doesn't really answer the question" —
-  a design explanation that describes the code instead of what the showrunner would see
-  is not an answer. Lead with the direct yes/no, then the mechanism.
-- **Explain a proposed fix as a before/after of what prints**, not as functions and
-  rows. The rendered table is the shared language.
-- **Ask for cascade effects and take them seriously** — the "no runnable re-cut command"
-  decision came from the showrunner asking what could go wrong, not from the original
-  design.
-- **Terse replies are decisions** — "ok go ahead", "yes". Not disengagement.
-- Still true: story in the subject of the sentence; precise numbers over estimates;
-  prose before menus; apply an established ruling rather than re-asking.
+- **Terse replies are decisions** — "ok", "beat", "1", "yes". Not disengagement.
+- **The showrunner reverses an earlier answer when they see further** — mid-brainstorm,
+  "engine only" became "engine + named migration". Take the update, don't relitigate.
+- Still true: answer the question that was asked, lead with the direct answer then the
+  mechanism; story in the subject of the sentence; explain a fix as a before/after of what
+  the showrunner would *see*; precise numbers over estimates; prose before menus; apply an
+  established ruling rather than re-asking.
 
 ## Key files right now
 
-- `~/myBooks/pelicanscrook-series/input/book-01/story.md` — **the live file.** 148 beats,
-  12 strands, plus `## Chapter Direction` (8) and `## Guardrails` (15) at the end.
-- `~/myBooks/pelicanscrook-series/series/whodunit/book-01.yaml` — needs 12 new clue
+- `~/myBooks/pelicanscrook-series/input/book-01/story.md` — **the live file**, uncommitted.
+  148 beats, 12 strands, plus `## Chapter Direction` (9) and `## Guardrails` (21).
+- `~/myBooks/pelicanscrook-series/series/whodunit/book-01.yaml` — needs 14 new clue
   entries. `reveal_chapter: 24`.
-- `scripts/book_status.py` — `_story_row`, `_cut_plan_row`, `_cut_row`, `_recut_cost`;
-  `book_rows` gates them on `_story_path(...).is_file()`.
-- `scripts/story_cut.py` — 16 named findings; `recut_refusal` called under
-  `if outline_p.is_file()`; `stamp_outline` writes `built_from_story`.
-- `tests/test_book_status.py` — the story-layer block is at the end, 18 tests.
+- `config/story-craft/writing-beats.md` — the craft document; read it before editing beats.
+- `agents/story-author.md` — the authority table.
+- `scripts/story_cut.py` — `_DIRECTIVE_OPENERS`, `directive_advisories()`, `_check()`;
+  sixteen blocking findings, unchanged.
 
 ## Watch out for
 
-- **The `story` row is now a permanent red top line while a book is being edited**, and
-  `next:` will keep saying "fix your story" until it is clean. That is the same shape as
-  the bug it replaced (one sticky row eating the `next:` line). Defensible here because
-  findings are finite and genuinely block the cut — but **watch it on book 02** and be
-  willing to revisit.
-- **`book_status.py _main` now refuses only when there is neither a story nor an
-  outline.** It used to refuse on a missing outline, which would have turned the table
-  off at the exact moment book 01 deletes its outline to migrate.
-- **`diagnostics` still reports 8 strands** where `story.md` has 12 — those views were
-  computed from the old outline and nothing recomputes them. Not wrong, just stale, and
-  no row says so.
-- **Every count denominator (`0/28`) comes from the outline's frontmatter**, so it is
-  only as current as the last cut. After the cut it will change.
+- **The `story` row in `/book-status` stays a red top line while a book is being edited**,
+  and `next:` will keep saying "fix your story" until it is clean. Defensible while findings
+  are finite and genuinely block the cut — but watch it on book 02.
 - **Do NOT run `/plot-book 01` after deleting the skeleton** — `stage_paths()` still
-  hard-names `outline-skeleton.md` and the tracker would resume by regenerating the
-  book's middle.
-- **Delete the stale lock before cutting** — the cut rewrites `plant_chapter:`, which is
-  only safe while the ledger is unsealed.
-- **A comment as the *first* line under `clue_schedule:`** kills `_item_spans` and
-  refuses the whole cut. Pre-existing, loud not silent.
-- **`story_cut.py`'s CLI is `story_cut.py <book>`** — no `check` subcommand, and it needs
-  `cut-plan.md`. To validate `story.md` alone, use the snippet above.
+  hard-names `outline-skeleton.md` and the tracker would resume by regenerating the book's
+  middle.
+- **A comment as the *first* line under `clue_schedule:`** kills `_item_spans` and refuses
+  the whole cut. Pre-existing, loud not silent.
+- **`diagnostics` still reports 8 strands** where `story.md` has 12 — computed from the old
+  outline, and nothing recomputes them. Stale, not wrong, and no row says so.
+- **Every count denominator (`0/28`) comes from the outline's frontmatter**, so it is only
+  as current as the last cut.
 - **22 of 34 outline-feedback items are still open**, and the feedback row's STALE branch
-  returns before it counts them — so the table cannot see the backlog. Known, unfixed;
-  it was the second defect identified this session and was left out of scope.
-- **The docs describe book 01 as mid-migration.** Once its `outline.md` is deleted and
-  cut, re-read README's "Book 01 predates all of this" paragraph and CLAUDE.md's
-  re-cutting paragraph — the tense will be wrong, and no test will catch it.
+  returns before counting them, so the table cannot see the backlog. Known, unfixed.
+- **Once book 01's `outline.md` is deleted and cut**, re-read README's "Book 01 predates all
+  of this" paragraph and CLAUDE.md's re-cutting paragraph — the tense will be wrong and no
+  test will catch it.
+- **Deferred minors from this session's review** (all judged safe to ride): `_declared_genre()`
+  reads real `Path.cwd()` rather than the passed root; the craft doc's tell-3 list names
+  phrases like *"rather than"* that the advisory does not actually fire on; `_OPENER_RE`
+  misses `**Plant**`; the `beats-without-chapter` suppression now exists in both
+  `story_cut.py` and `book_status.py`.
