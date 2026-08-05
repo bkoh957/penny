@@ -311,3 +311,41 @@ def test_the_forged_wiring_line_really_would_parse_as_wiring():
     # ...and check_story refuses the story before it can ever be emitted.
     assert any(f.startswith("wiring-shaped-directive:")
                for f in check_story(story, GOOD_PLAN, JOBS, CLUES)["blocking"])
+
+
+def test_directive_shaped_beat_is_advised_not_blocked():
+    story = (
+        "- Plant only the visible contradiction: a glimpse suggests Lisa met\n"
+        "  someone she treated as Maggie.\n  @maggie\n\n"
+        "- Maggie finds Lisa dead at the wheel.\n  @maggie\n"
+    )
+    r = check_story(story, "", JOBS, [])
+    assert not [f for f in r["blocking"] if "directive-shaped-beat" in f]
+    advisories = [n for n in r["notes"] if "directive-shaped-beat" in n]
+    assert len(advisories) == 1
+    assert "beat 1" in advisories[0]
+
+
+def test_every_opener_in_the_closed_list_is_advised():
+    from scripts.story_cut import _DIRECTIVE_OPENERS
+    for word in _DIRECTIVE_OPENERS:
+        story = f"- {word} the thing that happens next.\n  @maggie\n"
+        r = check_story(story, "", JOBS, [])
+        assert [n for n in r["notes"] if "directive-shaped-beat" in n], word
+
+
+def test_ordinary_beats_containing_those_words_are_silent():
+    story = (
+        "- Maggie lets the kiln cool before she opens it.\n  @maggie\n\n"
+        "- Faye keeps the corner table free all morning.\n  @faye\n\n"
+        "- Tom makes a joke about the surf-club minutes.\n  @tom\n"
+    )
+    r = check_story(story, "", JOBS, [])
+    assert not [n for n in r["notes"] if "directive-shaped-beat" in n]
+
+
+def test_advisory_names_the_block_the_note_probably_wants():
+    story = "- Do not reveal the impostor here.\n  @maggie\n"
+    r = check_story(story, "", JOBS, [])
+    note = [n for n in r["notes"] if "directive-shaped-beat" in n][0]
+    assert "## Guardrails" in note

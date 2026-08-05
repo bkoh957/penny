@@ -33,6 +33,37 @@ from scripts.penny_wiring import FIELD_RE, QID_RE, TRACK_RE
 #: tag with slug "-" (final review, Minor 6).
 _SCHEDULE_SIGILS = (("+", "opens"), ("-", "closes"), ("!", "clues"))
 
+#: Beats that open with one of these read as instructions to the writer, not
+#: as something the reader watches happen (spec 2026-08-06 §5.1). Advisory
+#: only, and deliberately grammar rather than judgment: the other two tells
+#: the craft document teaches — an abstraction as subject, a verb that is not
+#: an action — occur in perfectly good beats, and a checker for them would
+#: fire on innocent lines. Same reasoning that keeps reveal-detection an LLM
+#: judgment on inspector-fairplay instead of a name-grep.
+_DIRECTIVE_OPENERS = frozenset({
+    "Plant", "Keep", "Save", "Show", "Do", "Don't", "Avoid", "Ensure",
+    "Establish", "Introduce", "Reveal", "Treat", "Let", "Leave", "Use",
+    "Make",
+})
+
+_OPENER_RE = re.compile(r"^\s*(?P<word>[A-Za-z']+)")
+
+
+def directive_advisories(beats: list) -> list:
+    """Non-blocking notes for beats shaped like directions to the writer."""
+    out = []
+    for n, beat in enumerate(beats, 1):
+        m = _OPENER_RE.match(beat["text"])
+        if m and m.group("word") in _DIRECTIVE_OPENERS:
+            out.append(
+                f"directive-shaped-beat: beat {n} opens with "
+                f"\"{m.group('word')}\", which addresses the writer rather "
+                f"than describing what happens. If it is about how the prose "
+                f"should read it belongs in `## Guardrails`; if it is about "
+                f"where chapters fall, in `## Chapter Direction`. Advisory — "
+                f"nothing blocks on it.")
+    return out
+
 
 def check_story(story_text: str, cut_plan_text: str,
                 job_ids: list, clue_ids: list) -> dict:
@@ -196,6 +227,8 @@ def check_story(story_text: str, cut_plan_text: str,
             blocking.append(
                 f"beats-without-chapter: the cut plan claims beat {idx} but the "
                 f"story has only {len(beats)}")
+
+    notes.extend(directive_advisories(beats))
 
     return {"blocking": blocking, "notes": notes}
 
