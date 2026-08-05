@@ -22,22 +22,22 @@ small chapter.
 
 **1 — The subject is an abstraction.**
 
-> The town's warmth is strained by money and premises fear.
+> The harbor town's calm is strained by rent debts and old grudges.
 
 Nothing happened. A condition was described.
 
 **2 — The verb is not an action.** *surfaces, reads as, is seeded, establishes,
 gives, shows.*
 
-> Cal's thread surfaces through practical repair.
+> Dez's thread surfaces through practical repair.
 
-Surfacing is something the *book* does, not something Cal does.
+Surfacing is something the *book* does, not something Dez does.
 
 **3 — It addresses the writer, not the world.** *Plant, Keep, Save for later,
 Do not reveal, rather than.*
 
 > Plant only the visible contradiction: a glimpse, log or half-overheard gossip
-> suggests Lisa may have met someone she treated as Maggie. Do not reveal the
+> suggests Priya may have met someone she treated as Odette. Do not reveal the
 > witness's certainty here.
 
 That is a guardrail wearing a beat's clothes. `story_cut.py check NN` will name
@@ -48,13 +48,13 @@ third tell is grammar rather than judgment.
 
 Ask **what does the reader watch happen?** and write that.
 
-> Faye's premises fear surfaces through bakery work and customer rhythm rather
-> than exposition.
+> Renna's premises fear surfaces through print-shop work and customer rhythm
+> rather than exposition.
 
 becomes
 
-> Faye hides the adjoining-shop letter under a tray when Maggie asks who else
-> wanted The Wheelhouse.
+> Renna hides the eviction notice under the till when Odette asks who else
+> wanted The Tannery.
 
 Same information, now visible.
 
