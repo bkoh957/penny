@@ -191,10 +191,14 @@ Re-cutting is free while `outline.md` still matches its `cut_output_sha256` stam
 refuses `outline-modified-since-cut` the moment it does not — the same finding also fires
 when the stamp is **absent altogether**, which is not a lesser case: an outline with no
 `cut_output_sha256` was never produced by a cut at all, and absence is a refusal, never a
-licence. This is the branch that protects book 01 — hand-authored/scaffolded, unstamped,
-and never cut over. `/expand-outline` refuses a cut-produced outline the same way
-(`cut-owned-outline`) — it is for outlines the cut never touched (a legacy book such as
-book 01, which predates all of this and keeps its hand-edited outline). The plot
+licence. This is the branch that protects a hand-authored/scaffolded outline (book 01's)
+from being cut over. It is also **the whole migration path onto the source layer, and needs
+no engine support**: `recut_refusal` is only called inside `if outline_p.is_file()`, so a
+legacy book joins by writing `story.md`, committing, **deleting the unstamped `outline.md`**
+(and the stale lock, since the cut rewrites `plant_chapter:`), and cutting. There is no
+adoption flag and must not be one — the guard protects work still on disk, and deleting it
+is the showrunner's explicit act. `/expand-outline` refuses a cut-produced outline the same
+way (`cut-owned-outline`) — it is for outlines the cut never touched. The plot
 workshop's `readback` stage runs after the cut, against `outline.md` — never against
 `story.md`, which carries no chapters to read back.
 

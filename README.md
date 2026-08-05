@@ -258,12 +258,58 @@ tags — four sigils and nothing else:
 | `+question` / `-question` | opens / closes a dramatic question |
 | `!clue-id` | a ledger clue is planted here |
 
-`##` headings are for your own reading and carry no meaning to the parser. Question prose
-lives once, in a single `## Questions` block anywhere in the file — repeating it at every
-`+`/`-` mention is exactly how the skeleton's boilerplate happened. Everything else a
-chapter block needs — Character Knowledge, Guardrails, wiring, Starting/Ending State,
-Chapter Purpose — is *derived*, not authored, because it's a consequence of the beats and
-the ledger, not a taste call.
+Exactly three `##` headings mean something to the parser — `## Questions`,
+`## Chapter Direction` and `## Guardrails`. Every other heading is decoration for your own
+reading. Question prose lives once, in a single `## Questions` block anywhere in the file —
+repeating it at every `+`/`-` mention is exactly how the skeleton's boilerplate happened.
+Everything else a chapter block needs — Character Knowledge, Guardrails, wiring,
+Starting/Ending State, Chapter Purpose — is *derived*, not authored, because it's a
+consequence of the beats and the ledger, not a taste call.
+
+#### Notes to yourself: `## Chapter Direction` and `## Guardrails`
+
+Spec: `docs/superpowers/specs/2026-08-04-chapter-direction-and-guardrails-design.md`. Both
+blocks are optional, and leaving them out is byte-for-byte the old behaviour. They exist so
+that a note you have while *reading* — "these two beats belong in one chapter", "don't
+flatten Marion into a cackling villain" — has somewhere to live besides your memory:
+
+```markdown
+## Chapter Direction
+
+- These two belong in one chapter — the discovery and the confrontation should not be
+  split. #midpoint-case-changes-meaning
+- Don't let the run after the midpoint become four procedural chapters. @maggie
+
+## Guardrails
+
+- Don't flatten Marion into a cackling villain; her usefulness is her camouflage. @tara-marion
+- Keep Faye and Cal on the page in the endgame, not merely referenced.
+```
+
+A line is one bullet: prose, plus scope tags harvested by the same rule the beats use, and
+stripped from the rendered prose the same way. **A note scopes with `@strand` and `#job`
+only** — never a chapter number, because chapter numbers don't exist until the cut runs and
+the next re-cut would invalidate them anyway. A note about Marion isn't about a chapter,
+it's about *Marion*, and `@tara-marion` already names her. An untagged note is book-wide.
+
+The two blocks go to different readers. **Chapter Direction is for the `chapter-cutter`**
+and stops there — it shapes the boundaries the agent proposes, and nothing from it is ever
+emitted into `outline.md`. It stays in `story.md` because it has to survive to the *next*
+re-cut, not because the outline needs it. **Guardrails survive the cut**: each chapter's
+`### Guardrails` section is built from every authored note that applies to *that chapter's
+own beats*, **in the order you wrote them**, followed by the derived series guardrail and
+the reveal-chapter line. Guardrails attach where a strand actually acts — unlike Character
+Knowledge, they don't accumulate forward into chapters the character is absent from.
+
+Three findings police the blocks — `orphan-direction` (a note scoped to a tag no beat
+carries reaches no one), `misplaced-schedule-tag` (`+q`/`-q`/`!clue` here would look like
+they schedule something and don't), and `wiring-shaped-directive` (see the table below).
+
+One cost worth knowing: `packet_assemble` word-matches the **whole chapter block** against
+continuity entry names, so a book-wide guardrail naming two characters pulls those two
+entries *plus their one-hop links* into every chapter's packet, including chapters they
+never appear in. Keep book-wide notes about craft; scope anything that names a character to
+that character with `@strand`.
 
 The `chapters` stage writes `story.md` directly; `weave` tags strands and questions inline
 as it does, so there's no separate weaving pass. The new `cut` stage turns it into
@@ -334,21 +380,31 @@ chapters.
 `recut_refusal` doesn't treat a missing `cut_output_sha256` as "nothing to compare against,
 go ahead" — it's the other half of `outline-modified-since-cut`: no stamp means the cut
 never wrote this file, so cutting over it would destroy hand-authored or scaffolded
-chapter work. This is the exact protection book 01 relies on today — its `outline.md` has
-no stamp and is not eligible to be cut over. Absence of a stamp is a refusal, never a
-licence.
+chapter work. Absence of a stamp is a refusal, never a licence.
+
+**Which is also how a legacy book joins the source layer — by deleting, not by a flag.**
+The refusal is only reachable when an outline file exists; with none present there is
+nothing to refuse. So a book whose `outline.md` was hand-authored or scaffolded (no stamp)
+is migrated by writing its `story.md`, committing so the old outline is recoverable,
+**deleting `outline.md`**, and cutting. There is no adoption mode and no override: the
+guard protects work that is still on disk, and removing it is the showrunner's explicit
+act. Delete the stale mystery lock first — the cut rewrites the ledger's `plant_chapter:`
+values, which is only safe while the ledger is unsealed.
 
 `/expand-outline` enforces the mirror-image boundary: it refuses `cut-owned-outline` on
 any outline the cut *did* produce, because expanding a stub in place there would let
 `story.md` and `outline.md` silently disagree again. It remains the right tool for an
-outline the cut never touched — book 01's, precisely because it carries no stamp.
+outline the cut never touched, precisely because such an outline carries no stamp.
 
 The plot workshop's `readback` stage runs **after** the cut, against `outline.md` — never
 against `story.md`, which has no chapters yet for a reader's copy to be cut from.
 
-**Book 01 predates all of this.** It keeps its hand-authored, hand-repaired `outline.md`
-and never goes through `story.md` or the cut. **Book 02 is the first book with a
-`story.md`.**
+**Book 01 predates all of this** — it was hand-authored, then hand-repaired, and its
+`outline.md` carries no stamp. It is being brought onto the source layer anyway, by the
+migration route above: its `story.md` was derived from the outline's Required Beats plus
+the spine map's jobs and the ledger's clue ids, and has been edited well past that
+derivation since. The measurement that settled it: 1,769 outline lines, of which 124 were
+beat lines — everything else restated them.
 
 ### The outline-first front door
 
