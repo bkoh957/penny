@@ -1,5 +1,5 @@
 # Handoff — Penny (fiction-series engine) / story
-Saved: 2026-08-06 | Type: build
+Saved: 2026-08-06 12:00 | Type: build
 
 > **Stream note.** This is the only stream. Five older ones were deleted 2026-08-05 as
 > superseded (recoverable from git); the plot stream's deferred designs live in
@@ -54,8 +54,8 @@ complete, whole-branch review clean after one fix wave.
 
 ## Git state
 
-- **Engine** (`~/myTools/penny`): `main` at `27f91d4`, pushed, **clean**.
-  16 commits this session, `976fea1` (spec) through `27f91d4`.
+- **Engine** (`~/myTools/penny`): `main` at `2b6600a`, pushed (`main...origin/main`, no
+  divergence), **clean**. 17 commits this session, `976fea1` (spec) through `2b6600a`.
 - **Series** (`~/myBooks/pelicanscrook-series`): `main` at `decf0c7`. **Two files
   uncommitted** — `input/book-01/story.md` and `input/series/town-and-character-history.md`.
   Not touched this session; that is the showrunner's own in-progress editing.
