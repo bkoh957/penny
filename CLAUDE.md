@@ -138,11 +138,17 @@ engine code.
 **The source layer (spec `docs/superpowers/specs/2026-08-03-story-source-layer-design.md`):**
 
 ```
-story.md    input/book-NN/story.md      beats in story order, four sigils
+story.md    input/book-NN/story.md      beats in story order, four sigils, `- [n]`
     │  chapter-cutter proposes, showrunner approves — cut-plan.md
     ▼
 outline.md  input/book-NN/outline.md    packet format, generated  (locked)
 ```
+
+Beats may carry their position as `- [12] …` — optional, all-or-nothing per file,
+stripped from the prose, and verified by `story_cut.py check` (`misnumbered-beat`,
+`unnumbered-beat`). Position is the truth; the number is a checkable claim about it,
+so a cut plan's positional `Beats: 22-25` cannot silently drift after an insert.
+Renumber with `story_cut.py number NN`, never by hand.
 
 `story.md` carries only what the author decides — what happens, in what order, to whom
 (`@strand`), which structural job a beat answers (`#job`), which questions open and close

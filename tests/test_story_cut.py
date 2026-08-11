@@ -1,3 +1,4 @@
+from scripts import story_cut
 from scripts.story_cut import check_story
 
 JOBS = ["establish-protected-world", "crime-and-first-contradiction"]
@@ -349,3 +350,75 @@ def test_advisory_names_the_block_the_note_probably_wants():
     r = check_story(story, "", JOBS, [])
     note = [n for n in r["notes"] if "directive-shaped-beat" in n][0]
     assert "## Guardrails" in note
+
+
+# --- beat numbering (optional `- [n]` prefix) -------------------------------
+
+_NUMBERED = """---
+book: 01
+---
+## Act I
+- [1] Maggie arrives. @maggie
+- [2] She finds a body. @maggie
+
+## Guardrails
+- Never name the culprit early.
+"""
+
+
+def test_beat_number_is_parsed_and_stripped_from_prose():
+    beats = story_cut.parse_story(_NUMBERED)
+    assert [b["num"] for b in beats] == [1, 2]
+    # the number must NOT survive into the text, or it reaches the drafter's packet
+    assert beats[0]["text"] == "Maggie arrives."
+
+
+def test_unnumbered_story_still_parses_with_num_none():
+    beats = story_cut.parse_story(_NUMBERED.replace("[1] ", "").replace("[2] ", ""))
+    assert [b["num"] for b in beats] == [None, None]
+    assert beats[0]["text"] == "Maggie arrives."
+
+
+def test_bare_leading_number_is_not_a_beat_number():
+    text = _NUMBERED.replace("[1] Maggie arrives.", "1987 was the year of the flood.")
+    beats = story_cut.parse_story(text)
+    assert beats[0]["num"] is None
+    assert beats[0]["text"] == "1987 was the year of the flood."
+
+
+def test_misnumbered_beat_blocks():
+    text = _NUMBERED.replace("- [2] She finds", "- [7] She finds")
+    findings = story_cut.check_story(text, "", [], [])["blocking"]
+    assert any(f.startswith("misnumbered-beat") and "position 2" in f for f in findings)
+
+
+def test_half_numbered_file_blocks():
+    text = _NUMBERED.replace("- [2] She finds", "- She finds")
+    findings = story_cut.check_story(text, "", [], [])["blocking"]
+    assert any(f.startswith("unnumbered-beat") for f in findings)
+
+
+def test_fully_unnumbered_file_does_not_block_on_numbering():
+    text = _NUMBERED.replace("[1] ", "").replace("[2] ", "")
+    findings = story_cut.check_story(text, "", [], [])["blocking"]
+    assert not any("numbered-beat" in f for f in findings)
+
+
+def test_renumber_fixes_positions_and_is_idempotent():
+    text = _NUMBERED.replace("- [1] Maggie arrives. @maggie",
+                             "- [1] Maggie arrives. @maggie\n- [9] Inserted. @maggie")
+    fixed = story_cut.renumber(text)
+    assert [b["num"] for b in story_cut.parse_story(fixed)] == [1, 2, 3]
+    assert story_cut.renumber(fixed) == fixed
+
+
+def test_renumber_leaves_inert_block_bullets_alone():
+    fixed = story_cut.renumber(_NUMBERED)
+    assert "- Never name the culprit early." in fixed
+
+
+def test_renumber_preserves_tags_and_prose():
+    before = story_cut.parse_story(_NUMBERED)
+    after = story_cut.parse_story(story_cut.renumber(_NUMBERED))
+    assert [(b["text"], b["strands"], b["clues"]) for b in before] == \
+           [(b["text"], b["strands"], b["clues"]) for b in after]

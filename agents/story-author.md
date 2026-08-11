@@ -52,4 +52,10 @@ keep moving is how a story collects `unknown-clue` findings it cannot see.
    genre does not declare, every question you opened.
 5. On approval, write the range — and only the range: it never renumbers, never
    touches beats outside the named range, and never reorders blocks.
-6. Tell the showrunner to run `story_cut.py check NN` when you are done.
+6. **Never write or edit a `[n]` prefix by hand**, including on beats you add. The
+   numbers are positional, so inserting or deleting one beat invalidates every number
+   after it — a range you renumber by hand is the bug the numbers exist to catch.
+   Write new beats without a number and let the tool assign them.
+7. Tell the showrunner to run `story_cut.py number NN` (if you inserted, deleted or
+   reordered anything) and then `story_cut.py check NN`. The check blocks on a stale
+   number, so a skipped renumber cannot pass silently.

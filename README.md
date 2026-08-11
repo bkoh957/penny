@@ -258,6 +258,16 @@ tags — four sigils and nothing else:
 | `+question` / `-question` | opens / closes a dramatic question |
 | `!clue-id` | a ledger clue is planted here |
 
+A beat may also open with its position, `- [12] Maggie throws a cup…`. This is
+**optional and all-or-nothing per file**: number every beat or none. The number is
+stripped from the beat's prose, so it never reaches a packet or a drafter, and it is
+never the source of truth — position is. It is a written-down claim ABOUT position
+that `story_cut.py check NN` verifies, which is its entire value: cut-plan
+`Beats: 22-25` ranges are positional, so one inserted beat silently hands work to the
+wrong chapter with no other symptom. A stale number is a `misnumbered-beat` finding;
+a half-numbered file is `unnumbered-beat`. Renumber with `story_cut.py number NN`
+after any insert, delete or reorder — never by hand.
+
 Exactly three `##` headings mean something to the parser — `## Questions`,
 `## Chapter Direction` and `## Guardrails`. Every other heading is decoration for your own
 reading. Question prose lives once, in a single `## Questions` block anywhere in the file —

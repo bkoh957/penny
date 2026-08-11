@@ -136,6 +136,13 @@ state; this command never asks you anything a file already answers.
    Four sigils carry meaning — `@strand` `#job` `+q-id`/`-q-id` `!clue-id`.
    Everything else is for your reading.
 
+   Each beat opens with its position as `- [n] …`. The number is a claim ABOUT
+   position, never the source of truth — position is. After inserting, deleting
+   or reordering any beat, run `story_cut.py number NN`. Never renumber by hand.
+
+   Keep `## Questions`, `## Chapter Direction` and `## Guardrails` at the BOTTOM
+   of this file — their bullets are not beats.
+
    What a beat is: `penny_paths.py resolve-dir story-craft` names it — read
    every path it prints, before editing.
    Check this file with: story_cut.py check NN
@@ -147,6 +154,17 @@ state; this command never asks you anything a file already answers.
    `chapter-weaver`'s other half — deciding where chapter boundaries fall and
    emitting Track Movement rows — is absorbed by `chapter-cutter`, at the cut
    stage below, not here.
+
+   Once the beats are written, number them — the numbers are what make a cut
+   plan's `Beats: 22-25` ranges checkable rather than merely plausible:
+
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/story_cut.py" number $book
+   ```
+
+   Re-run it after ANY later insert, delete or reorder. `story_cut.py check`
+   blocks on a stale number (`misnumbered-beat`) or a half-numbered file
+   (`unnumbered-beat`), so this cannot be forgotten silently.
 
    When this is a re-plot regenerating a story that already exists, clear any
    stale `woven: true` from story.md's frontmatter yourself before rewriting

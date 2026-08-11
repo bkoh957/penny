@@ -36,6 +36,22 @@ TAG_RE = re.compile(r"(?<!\S)(?P<sigil>[@#+!-])(?P<slug>\S+)")
 QUESTIONS_HEADING_RE = re.compile(r"^##\s+Questions\s*$", re.IGNORECASE)
 _HEADING_RE = re.compile(r"^##\s+")
 _BULLET_RE = re.compile(r"^-\s+(?P<rest>.*)$")
+
+# An OPTIONAL author-facing beat number: `- [12] Maggie throws a cup…`. Bracketed
+# rather than `12.` because a beat may legitimately open with a bare number ("1987
+# was the year of the flood"), and a silent mis-parse here is the worst failure the
+# story layer has: beat indices are what the cut plan's `Beats: 22-25` ranges refer
+# to, so an off-by-one steals beats from a neighbouring chapter with no symptom.
+#
+# The number is STRIPPED from the beat's prose. Left in, it would travel through
+# emit_outline into the chapter block's Required Beats and land in the drafter's
+# packet as literal text — the same leak plain `$tags` cause.
+#
+# It is never the source of truth. POSITION is. The number is a written-down claim
+# ABOUT position, which `story_cut.check_story` verifies (misnumbered-beat) — that
+# is its whole value. Absent numbers are legal everywhere: a story.md that has
+# never been numbered parses exactly as before.
+_BEAT_NUM_RE = re.compile(r"^\[(?P<num>\d+)\]\s+")
 _QUESTION_LINE_RE = re.compile(rf"^-\s+(?P<id>q-{SLUG})\s*[—-]\s*(?P<prose>.+?)\s*$")
 
 # Headings whose bullets are NOT beats. A directive bullet read as a beat would
@@ -54,7 +70,7 @@ _SIGIL_KEY = {"@": "strands", "#": "jobs", "+": "opens", "-": "closes", "!": "cl
 
 def _blank_beat(line_no):
     return {"text": "", "strands": [], "jobs": [], "opens": [], "closes": [],
-            "clues": [], "line": line_no}
+            "clues": [], "line": line_no, "num": None}
 
 
 def _harvest(beat, raw):
@@ -114,7 +130,12 @@ def _fold(text: str, active) -> list[dict]:
             if current is not None:
                 entries.append(_finish(current, prose))
             current = _blank_beat(i + 1)
-            prose = [_harvest(current, m.group("rest"))]
+            rest = m.group("rest")
+            num = _BEAT_NUM_RE.match(rest)
+            if num:
+                current["num"] = int(num.group("num"))
+                rest = rest[num.end():]
+            prose = [_harvest(current, rest)]
         elif current is not None:
             if not raw.strip():
                 entries.append(_finish(current, prose))

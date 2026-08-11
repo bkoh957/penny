@@ -61,6 +61,17 @@ is carried through the cut to the drafter, and you neither read it nor act on it
 (`4, 6-7`), or both. **Every beat must land in exactly one chapter**; `story_cut.py`
 refuses `beats-without-chapter` and `duplicate-beat` otherwise.
 
+**Read the indices off the page, never by counting.** A numbered story.md writes each
+beat's position into the bullet as `- [12] …`, and that is the index `Beats:` means.
+Do NOT count bullets yourself: `## Questions`, `## Chapter Direction` and
+`## Guardrails` bullets are *not* beats, so raw bullet order and beat index diverge —
+on book 01, 225 bullets to 150 beats. Counting produced ranges that were contiguous,
+plausible and wrong.
+
+If the story is unnumbered, say so and ask for `story_cut.py number NN` before you
+propose ranges. An off-by-one here is invisible: the ranges still cover every beat and
+still look contiguous, while every chapter quietly holds its neighbour's work.
+
 One `- **X:**` row per track the genre declares. These rows are load-bearing, not
 decoration: `tension_check.py`'s `starved-thread` check reads them and so does the
 drafter.

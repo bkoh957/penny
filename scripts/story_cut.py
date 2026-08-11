@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml  # ledger only — nested human-edited data (dependency-split rule)
 
-from scripts import penny_genre, penny_paths, plot_stage
+from scripts import penny_genre, penny_paths, penny_story, plot_stage
 from scripts.outline_views import parse_jobs
 from scripts.penny_meta import parse_frontmatter, strip_frontmatter
 from scripts.penny_story import (SLUG_RE, parse_cut_plan, parse_directives,
@@ -83,6 +83,26 @@ def check_story(story_text: str, cut_plan_text: str,
     planted: set = set()
     opened: set = set()
     closed: set = set()
+
+    # Beat numbers are optional, but a WRONG one is worse than none: the cut plan's
+    # `Beats: 22-25` ranges are positional, so an author reading a stale number off
+    # the page and writing it into a range silently hands beats to the wrong chapter.
+    # Numbering is all-or-nothing per file — a half-numbered story is the state in
+    # which a stale number is most likely to be trusted.
+    numbered = [n for n, b in enumerate(beats, 1) if b["num"] is not None]
+    if numbered:
+        for n, beat in enumerate(beats, 1):
+            if beat["num"] is None:
+                blocking.append(
+                    f"unnumbered-beat: beat {n} (line {beat['line']}) carries no "
+                    f"[number] while {len(numbered)} other beats do — renumber the "
+                    f"file with `story_cut.py number NN`")
+            elif beat["num"] != n:
+                blocking.append(
+                    f"misnumbered-beat: the beat on line {beat['line']} is written "
+                    f"[{beat['num']}] but sits at position {n} — a cut plan range "
+                    f"built from the written number would claim the wrong beats; "
+                    f"renumber with `story_cut.py number NN`")
 
     for n, beat in enumerate(beats, 1):
         for slug in beat["strands"]:
@@ -766,13 +786,77 @@ def _check(book: str) -> int:
     return 1 if findings else 0
 
 
+def renumber(story_text: str) -> str:
+    """Rewrite every beat bullet's `[n]` to match its actual position.
+
+    Text-level and idempotent: only the bracketed prefix on a beat bullet is
+    touched, so tags, continuation lines, spacing and the inert Questions /
+    Chapter Direction / Guardrails blocks come through byte-identical. Walks the
+    same heading/bullet state machine `_fold` does, because a directive bullet
+    numbered as a beat would reintroduce the exact off-by-one the numbers exist
+    to catch.
+    """
+    lines = story_text.splitlines(keepends=True)
+    offset = len(lines) - len(penny_story.strip_frontmatter(story_text).splitlines(keepends=True))
+    collecting, n = True, 0
+    for i in range(offset, len(lines)):
+        raw = lines[i].rstrip("\n")
+        if penny_story._HEADING_RE.match(raw):
+            collecting = penny_story._heading_name(raw) not in penny_story._INERT_HEADINGS
+            continue
+        if not collecting:
+            continue
+        m = penny_story._BULLET_RE.match(raw)
+        if not m:
+            continue
+        rest = m.group("rest")
+        stripped = penny_story._BEAT_NUM_RE.sub("", rest)
+        # A lone `- ` is not a beat (matching _fold's final filter), so it must not
+        # consume a number — that would shift every beat after it.
+        if not stripped.strip():
+            continue
+        n += 1
+        eol = "\n" if lines[i].endswith("\n") else ""
+        lines[i] = f"- [{n}] {stripped}{eol}"
+    return "".join(lines)
+
+
+def _renumber_cmd(book: str) -> int:
+    root = penny_paths.series_root()
+    p = root / "input" / f"book-{book}" / "story.md"
+    if not p.is_file():
+        print(f"story_cut: missing {p}", file=sys.stderr)
+        return 2
+    before = p.read_text(encoding="utf-8")
+    after = renumber(before)
+    beats_before = parse_story(before)
+    beats_after = parse_story(after)
+    # Renumbering must never change what the beats ARE. If prose or tags moved, the
+    # rewrite is wrong and writing it would corrupt the story — refuse instead.
+    if [(b["text"], b["strands"], b["jobs"], b["opens"], b["closes"], b["clues"])
+            for b in beats_before] != [
+            (b["text"], b["strands"], b["jobs"], b["opens"], b["closes"], b["clues"])
+            for b in beats_after]:
+        print("story_cut: renumber would alter beat content — refusing to write",
+              file=sys.stderr)
+        return 1
+    if after == before:
+        print(f"story_cut: {p} already numbered 1..{len(beats_after)}")
+        return 0
+    p.write_text(after, encoding="utf-8")
+    print(f"story_cut: numbered {len(beats_after)} beats in {p}")
+    return 0
+
+
 def main(argv=None) -> int:
     argv = sys.argv[1:] if argv is None else argv
     if len(argv) == 2 and argv[0] == "check":
         return _check(argv[1])
+    if len(argv) == 2 and argv[0] == "number":
+        return _renumber_cmd(argv[1])
     if len(argv) != 1:
-        print("usage: story_cut.py <book> | story_cut.py check <book>",
-              file=sys.stderr)
+        print("usage: story_cut.py <book> | story_cut.py check <book> "
+              "| story_cut.py number <book>", file=sys.stderr)
         return 2
     book = argv[0]
     root = penny_paths.series_root()
