@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.tension_check import check_tension
+from scripts.tension_check import _closings_check, check_tension
 
 FIX = Path("tests/fixtures/outlines")
 
@@ -273,3 +273,46 @@ def test_overload_missing_cap_is_named_note():
     notes = " ".join(result["notes"])
     assert "overloaded-chapter" in notes
     assert "obligations.max_per_chapter" in notes
+
+
+def _ch(num, kind):
+    return {"num": num,
+            "sections": {"Closing": f"{kind} — something happens"} if kind else {}}
+
+
+def test_a_run_longer_than_the_cap_fires():
+    chapters = [_ch(n, "Cliffhanger") for n in range(1, 5)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert any(b.startswith("monotonous-closings:") and "ch 04" in b
+               for b in blocking)
+
+
+def test_a_run_exactly_at_the_cap_does_not_fire():
+    chapters = [_ch(n, "Cliffhanger") for n in range(1, 4)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == []
+
+
+def test_a_varied_book_does_not_fire():
+    chapters = [_ch(1, "Cliffhanger"), _ch(2, "Irony"),
+                _ch(3, "Cliffhanger"), _ch(4, "Promise of action")]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == []
+
+
+def test_absent_genre_key_is_a_named_note_never_a_silent_pass():
+    chapters = [_ch(n, "Cliffhanger") for n in range(1, 6)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=None)
+    assert blocking == []
+    assert any(n.startswith("monotonous-closings —") for n in notes)
+
+
+def test_an_outline_with_no_closings_is_skipped_entirely():
+    chapters = [_ch(n, None) for n in range(1, 6)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == [] and notes == []
