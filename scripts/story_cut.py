@@ -152,6 +152,31 @@ def check_story(story_text: str, cut_plan_text: str,
                     f"'{ch['closing']['kind']}', which is not one of "
                     f"{', '.join(CLOSING_KINDS)}")
 
+    # The same forgery the directive check below guards against, one level
+    # up: emit_outline writes Opening and Chapter Summary VERBATIM at column
+    # 0 (`"### Opening\n" + ch["opening"]`), and Compress with a bare "- "
+    # prefix it adds itself (`"Compress:\n- " + ch["compress"]`) — Closing is
+    # excluded because it always opens on a fixed, capitalised CLOSING_KINDS
+    # word, which can never parse as a wiring field. An authored
+    # `- **Closes:** q-bogus` in any of these three fields becomes a wiring
+    # line the cut never wrote, and tension_check fires phantom-answer on a
+    # chapter whose footer says no such thing (final review, Minor). Reuses
+    # the exact FIELD_RE/TRACK_RE check and message the directive guard below
+    # uses — one mechanism, not a second one for cut-plan fields.
+    for ch in chapters:
+        for label, emitted in (
+                ("Opening", ch["opening"]),
+                ("Chapter Summary", ch["summary"]),
+                ("Compress", f"- {ch['compress']}" if ch["compress"] else "")):
+            if emitted and (FIELD_RE.match(emitted) or TRACK_RE.match(emitted)):
+                blocking.append(
+                    f"wiring-shaped-directive: ch {ch['num']:02d} {label} reads "
+                    f"'{emitted}', which the outline parser would read as a "
+                    f"wiring field or a Track Movement row rather than as prose "
+                    f"— the cut writes those itself. Reword the note so it does "
+                    f"not begin with **Because:**/**Opens:**/**Closes:**/"
+                    f"**Carries:**/**Hook:** or **<letter>:**")
+
     for n, beat in enumerate(beats, 1):
         for slug in beat["strands"]:
             if not SLUG_RE.match(slug):

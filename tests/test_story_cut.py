@@ -546,6 +546,59 @@ def test_a_plan_carrying_none_of_the_fields_is_pre_design_and_silent():
         "missing-chapter-frame", "unknown-closing-kind"}]
 
 
+# --- FINAL REVIEW, Minor: emit_outline writes Opening/Chapter Summary
+# verbatim at column 0 and Compress with a bare "- " prefix it adds itself —
+# the same forgery hazard as an authored Guardrail, just one level up (in
+# the cut plan rather than story.md). ---
+
+def test_a_wiring_shaped_opening_is_refused_by_name():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n"
+                 "- **Opening:** - **Closes:** q-bogus\n"
+                 "- **Closing (cliffhanger):** The light goes out.\n")
+    hits = [b for b in _blocking(plan) if b.startswith("wiring-shaped-directive:")]
+    assert hits and "Opening" in hits[0], hits
+
+
+def test_a_wiring_shaped_summary_is_refused_by_name():
+    plan = _plan("- **Summary:** - **Because:** ch 01\n- **Compress:** c\n")
+    hits = [b for b in _blocking(plan) if b.startswith("wiring-shaped-directive:")]
+    assert hits and "Chapter Summary" in hits[0], hits
+
+
+def test_a_wiring_shaped_compress_is_refused_by_name():
+    # Compress gets its "- " prefix from the emitter itself, so the AUTHORED
+    # value need not repeat it — "**Because:** ch 01" alone becomes
+    # "- **Because:** ch 01" once emitted.
+    plan = _plan("- **Summary:** s\n- **Compress:** **Because:** ch 01\n")
+    hits = [b for b in _blocking(plan) if b.startswith("wiring-shaped-directive:")]
+    assert hits and "Compress" in hits[0], hits
+
+
+def test_the_forged_opening_really_would_parse_as_wiring():
+    # Same proof as the guardrail case: the emitted block really is read by
+    # penny_wiring as if the cut itself had written the wiring field.
+    from scripts.penny_wiring import parse_wired_chapters
+    from scripts.story_cut import emit_outline
+    from scripts.penny_story import parse_questions
+
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n"
+                 "- **Opening:** - **Closes:** q-bogus\n"
+                 "- **Closing (cliffhanger):** The light goes out.\n")
+    out = emit_outline(STORY, plan, parse_questions(STORY), {},
+                       reveal_chapter=2, guardrails="g", job_titles={},
+                       solution={})
+    assert any("q-bogus" in c["closes"] for c in parse_wired_chapters(out))
+    # ...and check_story refuses the plan before it can ever be emitted.
+    assert any(b.startswith("wiring-shaped-directive:") for b in _blocking(plan))
+
+
+def test_ordinary_opening_and_summary_prose_is_not_wiring_shaped():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n"
+                 "- **Summary:** She finds the tin.\n"
+                 "- **Compress:** the walk to the harbour\n" + FRAME)
+    assert not [b for b in _blocking(plan) if b.startswith("wiring-shaped-directive:")]
+
+
 def test_adoption_is_all_or_nothing_across_the_whole_plan():
     plan = ("## Chapter 01 — X\n- **Beats:** 1-2\n"
             "- **Setting:**\n  - 1-2 — the shop, morning\n"
