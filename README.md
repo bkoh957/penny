@@ -265,7 +265,8 @@ never the source of truth — position is. It is a written-down claim ABOUT posi
 that `story_cut.py check NN` verifies, which is its entire value: cut-plan
 `Beats: 22-25` ranges are positional, so one inserted beat silently hands work to the
 wrong chapter with no other symptom. A stale number is a `misnumbered-beat` finding;
-a half-numbered file is `unnumbered-beat`. Renumber with `story_cut.py number NN`
+a half-numbered file is `unnumbered-beat` — two of `story_cut.py`'s own findings, listed
+below with the rest. Renumber with `story_cut.py number NN`
 after any insert, delete or reorder — never by hand.
 
 Exactly three `##` headings mean something to the parser — `## Questions`,
@@ -361,11 +362,13 @@ as it does, so there's no separate weaving pass. The new `cut` stage turns it in
    Clues and Plants, wiring, Character Knowledge, Guardrails, and Starting/Ending State
    from the beats and the ledger.
 
-`story_cut.py` fails loud, by name, on twenty-one findings, and never writes a partial
+`story_cut.py` fails loud, by name, on twenty-three findings, and never writes a partial
 outline — there are no waivers at this level; fix the story or the cut plan:
 
 | finding | condition |
 |---|---|
+| `unnumbered-beat` | the file numbers some beats (`- [12] …`) but not this one |
+| `misnumbered-beat` | a beat's written `[n]` no longer matches its actual position |
 | `unknown-strand` | an `@tag` fails the strand slug contract |
 | `unknown-job` | a `#tag` isn't in the active genre's job list |
 | `unknown-clue` | a `!tag` isn't in the whodunit ledger |

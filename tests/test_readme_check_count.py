@@ -24,10 +24,15 @@ README = Path("README.md")
 # roster to derive from the way tension_check.py's do — check_story()/main()
 # raise them inline as f-strings, not from one contiguous block — so this
 # list is hand-verified against scripts/story_cut.py rather than parsed from
-# it. Verified exact as of the chapter-setting-and-frames wave (which added
-# the five setting/frame findings): grep `blocking.append(`/`return (` in
-# scripts/story_cut.py and confirm the count stays twenty-one before touching
-# this tuple.
+# it. `unnumbered-beat`/`misnumbered-beat` (the beat-numbering findings,
+# introduced earlier than the rest and documented in their own prose
+# paragraph) are unwaivable check_story() findings exactly like the other
+# twenty-one and belong in this same roster — an earlier version of this
+# tuple omitted them, which was an accident of which paragraph introduced
+# them, not a deliberate split. Verified exact as of the
+# chapter-setting-and-frames wave: `grep -n "blocking.append(\|findings.append(\|return (\"" scripts/story_cut.py`
+# and confirm every distinct id reaching `blocking`/`findings` is listed here
+# (23) before touching this tuple.
 STORY_CUT_FINDING_IDS = (
     "unknown-strand", "unknown-job", "unknown-clue", "unknown-question",
     "unscheduled-clue", "orphan-question", "unclosed-question",
@@ -36,6 +41,7 @@ STORY_CUT_FINDING_IDS = (
     "cut-owned-outline", "orphan-direction", "misplaced-schedule-tag",
     "wiring-shaped-directive", "beat-without-setting", "overlapping-setting",
     "setting-outside-chapter", "missing-chapter-frame", "unknown-closing-kind",
+    "unnumbered-beat", "misnumbered-beat",
 )
 
 
@@ -45,7 +51,7 @@ def test_the_story_cut_roster_is_complete_and_sized():
     # in it really is raised by the module — a stale roster that names fifteen
     # of sixteen reads as complete and isn't.
     source = pathlib.Path("scripts/story_cut.py").read_text(encoding="utf-8")
-    assert len(STORY_CUT_FINDING_IDS) == 21, STORY_CUT_FINDING_IDS
+    assert len(STORY_CUT_FINDING_IDS) == 23, STORY_CUT_FINDING_IDS
     for finding_id in STORY_CUT_FINDING_IDS:
         assert f"{finding_id}: " in source, f"story_cut.py never raises {finding_id}"
 

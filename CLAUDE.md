@@ -145,10 +145,10 @@ outline.md  input/book-NN/outline.md    packet format, generated  (locked)
 ```
 
 Beats may carry their position as `- [12] …` — optional, all-or-nothing per file,
-stripped from the prose, and verified by `story_cut.py check` (`misnumbered-beat`,
-`unnumbered-beat`). Position is the truth; the number is a checkable claim about it,
-so a cut plan's positional `Beats: 22-25` cannot silently drift after an insert.
-Renumber with `story_cut.py number NN`, never by hand.
+stripped from the prose, and enforced by two of `story_cut.py`'s own findings, named
+below (`unnumbered-beat`, `misnumbered-beat`). Position is the truth; the number is a
+checkable claim about it, so a cut plan's positional `Beats: 22-25` cannot silently
+drift after an insert. Renumber with `story_cut.py number NN`, never by hand.
 
 `story.md` carries only what the author decides — what happens, in what order, to whom
 (`@strand`), which structural job a beat answers (`#job`), which questions open and close
@@ -162,13 +162,14 @@ Everything else in a chapter block — Character Knowledge,
 Guardrails, wiring, Starting/Ending State, Chapter Purpose — is **derived** by
 `scripts/story_cut.py` from the ledger, the genre and the tags. There is nowhere to type
 boilerplate, which is why `story.md` cannot drift into the duplicate the retired
-chapter-skeleton layer became. `story_cut.py` fails loud, by name, on twenty-one findings —
-`unknown-strand`, `unknown-job`, `unknown-clue`, `unknown-question`, `unscheduled-clue`,
-`orphan-question`, `unclosed-question`, `beats-without-chapter`, `duplicate-beat`,
-`missing-reveal-chapter`, `clue-not-found-in-ledger-text`, `outline-modified-since-cut`,
-`cut-owned-outline`, `orphan-direction`, `misplaced-schedule-tag`,
-`wiring-shaped-directive`, `beat-without-setting`, `overlapping-setting`,
-`setting-outside-chapter`, `missing-chapter-frame`, `unknown-closing-kind` — no waivers at
+chapter-skeleton layer became. `story_cut.py` fails loud, by name, on twenty-three
+findings — `unknown-strand`, `unknown-job`, `unknown-clue`, `unknown-question`,
+`unscheduled-clue`, `orphan-question`, `unclosed-question`, `beats-without-chapter`,
+`duplicate-beat`, `missing-reveal-chapter`, `clue-not-found-in-ledger-text`,
+`outline-modified-since-cut`, `cut-owned-outline`, `orphan-direction`,
+`misplaced-schedule-tag`, `wiring-shaped-directive`, `beat-without-setting`,
+`overlapping-setting`, `setting-outside-chapter`, `missing-chapter-frame`,
+`unknown-closing-kind`, `unnumbered-beat`, `misnumbered-beat` — no waivers at
 this level (spec §8): fix the story or the cut plan. Authored guardrails are emitted **in
 authoring order**, ahead of the derived
 series-guardrail and reveal-chapter lines; a note shaped like a wiring field or a Track
@@ -208,8 +209,8 @@ mint `@strand` slugs (shape-checked only) but never a `!clue-id` (a ledger fact)
 `beats-without-chapter` (with no plan it fires once per beat) and printing the one
 advisory, **`directive-shaped-beat`** — a beat opening with an imperative such as
 *Plant* or *Do not*. It rides the existing non-blocking `notes` channel, never
-`blocking`: the twenty-one findings stay twenty-one, and an advisory that could block would
-just be a twenty-second with a softer name.
+`blocking`: the twenty-three findings stay twenty-three, and an advisory that could block
+would just be a twenty-fourth with a softer name.
 
 `unclosed-question` is the converse of `orphan-question` and **the only place it can be
 caught**: the emitter carries every live question into every chapter through the last one,

@@ -27,7 +27,7 @@ def test_claude_md_documents_the_check_subcommand_and_the_advisory():
     text = CLAUDE_MD.read_text(encoding="utf-8")
     assert "story_cut.py check" in text
     assert "directive-shaped-beat" in text
-    assert "twenty-one findings" in text
+    assert "twenty-three findings" in text
 
 
 def test_claude_md_names_the_craft_document_and_the_authoring_agent():
