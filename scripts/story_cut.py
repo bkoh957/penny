@@ -48,6 +48,10 @@ _DIRECTIVE_OPENERS = frozenset({
 
 _OPENER_RE = re.compile(r"^\s*(?P<word>[A-Za-z']+)")
 
+# The three kinds a chapter may end on (spec 2026-08-12 §3). Engine-level rather
+# than genre-level: these name shapes of ending, not cozy conventions.
+CLOSING_KINDS = ("cliffhanger", "irony", "promise of action")
+
 
 def directive_advisories(beats: list) -> list:
     """Non-blocking notes for beats shaped like directions to the writer."""
@@ -103,6 +107,50 @@ def check_story(story_text: str, cut_plan_text: str,
                     f"[{beat['num']}] but sits at position {n} — a cut plan range "
                     f"built from the written number would claim the wrong beats; "
                     f"renumber with `story_cut.py number NN`")
+
+    # Setting and chapter frames are cut-level, all-or-nothing per plan (spec
+    # 2026-08-12 §5.1). Checking each chapter independently would make a
+    # half-adopted book the quiet default: the chapters that were filled in are
+    # governed and the rest silently return the ending to the drafter.
+    adopted = any(ch["settings"] or ch["opening"] or ch["closing"]
+                  for ch in chapters)
+    if adopted:
+        for ch in chapters:
+            held = set(ch["beats"])
+            seen: set = set()
+            for s in ch["settings"]:
+                for n in s["beats"]:
+                    if n not in held:
+                        blocking.append(
+                            f"setting-outside-chapter: ch {ch['num']:02d} has a "
+                            f"setting covering beat {n}, which this chapter does "
+                            f"not hold — a chapter boundary moved and the setting "
+                            f"ranges did not move with it; repair cut-plan.md")
+                    elif n in seen:
+                        blocking.append(
+                            f"overlapping-setting: ch {ch['num']:02d} has two "
+                            f"settings covering beat {n}, so where it happens is "
+                            f"ambiguous")
+                    seen.add(n)
+            for n in sorted(held - seen):
+                blocking.append(
+                    f"beat-without-setting: ch {ch['num']:02d} beat {n} is covered "
+                    f"by no setting — every beat must say where it happens, or the "
+                    f"drafter picks the room")
+            if not ch["opening"]:
+                blocking.append(
+                    f"missing-chapter-frame: ch {ch['num']:02d} has no Opening — "
+                    f"other chapters in this plan carry one, and adoption is "
+                    f"all-or-nothing")
+            if not ch["closing"]:
+                blocking.append(
+                    f"missing-chapter-frame: ch {ch['num']:02d} has no Closing — "
+                    f"a missing ending hands the last line back to the drafter")
+            elif ch["closing"]["kind"] not in CLOSING_KINDS:
+                blocking.append(
+                    f"unknown-closing-kind: ch {ch['num']:02d} ends on "
+                    f"'{ch['closing']['kind']}', which is not one of "
+                    f"{', '.join(CLOSING_KINDS)}")
 
     for n, beat in enumerate(beats, 1):
         for slug in beat["strands"]:

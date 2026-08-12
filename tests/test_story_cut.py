@@ -471,3 +471,89 @@ def test_zero_indent_walk_does_not_run_past_its_collection():
     spans = story_cut._item_spans(lines, heading, "")
     assert max(e for _, e, _ in spans) <= next(
         i for i, l in enumerate(lines) if l.startswith("red_herrings:"))
+
+
+# --- chapter setting and frames (spec 2026-08-12 §5.1) -----
+
+STORY = """\
+# Story
+
+- [1] Maggie opens the shop.
+- [2] The tin turns up.
+- [3] She walks to the harbour.
+- [4] The light goes out.
+"""
+
+
+def _plan(body):
+    return "## Chapter 01 — X\n- **Beats:** 1-4\n" + body
+
+
+FRAME = ("- **Opening:** The kiln door still warm.\n"
+         "- **Closing (cliffhanger):** The light goes out.\n")
+
+
+def _blocking(plan):
+    return check_story(STORY, plan, [], [])["blocking"]
+
+
+def test_clean_plan_produces_none_of_the_new_findings():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n" + FRAME)
+    assert not [b for b in _blocking(plan) if b.split(":")[0] in {
+        "beat-without-setting", "overlapping-setting", "setting-outside-chapter",
+        "missing-chapter-frame", "unknown-closing-kind"}]
+
+
+def test_beat_without_setting_names_the_uncovered_beat():
+    plan = _plan("- **Setting:**\n  - 1-3 — the shop, morning\n" + FRAME)
+    assert any(b.startswith("beat-without-setting:") and "4" in b
+               for b in _blocking(plan))
+
+
+def test_overlapping_setting_fires_when_two_ranges_claim_one_beat():
+    plan = _plan("- **Setting:**\n  - 1-3 — the shop, morning\n"
+                 "  - 3-4 — the harbour, dusk\n" + FRAME)
+    assert any(b.startswith("overlapping-setting:") and "3" in b
+               for b in _blocking(plan))
+
+
+def test_setting_outside_chapter_fires_on_a_beat_this_chapter_does_not_hold():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n"
+                 "  - 9 — the harbour, dusk\n" + FRAME)
+    assert any(b.startswith("setting-outside-chapter:") and "9" in b
+               for b in _blocking(plan))
+
+
+def test_missing_chapter_frame_fires_once_per_missing_field():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n")
+    found = [b for b in _blocking(plan) if b.startswith("missing-chapter-frame:")]
+    assert len(found) == 2
+    assert any("Opening" in b for b in found) and any("Closing" in b for b in found)
+
+
+def test_unknown_closing_kind_names_the_three_valid_kinds():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n"
+                 "- **Opening:** The kiln door.\n"
+                 "- **Closing (twist):** The light goes out.\n")
+    hits = [b for b in _blocking(plan) if b.startswith("unknown-closing-kind:")]
+    assert hits and "promise of action" in hits[0]
+
+
+def test_a_plan_carrying_none_of_the_fields_is_pre_design_and_silent():
+    plan = _plan("- **Summary:** s\n- **Compress:** c\n")
+    assert not [b for b in _blocking(plan) if b.split(":")[0] in {
+        "beat-without-setting", "overlapping-setting", "setting-outside-chapter",
+        "missing-chapter-frame", "unknown-closing-kind"}]
+
+
+def test_adoption_is_all_or_nothing_across_the_whole_plan():
+    plan = ("## Chapter 01 — X\n- **Beats:** 1-2\n"
+            "- **Setting:**\n  - 1-2 — the shop, morning\n"
+            "- **Opening:** The kiln door.\n"
+            "- **Closing (irony):** She laughs.\n"
+            "## Chapter 02 — Y\n- **Beats:** 3-4\n"
+            "- **Summary:** s\n")
+    found = [b for b in _blocking(plan) if b.startswith("missing-chapter-frame:")]
+    assert len(found) == 2 and all("ch 02" in b for b in found)
+    assert any(b.startswith("beat-without-setting:") and "ch 02" in b
+               for b in _blocking(plan))
