@@ -356,3 +356,42 @@ def test_a_chapter_with_no_closing_breaks_the_run_rather_than_hiding_it():
     blocking, notes = [], []
     _closings_check(chapters, blocking, notes, max_run=3)
     assert blocking == []
+
+
+# --- Final review, Important 2: an unrecognised "kind" must not be measured -
+
+def test_unrecognized_closing_kind_is_treated_as_absent_and_breaks_the_run():
+    # ch 03's Closing is free prose ("Freeform"), not one of CLOSING_KINDS —
+    # exactly what a hand-authored/scaffolded ### Closing looks like, since
+    # story_cut's unknown-closing-kind only guards cut plans. Treated as
+    # absent, it must break the run the same way a missing Closing does
+    # (see the test above), not silently keep it going as if "freeform" were
+    # a real, repeatable kind.
+    chapters = [_ch(1, "Cliffhanger"), _ch(2, "Cliffhanger"), _ch(3, "Freeform"),
+                _ch(4, "Cliffhanger"), _ch(5, "Cliffhanger")]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == []
+    assert notes == []
+
+
+def test_all_unrecognized_kinds_produce_the_named_note_not_a_silent_return():
+    # Every chapter HAS a ### Closing (so this is not the no-Closing-anywhere
+    # case below), but none of them names a recognised kind — the check has
+    # nothing to measure and must say so by name, not return silently.
+    chapters = [_ch(n, "Freeform") for n in range(1, 5)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == []
+    assert any(n.startswith("monotonous-closings —") for n in notes)
+
+
+def test_no_closing_anywhere_still_stays_a_silent_skip():
+    # The other half of the same distinction: an outline with NO ### Closing
+    # section at all (the legacy shape) must still produce neither a finding
+    # nor a note — collapsing this into the "unrecognised kind" case above
+    # would turn every legacy outline's silence into a spurious note.
+    chapters = [_ch(n, None) for n in range(1, 5)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == [] and notes == []

@@ -70,6 +70,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.penny_meta import parse_frontmatter
 from scripts.penny_wiring import has_wiring, parse_wired_chapters
+from scripts.story_cut import CLOSING_KINDS
 
 
 def _load_yaml(path):
@@ -276,11 +277,35 @@ def _closings_check(chapters, blocking, notes, *, max_run=None):
     this check meets in the wild) BREAKS the run rather than being invisible
     to it: skipping it outright would let two runs either side of the gap
     silently concatenate into one that never actually happened on the page.
+
+    This check is aimed squarely at hand-authored/scaffolded outlines — the
+    ones `story_cut.check_story`'s `unknown-closing-kind` never sees, because
+    that finding guards cut plans only. So a `### Closing` reading free prose
+    ("She leaves the shed.") must not be treated as a real "kind": that would
+    let this check measure prose that can never literally repeat, and quietly
+    skip the "could not run" note it owes the lock certificate. Any extracted
+    kind not in CLOSING_KINDS is therefore treated as ABSENT — same as no
+    Closing at all, which already breaks a run correctly (see above). If NO
+    chapter yields a recognised kind, that is worth a named note (the check
+    could not measure anything); but an outline with NO Closing section
+    ANYWHERE is a different case and stays a silent skip, exactly as before —
+    collapsing the two would turn every legacy outline's silence into a
+    spurious note.
     """
-    kinds = [(ch["num"], (ch.get("sections") or {}).get("Closing", "")
-              .split("—")[0].strip().lower())
-             for ch in chapters]
+    raw_present = any((ch.get("sections") or {}).get("Closing", "")
+                       for ch in chapters)
+    if not raw_present:
+        return
+    kinds = []
+    for ch in chapters:
+        raw = (ch.get("sections") or {}).get("Closing", "")
+        kind = raw.split("—")[0].strip().lower()
+        kinds.append((ch["num"], kind if kind in CLOSING_KINDS else ""))
     if not any(k for _, k in kinds):
+        notes.append(
+            "monotonous-closings — the check could not run: no chapter's "
+            "### Closing names a recognised kind "
+            f"({', '.join(CLOSING_KINDS)})")
         return
     if max_run is None:
         notes.append(
