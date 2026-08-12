@@ -25,7 +25,11 @@ Does not write ledgers.
   Guardrails, the wiring footer), the merged Ledger Clues, the Continuity Extracts
   (this chapter's ledger slice — canon-core + the entries the chapter names + their
   one-hop links, already curated for you), Standing Series Guardrails, and the Word
-  Budget the map was priced against.
+  Budget the map was priced against. When the outline block carries them, `###
+  Setting` (where and when each of its beats happens), `### Opening`, and
+  `### Closing` are also here — the latter two are **instruction, not
+  context**: the chapter opens and lands exactly as they say, not as
+  something you're free to reinterpret in the room.
 - **The previous chapter's final ~300 words** — from `.final.md`, else `.draft.md`,
   else omitted with a note — so you open in continuity with what the reader just read.
 - When there is no map (the legacy path): the raw `## Chapter NN` outline section

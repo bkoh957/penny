@@ -51,6 +51,12 @@ of the answer; you never write the file they act on.
   primary anchor, any secondary anchor, the closing turn, and what to compress
   — that is taste, and it is authored upstream of you. Your job is staging and
   pricing what the packet already ruled, not re-deciding what matters.
+- **`### Setting`, when the packet carries it, is the strongest available
+  signal for where scenes break.** A location change is usually a scene
+  boundary, so read the setting ranges before you draw your own. `###
+  Opening` belongs to the first scene you stage and `### Closing` to the
+  last — they are the chapter's own first and last lines, already decided
+  upstream, not something to re-propose.
 - **Cover every Required Beat, exactly once.** Each beat is one line in the
   packet's numbered list; your `Beats covered:` lines must, between them,
   claim every index exactly once — a beat with no home or a beat claimed twice

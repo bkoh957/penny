@@ -57,3 +57,20 @@ def test_it_teaches_the_test_and_the_beat_size_rule():
     text = DOC.read_text(encoding="utf-8")
     assert "one visible change" in text
     assert "directive-shaped-beat" in text
+
+
+def test_chapter_frames_doc_ships_and_names_the_three_kinds():
+    p = Path(__file__).resolve().parents[1] / "config/story-craft/writing-chapter-frames.md"
+    assert p.is_file()
+    body = p.read_text(encoding="utf-8").lower()
+    for kind in ("cliffhanger", "irony", "promise of action"):
+        assert kind in body
+
+
+def test_chapter_cutter_declares_the_three_fields_and_the_craft_doc():
+    body = (Path(__file__).resolve().parents[1] / "agents/chapter-cutter.md").read_text(
+        encoding="utf-8")
+    assert "**Setting:**" in body and "**Opening:**" in body
+    assert "Closing (" in body
+    assert "writing-chapter-frames.md" in body
+    assert "setting-pack" in body
