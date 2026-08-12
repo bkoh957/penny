@@ -20,7 +20,7 @@ something happening.
 
 A recap is the opposite move: it spends the earned attention on catching the
 reader up rather than pulling them forward. If the last chapter's ending needs
-restating, that is what the chapter *does* with it — Maggie acting on what she
+restating, that is what the chapter *does* with it — Talia acting on what she
 just learned — not a sentence that tells the reader she learned it.
 
 ## The three closings
@@ -48,7 +48,7 @@ than suspense.
 
 **Promise of action** — the character commits.
 
-> Enough asking politely. Maggie was going to search the shed herself,
+> Enough asking politely. Talia was going to search the shed herself,
 > tonight.
 
 Nothing is withheld and nothing is ironic; the decision itself makes the next
