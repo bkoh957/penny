@@ -10,11 +10,12 @@ from pathlib import Path
 CLAUDE_MD = Path("CLAUDE.md")
 
 
-def test_claude_md_names_nine_tension_checks_including_overloaded_chapter():
+def test_claude_md_names_ten_tension_checks_including_overloaded_chapter():
     text = CLAUDE_MD.read_text(encoding="utf-8")
-    assert "nine named checks" in text
-    assert "eight named checks" not in text
+    assert "ten named checks" in text
+    assert "nine named checks" not in text
     assert "`overloaded-chapter`" in text
+    assert "`monotonous-closings`" in text
 
 
 def test_claude_md_documents_penny_length():
@@ -26,7 +27,7 @@ def test_claude_md_documents_the_check_subcommand_and_the_advisory():
     text = CLAUDE_MD.read_text(encoding="utf-8")
     assert "story_cut.py check" in text
     assert "directive-shaped-beat" in text
-    assert "sixteen findings" in text          # unchanged — no finding added
+    assert "twenty-one findings" in text
 
 
 def test_claude_md_names_the_craft_document_and_the_authoring_agent():

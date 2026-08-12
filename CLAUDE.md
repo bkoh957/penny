@@ -162,36 +162,43 @@ Everything else in a chapter block — Character Knowledge,
 Guardrails, wiring, Starting/Ending State, Chapter Purpose — is **derived** by
 `scripts/story_cut.py` from the ledger, the genre and the tags. There is nowhere to type
 boilerplate, which is why `story.md` cannot drift into the duplicate the retired
-chapter-skeleton layer became. `story_cut.py` fails loud, by name, on sixteen findings —
+chapter-skeleton layer became. `story_cut.py` fails loud, by name, on twenty-one findings —
 `unknown-strand`, `unknown-job`, `unknown-clue`, `unknown-question`, `unscheduled-clue`,
 `orphan-question`, `unclosed-question`, `beats-without-chapter`, `duplicate-beat`,
 `missing-reveal-chapter`, `clue-not-found-in-ledger-text`, `outline-modified-since-cut`,
 `cut-owned-outline`, `orphan-direction`, `misplaced-schedule-tag`,
-`wiring-shaped-directive` — no waivers at this level (spec §8): fix the story or the cut
-plan. Authored guardrails are emitted **in authoring order**, ahead of the derived
+`wiring-shaped-directive`, `beat-without-setting`, `overlapping-setting`,
+`setting-outside-chapter`, `missing-chapter-frame`, `unknown-closing-kind` — no waivers at
+this level (spec §8): fix the story or the cut plan. Authored guardrails are emitted **in
+authoring order**, ahead of the derived
 series-guardrail and reveal-chapter lines; a note shaped like a wiring field or a Track
 Movement row is refused rather than emitted, since the emitted block is parsed line by
 line and authored prose must not be able to forge the cut's own output.
 
 **Where a chapter happens, and how it opens and closes, are cut-level decisions, not beat
-tags** — approved, not yet built (spec
-`docs/superpowers/specs/2026-08-12-chapter-setting-and-frames-design.md`). `cut-plan.md`
-gains `Setting:` (nested, each entry bound to a beat range, prose = place, time, optional
-condition), `Opening:`, and `Closing (<kind>):` where kind is `cliffhanger`, `irony` or
-`promise of action`; the cut emits `### Setting`, `### Opening` and `### Closing`.
-Adoption is **all-or-nothing per cut plan**, as beat numbers are per `story.md`. On
-implementation the sixteen findings above become twenty-one (`beat-without-setting`,
+tags** (spec `docs/superpowers/specs/2026-08-12-chapter-setting-and-frames-design.md`) —
+chapters do not exist until beats are grouped, and an ending only means something once you
+know where the chapter stops. `cut-plan.md` carries `Setting:` (nested, each entry bound to
+a beat range, prose = place, time, optional condition), `Opening:`, and `Closing (<kind>):`
+where kind is `cliffhanger`, `irony` or `promise of action`; the cut emits `### Setting`,
+`### Opening` and `### Closing`. Adoption is **all-or-nothing per cut plan**, as beat
+numbers are per `story.md` — checking chapters independently would make a half-adopted book
+the quiet default, so the five findings above (`beat-without-setting`,
 `overlapping-setting`, `setting-outside-chapter`, `missing-chapter-frame`,
-`unknown-closing-kind`) and `tension_check`'s nine checks become ten
-(`monotonous-closings`, waivable, threshold from the genre beat sheet's
-`closings.max_same_kind_run`) — **those counts stay at sixteen and nine until the code
-lands.**
+`unknown-closing-kind`) go live only once a plan carries the fields at all.
+`tension_check`'s `monotonous-closings` — waivable, threshold from the genre beat sheet's
+`closings.max_same_kind_run` — catches a run of identical closings across the whole book, a
+property no per-chapter check can see.
 
 What a beat *is* — as opposed to how it is tagged — lives in the config overlay at
 `config/story-craft/`, read as a **directory** so a genre pack can add to it without
 copying it (spec `2026-08-06-dramatic-beat-authoring-design.md`). A beat is a change
 on the page, one visible change per beat; a note addressed to the writer belongs in
-`## Guardrails`, and a note about where chapters fall in `## Chapter Direction`.
+`## Guardrails`, and a note about where chapters fall in `## Chapter Direction`. The
+directory also holds `writing-chapter-frames.md`, read by the chapter-cutter alongside
+`writing-beats.md`: what distinguishes a cliffhanger from an irony from a promise of
+action, why a run of identical closings goes dead, and what makes an opening sentence
+strong.
 `/plot-book`'s chapters stage reads that union before writing a beat, and the
 **`story-author`** agent works a named range of beats with the showrunner — it may
 mint `@strand` slugs (shape-checked only) but never a `!clue-id` (a ledger fact) or a
@@ -201,8 +208,8 @@ mint `@strand` slugs (shape-checked only) but never a `!clue-id` (a ledger fact)
 `beats-without-chapter` (with no plan it fires once per beat) and printing the one
 advisory, **`directive-shaped-beat`** — a beat opening with an imperative such as
 *Plant* or *Do not*. It rides the existing non-blocking `notes` channel, never
-`blocking`: the sixteen findings stay sixteen, and an advisory that could block would
-just be a seventeenth with a softer name.
+`blocking`: the twenty-one findings stay twenty-one, and an advisory that could block would
+just be a twenty-second with a softer name.
 
 `unclosed-question` is the converse of `orphan-question` and **the only place it can be
 caught**: the emitter carries every live question into every chapter through the last one,
@@ -349,10 +356,10 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
 - **`scripts/preflight.py`** is the one deterministic-gate tool, six subcommands:
   `lock-mystery N` (validate fairplay+lexicon+tension, then mint the lock — the
   *only* lock writer; `tension_check.py` is the dramatic-wiring checker beside
-  `fairplay_check.py`, nine named checks — `orphan-chapter`, `dropped-question`,
+  `fairplay_check.py`, ten named checks — `orphan-chapter`, `dropped-question`,
   `phantom-answer`, `broken-hook`, `chapter-coverage`, `dead-stretch`,
-  `starved-thread`, `off-mark-beat`, `overloaded-chapter` — each waivable with
-  `--waive check-id:"reason"`,
+  `starved-thread`, `off-mark-beat`, `overloaded-chapter`, `monotonous-closings` — each
+  waivable with `--waive check-id:"reason"`,
   recorded in the lock certificate; the beat sheet driving the last three is
   resolved through the active genre's `genre.yaml` `beat_sheet:` key
   (`penny_genre.py beat-sheet`), never a hardcoded filename; an outline with no
@@ -366,9 +373,15 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
   nothing to do; an outline with none anywhere (the legacy scenes/weights shape) is
   never checked. Per-scene word pricing (band-mismatch, starved-scene) moved with the
   scenes themselves to `map_check.py`, post-lock, per chapter — this check is now purely
-  a plot-obligation count, not a word-count arithmetic. A check that **cannot run** — the
-  genre beat sheet declares no `obligations.max_per_chapter`, or the whodunit ledger
-  cannot be read — is never silent and never a traceback: it prints a named note and the
+  a plot-obligation count, not a word-count arithmetic. `monotonous-closings` is a BOOK
+  property rather than a per-chapter one: it fires when a run of consecutive chapters
+  longer than the genre beat sheet's `closings.max_same_kind_run` all end on the same
+  kind (read from each chapter's `### Closing` section), and runs on any outline carrying
+  a Closing section anywhere, wired or not; an outline with none (the legacy shape) is
+  never checked. A check that **cannot run** — the genre beat sheet declares no
+  `obligations.max_per_chapter` (or, for `monotonous-closings`, no
+  `closings.max_same_kind_run`), or the whodunit ledger cannot be read — is never silent
+  and never a traceback: it prints a named note and the
   lock certificate records it as `skipped: <check-id> — <why>`, so the certificate cannot
   claim coverage it does not have), `draft N CH`
   (lock present + ledger populated + the review panel is routed off the drafting

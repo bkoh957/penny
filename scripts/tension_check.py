@@ -48,20 +48,13 @@ Checks (ids are the waiver handles):
                      before a word is drafted (spec §6). Runs on any outline
                      carrying Required Beats anywhere; an outline with none
                      (the legacy scenes/weights shape) is never checked.
-
   monotonous-closings a run of chapters longer than the genre beat sheet's
                      closings.max_same_kind_run all ending on the same kind
                      (from each chapter's ### Closing section, spec
                      2026-08-12 §5.2). A BOOK property, not a per-chapter one.
                      Runs on any outline carrying a Closing section anywhere,
                      wired or not; an outline with none (the legacy shape) is
-                     never checked. Not yet in the "Checks (ids are the
-                     waiver handles):" roster above or in CLAUDE.md/README —
-                     tests/test_readme_check_count.py derives its expected
-                     roster straight from that block and pins it at nine
-                     until Task 7 of spec 2026-08-12-chapter-setting-and-
-                     frames flips the documented counts; adding it there
-                     early would fail that test for no functional reason.
+                     never checked.
 
   python3 scripts/tension_check.py input/book-NN/outline.md \
       [--beat-sheet P] [--turning-points P] [--whodunit P]
