@@ -909,6 +909,24 @@ def test_clues_and_plants_section_never_reaches_the_reader():
     assert "rh-simon" not in out
 
 
+def test_required_beats_reaches_the_reader_but_guardrails_and_clues_still_dont():
+    """Showrunner ruling, final review Important 3: the allowlist swap that
+    fixed the Guardrails leak also silently dropped Required Beats, leaving
+    the blind fan roughly one line per chapter — not enough evidence for the
+    fan-audit's interest curve or put-down risk to mean anything. Required
+    Beats is admitted back in; Guardrails and Clues and Plants must not be."""
+    out = readers_copy_text(_sectioned(
+        "### Required Beats",
+        "- Dez finds the ledger under the till.",
+        "### Guardrails",
+        "- Do not name the culprit before Chapter 24.",
+        "### Clues and Plants",
+        "- [rh-simon] the access path by which Tara could become paper-Maggie."))
+    assert "Dez finds the ledger under the till." in out
+    assert "Do not name the culprit" not in out
+    assert "paper-Maggie" not in out
+
+
 def test_character_knowledge_section_never_reaches_the_reader():
     out = readers_copy_text(_sectioned(
         "### Character Knowledge", "Not yet known:", "- The solution, until chapter 24."))

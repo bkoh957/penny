@@ -58,8 +58,19 @@ _DROP_FIELDS = {"Because", "Opens", "Closes", "Carries"}
 # put-down risk is actually made of, so hiding it would waste the read-back.
 # Truncation at reveal_chapter still applies, so a late closing cannot leak the
 # solution.
+#
+# `required beats` is admitted too (showrunner ruling, final review Important
+# 3): the allowlist swap that fixed the Guardrails leak also silently dropped
+# it, leaving the blind fan roughly one line per chapter to react to — not
+# enough for the fan-audit's interest curve and put-down risk to mean
+# anything. It is safe to admit: it is derived from story.md, carries no
+# ledger clue descriptions, and is already covered by the same
+# reveal-chapter truncation that makes Chapter Summary safe. Chapter Purpose
+# and Starting/Ending State stay OUT on purpose — they are machinery, and
+# Ending State in particular names which questions close, which is wiring
+# rather than reader experience.
 _KEEP_SUBSECTIONS = ("chapter summary", "reader-facing shape", "chapter structure",
-                     "setting", "opening", "closing")
+                     "setting", "opening", "closing", "required beats")
 _KEEP_SUBSECTION_RES = [re.compile(r"\b" + re.escape(s) + r"\b") for s in _KEEP_SUBSECTIONS]
 # Any heading of level 3 OR DEEPER (###, ####, ...) — a casing/level drift in a
 # hand-edited heading must not silently defeat the subsection strip.
