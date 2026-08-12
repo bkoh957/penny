@@ -1273,3 +1273,17 @@ def test_readback_refuses_before_the_cut_and_reads_outline_after(tmp_path):
 def test_no_stage_path_names_the_retired_skeleton(tmp_path):
     root = _series(tmp_path)
     assert all("skeleton" not in p.name for p in stage_paths("01", root).values())
+
+
+def test_the_reader_sees_setting_opening_and_closing():
+    text = ("## Chapter 01 — X\n"
+            "### Chapter Summary\nShe opens the shop.\n"
+            "### Setting\n- Beats 1-2 — the shop, morning\n"
+            "### Opening\nThe kiln door still warm.\n"
+            "### Closing\nCliffhanger — the light goes out.\n"
+            "### Guardrails\n- The culprit is Susan.\n")
+    out = readers_copy_text(text)
+    assert "the shop, morning" in out
+    assert "The kiln door still warm." in out
+    assert "the light goes out." in out
+    assert "Susan" not in out

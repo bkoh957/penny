@@ -53,7 +53,13 @@ _DROP_FIELDS = {"Because", "Opens", "Closes", "Carries"}
 # protection: Because/Opens/Closes/Carries are dropped by `_DROP_FIELDS` and Hook
 # survives with its question id scrubbed, which is the reader's dramatic question
 # and is meant to reach them. Admitting the section is not admitting its wiring.
-_KEEP_SUBSECTIONS = ("chapter summary", "reader-facing shape", "chapter structure")
+# `setting`, `opening` and `closing` are admitted deliberately (spec 2026-08-12
+# §6.3): setting is what a reader experiences, and the closing line is what
+# put-down risk is actually made of, so hiding it would waste the read-back.
+# Truncation at reveal_chapter still applies, so a late closing cannot leak the
+# solution.
+_KEEP_SUBSECTIONS = ("chapter summary", "reader-facing shape", "chapter structure",
+                     "setting", "opening", "closing")
 _KEEP_SUBSECTION_RES = [re.compile(r"\b" + re.escape(s) + r"\b") for s in _KEEP_SUBSECTIONS]
 # Any heading of level 3 OR DEEPER (###, ####, ...) — a casing/level drift in a
 # hand-edited heading must not silently defeat the subsection strip.
