@@ -852,19 +852,67 @@ def test_list_shaped_ledger_exits_with_named_error_not_traceback(tmp_path):
     assert "plot_stage:" in str(e.value)
 
 
-def test_resolution_heading_survives_the_solution_drop():
-    text = """---
+def _sectioned(*sections: str) -> str:
+    body = "\n".join(sections)
+    return f"""---
 book: 01
 total_chapters: 1
 ---
 
 ## Chapter 01 — One
 
-### Resolution
-Everything wraps up nicely for the town.
+{body}
 """
-    out = readers_copy_text(text)
-    assert "Everything wraps up nicely" in out
+
+
+def test_an_unadmitted_section_is_dropped_whatever_it_is_called():
+    """The allowlist's whole point (changed from a denylist 2026-08-12).
+
+    `### Resolution` used to survive, because the denylist only knew the names it
+    had been told. Under the allowlist an unknown section is dropped by default,
+    so a section the outline emitter grows later cannot unblind the reader before
+    anyone notices.
+    """
+    out = readers_copy_text(_sectioned("### Resolution",
+                                       "Everything wraps up nicely for the town."))
+    assert "Everything wraps up nicely" not in out
+
+
+def test_admitted_sections_survive_so_the_drop_is_not_overreaching():
+    out = readers_copy_text(_sectioned(
+        "### Chapter Summary", "Maggie finds the body at the wheel.",
+        "", "### Reader-Facing Shape", "Primary anchor:", "- The wrong clay.",
+        "", "### Chapter Structure", "- **Hook:** q-a — who made the vase?"))
+    assert "Maggie finds the body at the wheel." in out
+    assert "The wrong clay." in out
+    assert "who made the vase?" in out          # Hook prose reaches the reader
+    assert "q-a" not in out                     # ...without its question id
+
+
+def test_guardrails_section_never_reaches_the_reader():
+    """The leak this change exists for. `### Guardrails` began appearing in every
+    chapter with the 2026-08-04 chapter-direction feature; the denylist did not
+    know about it, so the blind copy shipped the solution from chapter 1."""
+    out = readers_copy_text(_sectioned(
+        "### Guardrails",
+        "- Marion is Tara; murder preserves identity under recognition.",
+        "- Do not name Tara as culprit before Chapter 24."))
+    assert "Marion is Tara" not in out
+    assert "culprit" not in out
+
+
+def test_clues_and_plants_section_never_reaches_the_reader():
+    out = readers_copy_text(_sectioned(
+        "### Clues and Plants",
+        "- [rh-simon] the access path by which Tara could become paper-Maggie."))
+    assert "paper-Maggie" not in out
+    assert "rh-simon" not in out
+
+
+def test_character_knowledge_section_never_reaches_the_reader():
+    out = readers_copy_text(_sectioned(
+        "### Character Knowledge", "Not yet known:", "- The solution, until chapter 24."))
+    assert "The solution, until chapter 24." not in out
 
 
 # --- Re-verify the blind guarantee over every wired-* fixture ---------------

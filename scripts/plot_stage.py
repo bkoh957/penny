@@ -32,9 +32,29 @@ _DROP_FIELDS = {"Because", "Opens", "Closes", "Carries"}
 # testing. Word-boundary (not substring) so "solution" doesn't also eat a
 # legitimate "### Resolution" subsection — "re" + "solution" shares no word
 # boundary at the point where "solution" would start.
-_DROP_SUBSECTIONS = ("track movement", "tracks", "drafting notes",
-                     "possible line-level prompts", "solution")
-_DROP_SUBSECTION_RES = [re.compile(r"\b" + re.escape(s) + r"\b") for s in _DROP_SUBSECTIONS]
+# ALLOWLIST, not a denylist. Spec §5: the reader's copy leaves "title, summary,
+# and the structure prose" — so name what a reader may see and drop everything
+# else by default.
+#
+# This was a denylist ("track movement", "tracks", "drafting notes", "possible
+# line-level prompts", "solution") until 2026-08-12. A denylist makes blindness
+# a property of a list that has to be maintained in step with every section the
+# outline emitter ever grows, and it silently failed exactly that way: the
+# 2026-08-04 chapter-direction/guardrails feature added `### Guardrails` to every
+# chapter block, nothing added it here, and the "blind" copy began shipping the
+# whole solution — culprit, identity twist and motive — from chapter 1. Two more
+# sections leaked the same way: `### Clues and Plants` (ledger ids WITH their
+# solution-bearing descriptions) and `### Character Knowledge`.
+#
+# Under an allowlist a new outline section is invisible to the reader until
+# someone deliberately admits it. That is what "the blind guarantee is a
+# CONSTRUCTION, not an instruction" has to mean to be worth stating.
+# `chapter structure` is admitted because it already carries field-level
+# protection: Because/Opens/Closes/Carries are dropped by `_DROP_FIELDS` and Hook
+# survives with its question id scrubbed, which is the reader's dramatic question
+# and is meant to reach them. Admitting the section is not admitting its wiring.
+_KEEP_SUBSECTIONS = ("chapter summary", "reader-facing shape", "chapter structure")
+_KEEP_SUBSECTION_RES = [re.compile(r"\b" + re.escape(s) + r"\b") for s in _KEEP_SUBSECTIONS]
 # Any heading of level 3 OR DEEPER (###, ####, ...) — a casing/level drift in a
 # hand-edited heading must not silently defeat the subsection strip.
 _H3_RE = re.compile(r"^#{3,}\s+(.*)$")
@@ -319,9 +339,12 @@ def stamp(book: str, target, upstreams, *, repo_root=None) -> None:
 
 def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None,
                       last_chapter: "int | None" = None) -> str:
-    """The blind reader's copy (spec §5): chapters only, in story order, with the
-    Solution/Threads sections, wiring lines, question ids, and drafting machinery
-    stripped BY CONSTRUCTION — blindness is not an instruction to an agent.
+    """The blind reader's copy (spec §5): chapters only, in story order — title,
+    summary and structure prose, and NOTHING ELSE. Section admission is an
+    allowlist (`_KEEP_SUBSECTIONS`), so a section the outline grows later is
+    dropped until someone deliberately admits it; wiring lines and question ids
+    are stripped on top of that. Blindness is a CONSTRUCTION here, not an
+    instruction to an agent — see `_KEEP_SUBSECTIONS` for what a denylist cost.
 
     When reveal_chapter is given, only chapters with num < reveal_chapter are
     emitted (FINDING 3): the reveal chapter's own summary names the culprit, so
@@ -368,7 +391,10 @@ def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None,
         for line in body[start:end].splitlines():
             h3 = _H3_RE.match(line)
             if h3:
-                skipping = any(pat.search(h3.group(1).lower()) for pat in _DROP_SUBSECTION_RES)
+                # Unknown section -> skip. The default must be "drop", or the
+                # next section someone adds upstream unblinds the reader again.
+                skipping = not any(pat.search(h3.group(1).lower())
+                                   for pat in _KEEP_SUBSECTION_RES)
                 if skipping:
                     continue
             elif skipping:
