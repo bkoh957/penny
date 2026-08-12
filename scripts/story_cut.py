@@ -699,10 +699,24 @@ def _item_spans(lines: list, heading_idx: int, heading_indent: str) -> list:
         if not body.strip():
             continue
         cur_indent = body[:len(body) - len(body.lstrip(" \t"))]
-        if len(cur_indent) <= len(heading_indent):
+        im = _ITEM_START_RE.match(body)
+        # A line SHALLOWER than the heading always ends the block. A line at the
+        # heading's OWN indent ends it only when it is not a sequence item —
+        # YAML lets a sequence sit at its key's indent, and that is exactly what
+        # `yaml.safe_dump` emits:
+        #
+        #     clue_schedule:
+        #     - id: c01-…
+        #
+        # Treating `- ` at heading indent as the block's end found zero items in
+        # every such ledger, so `_rewrite_plant_chapters` reported every clue as
+        # not-found and the cut refused a partial update. safe_load reads this
+        # shape happily, so the ledger validated and locked while the cut could
+        # never run on it.
+        if len(cur_indent) < len(heading_indent) or (
+                len(cur_indent) == len(heading_indent) and not im):
             end = idx
             break
-        im = _ITEM_START_RE.match(body)
         if item_indent is None:
             if not im:
                 end = idx

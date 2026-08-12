@@ -422,3 +422,52 @@ def test_renumber_preserves_tags_and_prose():
     after = story_cut.parse_story(story_cut.renumber(_NUMBERED))
     assert [(b["text"], b["strands"], b["clues"]) for b in before] == \
            [(b["text"], b["strands"], b["clues"]) for b in after]
+
+
+# --- ledger walk: zero-indent sequences (the shape yaml.safe_dump emits) ------
+
+_ZERO_INDENT_LEDGER = """book: '01'
+clue_schedule:
+- id: c01-first
+  plant_chapter: 3
+  description: first.
+- id: c02-second
+  plant_chapter: 4
+  description: second.
+red_herrings:
+- id: rh-one
+  plant_chapter: 5
+  description: herring.
+alibi_grid:
+- suspect: someone
+  chapter: 9
+"""
+
+
+def test_item_spans_finds_sequence_items_at_the_headings_own_indent():
+    """`clue_schedule:` followed by `- id:` at column 0 is legal YAML and is what
+    safe_dump emits. Reading the first item as the block's end found zero items,
+    so every clue reported not-found and the cut refused a partial update."""
+    lines = _ZERO_INDENT_LEDGER.splitlines(keepends=True)
+    heading = next(i for i, l in enumerate(lines) if l.startswith("clue_schedule:"))
+    assert len(story_cut._item_spans(lines, heading, "")) == 2
+
+
+def test_rewrite_plant_chapters_handles_zero_indent_ledger():
+    new, missing = story_cut._rewrite_plant_chapters(
+        _ZERO_INDENT_LEDGER, {"c01-first": 7, "rh-one": 8})
+    assert missing == []
+    assert "  plant_chapter: 7" in new
+    assert "  plant_chapter: 8" in new
+    assert "  plant_chapter: 4" in new          # untouched item survives
+    assert "  chapter: 9" in new                # alibi_grid never reached
+
+
+def test_zero_indent_walk_does_not_run_past_its_collection():
+    """`red_herrings:`/`alibi_grid:` sit at the same indent as `clue_schedule:`;
+    a non-item line at heading indent must still end the block."""
+    lines = _ZERO_INDENT_LEDGER.splitlines(keepends=True)
+    heading = next(i for i, l in enumerate(lines) if l.startswith("clue_schedule:"))
+    spans = story_cut._item_spans(lines, heading, "")
+    assert max(e for _, e, _ in spans) <= next(
+        i for i, l in enumerate(lines) if l.startswith("red_herrings:"))
