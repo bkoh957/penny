@@ -173,6 +173,20 @@ series-guardrail and reveal-chapter lines; a note shaped like a wiring field or 
 Movement row is refused rather than emitted, since the emitted block is parsed line by
 line and authored prose must not be able to forge the cut's own output.
 
+**Where a chapter happens, and how it opens and closes, are cut-level decisions, not beat
+tags** — approved, not yet built (spec
+`docs/superpowers/specs/2026-08-12-chapter-setting-and-frames-design.md`). `cut-plan.md`
+gains `Setting:` (nested, each entry bound to a beat range, prose = place, time, optional
+condition), `Opening:`, and `Closing (<kind>):` where kind is `cliffhanger`, `irony` or
+`promise of action`; the cut emits `### Setting`, `### Opening` and `### Closing`.
+Adoption is **all-or-nothing per cut plan**, as beat numbers are per `story.md`. On
+implementation the sixteen findings above become twenty-one (`beat-without-setting`,
+`overlapping-setting`, `setting-outside-chapter`, `missing-chapter-frame`,
+`unknown-closing-kind`) and `tension_check`'s nine checks become ten
+(`monotonous-closings`, waivable, threshold from the genre beat sheet's
+`closings.max_same_kind_run`) — **those counts stay at sixteen and nine until the code
+lands.**
+
 What a beat *is* — as opposed to how it is tagged — lives in the config overlay at
 `config/story-craft/`, read as a **directory** so a genre pack can add to it without
 copying it (spec `2026-08-06-dramatic-beat-authoring-design.md`). A beat is a change
