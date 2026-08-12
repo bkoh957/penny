@@ -258,7 +258,7 @@ tags — four sigils and nothing else:
 | `+question` / `-question` | opens / closes a dramatic question |
 | `!clue-id` | a ledger clue is planted here |
 
-A beat may also open with its position, `- [12] Maggie throws a cup…`. This is
+A beat may also open with its position, `- [12] Dez throws a cup…`. This is
 **optional and all-or-nothing per file**: number every beat or none. The number is
 stripped from the beat's prose, so it never reaches a packet or a drafter, and it is
 never the source of truth — position is. It is a written-down claim ABOUT position

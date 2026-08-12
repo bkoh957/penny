@@ -76,7 +76,7 @@ re-cut.
 
 ## The beat number
 
-A beat may open with its position: `- [12] Maggie throws the cup she meant to
+A beat may open with its position: `- [12] Dez throws the cup she meant to
 keep.` Optional, but all-or-nothing per file — number every beat or none.
 
 The number is **not** an identity. It is the beat's current position, written

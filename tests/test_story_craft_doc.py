@@ -74,3 +74,24 @@ def test_chapter_cutter_declares_the_three_fields_and_the_craft_doc():
     assert "Closing (" in body
     assert "writing-chapter-frames.md" in body
     assert "setting-pack" in body
+
+
+# Regression: a live-series character name leaked into a plugin-default craft
+# doc's worked example TWICE on this branch (writing-chapter-frames.md, then
+# writing-beats.md — both fixed by swapping in the doc's own invented names).
+# `config/` is a shipped default inherited by every genre and every series
+# (CLAUDE.md's genre/location-agnostic rule), so a real character name here
+# is not a cosmetic slip — it is exactly the contamination the rule forbids.
+# The names are hardcoded here, never read from the live series folder: that
+# folder lives outside this repo and this test must work without it.
+_LIVE_SERIES_NAMES = ("Maggie",)
+
+
+def test_no_live_series_character_name_appears_under_config():
+    config_dir = Path(__file__).resolve().parents[1] / "config"
+    for path in config_dir.rglob("*"):
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for name in _LIVE_SERIES_NAMES:
+            assert name not in text, f"{name!r} found in {path}"
