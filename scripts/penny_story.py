@@ -27,7 +27,7 @@ SLUG_RE = re.compile(rf"^{SLUG}$")
 # cannot match a space.
 #
 # Capture is deliberately LOOSE (\S+) while validation is strict (SLUG_RE, in
-# story_cut.check_story). A tight capture would make "@Maggie" fail to
+# story_cut.check_story). A tight capture would make "@Dez" fail to
 # tokenise at all — the strand would vanish from the beat silently, and the
 # author would get a clean run with a missing character. Capturing it and
 # refusing it by name is the loud failure the engine promises.
@@ -36,6 +36,22 @@ TAG_RE = re.compile(r"(?<!\S)(?P<sigil>[@#+!-])(?P<slug>\S+)")
 QUESTIONS_HEADING_RE = re.compile(r"^##\s+Questions\s*$", re.IGNORECASE)
 _HEADING_RE = re.compile(r"^##\s+")
 _BULLET_RE = re.compile(r"^-\s+(?P<rest>.*)$")
+
+# An OPTIONAL author-facing beat number: `- [12] Dez throws a cup…`. Bracketed
+# rather than `12.` because a beat may legitimately open with a bare number ("1987
+# was the year of the flood"), and a silent mis-parse here is the worst failure the
+# story layer has: beat indices are what the cut plan's `Beats: 22-25` ranges refer
+# to, so an off-by-one steals beats from a neighbouring chapter with no symptom.
+#
+# The number is STRIPPED from the beat's prose. Left in, it would travel through
+# emit_outline into the chapter block's Required Beats and land in the drafter's
+# packet as literal text — the same leak plain `$tags` cause.
+#
+# It is never the source of truth. POSITION is. The number is a written-down claim
+# ABOUT position, which `story_cut.check_story` verifies (misnumbered-beat) — that
+# is its whole value. Absent numbers are legal everywhere: a story.md that has
+# never been numbered parses exactly as before.
+_BEAT_NUM_RE = re.compile(r"^\[(?P<num>\d+)\]\s+")
 _QUESTION_LINE_RE = re.compile(rf"^-\s+(?P<id>q-{SLUG})\s*[—-]\s*(?P<prose>.+?)\s*$")
 
 # Headings whose bullets are NOT beats. A directive bullet read as a beat would
@@ -54,7 +70,7 @@ _SIGIL_KEY = {"@": "strands", "#": "jobs", "+": "opens", "-": "closes", "!": "cl
 
 def _blank_beat(line_no):
     return {"text": "", "strands": [], "jobs": [], "opens": [], "closes": [],
-            "clues": [], "line": line_no}
+            "clues": [], "line": line_no, "num": None}
 
 
 def _harvest(beat, raw):
@@ -114,7 +130,12 @@ def _fold(text: str, active) -> list[dict]:
             if current is not None:
                 entries.append(_finish(current, prose))
             current = _blank_beat(i + 1)
-            prose = [_harvest(current, m.group("rest"))]
+            rest = m.group("rest")
+            num = _BEAT_NUM_RE.match(rest)
+            if num:
+                current["num"] = int(num.group("num"))
+                rest = rest[num.end():]
+            prose = [_harvest(current, rest)]
         elif current is not None:
             if not raw.strip():
                 entries.append(_finish(current, prose))
@@ -160,7 +181,14 @@ def parse_directives(text: str, heading: str) -> list[dict]:
 
 
 _CUT_CHAPTER_RE = re.compile(r"^##\s+Chapter\s+(?P<num>\d+)\s*[—-]\s*(?P<title>.+?)\s*$")
-_CUT_FIELD_RE = re.compile(r"^\s*-\s+\*\*(?P<key>Beats|Summary|Compress):\*\*\s*(?P<val>.*)$")
+_CUT_FIELD_RE = re.compile(
+    r"^\s*-\s+\*\*(?P<key>Beats|Summary|Compress|Setting|Opening):\*\*\s*(?P<val>.*)$")
+_CUT_CLOSING_RE = re.compile(
+    r"^\s*-\s+\*\*Closing\s*\((?P<kind>[^)]*)\):\*\*\s*(?P<val>.*)$")
+# A setting sub-item: `  - 22-23 — the pottery studio, late afternoon`. The dash
+# separating range from prose is an em dash; a hyphen would be ambiguous against
+# the range's own `22-23`.
+_CUT_SETTING_ITEM_RE = re.compile(r"^\s+-\s+(?P<spec>[\d,\s-]+?)\s+—\s+(?P<val>.*)$")
 _CUT_TRACK_RE = re.compile(r"^\s*-\s+\*\*(?P<letter>[A-Z]):\*\*\s*(?P<val>.*)$")
 _RANGE_RE = re.compile(r"^(\d+)\s*-\s*(\d+)$")
 
@@ -178,26 +206,49 @@ def _expand_beats(spec: str) -> list[int]:
 
 
 def parse_cut_plan(text: str) -> list[dict]:
-    """The showrunner-approved grouping (spec §5.1)."""
-    chapters, current = [], None
+    """The showrunner-approved grouping (spec §5.1).
+
+    `settings`, `opening` and `closing` are the cut-level record of where a
+    chapter happens and how it lands (spec 2026-08-12). They default empty, so a
+    plan written before that design parses exactly as it always did — adoption is
+    all-or-nothing and `story_cut.check_story` owns that rule, not this parser.
+    """
+    chapters, current, in_setting = [], None, False
     for raw in text.splitlines():
         m = _CUT_CHAPTER_RE.match(raw)
         if m:
             current = {"num": int(m.group("num")), "title": m.group("title"),
-                       "beats": [], "summary": "", "compress": "", "tracks": {}}
+                       "beats": [], "summary": "", "compress": "", "tracks": {},
+                       "settings": [], "opening": "", "closing": None}
             chapters.append(current)
+            in_setting = False
             continue
         if current is None:
+            continue
+        if in_setting:
+            sm = _CUT_SETTING_ITEM_RE.match(raw)
+            if sm:
+                current["settings"].append(
+                    {"beats": _expand_beats(sm.group("spec")),
+                     "text": sm.group("val").strip()})
+                continue
+        cm = _CUT_CLOSING_RE.match(raw)
+        if cm:
+            in_setting = False
+            current["closing"] = {"kind": cm.group("kind").strip().lower(),
+                                  "text": cm.group("val").strip()}
             continue
         fm = _CUT_FIELD_RE.match(raw)
         if fm:
             key, val = fm.group("key"), fm.group("val").strip()
+            in_setting = key == "Setting"
             if key == "Beats":
                 current["beats"] = _expand_beats(val)
-            else:
+            elif key != "Setting":
                 current[key.lower()] = val
             continue
         tm = _CUT_TRACK_RE.match(raw)
         if tm:
+            in_setting = False
             current["tracks"][tm.group("letter")] = tm.group("val").strip()
     return chapters

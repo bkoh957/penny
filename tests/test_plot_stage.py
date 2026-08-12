@@ -852,19 +852,85 @@ def test_list_shaped_ledger_exits_with_named_error_not_traceback(tmp_path):
     assert "plot_stage:" in str(e.value)
 
 
-def test_resolution_heading_survives_the_solution_drop():
-    text = """---
+def _sectioned(*sections: str) -> str:
+    body = "\n".join(sections)
+    return f"""---
 book: 01
 total_chapters: 1
 ---
 
 ## Chapter 01 — One
 
-### Resolution
-Everything wraps up nicely for the town.
+{body}
 """
-    out = readers_copy_text(text)
-    assert "Everything wraps up nicely" in out
+
+
+def test_an_unadmitted_section_is_dropped_whatever_it_is_called():
+    """The allowlist's whole point (changed from a denylist 2026-08-12).
+
+    `### Resolution` used to survive, because the denylist only knew the names it
+    had been told. Under the allowlist an unknown section is dropped by default,
+    so a section the outline emitter grows later cannot unblind the reader before
+    anyone notices.
+    """
+    out = readers_copy_text(_sectioned("### Resolution",
+                                       "Everything wraps up nicely for the town."))
+    assert "Everything wraps up nicely" not in out
+
+
+def test_admitted_sections_survive_so_the_drop_is_not_overreaching():
+    out = readers_copy_text(_sectioned(
+        "### Chapter Summary", "Maggie finds the body at the wheel.",
+        "", "### Reader-Facing Shape", "Primary anchor:", "- The wrong clay.",
+        "", "### Chapter Structure", "- **Hook:** q-a — who made the vase?"))
+    assert "Maggie finds the body at the wheel." in out
+    assert "The wrong clay." in out
+    assert "who made the vase?" in out          # Hook prose reaches the reader
+    assert "q-a" not in out                     # ...without its question id
+
+
+def test_guardrails_section_never_reaches_the_reader():
+    """The leak this change exists for. `### Guardrails` began appearing in every
+    chapter with the 2026-08-04 chapter-direction feature; the denylist did not
+    know about it, so the blind copy shipped the solution from chapter 1."""
+    out = readers_copy_text(_sectioned(
+        "### Guardrails",
+        "- Marion is Tara; murder preserves identity under recognition.",
+        "- Do not name Tara as culprit before Chapter 24."))
+    assert "Marion is Tara" not in out
+    assert "culprit" not in out
+
+
+def test_clues_and_plants_section_never_reaches_the_reader():
+    out = readers_copy_text(_sectioned(
+        "### Clues and Plants",
+        "- [rh-simon] the access path by which Tara could become paper-Maggie."))
+    assert "paper-Maggie" not in out
+    assert "rh-simon" not in out
+
+
+def test_required_beats_reaches_the_reader_but_guardrails_and_clues_still_dont():
+    """Showrunner ruling, final review Important 3: the allowlist swap that
+    fixed the Guardrails leak also silently dropped Required Beats, leaving
+    the blind fan roughly one line per chapter — not enough evidence for the
+    fan-audit's interest curve or put-down risk to mean anything. Required
+    Beats is admitted back in; Guardrails and Clues and Plants must not be."""
+    out = readers_copy_text(_sectioned(
+        "### Required Beats",
+        "- Dez finds the ledger under the till.",
+        "### Guardrails",
+        "- Do not name the culprit before Chapter 24.",
+        "### Clues and Plants",
+        "- [rh-simon] the access path by which Tara could become paper-Maggie."))
+    assert "Dez finds the ledger under the till." in out
+    assert "Do not name the culprit" not in out
+    assert "paper-Maggie" not in out
+
+
+def test_character_knowledge_section_never_reaches_the_reader():
+    out = readers_copy_text(_sectioned(
+        "### Character Knowledge", "Not yet known:", "- The solution, until chapter 24."))
+    assert "The solution, until chapter 24." not in out
 
 
 # --- Re-verify the blind guarantee over every wired-* fixture ---------------
@@ -1225,3 +1291,17 @@ def test_readback_refuses_before_the_cut_and_reads_outline_after(tmp_path):
 def test_no_stage_path_names_the_retired_skeleton(tmp_path):
     root = _series(tmp_path)
     assert all("skeleton" not in p.name for p in stage_paths("01", root).values())
+
+
+def test_the_reader_sees_setting_opening_and_closing():
+    text = ("## Chapter 01 — X\n"
+            "### Chapter Summary\nShe opens the shop.\n"
+            "### Setting\n- Beats 1-2 — the shop, morning\n"
+            "### Opening\nThe kiln door still warm.\n"
+            "### Closing\nCliffhanger — the light goes out.\n"
+            "### Guardrails\n- The culprit is Susan.\n")
+    out = readers_copy_text(text)
+    assert "the shop, morning" in out
+    assert "The kiln door still warm." in out
+    assert "the light goes out." in out
+    assert "Susan" not in out

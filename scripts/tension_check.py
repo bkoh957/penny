@@ -48,6 +48,13 @@ Checks (ids are the waiver handles):
                      before a word is drafted (spec §6). Runs on any outline
                      carrying Required Beats anywhere; an outline with none
                      (the legacy scenes/weights shape) is never checked.
+  monotonous-closings a run of chapters longer than the genre beat sheet's
+                     closings.max_same_kind_run all ending on the same kind
+                     (from each chapter's ### Closing section, spec
+                     2026-08-12 §5.2). A BOOK property, not a per-chapter one.
+                     Runs on any outline carrying a Closing section anywhere,
+                     wired or not; an outline with none (the legacy shape) is
+                     never checked.
 
   python3 scripts/tension_check.py input/book-NN/outline.md \
       [--beat-sheet P] [--turning-points P] [--whodunit P]
@@ -63,6 +70,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.penny_meta import parse_frontmatter
 from scripts.penny_wiring import has_wiring, parse_wired_chapters
+from scripts.story_cut import CLOSING_KINDS
 
 
 def _load_yaml(path):
@@ -252,6 +260,73 @@ def _overload_check(chapters, blocking, notes, *, cap=None, clue_map=None):
                     f"how well it is written")
 
 
+def _closings_check(chapters, blocking, notes, *, max_run=None):
+    """The tenth check: a run of identical chapter endings (spec 2026-08-12 §5.2).
+
+    Five cliffhangers running is a fact about the BOOK, not a defect in any one
+    chapter — which is why it lives here and not among story_cut's per-chapter
+    findings. The threshold is a genre number, so an absent key is a named note
+    on the certificate, never a silent pass.
+
+    An outline carrying no ### Closing anywhere is the legacy shape and is
+    skipped entirely — it has no note to give, exactly as an outline with no
+    Required Beats is skipped by the overload check.
+
+    A chapter with no Closing of its own (a mixed legacy/hand-authored/
+    scaffolded outline outside Task 2's all-or-nothing rule — exactly what
+    this check meets in the wild) BREAKS the run rather than being invisible
+    to it: skipping it outright would let two runs either side of the gap
+    silently concatenate into one that never actually happened on the page.
+
+    This check is aimed squarely at hand-authored/scaffolded outlines — the
+    ones `story_cut.check_story`'s `unknown-closing-kind` never sees, because
+    that finding guards cut plans only. So a `### Closing` reading free prose
+    ("She leaves the shed.") must not be treated as a real "kind": that would
+    let this check measure prose that can never literally repeat, and quietly
+    skip the "could not run" note it owes the lock certificate. Any extracted
+    kind not in CLOSING_KINDS is therefore treated as ABSENT — same as no
+    Closing at all, which already breaks a run correctly (see above). If NO
+    chapter yields a recognised kind, that is worth a named note (the check
+    could not measure anything); but an outline with NO Closing section
+    ANYWHERE is a different case and stays a silent skip, exactly as before —
+    collapsing the two would turn every legacy outline's silence into a
+    spurious note.
+    """
+    raw_present = any((ch.get("sections") or {}).get("Closing", "")
+                       for ch in chapters)
+    if not raw_present:
+        return
+    kinds = []
+    for ch in chapters:
+        raw = (ch.get("sections") or {}).get("Closing", "")
+        kind = raw.split("—")[0].strip().lower()
+        kinds.append((ch["num"], kind if kind in CLOSING_KINDS else ""))
+    if not any(k for _, k in kinds):
+        notes.append(
+            "monotonous-closings — the check could not run: no chapter's "
+            "### Closing names a recognised kind "
+            f"({', '.join(CLOSING_KINDS)})")
+        return
+    if max_run is None:
+        notes.append(
+            "monotonous-closings — the check could not run: the genre's beat sheet "
+            "declares no closings.max_same_kind_run")
+        return
+    run_kind, run_len = None, 0
+    for num, kind in kinds:
+        if not kind:
+            run_kind, run_len = None, 0
+            continue
+        run_len = run_len + 1 if kind == run_kind else 1
+        run_kind = kind
+        if run_len > int(max_run):
+            blocking.append(
+                f"monotonous-closings: ch {num:02d} is the {run_len}th chapter in a "
+                f"row ending on {run_kind}, against the genre's run cap of {max_run} "
+                f"— a book whose endings stop varying reads as machinery no matter "
+                f"how good each one is")
+
+
 def check_overload(chapters, *, beat_sheet_path=None, whodunit_path=None) -> dict:
     """The ninth check, standalone and WIRING-INDEPENDENT.
 
@@ -293,6 +368,12 @@ def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=Non
     # it nothing to do, so a legacy outline is untouched.)
     over = check_overload(chapters, beat_sheet_path=beat_sheet_path,
                           whodunit_path=whodunit_path)
+    max_run = None
+    if beat_sheet_path is not None and Path(beat_sheet_path).is_file():
+        closings = _load_yaml(beat_sheet_path).get("closings")
+        if isinstance(closings, dict) and closings.get("max_same_kind_run") is not None:
+            max_run = int(closings["max_same_kind_run"])
+    _closings_check(chapters, over["blocking"], over["notes"], max_run=max_run)
     if not has_wiring(chapters):
         return {"wired": False, "blocking": over["blocking"], "notes": over["notes"],
                 "metrics": {"chapters": len(chapters)}}

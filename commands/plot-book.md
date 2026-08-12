@@ -136,6 +136,13 @@ state; this command never asks you anything a file already answers.
    Four sigils carry meaning — `@strand` `#job` `+q-id`/`-q-id` `!clue-id`.
    Everything else is for your reading.
 
+   Each beat opens with its position as `- [n] …`. The number is a claim ABOUT
+   position, never the source of truth — position is. After inserting, deleting
+   or reordering any beat, run `story_cut.py number NN`. Never renumber by hand.
+
+   Keep `## Questions`, `## Chapter Direction` and `## Guardrails` at the BOTTOM
+   of this file — their bullets are not beats.
+
    What a beat is: `penny_paths.py resolve-dir story-craft` names it — read
    every path it prints, before editing.
    Check this file with: story_cut.py check NN
@@ -147,6 +154,17 @@ state; this command never asks you anything a file already answers.
    `chapter-weaver`'s other half — deciding where chapter boundaries fall and
    emitting Track Movement rows — is absorbed by `chapter-cutter`, at the cut
    stage below, not here.
+
+   Once the beats are written, number them — the numbers are what make a cut
+   plan's `Beats: 22-25` ranges checkable rather than merely plausible:
+
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/story_cut.py" number $book
+   ```
+
+   Re-run it after ANY later insert, delete or reorder. `story_cut.py check`
+   blocks on a stale number (`misnumbered-beat`) or a half-numbered file
+   (`unnumbered-beat`), so this cannot be forgotten silently.
 
    When this is a re-plot regenerating a story that already exists, clear any
    stale `woven: true` from story.md's frontmatter yourself before rewriting
@@ -194,14 +212,16 @@ state; this command never asks you anything a file already answers.
       from `config/run-config.md`, defaulting to `drafting_model` when unset)
       with `input/book-$book/story.md`. Context-rich like the other planning
       agents — it reads the sealed solution so a turn lands on the right beat
-      — it proposes which beats become which chapter, plus the four authored
-      fields (title, summary, compress line, per-chapter track rows). **It
-      proposes only and writes nothing.**
+      — it proposes which beats become which chapter, plus the authored
+      fields: title, summary, compress line, per-chapter track rows, and
+      (spec `2026-08-12-chapter-setting-and-frames-design.md` §3) each
+      chapter's setting ranges, opening, and closing. **It proposes only and
+      writes nothing.**
    2. Present the proposal. The showrunner edits boundaries, titles,
-      summaries, compress lines and track rows. Save the **approved** plan —
-      and only the approved plan — to `input/book-$book/cut-plan.md`. A
-      generated file that wrote itself into this location would look approved
-      without being approved.
+      summaries, compress lines, track rows, setting ranges, openings and
+      closings. Save the **approved** plan — and only the approved plan — to
+      `input/book-$book/cut-plan.md`. A generated file that wrote itself into
+      this location would look approved without being approved.
    3. Run the cut:
 
       ```bash
@@ -226,6 +246,16 @@ state; this command never asks you anything a file already answers.
    a boundary in `cut-plan.md`, re-run, look again. Once `outline.md` has been
    hand-edited, the cut refuses `outline-modified-since-cut` rather than
    discarding that work.
+
+   **Moving a chapter boundary moves beats between chapters and leaves the
+   setting ranges behind** — the ranges still name the beat numbers they were
+   written against, not the chapter those beats now belong to. Re-running the
+   cut then reports `setting-outside-chapter` and `beat-without-setting`
+   together: the first names a range that points outside its chapter, the
+   second names a beat the moved boundary left with no range at all. Both are
+   repaired in `cut-plan.md` — adjust the setting ranges to match the new
+   boundary — never in `story.md`, which carries no setting or frame data to
+   fix.
 
 9. **Stage readback:** a LOOP, not a single pass — read, findings, work them, re-read,
    then lock. The cut above has already run, so `input/book-$book/outline.md` exists.

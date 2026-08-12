@@ -258,6 +258,17 @@ tags — four sigils and nothing else:
 | `+question` / `-question` | opens / closes a dramatic question |
 | `!clue-id` | a ledger clue is planted here |
 
+A beat may also open with its position, `- [12] Dez throws a cup…`. This is
+**optional and all-or-nothing per file**: number every beat or none. The number is
+stripped from the beat's prose, so it never reaches a packet or a drafter, and it is
+never the source of truth — position is. It is a written-down claim ABOUT position
+that `story_cut.py check NN` verifies, which is its entire value: cut-plan
+`Beats: 22-25` ranges are positional, so one inserted beat silently hands work to the
+wrong chapter with no other symptom. A stale number is a `misnumbered-beat` finding;
+a half-numbered file is `unnumbered-beat` — two of `story_cut.py`'s own findings, listed
+below with the rest. Renumber with `story_cut.py number NN`
+after any insert, delete or reorder — never by hand.
+
 Exactly three `##` headings mean something to the parser — `## Questions`,
 `## Chapter Direction` and `## Guardrails`. Every other heading is decoration for your own
 reading. Question prose lives once, in a single `## Questions` block anywhere in the file —
@@ -321,17 +332,43 @@ as it does, so there's no separate weaving pass. The new `cut` stage turns it in
    It absorbs the retired `chapter-weaver`'s job (deciding boundaries is the same act as
    weaving across them) and **writes nothing**.
 2. You approve, editing boundaries freely. The approved grouping is written to
-   `input/book-NN/cut-plan.md`.
+   `input/book-NN/cut-plan.md`. Each chapter block looks like this:
+
+   ```markdown
+   ## Chapter 07 — The Tin in the Tide
+   - **Beats:** 22-25
+   - **Summary:** <one line; this is what the story-at-a-glance view renders>
+   - **Compress:** <what this chapter should spend few words on>
+   - **Setting:**
+     - 22-23 — the pottery studio, late afternoon
+     - 24-25 — the harbour road, dusk, rain coming in off the water
+   - **Opening:** The kiln door still warm and the studio empty behind her.
+   - **Closing (promise of action):** She pockets the tin and turns for the harbour.
+   - **M:** <how the mystery track moves here>
+   ```
+
+   `Setting` is the one nested field — each sub-item is `<beat range> — place, time[,
+   condition]`, the range using the same syntax as `Beats:` (`22-23`, `24`, `22,24-25`).
+   `Opening` is one line of craft guidance for the chapter's first sentence or image.
+   `Closing` carries its kind in the key — `cliffhanger`, `irony`, or `promise of
+   action` — so it's machine-visible without the sentence having to announce itself. All
+   three are cut-level, not beat-level: chapters don't exist until beats are grouped, and
+   an ending only means something once you know where the chapter stops. Adoption is
+   all-or-nothing per plan — if no chapter carries `Setting`, `Opening`, or `Closing` the
+   plan predates this and none of the five findings below fire; the moment any chapter
+   carries any of them, every chapter must carry all three.
 3. `scripts/story_cut.py NN` — deterministic, no LLM — expands the approved plan into
    packet-format chapter blocks in `input/book-NN/outline.md`, deriving Required Beats,
    Clues and Plants, wiring, Character Knowledge, Guardrails, and Starting/Ending State
    from the beats and the ledger.
 
-`story_cut.py` fails loud, by name, on sixteen findings, and never writes a partial
+`story_cut.py` fails loud, by name, on twenty-three findings, and never writes a partial
 outline — there are no waivers at this level; fix the story or the cut plan:
 
 | finding | condition |
 |---|---|
+| `unnumbered-beat` | the file numbers some beats (`- [12] …`) but not this one |
+| `misnumbered-beat` | a beat's written `[n]` no longer matches its actual position |
 | `unknown-strand` | an `@tag` fails the strand slug contract |
 | `unknown-job` | a `#tag` isn't in the active genre's job list |
 | `unknown-clue` | a `!tag` isn't in the whodunit ledger |
@@ -348,6 +385,11 @@ outline — there are no waivers at this level; fix the story or the cut plan:
 | `orphan-direction` | a `## Chapter Direction`/`## Guardrails` line is scoped to an `@strand` or `#job` no beat carries — it would render nowhere and be read by no one |
 | `misplaced-schedule-tag` | a `## Chapter Direction`/`## Guardrails` line carries a `+q`/`-q`/`!clue` tag — those blocks scope with `@strand`/`#job` only, never schedule anything |
 | `wiring-shaped-directive` | a `## Chapter Direction`/`## Guardrails` line is shaped like a wiring field (`- **Closes:** …`) or a Track Movement row (`- **M:** …`) — emitted verbatim it would forge a line the cut never wrote, and downstream checks would fire on it |
+| `beat-without-setting` | a beat in the chapter is covered by no `Setting` range |
+| `overlapping-setting` | two `Setting` ranges in one chapter claim the same beat, so where it happens is ambiguous |
+| `setting-outside-chapter` | a `Setting` range names a beat this chapter does not hold — the routine case, left behind by a chapter-boundary move |
+| `missing-chapter-frame` | the chapter has no `Opening`, or no `Closing` — one finding per missing field, naming which |
+| `unknown-closing-kind` | the `Closing` kind isn't `cliffhanger`, `irony`, or `promise of action` |
 
 **Why `unclosed-question` allows one and refuses two.** The cut carries every live
 question into every chapter through the last one, so once the outline exists, a question
@@ -463,7 +505,7 @@ name the questions the reader is carrying; `Carries` marks one deliberately left
 this book (a series seed, not a dropped stitch). `Hook` must lead with a question still
 open, so a hook stops being a mood and becomes a promise on record.
 
-`scripts/tension_check.py` then reads the whole outline and fails loud on **nine named checks**:
+`scripts/tension_check.py` then reads the whole outline and fails loud on **ten named checks**:
 
 | Check | Fires when |
 |---|---|
@@ -476,6 +518,7 @@ open, so a hook stops being a mood and becomes a promise on record.
 | `off-mark-beat` | a tentpole scene sits outside its beat-sheet window |
 | `chapter-coverage` | the chapter set has gaps, dupes, or extras |
 | `overloaded-chapter` | a chapter's obligation load (Required Beats + clues planted + questions opened/closed + tracks advanced) exceeds the genre's cap — too many stops for the length, a plotting problem caught before the lock rather than in the prose |
+| `monotonous-closings` | a run of consecutive chapters longer than the genre's `closings.max_same_kind_run` all end on the same `### Closing` kind — a BOOK property, not a per-chapter one |
 
 Every threshold comes from the genre's `beat-sheet.yaml` or your `config/length-profile.md`
 — never from a constant in the engine. **Wiring is optional per book:** an outline without
@@ -487,10 +530,12 @@ nothing to do; an outline with none anywhere (the pre-packet/legacy scenes shape
 overload-checked. Per-scene
 word pricing (band-mismatch, starved-scene) is a separate, later check —
 `map_check.py`, post-lock, per chapter, once a prose map exists (see "Map the chapter" below).
-And a check that *cannot* run (the genre beat sheet declares no `obligations.max_per_chapter`,
-or the whodunit ledger can't be read) never crashes the lock and is never silently dropped: it
-prints a note, the book still locks, and the certificate records
-`skipped: overloaded-chapter — <why>`.
+`monotonous-closings` runs on any outline carrying a `### Closing` section anywhere, wired
+or not; an outline with none (the legacy shape) is never checked. And a check that *cannot*
+run (the genre beat sheet declares no `obligations.max_per_chapter` or, for
+`monotonous-closings`, no `closings.max_same_kind_run`, or the whodunit ledger can't be
+read) never crashes the lock and is never silently dropped: it prints a note, the book still
+locks, and the certificate records `skipped: <check-id> — <why>`.
 
 ### Chapter blocks are packet format
 

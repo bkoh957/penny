@@ -16,11 +16,14 @@ gates:
   - lexicon
 rubrics:
   - review-rubrics/fairplay-planting.md
+# Meanings live in conventions.md ("## Tracks") — a letter alone told the
+# chapter-cutter nothing, and it inferred R as "relationships", which reads as a
+# populated row while the romance thread starves. max_dark_gap is in beat-sheet.yaml.
 tracks:
-  - M
-  - P
-  - R
-  - B
+  - M   # Mystery — the investigation advances ("None" = deliberate rest chapter)
+  - P   # Personal / internal — the sleuth's own arc
+  - R   # Romance / community — NOT relationships-in-general
+  - B   # Business — livelihood, premises, craft standing
 beat_sheet: beat-sheet.yaml
 fan_persona: personas/genre-fan.md
 macro_structure: review-rubrics/macro-structure.md

@@ -12,7 +12,10 @@ turn on the right beat; it is not licence to put the answer on the page.
 
 **Inputs:** `{ input/book-NN/story.md — including its ## Chapter Direction block,
 the genre beat sheet, the genre macro-structure, series/whodunit/book-NN.yaml,
-output/book-NN/mystery-solution.md }`.
+output/book-NN/mystery-solution.md, the series' setting pack under
+config/setting-pack/ (resolved through the config overlay), the union of
+config/story-craft/ (list it with `penny_paths.py resolve-dir story-craft`,
+matching how agents/story-author.md declares it) }`.
 
 **You propose. You never write.** Emit the cut plan as your message. The showrunner edits
 it and saves the approved version to `input/book-NN/cut-plan.md`. Only the approved file
@@ -53,13 +56,49 @@ is carried through the cut to the drafter, and you neither read it nor act on it
 - **Summary:** <one line; this is what the story-at-a-glance view renders>
 - **Compress:** <what this chapter should spend few words on — specific to THIS
   chapter, never a standing phrase>
+- **Setting:**
+  - <beat range> — <place, time[, condition]>
+  - <beat range> — <place, time[, condition]>
+- **Opening:** <the chapter's first image or action — one line>
+- **Closing (cliffhanger|irony|promise of action):** <how the chapter lands — one line>
 - **M:** <how the mystery track moves here>
 - **P:** <the personal track>
 ```
 
+## Setting
+
+Every beat in the chapter must be covered by exactly one setting range — a beat
+covered by none leaves the drafter to invent the room, and a beat covered by
+two makes where it happens ambiguous. Ranges use the same positional beat
+numbers as `Beats:` above — book-wide indices, not a per-chapter recount. A
+chapter that moves rooms partway through needs a second range starting at the
+beat where the move happens, not one range spanning both places. Place names
+must match the setting pack's own names — do not invent a location the pack
+doesn't have.
+
+## Opening and Closing
+
+Read `config/story-craft/writing-chapter-frames.md` before proposing any
+Opening or Closing — it defines what an opening earns, what the three closing
+kinds each leave the reader holding, and why a run of the same kind goes dead.
+Vary the closing kinds across the book: propose each chapter's kind on its own
+merits, but look back at what the last few chapters closed on before settling
+on this one.
+
 `Beats:` takes indices into `story.md`'s beats in order — ranges (`1-3`), lists
 (`4, 6-7`), or both. **Every beat must land in exactly one chapter**; `story_cut.py`
 refuses `beats-without-chapter` and `duplicate-beat` otherwise.
+
+**Read the indices off the page, never by counting.** A numbered story.md writes each
+beat's position into the bullet as `- [12] …`, and that is the index `Beats:` means.
+Do NOT count bullets yourself: `## Questions`, `## Chapter Direction` and
+`## Guardrails` bullets are *not* beats, so raw bullet order and beat index diverge —
+on book 01, 225 bullets to 150 beats. Counting produced ranges that were contiguous,
+plausible and wrong.
+
+If the story is unnumbered, say so and ask for `story_cut.py number NN` before you
+propose ranges. An off-by-one here is invisible: the ranges still cover every beat and
+still look contiguous, while every chapter quietly holds its neighbour's work.
 
 One `- **X:**` row per track the genre declares. These rows are load-bearing, not
 decoration: `tension_check.py`'s `starved-thread` check reads them and so does the

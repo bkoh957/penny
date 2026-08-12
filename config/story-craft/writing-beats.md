@@ -74,9 +74,38 @@ Direction and guardrails scope with the same sigils the beats use — `@strand`,
 exist until the cut, so any chapter-shaped scoping is invalidated by the next
 re-cut.
 
+## The beat number
+
+A beat may open with its position: `- [12] Dez throws the cup she meant to
+keep.` Optional, but all-or-nothing per file — number every beat or none.
+
+The number is **not** an identity. It is the beat's current position, written
+down so it can be checked. Position is the truth; insert a beat at 5 and the old
+5 becomes 6, whatever its bracket still says.
+
+That is exactly why it is worth writing down. A cut plan says `Beats: 22-25`,
+which is positional, so one inserted beat quietly hands a chapter its
+neighbour's work — and nothing else catches it, because the ranges still cover
+every beat and still look contiguous. `story_cut.py check NN` compares each
+written number against its real position and blocks on the mismatch.
+
+**Never renumber by hand.** After any insert, delete or reorder:
+
+```bash
+python3 scripts/story_cut.py number NN
+```
+
+It rewrites only the brackets, refuses to write if any beat's prose or tags
+would change, and skips `## Questions`, `## Chapter Direction` and `##
+Guardrails` — whose bullets are not beats. Keep those three blocks at the bottom
+of the file.
+
 ## What a beat never carries
 
 Chapter numbers, packet sections, Character Knowledge, Starting/Ending State,
 wiring rows. All of those are **derived** by the cut from the ledger, the genre
 and your tags. If you are typing one into `story.md`, it is already being
 written for you somewhere else.
+
+The `[n]` prefix is not an exception: it is a *beat* number, not a chapter
+number, and the tool writes it.

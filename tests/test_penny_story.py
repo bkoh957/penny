@@ -247,3 +247,65 @@ LONE_BULLET = (
 def test_an_empty_directive_bullet_is_dropped():
     notes = parse_directives(LONE_BULLET, "Guardrails")
     assert [n["text"] for n in notes] == ["A real note."]
+
+
+PLAN = """\
+## Chapter 07 — The Tin in the Tide
+- **Beats:** 22-25
+- **Summary:** She finds the tin.
+- **Compress:** the walk back
+- **Setting:**
+  - 22-23 — the pottery studio, late afternoon
+  - 24-25 — the harbour road, dusk, rain coming in off the water
+- **Opening:** The kiln door still warm and the studio empty behind her.
+- **Closing (promise of action):** She pockets the tin and turns for the harbour.
+- **M:** the tin surfaces
+"""
+
+
+def test_settings_parse_in_order_with_expanded_ranges():
+    ch = parse_cut_plan(PLAN)[0]
+    assert ch["settings"] == [
+        {"beats": [22, 23], "text": "the pottery studio, late afternoon"},
+        {"beats": [24, 25],
+         "text": "the harbour road, dusk, rain coming in off the water"},
+    ]
+
+
+def test_opening_and_closing_parse_with_kind_in_the_key():
+    ch = parse_cut_plan(PLAN)[0]
+    assert ch["opening"] == "The kiln door still warm and the studio empty behind her."
+    assert ch["closing"] == {"kind": "promise of action",
+                             "text": "She pockets the tin and turns for the harbour."}
+
+
+def test_setting_range_accepts_single_beats_and_lists():
+    plan = ("## Chapter 01 — X\n"
+            "- **Beats:** 1-4\n"
+            "- **Setting:**\n"
+            "  - 1 — the kitchen, dawn\n"
+            "  - 2,4 — the yard, noon\n")
+    assert [s["beats"] for s in parse_cut_plan(plan)[0]["settings"]] == [[1], [2, 4]]
+
+
+def test_closing_kind_is_lowercased_but_not_validated_here():
+    plan = ("## Chapter 01 — X\n"
+            "- **Beats:** 1\n"
+            "- **Closing (Cliffhanger):** the door opens\n")
+    assert parse_cut_plan(plan)[0]["closing"]["kind"] == "cliffhanger"
+
+
+def test_legacy_plan_without_the_fields_gets_empty_defaults():
+    plan = ("## Chapter 01 — X\n"
+            "- **Beats:** 1-3\n"
+            "- **Summary:** s\n"
+            "- **Compress:** c\n"
+            "- **M:** m\n")
+    ch = parse_cut_plan(plan)[0]
+    assert ch["settings"] == [] and ch["opening"] == "" and ch["closing"] is None
+    assert ch["tracks"] == {"M": "m"}
+
+
+def test_a_track_row_is_never_mistaken_for_a_new_field():
+    ch = parse_cut_plan(PLAN)[0]
+    assert ch["tracks"] == {"M": "the tin surfaces"}

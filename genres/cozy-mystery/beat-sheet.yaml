@@ -23,3 +23,8 @@ questions:
 # unwaived — the check fires on load > cap, so 15 is the ceiling, not a trigger.
 obligations:
   max_per_chapter: 15
+# How many chapters may end on the same kind in a row before the book stops
+# feeling varied. A cozy runs short chapters with a hook on nearly every one, so
+# the risk is not too few endings but too many of one shape.
+closings:
+  max_same_kind_run: 3

@@ -1,3 +1,4 @@
+from scripts import story_cut
 from scripts.story_cut import check_story
 
 JOBS = ["establish-protected-world", "crime-and-first-contradiction"]
@@ -349,3 +350,263 @@ def test_advisory_names_the_block_the_note_probably_wants():
     r = check_story(story, "", JOBS, [])
     note = [n for n in r["notes"] if "directive-shaped-beat" in n][0]
     assert "## Guardrails" in note
+
+
+# --- beat numbering (optional `- [n]` prefix) -------------------------------
+
+_NUMBERED = """---
+book: 01
+---
+## Act I
+- [1] Maggie arrives. @maggie
+- [2] She finds a body. @maggie
+
+## Guardrails
+- Never name the culprit early.
+"""
+
+
+def test_beat_number_is_parsed_and_stripped_from_prose():
+    beats = story_cut.parse_story(_NUMBERED)
+    assert [b["num"] for b in beats] == [1, 2]
+    # the number must NOT survive into the text, or it reaches the drafter's packet
+    assert beats[0]["text"] == "Maggie arrives."
+
+
+def test_unnumbered_story_still_parses_with_num_none():
+    beats = story_cut.parse_story(_NUMBERED.replace("[1] ", "").replace("[2] ", ""))
+    assert [b["num"] for b in beats] == [None, None]
+    assert beats[0]["text"] == "Maggie arrives."
+
+
+def test_bare_leading_number_is_not_a_beat_number():
+    text = _NUMBERED.replace("[1] Maggie arrives.", "1987 was the year of the flood.")
+    beats = story_cut.parse_story(text)
+    assert beats[0]["num"] is None
+    assert beats[0]["text"] == "1987 was the year of the flood."
+
+
+def test_misnumbered_beat_blocks():
+    text = _NUMBERED.replace("- [2] She finds", "- [7] She finds")
+    findings = story_cut.check_story(text, "", [], [])["blocking"]
+    assert any(f.startswith("misnumbered-beat") and "position 2" in f for f in findings)
+
+
+def test_half_numbered_file_blocks():
+    text = _NUMBERED.replace("- [2] She finds", "- She finds")
+    findings = story_cut.check_story(text, "", [], [])["blocking"]
+    assert any(f.startswith("unnumbered-beat") for f in findings)
+
+
+def test_fully_unnumbered_file_does_not_block_on_numbering():
+    text = _NUMBERED.replace("[1] ", "").replace("[2] ", "")
+    findings = story_cut.check_story(text, "", [], [])["blocking"]
+    assert not any("numbered-beat" in f for f in findings)
+
+
+def test_renumber_fixes_positions_and_is_idempotent():
+    text = _NUMBERED.replace("- [1] Maggie arrives. @maggie",
+                             "- [1] Maggie arrives. @maggie\n- [9] Inserted. @maggie")
+    fixed = story_cut.renumber(text)
+    assert [b["num"] for b in story_cut.parse_story(fixed)] == [1, 2, 3]
+    assert story_cut.renumber(fixed) == fixed
+
+
+def test_renumber_leaves_inert_block_bullets_alone():
+    fixed = story_cut.renumber(_NUMBERED)
+    assert "- Never name the culprit early." in fixed
+
+
+def test_renumber_preserves_tags_and_prose():
+    before = story_cut.parse_story(_NUMBERED)
+    after = story_cut.parse_story(story_cut.renumber(_NUMBERED))
+    assert [(b["text"], b["strands"], b["clues"]) for b in before] == \
+           [(b["text"], b["strands"], b["clues"]) for b in after]
+
+
+# --- ledger walk: zero-indent sequences (the shape yaml.safe_dump emits) ------
+
+_ZERO_INDENT_LEDGER = """book: '01'
+clue_schedule:
+- id: c01-first
+  plant_chapter: 3
+  description: first.
+- id: c02-second
+  plant_chapter: 4
+  description: second.
+red_herrings:
+- id: rh-one
+  plant_chapter: 5
+  description: herring.
+alibi_grid:
+- suspect: someone
+  chapter: 9
+"""
+
+
+def test_item_spans_finds_sequence_items_at_the_headings_own_indent():
+    """`clue_schedule:` followed by `- id:` at column 0 is legal YAML and is what
+    safe_dump emits. Reading the first item as the block's end found zero items,
+    so every clue reported not-found and the cut refused a partial update."""
+    lines = _ZERO_INDENT_LEDGER.splitlines(keepends=True)
+    heading = next(i for i, l in enumerate(lines) if l.startswith("clue_schedule:"))
+    assert len(story_cut._item_spans(lines, heading, "")) == 2
+
+
+def test_rewrite_plant_chapters_handles_zero_indent_ledger():
+    new, missing = story_cut._rewrite_plant_chapters(
+        _ZERO_INDENT_LEDGER, {"c01-first": 7, "rh-one": 8})
+    assert missing == []
+    assert "  plant_chapter: 7" in new
+    assert "  plant_chapter: 8" in new
+    assert "  plant_chapter: 4" in new          # untouched item survives
+    assert "  chapter: 9" in new                # alibi_grid never reached
+
+
+def test_zero_indent_walk_does_not_run_past_its_collection():
+    """`red_herrings:`/`alibi_grid:` sit at the same indent as `clue_schedule:`;
+    a non-item line at heading indent must still end the block."""
+    lines = _ZERO_INDENT_LEDGER.splitlines(keepends=True)
+    heading = next(i for i, l in enumerate(lines) if l.startswith("clue_schedule:"))
+    spans = story_cut._item_spans(lines, heading, "")
+    assert max(e for _, e, _ in spans) <= next(
+        i for i, l in enumerate(lines) if l.startswith("red_herrings:"))
+
+
+# --- chapter setting and frames (spec 2026-08-12 §5.1) -----
+
+STORY = """\
+# Story
+
+- [1] Maggie opens the shop.
+- [2] The tin turns up.
+- [3] She walks to the harbour.
+- [4] The light goes out.
+"""
+
+
+def _plan(body):
+    return "## Chapter 01 — X\n- **Beats:** 1-4\n" + body
+
+
+FRAME = ("- **Opening:** The kiln door still warm.\n"
+         "- **Closing (cliffhanger):** The light goes out.\n")
+
+
+def _blocking(plan):
+    return check_story(STORY, plan, [], [])["blocking"]
+
+
+def test_clean_plan_produces_none_of_the_new_findings():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n" + FRAME)
+    assert not [b for b in _blocking(plan) if b.split(":")[0] in {
+        "beat-without-setting", "overlapping-setting", "setting-outside-chapter",
+        "missing-chapter-frame", "unknown-closing-kind"}]
+
+
+def test_beat_without_setting_names_the_uncovered_beat():
+    plan = _plan("- **Setting:**\n  - 1-3 — the shop, morning\n" + FRAME)
+    assert any(b.startswith("beat-without-setting:") and "4" in b
+               for b in _blocking(plan))
+
+
+def test_overlapping_setting_fires_when_two_ranges_claim_one_beat():
+    plan = _plan("- **Setting:**\n  - 1-3 — the shop, morning\n"
+                 "  - 3-4 — the harbour, dusk\n" + FRAME)
+    assert any(b.startswith("overlapping-setting:") and "3" in b
+               for b in _blocking(plan))
+
+
+def test_setting_outside_chapter_fires_on_a_beat_this_chapter_does_not_hold():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n"
+                 "  - 9 — the harbour, dusk\n" + FRAME)
+    assert any(b.startswith("setting-outside-chapter:") and "9" in b
+               for b in _blocking(plan))
+
+
+def test_missing_chapter_frame_fires_once_per_missing_field():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n")
+    found = [b for b in _blocking(plan) if b.startswith("missing-chapter-frame:")]
+    assert len(found) == 2
+    assert any("Opening" in b for b in found) and any("Closing" in b for b in found)
+
+
+def test_unknown_closing_kind_names_the_three_valid_kinds():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n"
+                 "- **Opening:** The kiln door.\n"
+                 "- **Closing (twist):** The light goes out.\n")
+    hits = [b for b in _blocking(plan) if b.startswith("unknown-closing-kind:")]
+    assert hits and "promise of action" in hits[0]
+
+
+def test_a_plan_carrying_none_of_the_fields_is_pre_design_and_silent():
+    plan = _plan("- **Summary:** s\n- **Compress:** c\n")
+    assert not [b for b in _blocking(plan) if b.split(":")[0] in {
+        "beat-without-setting", "overlapping-setting", "setting-outside-chapter",
+        "missing-chapter-frame", "unknown-closing-kind"}]
+
+
+# --- FINAL REVIEW, Minor: emit_outline writes Opening/Chapter Summary
+# verbatim at column 0 and Compress with a bare "- " prefix it adds itself —
+# the same forgery hazard as an authored Guardrail, just one level up (in
+# the cut plan rather than story.md). ---
+
+def test_a_wiring_shaped_opening_is_refused_by_name():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n"
+                 "- **Opening:** - **Closes:** q-bogus\n"
+                 "- **Closing (cliffhanger):** The light goes out.\n")
+    hits = [b for b in _blocking(plan) if b.startswith("wiring-shaped-directive:")]
+    assert hits and "Opening" in hits[0], hits
+
+
+def test_a_wiring_shaped_summary_is_refused_by_name():
+    plan = _plan("- **Summary:** - **Because:** ch 01\n- **Compress:** c\n")
+    hits = [b for b in _blocking(plan) if b.startswith("wiring-shaped-directive:")]
+    assert hits and "Chapter Summary" in hits[0], hits
+
+
+def test_a_wiring_shaped_compress_is_refused_by_name():
+    # Compress gets its "- " prefix from the emitter itself, so the AUTHORED
+    # value need not repeat it — "**Because:** ch 01" alone becomes
+    # "- **Because:** ch 01" once emitted.
+    plan = _plan("- **Summary:** s\n- **Compress:** **Because:** ch 01\n")
+    hits = [b for b in _blocking(plan) if b.startswith("wiring-shaped-directive:")]
+    assert hits and "Compress" in hits[0], hits
+
+
+def test_the_forged_opening_really_would_parse_as_wiring():
+    # Same proof as the guardrail case: the emitted block really is read by
+    # penny_wiring as if the cut itself had written the wiring field.
+    from scripts.penny_wiring import parse_wired_chapters
+    from scripts.story_cut import emit_outline
+    from scripts.penny_story import parse_questions
+
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n"
+                 "- **Opening:** - **Closes:** q-bogus\n"
+                 "- **Closing (cliffhanger):** The light goes out.\n")
+    out = emit_outline(STORY, plan, parse_questions(STORY), {},
+                       reveal_chapter=2, guardrails="g", job_titles={},
+                       solution={})
+    assert any("q-bogus" in c["closes"] for c in parse_wired_chapters(out))
+    # ...and check_story refuses the plan before it can ever be emitted.
+    assert any(b.startswith("wiring-shaped-directive:") for b in _blocking(plan))
+
+
+def test_ordinary_opening_and_summary_prose_is_not_wiring_shaped():
+    plan = _plan("- **Setting:**\n  - 1-4 — the shop, morning\n"
+                 "- **Summary:** She finds the tin.\n"
+                 "- **Compress:** the walk to the harbour\n" + FRAME)
+    assert not [b for b in _blocking(plan) if b.startswith("wiring-shaped-directive:")]
+
+
+def test_adoption_is_all_or_nothing_across_the_whole_plan():
+    plan = ("## Chapter 01 — X\n- **Beats:** 1-2\n"
+            "- **Setting:**\n  - 1-2 — the shop, morning\n"
+            "- **Opening:** The kiln door.\n"
+            "- **Closing (irony):** She laughs.\n"
+            "## Chapter 02 — Y\n- **Beats:** 3-4\n"
+            "- **Summary:** s\n")
+    found = [b for b in _blocking(plan) if b.startswith("missing-chapter-frame:")]
+    assert len(found) == 2 and all("ch 02" in b for b in found)
+    assert any(b.startswith("beat-without-setting:") and "ch 02" in b
+               for b in _blocking(plan))

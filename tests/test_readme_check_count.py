@@ -19,21 +19,29 @@ CLAUDE_MD = Path("CLAUDE.md")
 README = Path("README.md")
 
 # story_cut.py's findings (spec 2026-08-03 §8, extended by spec
-# 2026-08-04-chapter-direction-and-guardrails-design.md) have no docstring
+# 2026-08-04-chapter-direction-and-guardrails-design.md and spec
+# 2026-08-12-chapter-setting-and-frames-design.md §5.1) have no docstring
 # roster to derive from the way tension_check.py's do — check_story()/main()
 # raise them inline as f-strings, not from one contiguous block — so this
 # list is hand-verified against scripts/story_cut.py rather than parsed from
-# it. Verified exact as of the chapter-direction-and-guardrails FINAL FIX wave
-# (which added `wiring-shaped-directive`): grep `blocking.append(`/`return (`
-# in scripts/story_cut.py and confirm the count stays sixteen before touching
-# this tuple.
+# it. `unnumbered-beat`/`misnumbered-beat` (the beat-numbering findings,
+# introduced earlier than the rest and documented in their own prose
+# paragraph) are unwaivable check_story() findings exactly like the other
+# twenty-one and belong in this same roster — an earlier version of this
+# tuple omitted them, which was an accident of which paragraph introduced
+# them, not a deliberate split. Verified exact as of the
+# chapter-setting-and-frames wave: `grep -n "blocking.append(\|findings.append(\|return (\"" scripts/story_cut.py`
+# and confirm every distinct id reaching `blocking`/`findings` is listed here
+# (23) before touching this tuple.
 STORY_CUT_FINDING_IDS = (
     "unknown-strand", "unknown-job", "unknown-clue", "unknown-question",
     "unscheduled-clue", "orphan-question", "unclosed-question",
     "beats-without-chapter", "duplicate-beat", "outline-modified-since-cut",
     "missing-reveal-chapter", "clue-not-found-in-ledger-text",
     "cut-owned-outline", "orphan-direction", "misplaced-schedule-tag",
-    "wiring-shaped-directive",
+    "wiring-shaped-directive", "beat-without-setting", "overlapping-setting",
+    "setting-outside-chapter", "missing-chapter-frame", "unknown-closing-kind",
+    "unnumbered-beat", "misnumbered-beat",
 )
 
 
@@ -43,7 +51,7 @@ def test_the_story_cut_roster_is_complete_and_sized():
     # in it really is raised by the module — a stale roster that names fifteen
     # of sixteen reads as complete and isn't.
     source = pathlib.Path("scripts/story_cut.py").read_text(encoding="utf-8")
-    assert len(STORY_CUT_FINDING_IDS) == 16, STORY_CUT_FINDING_IDS
+    assert len(STORY_CUT_FINDING_IDS) == 23, STORY_CUT_FINDING_IDS
     for finding_id in STORY_CUT_FINDING_IDS:
         assert f"{finding_id}: " in source, f"story_cut.py never raises {finding_id}"
 
@@ -61,20 +69,22 @@ def _docstring_check_ids() -> list[str]:
     return [i for i in ids if i != "undeclared-scene-weight"]
 
 
-def test_docstring_yields_exactly_nine_checks():
-    # Sanity check on the derivation itself, so a future tenth check makes
+def test_docstring_yields_exactly_ten_checks():
+    # Sanity check on the derivation itself, so a future eleventh check makes
     # this test fail loudly here rather than silently under-counting below.
     ids = _docstring_check_ids()
-    assert len(ids) == 9, ids
+    assert len(ids) == 10, ids
     assert "overloaded-chapter" in ids
+    assert "monotonous-closings" in ids
     assert "undeclared-scene-weight" not in ids
 
 
-def test_readme_names_nine_tension_checks_including_overloaded_chapter():
+def test_readme_names_ten_tension_checks_including_overloaded_chapter():
     text = README.read_text(encoding="utf-8")
-    assert "nine named checks" in text
-    assert "eight named checks" not in text
+    assert "ten named checks" in text
+    assert "nine named checks" not in text
     assert "`overloaded-chapter`" in text
+    assert "`monotonous-closings`" in text
 
 
 def test_readme_and_claude_md_roster_every_derived_check_id():

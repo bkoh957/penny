@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml  # ledger only — nested human-edited data (dependency-split rule)
 
-from scripts import penny_genre, penny_paths, plot_stage
+from scripts import penny_genre, penny_paths, penny_story, plot_stage
 from scripts.outline_views import parse_jobs
 from scripts.penny_meta import parse_frontmatter, strip_frontmatter
 from scripts.penny_story import (SLUG_RE, parse_cut_plan, parse_directives,
@@ -47,6 +47,10 @@ _DIRECTIVE_OPENERS = frozenset({
 })
 
 _OPENER_RE = re.compile(r"^\s*(?P<word>[A-Za-z']+)")
+
+# The three kinds a chapter may end on (spec 2026-08-12 §3). Engine-level rather
+# than genre-level: these name shapes of ending, not cozy conventions.
+CLOSING_KINDS = ("cliffhanger", "irony", "promise of action")
 
 
 def directive_advisories(beats: list) -> list:
@@ -83,6 +87,95 @@ def check_story(story_text: str, cut_plan_text: str,
     planted: set = set()
     opened: set = set()
     closed: set = set()
+
+    # Beat numbers are optional, but a WRONG one is worse than none: the cut plan's
+    # `Beats: 22-25` ranges are positional, so an author reading a stale number off
+    # the page and writing it into a range silently hands beats to the wrong chapter.
+    # Numbering is all-or-nothing per file — a half-numbered story is the state in
+    # which a stale number is most likely to be trusted.
+    numbered = [n for n, b in enumerate(beats, 1) if b["num"] is not None]
+    if numbered:
+        for n, beat in enumerate(beats, 1):
+            if beat["num"] is None:
+                blocking.append(
+                    f"unnumbered-beat: beat {n} (line {beat['line']}) carries no "
+                    f"[number] while {len(numbered)} other beats do — renumber the "
+                    f"file with `story_cut.py number NN`")
+            elif beat["num"] != n:
+                blocking.append(
+                    f"misnumbered-beat: the beat on line {beat['line']} is written "
+                    f"[{beat['num']}] but sits at position {n} — a cut plan range "
+                    f"built from the written number would claim the wrong beats; "
+                    f"renumber with `story_cut.py number NN`")
+
+    # Setting and chapter frames are cut-level, all-or-nothing per plan (spec
+    # 2026-08-12 §5.1). Checking each chapter independently would make a
+    # half-adopted book the quiet default: the chapters that were filled in are
+    # governed and the rest silently return the ending to the drafter.
+    adopted = any(ch["settings"] or ch["opening"] or ch["closing"]
+                  for ch in chapters)
+    if adopted:
+        for ch in chapters:
+            held = set(ch["beats"])
+            seen: set = set()
+            for s in ch["settings"]:
+                for n in s["beats"]:
+                    if n not in held:
+                        blocking.append(
+                            f"setting-outside-chapter: ch {ch['num']:02d} has a "
+                            f"setting covering beat {n}, which this chapter does "
+                            f"not hold — a chapter boundary moved and the setting "
+                            f"ranges did not move with it; repair cut-plan.md")
+                    elif n in seen:
+                        blocking.append(
+                            f"overlapping-setting: ch {ch['num']:02d} has two "
+                            f"settings covering beat {n}, so where it happens is "
+                            f"ambiguous")
+                    seen.add(n)
+            for n in sorted(held - seen):
+                blocking.append(
+                    f"beat-without-setting: ch {ch['num']:02d} beat {n} is covered "
+                    f"by no setting — every beat must say where it happens, or the "
+                    f"drafter picks the room")
+            if not ch["opening"]:
+                blocking.append(
+                    f"missing-chapter-frame: ch {ch['num']:02d} has no Opening — "
+                    f"other chapters in this plan carry one, and adoption is "
+                    f"all-or-nothing")
+            if not ch["closing"]:
+                blocking.append(
+                    f"missing-chapter-frame: ch {ch['num']:02d} has no Closing — "
+                    f"a missing ending hands the last line back to the drafter")
+            elif ch["closing"]["kind"] not in CLOSING_KINDS:
+                blocking.append(
+                    f"unknown-closing-kind: ch {ch['num']:02d} ends on "
+                    f"'{ch['closing']['kind']}', which is not one of "
+                    f"{', '.join(CLOSING_KINDS)}")
+
+    # The same forgery the directive check below guards against, one level
+    # up: emit_outline writes Opening and Chapter Summary VERBATIM at column
+    # 0 (`"### Opening\n" + ch["opening"]`), and Compress with a bare "- "
+    # prefix it adds itself (`"Compress:\n- " + ch["compress"]`) — Closing is
+    # excluded because it always opens on a fixed, capitalised CLOSING_KINDS
+    # word, which can never parse as a wiring field. An authored
+    # `- **Closes:** q-bogus` in any of these three fields becomes a wiring
+    # line the cut never wrote, and tension_check fires phantom-answer on a
+    # chapter whose footer says no such thing (final review, Minor). Reuses
+    # the exact FIELD_RE/TRACK_RE check and message the directive guard below
+    # uses — one mechanism, not a second one for cut-plan fields.
+    for ch in chapters:
+        for label, emitted in (
+                ("Opening", ch["opening"]),
+                ("Chapter Summary", ch["summary"]),
+                ("Compress", f"- {ch['compress']}" if ch["compress"] else "")):
+            if emitted and (FIELD_RE.match(emitted) or TRACK_RE.match(emitted)):
+                blocking.append(
+                    f"wiring-shaped-directive: ch {ch['num']:02d} {label} reads "
+                    f"'{emitted}', which the outline parser would read as a "
+                    f"wiring field or a Track Movement row rather than as prose "
+                    f"— the cut writes those itself. Reword the note so it does "
+                    f"not begin with **Because:**/**Opens:**/**Closes:**/"
+                    f"**Carries:**/**Hook:** or **<letter>:**")
 
     for n, beat in enumerate(beats, 1):
         for slug in beat["strands"]:
@@ -350,6 +443,23 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
 
         out.append(f"## Chapter {ch['num']:02d} — {ch['title']}\n")
         out.append("### Chapter Summary\n" + ch["summary"] + "\n")
+        if ch["settings"]:
+            # Chapter-local beat numbers, matching ### Required Beats, which
+            # already lists this chapter's beats rather than the book's. Book
+            # positions here would send the drafter to the wrong line. Rank
+            # within the chapter's own (possibly non-contiguous) Beats set,
+            # not an arithmetic offset from its minimum — a chapter holding
+            # book beats {3,5,6} has only three local beats, so an offset
+            # would render a local number ("4") that doesn't exist.
+            ordered = sorted(ch["beats"])
+            def _local(ns):
+                loc = sorted(ordered.index(n) + 1 for n in ns)
+                return (f"{loc[0]}-{loc[-1]}"
+                        if len(loc) > 1 and loc == list(range(loc[0], loc[-1] + 1))
+                        else ",".join(str(n) for n in loc))
+            out.append("### Setting\n" + "\n".join(
+                f"- Beats {_local(s['beats'])} — {s['text']}"
+                for s in ch["settings"]) + "\n")
         out.append("### Chapter Purpose\n"
                    + "\n".join(f"- {job_titles.get(j, j)}" for j in jobs) + "\n")
 
@@ -367,6 +477,16 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
         out.append("### Reader-Facing Shape\nPrimary anchor:\n"
                    + (f"- {mine[0]['text']}\n" if mine else "")
                    + "\nCompress:\n- " + ch["compress"] + "\n")
+
+        if ch["opening"]:
+            out.append("### Opening\n" + ch["opening"] + "\n")
+        if ch["closing"]:
+            # The kind becomes a prose lead-in rather than a parenthetical key:
+            # the emitted block is read by agents and by the reader's copy, never
+            # parsed back into the cut plan.
+            kind = ch["closing"]["kind"]
+            out.append(f"### Closing\n{kind[0].upper() + kind[1:]} — "
+                       f"{ch['closing']['text']}\n")
 
         out.append("### Required Beats\n"
                    + "\n".join(f"- {b['text']}" for b in mine) + "\n")
@@ -679,10 +799,24 @@ def _item_spans(lines: list, heading_idx: int, heading_indent: str) -> list:
         if not body.strip():
             continue
         cur_indent = body[:len(body) - len(body.lstrip(" \t"))]
-        if len(cur_indent) <= len(heading_indent):
+        im = _ITEM_START_RE.match(body)
+        # A line SHALLOWER than the heading always ends the block. A line at the
+        # heading's OWN indent ends it only when it is not a sequence item —
+        # YAML lets a sequence sit at its key's indent, and that is exactly what
+        # `yaml.safe_dump` emits:
+        #
+        #     clue_schedule:
+        #     - id: c01-…
+        #
+        # Treating `- ` at heading indent as the block's end found zero items in
+        # every such ledger, so `_rewrite_plant_chapters` reported every clue as
+        # not-found and the cut refused a partial update. safe_load reads this
+        # shape happily, so the ledger validated and locked while the cut could
+        # never run on it.
+        if len(cur_indent) < len(heading_indent) or (
+                len(cur_indent) == len(heading_indent) and not im):
             end = idx
             break
-        im = _ITEM_START_RE.match(body)
         if item_indent is None:
             if not im:
                 end = idx
@@ -766,13 +900,77 @@ def _check(book: str) -> int:
     return 1 if findings else 0
 
 
+def renumber(story_text: str) -> str:
+    """Rewrite every beat bullet's `[n]` to match its actual position.
+
+    Text-level and idempotent: only the bracketed prefix on a beat bullet is
+    touched, so tags, continuation lines, spacing and the inert Questions /
+    Chapter Direction / Guardrails blocks come through byte-identical. Walks the
+    same heading/bullet state machine `_fold` does, because a directive bullet
+    numbered as a beat would reintroduce the exact off-by-one the numbers exist
+    to catch.
+    """
+    lines = story_text.splitlines(keepends=True)
+    offset = len(lines) - len(penny_story.strip_frontmatter(story_text).splitlines(keepends=True))
+    collecting, n = True, 0
+    for i in range(offset, len(lines)):
+        raw = lines[i].rstrip("\n")
+        if penny_story._HEADING_RE.match(raw):
+            collecting = penny_story._heading_name(raw) not in penny_story._INERT_HEADINGS
+            continue
+        if not collecting:
+            continue
+        m = penny_story._BULLET_RE.match(raw)
+        if not m:
+            continue
+        rest = m.group("rest")
+        stripped = penny_story._BEAT_NUM_RE.sub("", rest)
+        # A lone `- ` is not a beat (matching _fold's final filter), so it must not
+        # consume a number — that would shift every beat after it.
+        if not stripped.strip():
+            continue
+        n += 1
+        eol = "\n" if lines[i].endswith("\n") else ""
+        lines[i] = f"- [{n}] {stripped}{eol}"
+    return "".join(lines)
+
+
+def _renumber_cmd(book: str) -> int:
+    root = penny_paths.series_root()
+    p = root / "input" / f"book-{book}" / "story.md"
+    if not p.is_file():
+        print(f"story_cut: missing {p}", file=sys.stderr)
+        return 2
+    before = p.read_text(encoding="utf-8")
+    after = renumber(before)
+    beats_before = parse_story(before)
+    beats_after = parse_story(after)
+    # Renumbering must never change what the beats ARE. If prose or tags moved, the
+    # rewrite is wrong and writing it would corrupt the story — refuse instead.
+    if [(b["text"], b["strands"], b["jobs"], b["opens"], b["closes"], b["clues"])
+            for b in beats_before] != [
+            (b["text"], b["strands"], b["jobs"], b["opens"], b["closes"], b["clues"])
+            for b in beats_after]:
+        print("story_cut: renumber would alter beat content — refusing to write",
+              file=sys.stderr)
+        return 1
+    if after == before:
+        print(f"story_cut: {p} already numbered 1..{len(beats_after)}")
+        return 0
+    p.write_text(after, encoding="utf-8")
+    print(f"story_cut: numbered {len(beats_after)} beats in {p}")
+    return 0
+
+
 def main(argv=None) -> int:
     argv = sys.argv[1:] if argv is None else argv
     if len(argv) == 2 and argv[0] == "check":
         return _check(argv[1])
+    if len(argv) == 2 and argv[0] == "number":
+        return _renumber_cmd(argv[1])
     if len(argv) != 1:
-        print("usage: story_cut.py <book> | story_cut.py check <book>",
-              file=sys.stderr)
+        print("usage: story_cut.py <book> | story_cut.py check <book> "
+              "| story_cut.py number <book>", file=sys.stderr)
         return 2
     book = argv[0]
     root = penny_paths.series_root()

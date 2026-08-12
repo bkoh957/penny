@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.tension_check import check_tension
+from scripts.tension_check import _closings_check, check_tension
 
 FIX = Path("tests/fixtures/outlines")
 
@@ -273,3 +273,125 @@ def test_overload_missing_cap_is_named_note():
     notes = " ".join(result["notes"])
     assert "overloaded-chapter" in notes
     assert "obligations.max_per_chapter" in notes
+
+
+def _ch(num, kind):
+    return {"num": num,
+            "sections": {"Closing": f"{kind} — something happens"} if kind else {}}
+
+
+def test_a_run_longer_than_the_cap_fires():
+    chapters = [_ch(n, "Cliffhanger") for n in range(1, 5)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert any(b.startswith("monotonous-closings:") and "ch 04" in b
+               for b in blocking)
+
+
+def test_a_run_exactly_at_the_cap_does_not_fire():
+    chapters = [_ch(n, "Cliffhanger") for n in range(1, 4)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == []
+
+
+def test_a_varied_book_does_not_fire():
+    chapters = [_ch(1, "Cliffhanger"), _ch(2, "Irony"),
+                _ch(3, "Cliffhanger"), _ch(4, "Promise of action")]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == []
+
+
+def test_absent_genre_key_is_a_named_note_never_a_silent_pass():
+    chapters = [_ch(n, "Cliffhanger") for n in range(1, 6)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=None)
+    assert blocking == []
+    assert any(n.startswith("monotonous-closings —") for n in notes)
+
+
+def test_an_outline_with_no_closings_is_skipped_entirely():
+    chapters = [_ch(n, None) for n in range(1, 6)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == [] and notes == []
+
+
+BEATS_WITH_CLOSINGS = Path("tests/fixtures/plot/beat-sheet-with-closings.yaml")
+
+
+def test_monotonous_closings_reaches_blocking_through_check_tension_wired():
+    # Integration coverage for the glue in check_tension() itself: the
+    # beat-sheet-path guard, the _load_yaml(...).get("closings") read, and
+    # the call site on the WIRED return path — not just _closings_check in
+    # isolation. wired-monotonous-closings.md is wired-clean.md (which is
+    # independently pinned findings-clean) plus four chapters in a row
+    # closing on Cliffhanger against this fixture's cap of 3.
+    r = check_tension(FIX / "wired-monotonous-closings.md",
+                       beat_sheet_path=BEATS_WITH_CLOSINGS, whodunit_path=WHOD)
+    assert r["wired"] is True
+    assert "monotonous-closings" in _predicates(r)
+
+
+def test_monotonous_closings_reaches_blocking_through_check_tension_unwired():
+    # Same glue, but through the UNWIRED early-return path — the check must
+    # still run on a book with no Because/Opens wiring at all (legacy/
+    # hand-authored/scaffolded outlines are exactly this check's real-world
+    # input, per the review finding).
+    r = check_tension(FIX / "unwired-monotonous-closings.md",
+                       beat_sheet_path=BEATS_WITH_CLOSINGS)
+    assert r["wired"] is False
+    assert "monotonous-closings" in _predicates(r)
+
+
+def test_a_chapter_with_no_closing_breaks_the_run_rather_than_hiding_it():
+    # 1,2 = cliffhanger, 3 = no Closing at all, 4,5 = cliffhanger. The real
+    # longest run on the page is 2, not 4 — ch 03 does not end on a
+    # cliffhanger, so it must not be silently skipped as if it were never
+    # there. Review finding: filtering ch 03 out before counting made the
+    # check report a false 4-chapter run at ch 05.
+    chapters = [_ch(1, "Cliffhanger"), _ch(2, "Cliffhanger"), _ch(3, None),
+                _ch(4, "Cliffhanger"), _ch(5, "Cliffhanger")]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == []
+
+
+# --- Final review, Important 2: an unrecognised "kind" must not be measured -
+
+def test_unrecognized_closing_kind_is_treated_as_absent_and_breaks_the_run():
+    # ch 03's Closing is free prose ("Freeform"), not one of CLOSING_KINDS —
+    # exactly what a hand-authored/scaffolded ### Closing looks like, since
+    # story_cut's unknown-closing-kind only guards cut plans. Treated as
+    # absent, it must break the run the same way a missing Closing does
+    # (see the test above), not silently keep it going as if "freeform" were
+    # a real, repeatable kind.
+    chapters = [_ch(1, "Cliffhanger"), _ch(2, "Cliffhanger"), _ch(3, "Freeform"),
+                _ch(4, "Cliffhanger"), _ch(5, "Cliffhanger")]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == []
+    assert notes == []
+
+
+def test_all_unrecognized_kinds_produce_the_named_note_not_a_silent_return():
+    # Every chapter HAS a ### Closing (so this is not the no-Closing-anywhere
+    # case below), but none of them names a recognised kind — the check has
+    # nothing to measure and must say so by name, not return silently.
+    chapters = [_ch(n, "Freeform") for n in range(1, 5)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == []
+    assert any(n.startswith("monotonous-closings —") for n in notes)
+
+
+def test_no_closing_anywhere_still_stays_a_silent_skip():
+    # The other half of the same distinction: an outline with NO ### Closing
+    # section at all (the legacy shape) must still produce neither a finding
+    # nor a note — collapsing this into the "unrecognised kind" case above
+    # would turn every legacy outline's silence into a spurious note.
+    chapters = [_ch(n, None) for n in range(1, 5)]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == [] and notes == []
