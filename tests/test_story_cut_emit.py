@@ -427,3 +427,48 @@ def test_a_plan_without_the_fields_emits_no_empty_sections():
     out = _emit_legacy()
     assert "### Setting" not in out
     assert "### Opening" not in out and "### Closing" not in out
+
+
+# --- Fix round 1: chapter-local Setting beat numbers must use rank, not an
+# arithmetic offset from the chapter's minimum beat — a chapter's Beats set is
+# never enforced to be contiguous (`_expand_beats("3,5-6")` parses fine), so
+# an offset can render a local beat number that doesn't exist in the chapter.
+
+NONCONTIG_STORY = """- Beat one.
+  @a
+
+- Beat two.
+  @a
+
+- Beat three.
+  @a
+
+- Beat four.
+  @a
+
+- Beat five.
+  @a
+
+- Beat six.
+  @a
+"""
+
+NONCONTIG_PLAN = """## Chapter 01 — Scattered
+
+- **Beats:** 3,5-6
+- **Summary:** s
+- **Compress:** c
+- **Setting:**
+  - 5-6 — the harbour road, dusk
+"""
+
+
+def test_setting_beat_numbers_use_rank_not_offset_for_a_noncontiguous_chapter():
+    # Chapter beats {3,5,6}: an offset from min (3) would render book beats
+    # 5-6 as local "3-4" — a local beat 4 that doesn't exist, since this
+    # chapter only has three beats. Rank within the chapter's own Beats set
+    # (sorted [3,5,6], so 5 is rank 2 and 6 is rank 3) renders "2-3".
+    out = emit_outline(NONCONTIG_STORY, NONCONTIG_PLAN, {}, {},
+                       reveal_chapter=1, guardrails="g", job_titles={},
+                       solution={})
+    assert "### Setting\n- Beats 2-3 — the harbour road, dusk\n" in out

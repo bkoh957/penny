@@ -421,10 +421,14 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
         if ch["settings"]:
             # Chapter-local beat numbers, matching ### Required Beats, which
             # already lists this chapter's beats rather than the book's. Book
-            # positions here would send the drafter to the wrong line.
-            first = min(ch["beats"]) if ch["beats"] else 1
+            # positions here would send the drafter to the wrong line. Rank
+            # within the chapter's own (possibly non-contiguous) Beats set,
+            # not an arithmetic offset from its minimum — a chapter holding
+            # book beats {3,5,6} has only three local beats, so an offset
+            # would render a local number ("4") that doesn't exist.
+            ordered = sorted(ch["beats"])
             def _local(ns):
-                loc = sorted(n - first + 1 for n in ns)
+                loc = sorted(ordered.index(n) + 1 for n in ns)
                 return (f"{loc[0]}-{loc[-1]}"
                         if len(loc) > 1 and loc == list(range(loc[0], loc[-1] + 1))
                         else ",".join(str(n) for n in loc))
