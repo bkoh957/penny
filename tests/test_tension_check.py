@@ -316,3 +316,43 @@ def test_an_outline_with_no_closings_is_skipped_entirely():
     blocking, notes = [], []
     _closings_check(chapters, blocking, notes, max_run=3)
     assert blocking == [] and notes == []
+
+
+BEATS_WITH_CLOSINGS = Path("tests/fixtures/plot/beat-sheet-with-closings.yaml")
+
+
+def test_monotonous_closings_reaches_blocking_through_check_tension_wired():
+    # Integration coverage for the glue in check_tension() itself: the
+    # beat-sheet-path guard, the _load_yaml(...).get("closings") read, and
+    # the call site on the WIRED return path — not just _closings_check in
+    # isolation. wired-monotonous-closings.md is wired-clean.md (which is
+    # independently pinned findings-clean) plus four chapters in a row
+    # closing on Cliffhanger against this fixture's cap of 3.
+    r = check_tension(FIX / "wired-monotonous-closings.md",
+                       beat_sheet_path=BEATS_WITH_CLOSINGS, whodunit_path=WHOD)
+    assert r["wired"] is True
+    assert "monotonous-closings" in _predicates(r)
+
+
+def test_monotonous_closings_reaches_blocking_through_check_tension_unwired():
+    # Same glue, but through the UNWIRED early-return path — the check must
+    # still run on a book with no Because/Opens wiring at all (legacy/
+    # hand-authored/scaffolded outlines are exactly this check's real-world
+    # input, per the review finding).
+    r = check_tension(FIX / "unwired-monotonous-closings.md",
+                       beat_sheet_path=BEATS_WITH_CLOSINGS)
+    assert r["wired"] is False
+    assert "monotonous-closings" in _predicates(r)
+
+
+def test_a_chapter_with_no_closing_breaks_the_run_rather_than_hiding_it():
+    # 1,2 = cliffhanger, 3 = no Closing at all, 4,5 = cliffhanger. The real
+    # longest run on the page is 2, not 4 — ch 03 does not end on a
+    # cliffhanger, so it must not be silently skipped as if it were never
+    # there. Review finding: filtering ch 03 out before counting made the
+    # check report a false 4-chapter run at ch 05.
+    chapters = [_ch(1, "Cliffhanger"), _ch(2, "Cliffhanger"), _ch(3, None),
+                _ch(4, "Cliffhanger"), _ch(5, "Cliffhanger")]
+    blocking, notes = [], []
+    _closings_check(chapters, blocking, notes, max_run=3)
+    assert blocking == []

@@ -277,12 +277,17 @@ def _closings_check(chapters, blocking, notes, *, max_run=None):
     An outline carrying no ### Closing anywhere is the legacy shape and is
     skipped entirely — it has no note to give, exactly as an outline with no
     Required Beats is skipped by the overload check.
+
+    A chapter with no Closing of its own (a mixed legacy/hand-authored/
+    scaffolded outline outside Task 2's all-or-nothing rule — exactly what
+    this check meets in the wild) BREAKS the run rather than being invisible
+    to it: skipping it outright would let two runs either side of the gap
+    silently concatenate into one that never actually happened on the page.
     """
     kinds = [(ch["num"], (ch.get("sections") or {}).get("Closing", "")
               .split("—")[0].strip().lower())
              for ch in chapters]
-    kinds = [(num, k) for num, k in kinds if k]
-    if not kinds:
+    if not any(k for _, k in kinds):
         return
     if max_run is None:
         notes.append(
@@ -291,6 +296,9 @@ def _closings_check(chapters, blocking, notes, *, max_run=None):
         return
     run_kind, run_len = None, 0
     for num, kind in kinds:
+        if not kind:
+            run_kind, run_len = None, 0
+            continue
         run_len = run_len + 1 if kind == run_kind else 1
         run_kind = kind
         if run_len > int(max_run):

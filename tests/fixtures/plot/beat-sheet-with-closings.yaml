@@ -1,0 +1,14 @@
+beats:
+  - { id: inciting-death,    by_fraction: 0.34 }
+  - { id: midpoint-reversal, at_fraction: 0.50, tolerance: 0.17 }
+  - { id: dark-night,        window: [0.60, 0.95] }
+  - { id: reveal,            from: whodunit }
+tracks:
+  max_dark_gap: { M: 2, P: 4, R: 4, B: 5 }
+questions:
+  min_open_before_reveal: 1
+# A dedicated fixture (not tests/fixtures/plot/beat-sheet.yaml) so declaring
+# closings.max_same_kind_run here cannot collaterally change any other
+# test's expectations against the shared beat sheet.
+closings:
+  max_same_kind_run: 3
