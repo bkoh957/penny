@@ -371,3 +371,59 @@ def test_a_story_with_no_directive_blocks_keeps_the_old_guardrails_shape():
         "- Do not name the culprit early.",
         "- Do not resolve the mystery before chapter 02.",
     ]
+
+
+# --- Task 3: emit Setting, Opening and Closing sections --------------------
+
+PLAN_WITH_SETTING = """## Chapter 01 — The Life Maggie Chose
+
+- **Beats:** 2-3
+- **Summary:** A life chosen, and the body that ends it.
+- **Compress:** Gallery logistics.
+- **Setting:**
+  - 2-3 — the shop, morning
+- **Opening:** The kiln door still warm and the studio empty behind her.
+- **Closing (promise of action):** she pockets the tin and turns for the harbour.
+"""
+
+LEGACY_PLAN = PLAN
+
+
+def _emit_setting():
+    return emit_outline(STORY, PLAN_WITH_SETTING, parse_questions(STORY), LEDGER,
+                        reveal_chapter=1, guardrails="Do not name the culprit early.",
+                        job_titles=JOB_TITLES, solution={})
+
+
+def _emit_legacy():
+    return emit_outline(STORY, LEGACY_PLAN, parse_questions(STORY), LEDGER,
+                        reveal_chapter=2, guardrails="Do not name the culprit early.",
+                        job_titles=JOB_TITLES, solution={})
+
+
+def test_setting_is_emitted_after_chapter_summary_with_chapter_local_beats():
+    # The chapter holds book-level beats 2-3; the Setting section renders them
+    # as Beats 1-2, matching how ### Required Beats already lists this
+    # chapter's beats, not the book's.
+    out = _emit_setting()
+    assert "### Setting\n- Beats 1-2 — the shop, morning\n" in out
+    assert out.index("### Chapter Summary") < out.index("### Setting")
+    assert out.index("### Setting") < out.index("### Chapter Purpose")
+
+
+def test_opening_and_closing_follow_reader_facing_shape():
+    out = _emit_setting()
+    assert out.index("### Reader-Facing Shape") < out.index("### Opening")
+    assert out.index("### Opening") < out.index("### Closing")
+    assert out.index("### Closing") < out.index("### Required Beats")
+
+
+def test_closing_renders_its_kind_as_a_prose_lead_in():
+    out = _emit_setting()
+    assert "### Closing\nPromise of action — she pockets the tin" in out
+
+
+def test_a_plan_without_the_fields_emits_no_empty_sections():
+    out = _emit_legacy()
+    assert "### Setting" not in out
+    assert "### Opening" not in out and "### Closing" not in out

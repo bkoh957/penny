@@ -418,6 +418,19 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
 
         out.append(f"## Chapter {ch['num']:02d} — {ch['title']}\n")
         out.append("### Chapter Summary\n" + ch["summary"] + "\n")
+        if ch["settings"]:
+            # Chapter-local beat numbers, matching ### Required Beats, which
+            # already lists this chapter's beats rather than the book's. Book
+            # positions here would send the drafter to the wrong line.
+            first = min(ch["beats"]) if ch["beats"] else 1
+            def _local(ns):
+                loc = sorted(n - first + 1 for n in ns)
+                return (f"{loc[0]}-{loc[-1]}"
+                        if len(loc) > 1 and loc == list(range(loc[0], loc[-1] + 1))
+                        else ",".join(str(n) for n in loc))
+            out.append("### Setting\n" + "\n".join(
+                f"- Beats {_local(s['beats'])} — {s['text']}"
+                for s in ch["settings"]) + "\n")
         out.append("### Chapter Purpose\n"
                    + "\n".join(f"- {job_titles.get(j, j)}" for j in jobs) + "\n")
 
@@ -435,6 +448,16 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
         out.append("### Reader-Facing Shape\nPrimary anchor:\n"
                    + (f"- {mine[0]['text']}\n" if mine else "")
                    + "\nCompress:\n- " + ch["compress"] + "\n")
+
+        if ch["opening"]:
+            out.append("### Opening\n" + ch["opening"] + "\n")
+        if ch["closing"]:
+            # The kind becomes a prose lead-in rather than a parenthetical key:
+            # the emitted block is read by agents and by the reader's copy, never
+            # parsed back into the cut plan.
+            kind = ch["closing"]["kind"]
+            out.append(f"### Closing\n{kind[0].upper() + kind[1:]} — "
+                       f"{ch['closing']['text']}\n")
 
         out.append("### Required Beats\n"
                    + "\n".join(f"- {b['text']}" for b in mine) + "\n")
