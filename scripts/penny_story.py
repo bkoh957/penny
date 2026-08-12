@@ -181,7 +181,14 @@ def parse_directives(text: str, heading: str) -> list[dict]:
 
 
 _CUT_CHAPTER_RE = re.compile(r"^##\s+Chapter\s+(?P<num>\d+)\s*[—-]\s*(?P<title>.+?)\s*$")
-_CUT_FIELD_RE = re.compile(r"^\s*-\s+\*\*(?P<key>Beats|Summary|Compress):\*\*\s*(?P<val>.*)$")
+_CUT_FIELD_RE = re.compile(
+    r"^\s*-\s+\*\*(?P<key>Beats|Summary|Compress|Setting|Opening):\*\*\s*(?P<val>.*)$")
+_CUT_CLOSING_RE = re.compile(
+    r"^\s*-\s+\*\*Closing\s*\((?P<kind>[^)]*)\):\*\*\s*(?P<val>.*)$")
+# A setting sub-item: `  - 22-23 — the pottery studio, late afternoon`. The dash
+# separating range from prose is an em dash; a hyphen would be ambiguous against
+# the range's own `22-23`.
+_CUT_SETTING_ITEM_RE = re.compile(r"^\s+-\s+(?P<spec>[\d,\s-]+?)\s+—\s+(?P<val>.*)$")
 _CUT_TRACK_RE = re.compile(r"^\s*-\s+\*\*(?P<letter>[A-Z]):\*\*\s*(?P<val>.*)$")
 _RANGE_RE = re.compile(r"^(\d+)\s*-\s*(\d+)$")
 
@@ -199,26 +206,49 @@ def _expand_beats(spec: str) -> list[int]:
 
 
 def parse_cut_plan(text: str) -> list[dict]:
-    """The showrunner-approved grouping (spec §5.1)."""
-    chapters, current = [], None
+    """The showrunner-approved grouping (spec §5.1).
+
+    `settings`, `opening` and `closing` are the cut-level record of where a
+    chapter happens and how it lands (spec 2026-08-12). They default empty, so a
+    plan written before that design parses exactly as it always did — adoption is
+    all-or-nothing and `story_cut.check_story` owns that rule, not this parser.
+    """
+    chapters, current, in_setting = [], None, False
     for raw in text.splitlines():
         m = _CUT_CHAPTER_RE.match(raw)
         if m:
             current = {"num": int(m.group("num")), "title": m.group("title"),
-                       "beats": [], "summary": "", "compress": "", "tracks": {}}
+                       "beats": [], "summary": "", "compress": "", "tracks": {},
+                       "settings": [], "opening": "", "closing": None}
             chapters.append(current)
+            in_setting = False
             continue
         if current is None:
+            continue
+        if in_setting:
+            sm = _CUT_SETTING_ITEM_RE.match(raw)
+            if sm:
+                current["settings"].append(
+                    {"beats": _expand_beats(sm.group("spec")),
+                     "text": sm.group("val").strip()})
+                continue
+        cm = _CUT_CLOSING_RE.match(raw)
+        if cm:
+            in_setting = False
+            current["closing"] = {"kind": cm.group("kind").strip().lower(),
+                                  "text": cm.group("val").strip()}
             continue
         fm = _CUT_FIELD_RE.match(raw)
         if fm:
             key, val = fm.group("key"), fm.group("val").strip()
+            in_setting = key == "Setting"
             if key == "Beats":
                 current["beats"] = _expand_beats(val)
-            else:
+            elif key != "Setting":
                 current[key.lower()] = val
             continue
         tm = _CUT_TRACK_RE.match(raw)
         if tm:
+            in_setting = False
             current["tracks"][tm.group("letter")] = tm.group("val").strip()
     return chapters
