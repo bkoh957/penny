@@ -146,7 +146,8 @@ def check_background(parsed: dict) -> dict:
 
 
 BACKGROUND_DIR = "series/continuity/background"
-SETTING_PACK_REL = "config/setting-pack/setting.md"
+SETTING_PACK_DIR = "config/setting-pack"
+SETTING_PACK_REL = f"{SETTING_PACK_DIR}/setting.md"
 
 
 def body_sha(text: str) -> str:
@@ -237,6 +238,27 @@ def orphan_notes(existing_rels: list, produced_rels: list) -> list:
     ]
 
 
+SETTING_PACK_CONTRACT_FILES = {
+    "setting.md", "lexicon.md", "ai-tics-detection.md", "lmstudio-digest.md",
+}
+
+
+def stale_setting_pack_notes(existing_rels: list) -> list:
+    """Advisory only. `lmstudio_draft_chapter._read_config_pack_for_lmstudio`
+    concatenates every `*.md` under config/setting-pack/, so a hand-authored
+    sibling file (e.g. a stale, pre-migration place pack) still reaches the
+    drafter beside the derived setting.md — the cut cannot refuse it (that
+    guard only covers paths it is about to write), so it names it here
+    instead. Never deletes; deleting a file the author wrote is the author's
+    act."""
+    return [
+        f"stale-setting-pack: {rel} is not part of the derived setting pack. "
+        f"It still reaches the drafter until you delete it."
+        for rel in sorted(existing_rels)
+        if Path(rel).name not in SETTING_PACK_CONTRACT_FILES
+    ]
+
+
 SOURCE_REL = "input/series/background-history.md"
 
 
@@ -284,6 +306,11 @@ def main(argv=None) -> int:
     existing = ([f"{BACKGROUND_DIR}/{p.name}" for p in sorted(bg.glob("*.md"))]
                 if bg.is_dir() else [])
     notes = orphan_notes(existing, [b["rel"] for b in built])
+
+    sp = root / SETTING_PACK_DIR
+    sp_existing = ([f"{SETTING_PACK_DIR}/{p.name}" for p in sorted(sp.glob("*.md"))]
+                   if sp.is_dir() else [])
+    notes += stale_setting_pack_notes(sp_existing)
 
     print(f"background_cut: wrote {len(built)} files from {src}")
     if notes:

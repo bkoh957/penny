@@ -274,7 +274,21 @@ def test_no_orphans_when_everything_is_produced():
                            ["series/continuity/background/cal.md"]) == []
 
 
-import pytest
+def test_stale_setting_pack_names_a_non_contract_file():
+    notes = bc.stale_setting_pack_notes(
+        ["config/setting-pack/setting.md", "config/setting-pack/coastal.md"])
+    assert len(notes) == 1
+    assert notes[0].startswith("stale-setting-pack:")
+    assert "coastal.md" in notes[0]
+
+
+def test_stale_setting_pack_allows_the_known_contract_files():
+    assert bc.stale_setting_pack_notes([
+        "config/setting-pack/setting.md",
+        "config/setting-pack/lexicon.md",
+        "config/setting-pack/ai-tics-detection.md",
+        "config/setting-pack/lmstudio-digest.md",
+    ]) == []
 
 
 @pytest.fixture
@@ -289,11 +303,19 @@ def series(tmp_path, monkeypatch):
     return tmp_path
 
 
-def test_cut_writes_targets_and_exits_zero(series, capsys):
+def test_cut_writes_targets_and_exits_zero(series):
     assert bc.main([]) == 0
     assert (series / "config/setting-pack/setting.md").is_file()
     assert (series / "series/continuity/background/maggie.md").is_file()
     assert (series / "series/continuity/background/cal--maggie.md").is_file()
+
+
+def test_cut_reports_a_stale_sibling_setting_pack(series, capsys):
+    (series / "config/setting-pack/coastal-victoria-au.md").write_text(
+        "# hand-authored place notes\n", encoding="utf-8")
+    assert bc.main([]) == 0
+    out = capsys.readouterr().out
+    assert "stale-setting-pack" in out and "coastal-victoria-au.md" in out
 
 
 def test_cut_is_idempotent(series):
@@ -368,13 +390,19 @@ REPO = Path(__file__).resolve().parent.parent
 def test_agents_declare_the_background_layer():
     for rel in ("agents/story-author.md", "agents/plot-proposer.md"):
         body = (REPO / rel).read_text(encoding="utf-8")
-        assert "background" in body.lower(), f"{rel} does not declare background"
+        assert "config/setting-pack/setting.md" in body, \
+            f"{rel} does not name the derived setting pack"
+    story_author = (REPO / "agents/story-author.md").read_text(encoding="utf-8")
+    assert "series/continuity/background/" in story_author, \
+        "story-author.md does not name the background continuity dir"
 
 
-def test_setting_pack_consumers_do_not_name_a_place():
-    """The engine ships no place name — the derived pack is setting.md."""
+def test_setting_pack_consumers_name_the_pack():
+    """The engine ships no place name — the derived pack is setting.md, and
+    every consumer must actually reference config/setting-pack/."""
     for rel in ("agents/drafter.md", "agents/chapter-cutter.md",
                 "agents/outline-expander.md",
                 "config/review-rubrics/developmental-craft.md"):
         body = (REPO / rel).read_text(encoding="utf-8")
-        assert "coastal-victoria-au" not in body, f"{rel} names a place"
+        assert "config/setting-pack/" in body, \
+            f"{rel} does not reference config/setting-pack/"

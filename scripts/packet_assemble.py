@@ -49,7 +49,7 @@ _CONTINUITY_SUBDIRS = ("characters", "locations", "threads", "background")
 
 
 def _continuity_entries(root) -> dict[str, dict]:
-    """Every series/continuity/{characters,locations,threads}/*.md entry,
+    """Every series/continuity/{characters,locations,threads,background}/*.md entry,
     keyed by `"<subdir>/<stem>"` (lowercased) — a subdir-qualified key, so a
     same-named file in two subdirs (characters/mary.md and threads/mary.md)
     gets two distinct entries instead of one silently clobbering the other.
