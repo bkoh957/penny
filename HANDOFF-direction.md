@@ -431,6 +431,13 @@ Eight blocking findings — `missing-stance`, `unknown-section`, `unknown-entry-
 `target-modified-since-cut` — no waivers. Two advisories: `orphan-derived`,
 `stale-setting-pack`.
 
+Documented at `3aa0f9a`: README gains a **"The background layer"** section between series
+setup and book plotting (series-scoped, so it sits outside the per-book parts) covering the
+heading contract, why `## Stance` is authored, the findings, what the cut never writes and
+whose those files are, and a consumption table. That commit also fixes a contradiction the
+layer introduced — `config/setting-pack/setting.md` was listed under "you must create the
+rest" while being derived.
+
 ## The design decisions that are not obvious from the code
 
 - **The `## Stance` block is authored, not compressed — and that is what removes the LLM
