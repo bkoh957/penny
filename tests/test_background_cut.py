@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from scripts import background_cut as bc
 
 SOURCE = """# Pelican's Crook — Background History
@@ -342,3 +344,21 @@ def test_never_writes_characters_canon_core_or_whodunit(series):
     before = (canon.read_bytes(), char.read_bytes(), ledger.read_bytes())
     assert bc.main([]) == 0
     assert (canon.read_bytes(), char.read_bytes(), ledger.read_bytes()) == before
+
+
+REPO = Path(__file__).resolve().parent.parent
+
+
+def test_agents_declare_the_background_layer():
+    for rel in ("agents/story-author.md", "agents/plot-proposer.md"):
+        body = (REPO / rel).read_text(encoding="utf-8")
+        assert "background" in body.lower(), f"{rel} does not declare background"
+
+
+def test_setting_pack_consumers_do_not_name_a_place():
+    """The engine ships no place name — the derived pack is setting.md."""
+    for rel in ("agents/drafter.md", "agents/chapter-cutter.md",
+                "agents/outline-expander.md",
+                "config/review-rubrics/developmental-craft.md"):
+        body = (REPO / rel).read_text(encoding="utf-8")
+        assert "coastal-victoria-au" not in body, f"{rel} names a place"

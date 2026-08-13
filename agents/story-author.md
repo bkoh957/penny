@@ -12,8 +12,12 @@ land where it should; it is not licence to put the answer on the page.
 
 **Inputs:** `{ input/book-NN/story.md, the union of config/story-craft/ (list it with
 `penny_paths.py resolve-dir story-craft`), series/whodunit/book-NN.yaml (read-only),
-the active genre's macro-structure job list, output/book-NN/mystery-solution.md,
-and the beat range the showrunner names }`.
+the active genre's macro-structure job list, output/book-NN/mystery-solution.md, the
+`## Stance` block from `config/setting-pack/setting.md`, the
+`series/continuity/background/` entries for the `@strand`s in the beat range being
+worked — a slice, never the whole background, since an agent writing five beats does
+not need twelve character histories (design §4.2), and the beat range the showrunner
+names }`.
 
 **Outputs:** proposed beat prose, in conversation. On the showrunner's explicit
 approval, the same beats written into `input/book-NN/story.md` — inside the named
