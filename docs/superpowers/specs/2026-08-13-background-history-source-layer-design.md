@@ -142,10 +142,23 @@ invisible to the slice. The category is carried in each entry's `canon-meta` hea
 instead of in its path:
 
 ```markdown
-<!-- canon-meta: {"id": "maggie", "kind": "character", "links": ["cal--maggie"], "source": "background-history.md#characters-maggie", "built_from_background": "…", "cut_output_sha256": "…"} -->
+<!-- canon-meta: {id: maggie, kind: character, links: [cal--maggie, faye--maggie], source: characters-maggie, built_from_background: …, cut_output_sha256: …} -->
 ```
 
 `kind` is one of `town`, `character`, `relationship`, `secret`.
+
+**The header is the `canon-meta` comment form, not YAML frontmatter.**
+`packet_assemble.py` reads entries with `parse_canon_meta`, which only sees the comment
+form — so an entry written as frontmatter contributes no `id` and no `links`, and gets no
+one-hop. (Noted, out of scope: the cozy series' existing `characters/*.md` are frontmatter,
+so one-hop linking is inert for them today.)
+
+**Prerequisite fix.** `penny_meta.parse_canon_meta` splits its header on bare commas
+(`inner.split(",")`), so `links: [cal--maggie, faye--maggie]` parses as `[cal--maggie` and
+the rest is lost. Only single-element lists have ever been exercised
+(`tests/test_packet_assemble.py:58`). `_split_top_level` already exists for exactly this
+and is used by `parse_canon_sections`; `parse_canon_meta` must use it too. This is a
+prerequisite of §4.1, not an optional cleanup — multi-link entries are the normal case.
 
 A background entry and a continuity entry may share a stem — `background/maggie.md` beside
 `characters/maggie.md`. `_continuity_entries` keys by `<subdir>/<stem>`, so they are two
