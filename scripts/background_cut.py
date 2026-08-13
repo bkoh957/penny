@@ -198,3 +198,34 @@ def build_entries(parsed: dict, source_sha: str) -> list[dict]:
         }),
     })
     return out
+
+
+def target_refusal(existing_text: str, rel: str) -> "str | None":
+    """Guard an existing file at a derived path (spec §5.1).
+
+    An absent stamp is a refusal, not a licence: a file with no
+    cut_output_sha256 was never produced by a cut, so it is hand-authored work
+    and deleting it is the showrunner's explicit act — the same branch that
+    protects a hand-authored outline.md.
+    """
+    meta = penny_meta.parse_canon_meta(existing_text)
+    stamped = str(meta.get("cut_output_sha256", "")).strip()
+    if not stamped:
+        return (f"unstamped-target: {rel} has no cut_output_sha256 — it was "
+                f"not produced by a cut. Delete it to adopt the layer.")
+    body = existing_text.split("-->", 1)[1] if "-->" in existing_text else existing_text
+    if body_sha(body) != stamped:
+        return (f"target-modified-since-cut: {rel} was edited by hand since "
+                f"the last cut. Move the change into background-history.md.")
+    return None
+
+
+def orphan_notes(existing_rels: list, produced_rels: list) -> list:
+    """Advisory only — never deleted. A vanished heading is as likely to be a
+    rename in progress as a deletion (spec §5.2)."""
+    produced = set(produced_rels)
+    return [
+        f"orphan-derived: {rel} has no section in background-history.md. "
+        f"It still loads into packets until you delete it."
+        for rel in sorted(existing_rels) if rel not in produced
+    ]

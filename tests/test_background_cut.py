@@ -219,3 +219,38 @@ def test_body_sha_excludes_the_header():
 def test_stamp_renders_lists_in_canon_meta_form():
     text = bc.stamp("x", {"id": "a", "links": ["b", "c"]})
     assert penny_meta.parse_canon_meta(text)["links"] == ["b", "c"]
+
+
+def test_unstamped_target_refuses():
+    hand_authored = "# Setting Pack — Coastal Victoria\n\nHand written.\n"
+    f = bc.target_refusal(hand_authored, "config/setting-pack/setting.md")
+    assert f is not None and f.startswith("unstamped-target:")
+
+
+def test_stamped_and_unchanged_target_is_safe():
+    body = "The carpenter who repaired everyone."
+    text = bc.stamp(body, {"id": "cal", "cut_output_sha256": bc.body_sha(body)})
+    assert bc.target_refusal(text, "series/continuity/background/cal.md") is None
+
+
+def test_hand_edited_target_refuses():
+    body = "The carpenter who repaired everyone."
+    text = bc.stamp(body, {"id": "cal", "cut_output_sha256": bc.body_sha(body)})
+    edited = text.replace("repaired everyone", "repaired almost everyone")
+    f = bc.target_refusal(edited, "series/continuity/background/cal.md")
+    assert f is not None and f.startswith("target-modified-since-cut:")
+
+
+def test_orphan_is_advisory_and_names_the_file():
+    notes = bc.orphan_notes(
+        ["series/continuity/background/pruitt.md",
+         "series/continuity/background/cal.md"],
+        ["series/continuity/background/cal.md"])
+    assert len(notes) == 1
+    assert notes[0].startswith("orphan-derived:")
+    assert "pruitt.md" in notes[0]
+
+
+def test_no_orphans_when_everything_is_produced():
+    assert bc.orphan_notes(["series/continuity/background/cal.md"],
+                           ["series/continuity/background/cal.md"]) == []
