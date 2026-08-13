@@ -253,10 +253,11 @@ history, character histories, relationships, secrets — that `scripts/backgroun
 cuts into a flat `series/continuity/background/` and the derived
 `config/setting-pack/setting.md`. The `## Stance` block is **authored, not compressed**:
 the setting pack is loaded on every chapter and truncated at 2,500 chars on the LM Studio
-path, and a lossy compression step would degrade silently. Seven blocking findings —
+path, and a lossy compression step would degrade silently. Eight blocking findings —
 `missing-stance`, `unknown-section`, `unknown-entry-depth`, `duplicate-entry`,
-`malformed-relationship`, `unstamped-target`, `target-modified-since-cut` — no waivers,
-plus one advisory, `orphan-derived`, which never deletes. The cut **never** writes
+`malformed-relationship`, `unslugged-entry`, `unstamped-target`,
+`target-modified-since-cut` — no waivers, plus two advisories, `orphan-derived` and
+`stale-setting-pack`, neither of which ever deletes. The cut **never** writes
 `canon-core.md`, `continuity/characters/` (owned by `ledger-updater`), or any whodunit
 ledger (per-book and sealed by the lock).
 

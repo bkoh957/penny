@@ -215,16 +215,25 @@ spec §8).
 | `unknown-entry-depth` | a heading deeper than `###` anywhere inside a Part |
 | `duplicate-entry` | two `###` titles slug to the same filename |
 | `malformed-relationship` | a `###` title under `## Relationships` with no ` and ` separator |
+| `unslugged-entry` | a `###` title slugs to `""` (e.g. pure punctuation) — no usable identifier |
 | `unstamped-target` | a file exists at a derived path with no `cut_output_sha256` |
 | `target-modified-since-cut` | a derived file's content no longer matches its stamp |
 
-And one advisory on the non-blocking `notes` channel, never blocking — the roster stays
-seven:
+And two advisories on the non-blocking `notes` channel, never blocking — the roster stays
+eight:
 
 - **`orphan-derived`** — a derived file whose source `###` is gone. Reported by name,
   **never auto-deleted**: a removed heading is as likely to be a rename in progress as a
   deletion, and the cut destroying an entry on that guess is unrecoverable in a way the
   report is not.
+- **`stale-setting-pack`** — a `config/setting-pack/*.md` file that is not `setting.md`
+  (or one of the pack's other known contract files: `lexicon.md`, `ai-tics-detection.md`,
+  `lmstudio-digest.md`). The cut cannot refuse it — `target_refusal` only guards paths it
+  is about to write, and this file is not one of them — but
+  `lmstudio_draft_chapter._read_config_pack_for_lmstudio` concatenates every `*.md` in the
+  directory, so a stale hand-authored pack still reaches every drafting agent until the
+  author deletes it. Reported, never deleted, for the same reason as `orphan-derived`:
+  deleting a file the author wrote is the author's act.
 
 Exit 0/1/2 (clean / findings / usage), matching `map_check.py`.
 
@@ -299,8 +308,13 @@ need twelve character histories.
 
 1. `git mv input/series/town-and-character-history.md input/series/background-history.md`
 2. Author `## Stance`; conform the Part/entry headings to §3.
-3. **Delete `config/setting-pack/coastal-victoria-au.md`** — unstamped and hand-authored,
-   so the cut refuses it by design (§5.1). Deleting is the showrunner's explicit act.
+3. **Delete `config/setting-pack/coastal-victoria-au.md`.** The cut does not refuse this
+   file — `target_refusal` only guards paths it is about to write, and this stale sibling
+   is not one of them. Left in place, it keeps reaching every drafting agent alongside the
+   derived `setting.md`, since `lmstudio_draft_chapter._read_config_pack_for_lmstudio`
+   concatenates every `*.md` in the directory. The cut *names* it as an advisory
+   (`stale-setting-pack`, §5.2) on every run until it is gone. Deleting is the
+   showrunner's explicit act.
 4. Run the cut. `series/continuity/characters/` is untouched throughout.
 5. Give **Elspeth** an entry (§1.1).
 
@@ -321,7 +335,7 @@ Test-first against `tests/fixtures/`, per the engine convention.
   cut; an absent Part cuts nothing; `## Stance` becomes the setting pack byte-for-byte.
 - **Slugging:** em-dash truncation; relationship titles sort and join; `Maggie and Cal` and
   `Cal and Maggie` collide as `duplicate-entry`.
-- **Each of the seven findings** fires on its own fixture and does not fire on the clean
+- **Each of the eight findings** fires on its own fixture and does not fire on the clean
   one — enumerated by reading the source, never by grepping for finding strings (the
   Step-5 lesson from `2026-08-12`).
 - **`orphan-derived` is advisory**: it rides `notes`, exits 0, and leaves the file on disk.
