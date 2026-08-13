@@ -247,6 +247,20 @@ way (`cut-owned-outline`) — it is for outlines the cut never touched. The plot
 workshop's `readback` stage runs after the cut, against `outline.md` — never against
 `story.md`, which carries no chapters to read back.
 
+**The background layer** (spec `docs/superpowers/specs/2026-08-13-background-history-source-layer-design.md`):
+`input/series/background-history.md` is one authored, series-level document — town
+history, character histories, relationships, secrets — that `scripts/background_cut.py`
+cuts into a flat `series/continuity/background/` and the derived
+`config/setting-pack/setting.md`. The `## Stance` block is **authored, not compressed**:
+the setting pack is loaded on every chapter and truncated at 2,500 chars on the LM Studio
+path, and a lossy compression step would degrade silently. Eight blocking findings —
+`missing-stance`, `unknown-section`, `unknown-entry-depth`, `duplicate-entry`,
+`malformed-relationship`, `unslugged-entry`, `unstamped-target`,
+`target-modified-since-cut` — no waivers, plus two advisories, `orphan-derived` and
+`stale-setting-pack`, neither of which ever deletes. The cut **never** writes
+`canon-core.md`, `continuity/characters/` (owned by `ledger-updater`), or any whodunit
+ledger (per-book and sealed by the lock).
+
 **Per book, around the lock — three artifacts, one per chapter (design
 `docs/superpowers/specs/2026-07-18-packet-map-chapter-design.md` §2–§7,
 supersedes the brief compiler above the lock):**

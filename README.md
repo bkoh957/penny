@@ -165,7 +165,7 @@ the last four; **you must create the rest** under the series' `config/`:
 | `config/voice-pack/ai-tics-config.yaml` | tic list driving `voice_drift.py` |
 | `config/voice-pack/ai-tics-detection.md` | how the AI-prose inspector reads those tics |
 | `config/setting-pack/lexicon.yaml` | place/idiom lexicon gated at lock time |
-| `config/setting-pack/<place>.md` | the setting pack itself |
+| `config/setting-pack/setting.md` | the setting pack — **derived**, cut from `input/series/background-history.md` |
 | `config/genre-pack/<genre>.md` | genre conventions as prose for the drafter |
 | `config/length-profile.md` | target chapter/book word counts |
 | `config/beta-readers/personas/*.md` | six reader personas (`beta-protocol.md` ships; personas don't) |
@@ -181,7 +181,10 @@ as `config/genre-pack/<genre>.md`.
 ### 4. Author the series reference files
 
 Under `input/series/` — showrunner-authored, read by planners and reviewers:
-`series-bible.md`, `series-arc.md`, `style-sheet.md`, `whodunit-ledger.md`.
+`series-bible.md`, `series-arc.md`, `style-sheet.md`, `whodunit-ledger.md`. Also here:
+`background-history.md`, the authored source for the background layer —
+`scripts/background_cut.py` cuts it into `series/continuity/background/` and the
+derived `config/setting-pack/setting.md` above.
 
 ### 5. Confirm the series is ready
 

@@ -25,7 +25,8 @@ written). Recency is not a decision. One question at a time.
 
 **Inputs:** `{ stage name, material.md if present, the genre archetype document,
 the genre beat-sheet (resolved via the config overlay), earlier plot/ save
-points, series bible if present }`.
+points, series bible if present, config/setting-pack/setting.md — the series'
+stance, derived from input/series/background-history.md, never edited directly }`.
 
 **Stage obligations:**
 - **premise** — generate rival dramatic engines to fill gaps in the material
