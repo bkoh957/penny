@@ -98,8 +98,10 @@ def parse_canon_meta(text: str) -> dict:
     if not m:
         return {}
     inner = m.group(1)
-    # Split top-level commas (no nesting expected at this stage) into k: v lines.
-    return _parse_kv_lines([part for part in inner.split(",")])
+    # Split on top-level commas only — a `links: [a, b]` value contains commas
+    # that are not field separators. `_split_top_level` is the same splitter
+    # `parse_canon_sections` uses.
+    return _parse_kv_lines(_split_top_level(inner))
 
 
 _SECTION_RE = re.compile(r"^##\s+(.*?)\s*$", re.MULTILINE)

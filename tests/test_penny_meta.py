@@ -154,3 +154,21 @@ def test_write_frontmatter_field_updates_existing_and_inserts():
     out2 = write_frontmatter_field(out, "last_advanced_chapter", 9)
     assert "last_advanced_chapter: 9" in out2
     assert "last_advanced_chapter: 5" not in out2  # replaced, not duplicated
+
+
+def test_canon_meta_multi_element_list():
+    text = "<!-- canon-meta: {id: maggie, links: [cal--maggie, faye--maggie]} -->\n"
+    meta = parse_canon_meta(text)
+    assert meta["id"] == "maggie"
+    assert meta["links"] == ["cal--maggie", "faye--maggie"]
+
+
+def test_canon_meta_single_element_list_unchanged():
+    text = "<!-- canon-meta: {id: mary, links: [cal]} -->\n"
+    assert parse_canon_meta(text)["links"] == ["cal"]
+
+
+def test_canon_meta_scalar_pairs_unchanged():
+    text = "<!-- canon-meta: {id: canon-core, fluency_stage: OUTSIDER} -->\n"
+    meta = parse_canon_meta(text)
+    assert meta == {"id": "canon-core", "fluency_stage": "OUTSIDER"}
