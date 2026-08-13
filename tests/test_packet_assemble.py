@@ -152,3 +152,24 @@ def test_same_stem_in_two_continuity_subdirs_are_both_matched(series_tree):
     assert "### threads/mary.md" in text
     assert "Mary's domestic-order habit runs the whole book." in text
     assert "Mary keeps everything in its place." in text
+
+
+def test_background_entry_loads_when_named(tmp_path, monkeypatch):
+    """A background entry named in the chapter lands in the packet, and its
+    one-hop links pull the relationship entry with it."""
+    bg = tmp_path / "series/continuity/background"
+    bg.mkdir(parents=True)
+    (bg / "maggie.md").write_text(
+        "<!-- canon-meta: {id: maggie, kind: character, links: [cal--maggie]} -->\n\n"
+        "A potter who does not perform fear.\n", encoding="utf-8")
+    (bg / "cal--maggie.md").write_text(
+        "<!-- canon-meta: {id: cal--maggie, kind: relationship, links: [cal, maggie]} -->\n\n"
+        "Slow, and neither will name it first.\n", encoding="utf-8")
+    (bg / "pruitt.md").write_text(
+        "<!-- canon-meta: {id: pruitt, kind: character, links: []} -->\n\n"
+        "Not in this chapter.\n", encoding="utf-8")
+
+    out = packet_assemble._continuity_slice(tmp_path, "Maggie opens the studio.")
+    assert "A potter who does not perform fear." in out
+    assert "Slow, and neither will name it first." in out
+    assert "Not in this chapter." not in out

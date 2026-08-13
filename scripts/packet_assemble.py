@@ -45,7 +45,7 @@ def _heading_line(outline_text: str, num: int) -> str:
     return ""
 
 
-_CONTINUITY_SUBDIRS = ("characters", "locations", "threads")
+_CONTINUITY_SUBDIRS = ("characters", "locations", "threads", "background")
 
 
 def _continuity_entries(root) -> dict[str, dict]:
