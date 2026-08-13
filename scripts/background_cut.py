@@ -137,3 +137,64 @@ def check_background(parsed: dict) -> dict:
         seen[e["slug"]] = e["title"]
 
     return {"blocking": blocking, "notes": notes}
+
+
+BACKGROUND_DIR = "series/continuity/background"
+SETTING_PACK_REL = "config/setting-pack/setting.md"
+
+
+def body_sha(text: str) -> str:
+    return hashlib.sha256(text.strip().encode("utf-8")).hexdigest()
+
+
+def _fmt(value) -> str:
+    if isinstance(value, list):
+        return "[" + ", ".join(str(v) for v in value) + "]"
+    return str(value)
+
+
+def stamp(body: str, meta: dict) -> str:
+    """Prepend the canon-meta comment header. Comment form, not frontmatter —
+    packet_assemble reads entries with parse_canon_meta, which only sees this
+    form (spec §4)."""
+    inner = ", ".join(f"{k}: {_fmt(v)}" for k, v in meta.items())
+    return f"<!-- canon-meta: {{{inner}}} -->\n\n{body.strip()}\n"
+
+
+def build_entries(parsed: dict, source_sha: str) -> list[dict]:
+    """Emitted files for a parsed source. Assumes check_background is clean."""
+    entries = [e for e in parsed["entries"] if e["slug"]]
+    rel_slugs = {e["slug"] for e in entries if e["kind"] == "relationship"}
+
+    def links_for(e: dict) -> list[str]:
+        if e["kind"] == "relationship":
+            return sorted(e["slug"].split("--"))
+        if e["kind"] == "character":
+            return sorted(r for r in rel_slugs
+                          if e["slug"] in r.split("--"))
+        return []
+
+    out: list[dict] = []
+    for e in entries:
+        meta = {
+            "id": e["slug"],
+            "kind": e["kind"],
+            "links": links_for(e),
+            "source": f"{e['part'].lower()}-{e['slug']}",
+            "built_from_background": source_sha,
+            "cut_output_sha256": body_sha(e["body"]),
+        }
+        out.append({"rel": f"{BACKGROUND_DIR}/{e['slug']}.md",
+                    "text": stamp(e["body"], meta)})
+
+    stance = parsed["stance"]
+    out.append({
+        "rel": SETTING_PACK_REL,
+        "text": stamp(stance, {
+            "id": "setting-pack",
+            "kind": "stance",
+            "built_from_background": source_sha,
+            "cut_output_sha256": body_sha(stance),
+        }),
+    })
+    return out

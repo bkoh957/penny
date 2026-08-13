@@ -157,3 +157,65 @@ def test_duplicate_across_parts_collides():
     found = _blocking(
         "## Stance\nx\n\n## Town\n\n### Cal\nplace\n\n## Characters\n\n### Cal\nperson\n")
     assert any(f.startswith("duplicate-entry:") for f in found)
+
+
+from scripts import penny_meta
+
+
+def _built(text):
+    parsed = bc.parse_background(text)
+    return {b["rel"]: b["text"] for b in bc.build_entries(parsed, "SRCSHA")}
+
+
+def test_targets_are_flat_background_dir_plus_setting_pack():
+    rels = set(_built(SOURCE))
+    assert "config/setting-pack/setting.md" in rels
+    assert "series/continuity/background/maggie.md" in rels
+    assert "series/continuity/background/cal--maggie.md" in rels
+    assert not any("background/characters/" in r for r in rels)
+
+
+def test_setting_pack_body_is_the_stance_verbatim():
+    text = _built(SOURCE)["config/setting-pack/setting.md"]
+    assert "- Southern Ocean, not tropical: cool, changeable." in text
+    assert "Ordinary to locals, strange to the protagonist." in text
+
+
+def test_entry_carries_canon_meta_header():
+    text = _built(SOURCE)["series/continuity/background/maggie.md"]
+    meta = penny_meta.parse_canon_meta(text)
+    assert meta["id"] == "maggie"
+    assert meta["kind"] == "character"
+    assert meta["built_from_background"] == "SRCSHA"
+    assert meta["cut_output_sha256"] == bc.body_sha(
+        "A potter who does not perform fear.")
+
+
+def test_relationship_links_both_characters():
+    text = _built(SOURCE)["series/continuity/background/cal--maggie.md"]
+    assert sorted(penny_meta.parse_canon_meta(text)["links"]) == ["cal", "maggie"]
+
+
+def test_character_links_its_relationships():
+    text = _built(SOURCE)["series/continuity/background/maggie.md"]
+    assert penny_meta.parse_canon_meta(text)["links"] == ["cal--maggie"]
+
+
+def test_town_and_secret_entries_have_no_links():
+    built = _built(SOURCE)
+    for slug in ("the-real-marion-wexler",
+                 "the-wheelhouse-becomes-the-symbolic-centre"):
+        meta = penny_meta.parse_canon_meta(
+            built[f"series/continuity/background/{slug}.md"])
+        assert meta["links"] == []
+
+
+def test_body_sha_excludes_the_header():
+    body = "A potter who does not perform fear."
+    text = bc.stamp(body, {"id": "maggie", "cut_output_sha256": bc.body_sha(body)})
+    assert bc.body_sha(text.split("-->\n", 1)[1].strip()) == bc.body_sha(body)
+
+
+def test_stamp_renders_lists_in_canon_meta_form():
+    text = bc.stamp("x", {"id": "a", "links": ["b", "c"]})
+    assert penny_meta.parse_canon_meta(text)["links"] == ["b", "c"]
