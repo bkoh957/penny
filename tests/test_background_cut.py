@@ -99,3 +99,61 @@ def test_absent_part_cuts_nothing():
     parsed = bc.parse_background("## Stance\njust a stance\n")
     assert parsed["entries"] == []
     assert parsed["stance"] == "just a stance"
+
+
+def _blocking(text):
+    return bc.check_background(bc.parse_background(text))["blocking"]
+
+
+def test_clean_source_has_no_blocking():
+    assert _blocking(SOURCE) == []
+
+
+def test_missing_stance():
+    found = _blocking("## Characters\n\n### Cal\nc\n")
+    assert any(f.startswith("missing-stance:") for f in found)
+
+
+def test_empty_stance_is_missing_stance():
+    found = _blocking("## Stance\n\n## Characters\n\n### Cal\nc\n")
+    assert any(f.startswith("missing-stance:") for f in found)
+
+
+def test_unknown_section():
+    found = _blocking("## Stance\nx\n\n## Weather\n\n### Rain\nwet\n")
+    assert any(f.startswith("unknown-section:") and "Weather" in f for f in found)
+
+
+def test_unknown_entry_depth():
+    found = _blocking(
+        "## Stance\nx\n\n## Characters\n\n### Cal\nc\n\n#### Cal's hands\nh\n")
+    assert any(f.startswith("unknown-entry-depth:") and "Cal's hands" in f
+               for f in found)
+
+
+def test_duplicate_entry():
+    found = _blocking(
+        "## Stance\nx\n\n## Characters\n\n### Cal — the carpenter\na\n\n"
+        "### Cal — the other one\nb\n")
+    assert any(f.startswith("duplicate-entry:") and "cal" in f for f in found)
+
+
+def test_relationship_reversal_is_a_duplicate():
+    found = _blocking(
+        "## Stance\nx\n\n## Relationships\n\n### Maggie and Cal\na\n\n"
+        "### Cal and Maggie\nb\n")
+    assert any(f.startswith("duplicate-entry:") and "cal--maggie" in f
+               for f in found)
+
+
+def test_malformed_relationship():
+    found = _blocking("## Stance\nx\n\n## Relationships\n\n### Maggie\na\n")
+    assert any(f.startswith("malformed-relationship:") and "Maggie" in f
+               for f in found)
+
+
+def test_duplicate_across_parts_collides():
+    """A town section and a character that slug the same collide — one flat dir."""
+    found = _blocking(
+        "## Stance\nx\n\n## Town\n\n### Cal\nplace\n\n## Characters\n\n### Cal\nperson\n")
+    assert any(f.startswith("duplicate-entry:") for f in found)

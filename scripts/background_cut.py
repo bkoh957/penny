@@ -101,3 +101,39 @@ def parse_background(text: str) -> dict:
         "unknown_parts": unknown_parts,
         "deep_headings": deep_headings,
     }
+
+
+def check_background(parsed: dict) -> dict:
+    """Named findings over the parsed source (spec §5.2). No waivers."""
+    blocking: list[str] = []
+    notes: list[str] = []
+
+    if not parsed["stance"].strip():
+        blocking.append(
+            "missing-stance: no `## Stance` block, or its body is empty — "
+            "the setting pack is authored, not derived (spec §3.1)")
+
+    for title in parsed["unknown_parts"]:
+        blocking.append(
+            f"unknown-section: `## {title}` is not one of "
+            f"{', '.join(PART_HEADINGS)}")
+
+    for title in parsed["deep_headings"]:
+        blocking.append(
+            f"unknown-entry-depth: `#### {title}` — entries are `###` only")
+
+    seen: dict[str, str] = {}
+    for e in parsed["entries"]:
+        if e["slug"] is None:
+            blocking.append(
+                f"malformed-relationship: `### {e['title']}` has no ` and ` "
+                f"separator")
+            continue
+        if e["slug"] in seen:
+            blocking.append(
+                f"duplicate-entry: `### {e['title']}` and "
+                f"`### {seen[e['slug']]}` both slug to `{e['slug']}`")
+            continue
+        seen[e["slug"]] = e["title"]
+
+    return {"blocking": blocking, "notes": notes}
