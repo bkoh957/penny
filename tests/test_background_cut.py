@@ -254,3 +254,91 @@ def test_orphan_is_advisory_and_names_the_file():
 def test_no_orphans_when_everything_is_produced():
     assert bc.orphan_notes(["series/continuity/background/cal.md"],
                            ["series/continuity/background/cal.md"]) == []
+
+
+import pytest
+
+
+@pytest.fixture
+def series(tmp_path, monkeypatch):
+    (tmp_path / ".penny").mkdir()
+    (tmp_path / "input/series").mkdir(parents=True)
+    (tmp_path / "series/continuity/characters").mkdir(parents=True)
+    (tmp_path / "config/setting-pack").mkdir(parents=True)
+    (tmp_path / "input/series/background-history.md").write_text(
+        SOURCE, encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    return tmp_path
+
+
+def test_cut_writes_targets_and_exits_zero(series, capsys):
+    assert bc.main([]) == 0
+    assert (series / "config/setting-pack/setting.md").is_file()
+    assert (series / "series/continuity/background/maggie.md").is_file()
+    assert (series / "series/continuity/background/cal--maggie.md").is_file()
+
+
+def test_cut_is_idempotent(series):
+    assert bc.main([]) == 0
+    first = (series / "series/continuity/background/maggie.md").read_bytes()
+    assert bc.main([]) == 0
+    assert (series / "series/continuity/background/maggie.md").read_bytes() == first
+
+
+def test_blocking_finding_writes_nothing(series, capsys):
+    (series / "input/series/background-history.md").write_text(
+        "## Characters\n\n### Cal\nc\n", encoding="utf-8")
+    assert bc.main([]) == 1
+    assert "missing-stance" in capsys.readouterr().out
+    assert not (series / "series/continuity/background").exists()
+
+
+def test_unstamped_setting_pack_refuses_and_writes_nothing(series, capsys):
+    (series / "config/setting-pack/coastal.md").write_text("old", encoding="utf-8")
+    (series / "config/setting-pack/setting.md").write_text(
+        "# hand authored\n", encoding="utf-8")
+    assert bc.main([]) == 1
+    assert "unstamped-target" in capsys.readouterr().out
+    assert (series / "config/setting-pack/setting.md").read_text() == "# hand authored\n"
+    assert not (series / "series/continuity/background").exists()
+
+
+def test_recut_after_source_edit_rewrites(series):
+    assert bc.main([]) == 0
+    src = series / "input/series/background-history.md"
+    src.write_text(SOURCE.replace("The carpenter who repaired everyone.",
+                                  "The carpenter who repaired the pier."),
+                   encoding="utf-8")
+    assert bc.main([]) == 0
+    assert "repaired the pier" in (
+        series / "series/continuity/background/cal.md").read_text()
+
+
+def test_orphan_reported_but_left_on_disk(series, capsys):
+    assert bc.main([]) == 0
+    orphan = series / "series/continuity/background/pruitt.md"
+    orphan.write_text(bc.stamp("gone", {"id": "pruitt",
+                                        "cut_output_sha256": bc.body_sha("gone")}),
+                      encoding="utf-8")
+    assert bc.main([]) == 0
+    out = capsys.readouterr().out
+    assert "orphan-derived" in out and "pruitt.md" in out
+    assert orphan.is_file()
+
+
+def test_missing_source_is_exit_two(series, capsys):
+    (series / "input/series/background-history.md").unlink()
+    assert bc.main([]) == 2
+
+
+def test_never_writes_characters_canon_core_or_whodunit(series):
+    canon = series / "series/continuity/canon-core.md"
+    canon.write_text("core\n", encoding="utf-8")
+    char = series / "series/continuity/characters/maggie.md"
+    char.write_text("---\nid: maggie\n---\n\nledger owned\n", encoding="utf-8")
+    (series / "series/whodunit").mkdir(parents=True)
+    ledger = series / "series/whodunit/book-01.yaml"
+    ledger.write_text("culprit: x\n", encoding="utf-8")
+    before = (canon.read_bytes(), char.read_bytes(), ledger.read_bytes())
+    assert bc.main([]) == 0
+    assert (canon.read_bytes(), char.read_bytes(), ledger.read_bytes()) == before

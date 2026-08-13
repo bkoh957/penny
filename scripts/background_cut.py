@@ -229,3 +229,63 @@ def orphan_notes(existing_rels: list, produced_rels: list) -> list:
         f"It still loads into packets until you delete it."
         for rel in sorted(existing_rels) if rel not in produced
     ]
+
+
+SOURCE_REL = "input/series/background-history.md"
+
+
+def main(argv=None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if argv:
+        print("usage: background_cut.py   (run from a series root)",
+              file=sys.stderr)
+        return 2
+
+    root = penny_paths.series_root()
+    src = root / SOURCE_REL
+    if not src.is_file():
+        print(f"background_cut: missing {src}", file=sys.stderr)
+        return 2
+
+    text = src.read_text(encoding="utf-8")
+    parsed = parse_background(text)
+    result = check_background(parsed)
+    if result["blocking"]:
+        for f in result["blocking"]:
+            print(f)
+        return 1
+
+    built = build_entries(parsed, body_sha(text))
+
+    refusals = []
+    for b in built:
+        p = root / b["rel"]
+        if p.is_file():
+            f = target_refusal(p.read_text(encoding="utf-8"), b["rel"])
+            if f:
+                refusals.append(f)
+    if refusals:
+        for f in refusals:
+            print(f)
+        return 1
+
+    for b in built:
+        p = root / b["rel"]
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(b["text"], encoding="utf-8")
+
+    bg = root / BACKGROUND_DIR
+    existing = ([f"{BACKGROUND_DIR}/{p.name}" for p in sorted(bg.glob("*.md"))]
+                if bg.is_dir() else [])
+    notes = orphan_notes(existing, [b["rel"] for b in built])
+
+    print(f"background_cut: wrote {len(built)} files from {src}")
+    if notes:
+        print("\nAdvisory — nothing blocks on these:")
+        for n in notes:
+            print(f"  {n}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
