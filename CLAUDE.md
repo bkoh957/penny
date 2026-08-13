@@ -259,7 +259,22 @@ path, and a lossy compression step would degrade silently. Eight blocking findin
 `target-modified-since-cut` — no waivers, plus two advisories, `orphan-derived` and
 `stale-setting-pack`, neither of which ever deletes. The cut **never** writes
 `canon-core.md`, `continuity/characters/` (owned by `ledger-updater`), or any whodunit
-ledger (per-book and sealed by the lock).
+ledger (per-book and sealed by the lock) — separate homes, because a re-cut must never
+clobber what the books established, and because a series-level file must not write into a
+per-book sealed one.
+
+Consumption splits the same way the packet already splits: **background entries join the
+continuity slice** (`_CONTINUITY_SUBDIRS`, same name-match + one-hop trigger as
+`characters/`), while the **setting pack stays a direct read** by `drafter`,
+`chapter-cutter`, `outline-expander` and `developmental-editor` — embedding a global,
+constant file in the packet would make every packet stale on a one-line edit, which is why
+the voice and genre packs aren't in there either. `story-author` and `plot-proposer` gained
+the stance block as a new input; `story-author` gets a slice scoped to its beat range's
+strands, never the whole background. Relationship entries are reachable only by one hop from
+a character (`cal--maggie` never appears in prose), so naming a protagonist pulls every
+relationship she is in — keep them terse. Note `built_from_background` is stamped but read
+by nothing: unlike `built_from_packet`/`built_from_outline`, no gate catches a derived tree
+that has fallen behind an edited source.
 
 **Per book, around the lock — three artifacts, one per chapter (design
 `docs/superpowers/specs/2026-07-18-packet-map-chapter-design.md` §2–§7,

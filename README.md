@@ -165,7 +165,6 @@ the last four; **you must create the rest** under the series' `config/`:
 | `config/voice-pack/ai-tics-config.yaml` | tic list driving `voice_drift.py` |
 | `config/voice-pack/ai-tics-detection.md` | how the AI-prose inspector reads those tics |
 | `config/setting-pack/lexicon.yaml` | place/idiom lexicon gated at lock time |
-| `config/setting-pack/setting.md` | the setting pack — **derived**, cut from `input/series/background-history.md` |
 | `config/genre-pack/<genre>.md` | genre conventions as prose for the drafter |
 | `config/length-profile.md` | target chapter/book word counts |
 | `config/beta-readers/personas/*.md` | six reader personas (`beta-protocol.md` ships; personas don't) |
@@ -174,6 +173,12 @@ Fastest honest start: copy a working set from `tests/fixtures/cozy/config/` or a
 series, then rewrite the contents. Copying gets the *shape* right; none of the prose will
 be yours.
 
+**The setting pack is not in that list, because you do not write it.**
+`config/setting-pack/setting.md` is *derived* — cut from `input/series/background-history.md`
+by `scripts/background_cut.py`. See "The background layer" below. If you are migrating a
+series that already has a hand-written setting pack, delete it: the cut refuses to overwrite
+a file it did not produce, and until you remove it the LM Studio drafter reads both.
+
 `readiness_check.py` is genre/location-agnostic: it accepts any authored setting-pack prose
 file under `config/setting-pack/` and expects the genre prose pack to match `series.yaml`
 as `config/genre-pack/<genre>.md`.
@@ -181,10 +186,15 @@ as `config/genre-pack/<genre>.md`.
 ### 4. Author the series reference files
 
 Under `input/series/` — showrunner-authored, read by planners and reviewers:
-`series-bible.md`, `series-arc.md`, `style-sheet.md`, `whodunit-ledger.md`. Also here:
-`background-history.md`, the authored source for the background layer —
-`scripts/background_cut.py` cuts it into `series/continuity/background/` and the
-derived `config/setting-pack/setting.md` above.
+`series-bible.md`, `series-arc.md`, `style-sheet.md`, `whodunit-ledger.md`, and
+`background-history.md` (the next section).
+
+The bible and the background answer to different things and both are worth having. The
+**bible is imperative** — *don't write her as literally fearless*, *avoid diagnostic labels
+on the page* — rulings about how to render people. The **background is indicative** — what
+is true about them, their history, who fell out with whom and why. Where the two overlap,
+the background is the fact and the bible is the ruling; a bible sentence that states a fact
+rather than a constraint belongs in the background.
 
 ### 5. Confirm the series is ready
 
@@ -197,6 +207,145 @@ A **reporter, not a gate** — it never exits non-zero and never mints a certifi
 reuses the same predicates the real gates enforce, so a green checklist lines up with a
 clean `lock-mystery`. Statuses: `ready` / `missing` / `blocked` (present but failing
 validation).
+
+---
+
+## The background layer — `background-history.md`, and its cut
+
+Spec: `docs/superpowers/specs/2026-08-13-background-history-source-layer-design.md`.
+
+You work out a series' town and its people in one long document, written the way you'd
+write anything — the town's history, who these people are, how they fell out, what they're
+hiding. The engine needs the opposite: small files it can hand an agent one at a time,
+because everything loaded taxes every chapter. **You write the one document; a deterministic
+cut makes the small files.** Same shape as `story.md` → `outline.md`, one level up and
+series-wide.
+
+```
+background-history.md   input/series/background-history.md    authored, evolves forever
+    │  deterministic, no LLM — background_cut.py
+    ├─────────────────────────► series/continuity/background/*.md   sliced per chapter
+    └─────────────────────────► config/setting-pack/setting.md      loaded every chapter
+```
+
+There is **one** of these per series and it is never versioned per book. When book 3 changes
+what's true about the town, you edit this file and re-cut. Book 1's earlier state lives in
+git and nowhere else — deliberately, because a per-book background is machinery serving a
+need nobody has.
+
+### Capture — the heading contract
+
+The cut is mechanical because your headings are its contract:
+
+```markdown
+# Pelican's Crook — Background History
+
+## Stance
+Southern Ocean, not tropical: cool, changeable, wind as a constant.
+The town is ordinary to locals, strange to the protagonist.
+
+## Town
+### The Wheelhouse becomes the symbolic centre
+### Tourism: the thing everyone resents and needs
+
+## Characters
+### Maggie — the woman who rebuilt without erasing herself
+
+## Relationships
+### Maggie and Cal
+
+## Secrets
+### The real Marion Wexler
+```
+
+- **`## Stance` is required**, and it is the one part you write *compactly*. It becomes the
+  setting pack verbatim — loaded on every chapter of every book, and hard-truncated at 2,500
+  characters on the LM Studio path. Everything else can run as long as you like.
+- The four Part headings are each optional. An absent one cuts nothing.
+- Every `###` under a Part becomes one entry, body copied **verbatim**. The cut never
+  rewrites your prose.
+- Prose sitting directly under a `##`, before the first `###`, is **reference only** — your
+  connective writing, never cut. This is where a paragraph that isn't about any one person
+  can live.
+- Titles slug on the part before the em dash, so `### Maggie — the woman who rebuilt…`
+  becomes `maggie.md`. Relationship titles split on ` and `, sort, and join with `--`, so
+  `Maggie and Cal` and `Cal and Maggie` both produce `cal--maggie` and collide loudly
+  instead of quietly becoming two entries.
+
+**Why `## Stance` is authored and not summarized.** An earlier design had an agent compress
+the town history into the pack. That was cut, along with the approval gate over it.
+Compression is lossy and the loss is *silent*: drop "ordinary to locals, strange to the
+protagonist" and nothing fires — the prose is just slightly worse in every chapter for
+months. So the compression was removed rather than policed. You write the short version
+because you're the one who knows which two sentences matter. It's the same reason nothing
+derives your `## Questions` in `story.md`.
+
+### Cut
+
+```bash
+cd ~/myBooks/your-series
+python3 $PENNY_ENGINE/scripts/background_cut.py
+```
+
+Exit `0` clean, `1` findings, `2` usage or missing source. **Eight blocking findings, no
+waivers** — fix the document or fix the target:
+
+| finding | fires when |
+|---|---|
+| `missing-stance` | no `## Stance`, or its body is empty |
+| `unknown-section` | a `##` that isn't one of the five |
+| `unknown-entry-depth` | a heading deeper than `###` inside a Part |
+| `duplicate-entry` | two titles slug to the same filename |
+| `malformed-relationship` | a Relationships title with no ` and ` |
+| `unslugged-entry` | a title that produces no usable identifier at all |
+| `unstamped-target` | a file sits at a derived path that the cut didn't write |
+| `target-modified-since-cut` | someone hand-edited a derived file |
+
+Plus two advisories that never block and **never delete anything**: `orphan-derived` (a
+derived file whose section you removed — it still loads into packets until you delete it)
+and `stale-setting-pack` (another `*.md` loitering in `config/setting-pack/`, which the LM
+Studio drafter reads alongside the real one).
+
+The last two findings are the same guard from two directions. Every derived file carries
+`cut_output_sha256` of its own body, so **re-cutting is free while nothing has been touched,
+and refuses the moment something has.** An *absent* stamp is a refusal too, not a licence: a
+file with no stamp was never produced by a cut, so it's your writing, and adopting the layer
+means deleting it yourself.
+
+### What the cut never writes
+
+Three things, each because it already has an owner:
+
+- **`series/continuity/characters/`** — `ledger-updater` writes these after every finalized
+  chapter. Background entries get their own directory so a re-cut can never clobber what the
+  books established. Both load together when a chapter names someone.
+- **`series/continuity/canon-core.md`** — promotion to canon-core is your act, not a
+  derivation. It's loaded every chapter forever.
+- **`series/whodunit/book-NN.yaml`** — per book, and sealed by the lock. Your `## Secrets`
+  say what's *true*; the ledger says what this book plants and when. Define a secret once
+  in the background, then let each book's ledger reference it.
+
+### Consume
+
+| Where | Gets what | How |
+|---|---|---|
+| `packet_assemble.py` | background entries the chapter names, plus one hop through their links | joins the existing continuity slice — same trigger as `characters/` |
+| `drafter`, `chapter-cutter`, `outline-expander`, `developmental-editor` | `config/setting-pack/setting.md` | direct read, declared in each agent's `Inputs:` |
+| `story-author` | the stance block, plus entries for the strands in its beat range | a slice, never the whole background |
+| `plot-proposer` | the stance block | — |
+| `draft-chapter-lmstudio` | the setting pack, inlined into every scene prompt | 2,500-char cap |
+
+**The setting pack is deliberately not embedded in the packet.** The packet carries what
+varies per chapter and stamps `built_from_*` on it; setting is global and constant, so
+embedding it would make every packet in the book stale on a one-line edit. The continuity
+slice is in the packet, the voice and genre packs aren't — setting belongs on that second
+side.
+
+**Linking, and the one thing to watch.** A relationship entry links to both its people, and
+each person links back to the relationships they're in. That's what makes relationships
+reachable at all — `cal--maggie` never appears in anyone's prose, so it can only arrive by
+one hop from a character. The cost is that naming a protagonist pulls every relationship
+she's in, so **keep relationship entries short** — they're the entries most often loaded.
 
 ---
 
@@ -815,6 +964,11 @@ when the ledger declares none).
 
 `scripts/packet_assemble.py NN MM` and `scripts/map_check.py NN MM` are `/map-chapter`'s two
 deterministic halves — see "Map the chapter" above.
+
+`scripts/background_cut.py` (no arguments, run from the series root) cuts
+`input/series/background-history.md` into `series/continuity/background/` and the derived
+`config/setting-pack/setting.md` — see "The background layer" above. Eight blocking
+findings, two advisories, exit 0/1/2.
 
 `scripts/review_gate.py` owns the panel DECISION: `PASS` iff zero blockers, else `HOLD`. It
 writes `ch-MM.gate.md` and prints `GATE: PASS|HOLD`. **Exit 0 means the gate *evaluated***
