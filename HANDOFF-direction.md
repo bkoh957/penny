@@ -368,3 +368,144 @@ a second community track and the romance thread starves while every row still lo
   mis-named* finding — the repair they name is not the repair you need. `CLOSING_KINDS` is
   an engine constant while its threshold is genre-resolved, which will want a `[DECISION]`
   when the thriller pack lands.
+
+---
+
+# Session append — 2026-08-13 | Type: diagnostic → brainstorm → spec → plan → build (shipped, merged, pushed)
+
+> **Stream note.** Another feature build requested mid-stream. **Nothing in the direction
+> analysis above was actioned and nothing above is superseded.** The five options are still
+> unchosen, the PRD's Goals and Success Metrics are still stale, and Gate 3 — *would this
+> person do this* — is still unbuilt and still the highest-value thing in the record.
+
+## What started it
+
+The showrunner asked how the setting/background config is actually consumed. Tracing it
+found two failures pointing opposite ways:
+
+- **`config/setting-pack/coastal-victoria-au.md` is stale by two names.** 837 bytes, last
+  edited 8 July, describing a town called **Wreckers Bluff** and a protagonist called
+  **Cora**. The series is Pelican's Crook and Maggie. Five consumers read it.
+- **`input/series/town-and-character-history.md` is read by nothing.** 72KB, edited 11
+  August, actively maintained. Zero references in `scripts/`, `commands/`, `agents/`.
+
+So the file that was wrong was wired in, and the file that was right was orphaned.
+`readiness_check.py` reported READY and was correct to — it verifies a setting `*.md`
+exists, never what is in it, because the engine is location-agnostic by rule. **No
+deterministic check can catch this class of drift**, which is why the fix had to be
+making the pack *derived* rather than adding a checker.
+
+Also found, unfixed: **`input/book 01/materials.md`** — 42KB, directory name uses a
+**space** not a hyphen, so nothing reads it (`plot_stage.py` looks in `input/book-01/plot/`).
+
+## How the setting pack actually reaches agents (the answer to the original question)
+
+Two mechanisms, and it travels by the weaker one.
+
+| Stage | Reads it? | How |
+|---|---|---|
+| `story-author`, `plot-proposer`, `mystery-planner` | **No** | — |
+| `chapter-cutter` | Yes | named in `Inputs:`, agent reads it itself |
+| **`packet_assemble.py`** | **No** | setting is not in the packet |
+| `map-maker` | No | reads the packet only |
+| `drafter` (Claude) | Yes | named in `Inputs:` |
+| `drafter` (LM Studio) | Yes | pasted into **every scene prompt**, 2,500-char cap |
+| `developmental-editor` | Yes | via `developmental-craft.md:30` |
+
+**The packet does not carry setting.** The drafter gets it only because its agent file says
+to go read it — an instruction, not a contract. That asymmetry is why the new layer puts
+background *entries* in the packet but deliberately leaves the *pack* a direct read.
+
+## What shipped
+
+**The background-history source layer.** One authored series-level document,
+`input/series/background-history.md`, cut deterministically into a flat
+`series/continuity/background/` plus a derived `config/setting-pack/setting.md`.
+
+Spec `docs/superpowers/specs/2026-08-13-background-history-source-layer-design.md`, plan
+`docs/superpowers/plans/2026-08-13-background-history-source-layer.md`. 12 commits, merged
+to `main` at `130b0ac`, **pushed**. **1070 tests pass** (was 1018).
+
+Eight blocking findings — `missing-stance`, `unknown-section`, `unknown-entry-depth`,
+`duplicate-entry`, `malformed-relationship`, `unslugged-entry`, `unstamped-target`,
+`target-modified-since-cut` — no waivers. Two advisories: `orphan-derived`,
+`stale-setting-pack`.
+
+## The design decisions that are not obvious from the code
+
+- **The `## Stance` block is authored, not compressed — and that is what removes the LLM
+  from this layer entirely.** The setting pack is loaded every chapter and truncated at
+  2,500 chars, so no verbatim slice of fourteen town-history sections fits. An earlier
+  draft had an agent compress it behind an approval gate. **Both were cut.** Approval
+  exists in this engine only where a generated artifact would be mistaken for a decision;
+  a compressed pack is a lossy *view* of a decision already made in the source, so a gate
+  bought nothing and added showrunner touch on every re-cut. But removing the gate left
+  what the gate covered for — silent lossy compression, the same failure class as the
+  2026-08-04 fan-read leak. **So the compression was removed instead of gated.** Same move
+  as `## Questions` in `story.md`: the author writes it once, the machine copies it.
+- **Background gets its own directory rather than a section inside `characters/`.**
+  `ledger-updater` already writes those files after every finalized chapter, so a re-cut
+  would clobber its accumulated record. Separate homes is the only option under which
+  re-cutting stays free forever, and it keeps the two kinds of knowledge distinct:
+  background is what the showrunner decided, the ledger is what the books put on the page.
+  When they disagree that should be visible, not silently resolved by whoever ran last.
+- **Flat, not nested.** `packet_assemble.py` walks a fixed subdir allowlist with a flat
+  `*.md` glob, so `background/characters/…` would have been invisible. `kind` lives in the
+  `canon-meta` header instead of the path.
+- **`## Secrets` never touches the whodunit ledger.** That ledger is per-book and gets
+  sealed; the background is series-level and never freezes. Background says what is true;
+  the ledger says what this book plants and when. Accepted cost: renaming a secret does not
+  check that book-01's ledger still agrees.
+- **`unslugged-entry` was added as an eighth finding against the plan's own "seven, do not
+  add an eighth" constraint.** A `###` title of pure punctuation or non-Latin script slugged
+  to `""` and the entry *vanished silently with exit 0*. It was not folded into
+  `malformed-relationship` because a Town or Secrets entry would then report a relationship
+  defect — the mis-named-finding lesson from 2026-08-12.
+
+## Two pre-existing defects found on the way
+
+1. **`penny_meta.parse_canon_meta` truncated multi-element lists.** It split its header on
+   bare commas, so `links: [a, b]` parsed as `[a` and the rest was lost. Only
+   single-element lists had ever been exercised. `_split_top_level` already existed for
+   exactly this and is used by `parse_canon_sections`. Fixed (`f62fb3b`).
+2. **My own spec §8 was wrong and the final review caught it.** It claimed the cut would
+   *refuse* the stale `coastal-victoria-au.md`. It never could — `target_refusal` only sees
+   paths the cut is about to write. Meanwhile `lmstudio_draft_chapter.py` concatenates
+   **every** `*.md` in `config/setting-pack/` into the prompt, so the stale town kept
+   reaching the drafter. Now named by the `stale-setting-pack` advisory.
+
+## Series work (separate repo, pushed)
+
+**Elspeth has a continuity entry** — `series/continuity/characters/elspeth.md`, commit
+`b2f9659`, pushed. She is named 11 times in `story.md` and had none, so nothing loaded for
+her. Facts extracted from `series-bible.md`, the town history and her own beats; nothing
+invented. Verified against the real slice: naming her pulls George, Lisa and Tara/Marion.
+
+**Her header is the `canon-meta` comment form, unlike her eight frontmatter siblings** —
+see the next section for why that matters.
+
+## Watch out for
+
+- **One-hop linking has never fired for any of the eight original characters.** They use
+  YAML frontmatter; `packet_assemble` reads entries with `parse_canon_meta`, which only
+  recognises the comment form, so their `links:` is invisible. It is dead config that looks
+  live. `elspeth.md` is currently the only character in the series whose links work.
+  Converting the other eight is mechanical and would make the graph live for the whole cast
+  — deliberately out of the spec's scope, not done.
+- **`built_from_background` is a stamp with no reader.** Every other `built_from_*` in the
+  engine has a gate (`map_check`'s `stale-map`, `packet_assemble`'s `stale_packets`,
+  `plot_stage`'s stage staleness). This one does not, so a derived tree that has fallen
+  behind an edited source is invisible: you would draft against a version of the background
+  you had already replaced, with every artifact looking healthy. Re-cutting after an edit is
+  discipline, not enforcement. Cheapest real fix is a `/book-status` row, **not** a
+  `preflight draft` refusal — a background edit should not be able to block a draft.
+- **The series migration has NOT been done.** `background-history.md` does not exist yet;
+  the file is still `town-and-character-history.md`, still has no `## Stance`, and the
+  headings are not yet conformed. `coastal-victoria-au.md` is still on disk and still
+  reaching the LM Studio drafter. Spec §8 has the four steps.
+- **`input/book-01/cut-plan.proposed.md` is still uncommitted** in the series repo — the
+  showrunner's own in-progress editing, untouched this session.
+- **`HANDOFF-story.md` is badly out of date** — it says book 01 has 19 blocking findings
+  (cleared) and `story_cut.py` has sixteen (it has twenty-three). Read it as history only.
+- **Nothing in the direction analysis at the top of this file has been actioned**, and three
+  build sessions have now been appended beneath it. That gap is itself worth a decision.
