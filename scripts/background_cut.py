@@ -129,6 +129,12 @@ def check_background(parsed: dict) -> dict:
                 f"malformed-relationship: `### {e['title']}` has no ` and ` "
                 f"separator")
             continue
+        if e["slug"] == "":
+            blocking.append(
+                f"unslugged-entry: `### {e['title']}` produced no usable "
+                f"identifier — give it a title with at least one letter or "
+                f"digit")
+            continue
         if e["slug"] in seen:
             blocking.append(
                 f"duplicate-entry: `### {e['title']}` and "

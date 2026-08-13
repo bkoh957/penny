@@ -1,6 +1,9 @@
 from pathlib import Path
 
+import pytest
+
 from scripts import background_cut as bc
+from scripts import penny_meta
 
 SOURCE = """# Pelican's Crook — Background History
 
@@ -161,7 +164,20 @@ def test_duplicate_across_parts_collides():
     assert any(f.startswith("duplicate-entry:") for f in found)
 
 
-from scripts import penny_meta
+def test_unslugged_entry_from_punctuation_title():
+    """A title that is pure punctuation slugs to `""` — must not vanish silently."""
+    found = _blocking("## Stance\nx\n\n## Town\n\n### !!!\nbody\n")
+    assert any(f.startswith("unslugged-entry:") and "!!!" in f for f in found)
+
+
+def test_unslugged_entry_precedes_duplicate_bookkeeping():
+    """Two empty-slug titles must not collide as duplicate-entry — each is its
+    own unslugged-entry finding, reported before the seen-slug dict is touched."""
+    found = _blocking(
+        "## Stance\nx\n\n## Town\n\n### !!!\na\n\n### ???\nb\n")
+    assert any(f.startswith("unslugged-entry:") and "!!!" in f for f in found)
+    assert any(f.startswith("unslugged-entry:") and "???" in f for f in found)
+    assert not any(f.startswith("duplicate-entry:") for f in found)
 
 
 def _built(text):
