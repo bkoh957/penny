@@ -27,7 +27,17 @@ from scripts.penny_wiring import (CHAPTER_RE, FIELD_RE, HEADING_RE, LONG_FLAG_RE
 STAGE_ORDER = ["premise", "ending", "turning-points", "counterplot",
                "chapters", "weave", "cut", "readback"]
 
-_DROP_FIELDS = {"Because", "Opens", "Closes", "Carries"}
+_DROP_FIELDS = {"Because", "Opens", "Closes", "Carries", "Hook"}
+# Sub-block labels INSIDE an admitted section. `### Reader-Facing Shape` carries
+# two: `Primary anchor:`, which is reader prose and is the reason the section is
+# admitted at all, and `Compress:`, which is drafting instruction addressed to the
+# writer ("Any framing that tells the reader the hour matters... it must read as
+# one"). The outline is a drafting prompt, so that instruction is correct content —
+# it simply must not reach a blind reader who is being measured on what they can
+# work out. Matched case-insensitively on the bare `Label:` line; everything under
+# it is dropped until the next sub-label or section heading.
+_DROP_SUBBLOCKS = {"compress"}
+_SUBBLOCK_RE = re.compile(r"^\s*([A-Za-z][A-Za-z /&'-]*)\s*:\s*$")
 # Case-insensitive WORD-BOUNDARY match; heading text is lower()'d before
 # testing. Word-boundary (not substring) so "solution" doesn't also eat a
 # legitimate "### Resolution" subsection — "re" + "solution" shares no word
@@ -50,9 +60,20 @@ _DROP_FIELDS = {"Because", "Opens", "Closes", "Carries"}
 # someone deliberately admits it. That is what "the blind guarantee is a
 # CONSTRUCTION, not an instruction" has to mean to be worth stating.
 # `chapter structure` is admitted because it already carries field-level
-# protection: Because/Opens/Closes/Carries are dropped by `_DROP_FIELDS` and Hook
-# survives with its question id scrubbed, which is the reader's dramatic question
-# and is meant to reach them. Admitting the section is not admitting its wiring.
+# protection: Because/Opens/Closes/Carries/Hook are all dropped by `_DROP_FIELDS`.
+# Admitting the section is not admitting its wiring.
+#
+# HOOK WAS ADMITTED UNTIL 2026-08-23, prose-only with its question id scrubbed, on
+# the reasoning that the chapter's dramatic question is what a reader carries and
+# is meant to reach them. That was wrong, and it cost real measurements. A Hook
+# line is generated from the author's `## Questions` prose, and that prose names
+# people the reader is not supposed to be thinking about yet. On book 01 eight of
+# them named the culprit, the earliest at chapter 9 while she is still meant to
+# read as furniture: "how much of Marion's helpfulness is also an access system?"
+# The blind fan quoted those lines as the reason they named her — "each chapter's
+# hook line is basically pointing at her by name" — so the suspicion audit built
+# on that read measured the hooks rather than the book.
+# A real reader gets no such line. Neither does the reader's copy now.
 # `setting`, `opening` and `closing` are admitted deliberately (spec 2026-08-12
 # §6.3): setting is what a reader experiences, and the closing line is what
 # put-down risk is actually made of, so hiding it would waste the read-back.
@@ -84,7 +105,7 @@ _QID_TOKEN_RE = re.compile(r"\bq-[a-z0-9][a-z0-9-]*\b")
 # markers. The reader's copy may be over-aggressive about dropping wiring
 # lines; it must never be under-aggressive.
 _WIRING_DROP_RE = re.compile(
-    r"^\s*(?:[-*+]\s*)?\*\*\s*(?:Because|Opens|Closes|Carries)\s*:?\s*\*\*\s*:?",
+    r"^\s*(?:[-*+]\s*)?\*\*\s*(?:Because|Opens|Closes|Carries|Hook)\s*:?\s*\*\*\s*:?",
     re.IGNORECASE,
 )
 # FINDING 1: the shared, strict penny_wiring.TRACK_RE (dash-space bullet,
@@ -405,16 +426,34 @@ def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None,
     out_lines.append("")
     for _num, start, end in emitted:
         skipping = False
+        # An admitted section whose every line turns out to be wiring must not
+        # leave a bare header behind. Since Hook joined _DROP_FIELDS (2026-08-23)
+        # `### Chapter Structure` is wiring-only in current outlines, so without
+        # this the reader's copy carries one empty heading per chapter. Hold an
+        # admitted header back and emit it only when real content lands under it.
+        pending_h3 = None
+        # Sub-block state within an admitted section (see _DROP_SUBBLOCKS).
+        skipping_sub = False
         for line in body[start:end].splitlines():
             h3 = _H3_RE.match(line)
             if h3:
+                skipping_sub = False
                 # Unknown section -> skip. The default must be "drop", or the
                 # next section someone adds upstream unblinds the reader again.
                 skipping = not any(pat.search(h3.group(1).lower())
                                    for pat in _KEEP_SUBSECTION_RES)
                 if skipping:
                     continue
+                pending_h3 = line
+                continue
             elif skipping:
+                continue
+            sub_m = _SUBBLOCK_RE.match(line)
+            if sub_m:
+                skipping_sub = sub_m.group(1).strip().lower() in _DROP_SUBBLOCKS
+                if skipping_sub:
+                    continue
+            elif skipping_sub:
                 continue
             if HEADING_RE.match(line):
                 # A chapter-title flag ("## Chapter 14 — The Reveal
@@ -435,31 +474,24 @@ def readers_copy_text(text: str, *, reveal_chapter: "int | None" = None,
                 field, value = fm.group(1), fm.group(2)
                 if field in _DROP_FIELDS:
                     continue
-                if field == "Hook":
-                    qid, rest = split_id(value)
-                    if not QID_RE.match(qid):
-                        # Malformed wiring (no clean "id — prose" separator):
-                        # don't trust the split, don't leave the raw line in
-                        # place — defensively scrub any bare question-id token
-                        # wherever it falls. Blindness is enforced here, at
-                        # the strip, not by trusting upstream validation ran.
-                        rest = _QID_TOKEN_RE.sub("", value).strip()
-                    line = line[:line.index("**Hook:**") + len("**Hook:**")] + (
-                        f" {rest}" if rest else "")
             elif _WIRING_DROP_RE.match(line):
                 # FINDING 2: non-canonical wiring bullets (asterisk bullet, no
                 # space after the dash, colon outside the bold, no bullet at
                 # all) that FIELD_RE's exact shape misses.
                 continue
             # FINDING 2, belt-and-braces: scrub any surviving question-id
-            # token from EVERY line that reaches the reader, not just the
-            # malformed-Hook branch above. This closes case-drift gaps (e.g.
-            # a lowercase "**hook:**" field, which misses FIELD_RE's exact
-            # case and is deliberately absent from _WIRING_DROP_RE so Hook
-            # prose can survive) by construction rather than by enumerating
-            # every field shape that might carry an id.
+            # token from EVERY line that reaches the reader. This closes
+            # case-drift and spacing gaps (e.g. a "**hook :**" field whose
+            # shape misses both FIELD_RE and _WIRING_DROP_RE) by construction
+            # rather than by enumerating every field shape that might carry
+            # an id.
             line = _QID_TOKEN_RE.sub("", line)
             line = re.sub(r"(?<=\S)[ \t]{2,}", " ", line).rstrip()
+            if pending_h3 is not None:
+                if not line.strip():
+                    continue          # swallow blanks under a not-yet-earned header
+                out_lines.append(pending_h3)
+                pending_h3 = None
             out_lines.append(line)
         out_lines.append("")
     return "\n".join(out_lines).rstrip() + "\n"

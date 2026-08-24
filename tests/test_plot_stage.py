@@ -423,17 +423,20 @@ def test_readers_copy_keeps_story_drops_wiring_and_solution():
     assert "Track Movement" not in out and "**M:**" not in out
 
 
-def test_readers_copy_keeps_hook_prose_without_id():
+def test_readers_copy_drops_the_hook_line_entirely():
+    # Hook was admitted prose-only until 2026-08-23. It is wiring: the line is
+    # generated from the author's `## Questions` prose, which names people the
+    # reader is not meant to be thinking about yet, and no real reader gets one.
     out = readers_copy_text(WIRED_CLEAN.read_text(encoding="utf-8"))
-    assert "the doctor is dead on his own kitchen floor." in out
+    assert "the doctor is dead on his own kitchen floor." not in out
+    assert "**Hook:**" not in out
 
 
-def test_readers_copy_scrubs_malformed_hook_missing_separator():
+def test_readers_copy_drops_malformed_hook_missing_separator():
     # A Hook line that doesn't follow the canonical "id — prose" shape (no
-    # em-dash/hyphen separator between the question id and the prose) must
-    # still lose its question id: the blind guarantee is enforced at the
-    # strip itself, not by trusting that tension_check's broken-hook rule
-    # already rejected malformed wiring before this ever runs.
+    # em-dash/hyphen separator) must go too. Blindness is enforced at the strip
+    # itself, not by trusting that tension_check's broken-hook rule already
+    # rejected malformed wiring before this ever runs.
     text = """---
 book: 01
 total_chapters: 1
@@ -447,7 +450,7 @@ total_chapters: 1
 """
     out = readers_copy_text(text)
     assert "q-" not in out
-    assert "the doctor is dead on his own kitchen floor" in out
+    assert "the doctor is dead on his own kitchen floor" not in out
 
 
 def test_readers_copy_writes_report_file(tmp_path):
@@ -608,9 +611,9 @@ def test_track_drop_does_not_eat_turn_change_row():
     assert "Something happens" in out
 
 
-def test_track_drop_does_not_eat_hook_row():
+def test_hook_row_is_dropped_like_any_other_wiring_row():
     out = readers_copy_text(_track_row_text("- **Hook:** q-a — the doctor is dead."))
-    assert "the doctor is dead" in out
+    assert "the doctor is dead" not in out
 
 
 def test_track_drop_does_not_eat_bolded_prose_without_colon():
@@ -699,11 +702,9 @@ total_chapters: 1
     assert "q-" not in out
 
 
-def test_case_drifted_hook_still_scrubs_question_id():
-    # "hook" (lowercase) misses FIELD_RE's exact case, and Hook is
-    # deliberately excluded from _WIRING_DROP_RE so its prose can survive —
-    # so this line only loses its id via the unconditional belt-and-braces
-    # scrub (FINDING 2), not via either field-shape pattern.
+def test_case_drifted_hook_is_dropped():
+    # "hook" (lowercase) misses FIELD_RE's exact case, so this line is caught
+    # by _WIRING_DROP_RE, which is IGNORECASE and now includes Hook.
     text = """---
 book: 01
 total_chapters: 1
@@ -716,7 +717,7 @@ total_chapters: 1
 """
     out = readers_copy_text(text)
     assert "q-" not in out
-    assert "the doctor is dead" in out
+    assert "the doctor is dead" not in out
 
 
 def test_question_id_in_bare_prose_is_scrubbed_anywhere():
@@ -885,8 +886,8 @@ def test_admitted_sections_survive_so_the_drop_is_not_overreaching():
         "", "### Chapter Structure", "- **Hook:** q-a — who made the vase?"))
     assert "Maggie finds the body at the wheel." in out
     assert "The wrong clay." in out
-    assert "who made the vase?" in out          # Hook prose reaches the reader
-    assert "q-a" not in out                     # ...without its question id
+    assert "who made the vase?" not in out      # ...but the Hook row is wiring
+    assert "q-a" not in out
 
 
 def test_guardrails_section_never_reaches_the_reader():
@@ -1305,3 +1306,61 @@ def test_the_reader_sees_setting_opening_and_closing():
     assert "The kiln door still warm." in out
     assert "the light goes out." in out
     assert "Susan" not in out
+
+
+def test_admitted_section_with_only_wiring_leaves_no_bare_header():
+    # Since Hook joined _DROP_FIELDS, `### Chapter Structure` is wiring-only in
+    # current outlines. An admitted header whose every line is dropped must not
+    # survive on its own, or the blind copy carries one empty heading per
+    # chapter — noise in a document a persona is asked to read as a reader.
+    out = readers_copy_text(_sectioned(
+        "### Chapter Summary", "Maggie finds the body at the wheel.",
+        "", "### Chapter Structure",
+        "- **Hook:** q-a — who made the vase?",
+        "- **Because:** the body is on her wheel."))
+    assert "Maggie finds the body at the wheel." in out
+    assert "### Chapter Structure" not in out
+
+
+def test_admitted_section_header_survives_when_content_survives():
+    # The suppression must not eat a header that still has real content under
+    # it — Turn / Change is not wiring and keeps its section alive.
+    out = readers_copy_text(_sectioned(
+        "### Chapter Structure",
+        "- **Hook:** q-a — who made the vase?",
+        "- **Turn / Change:** She stops waiting for the police."))
+    assert "### Chapter Structure" in out
+    assert "She stops waiting for the police." in out
+    assert "who made the vase?" not in out
+
+
+def test_compress_subblock_never_reaches_the_reader():
+    # `### Reader-Facing Shape` is admitted for its Primary anchor prose, and it
+    # also carries a Compress block that addresses the writer. The outline is a
+    # drafting prompt, so that instruction is correct content — it just must not
+    # reach a blind reader being measured on what they can work out.
+    out = readers_copy_text(_sectioned(
+        "### Reader-Facing Shape",
+        "Primary anchor:",
+        "- Maggie finds the body at the wheel.",
+        "Compress:",
+        "- Any framing that tells the reader the hour matters.",
+        "- It is an hour off, and it must read as one."))
+    assert "Maggie finds the body at the wheel." in out
+    assert "Primary anchor:" in out
+    assert "Compress:" not in out
+    assert "tells the reader the hour matters" not in out
+    assert "it must read as one" not in out
+
+
+def test_subblock_drop_stops_at_the_next_section():
+    # The drop must not run past its own section and eat the next one.
+    out = readers_copy_text(_sectioned(
+        "### Reader-Facing Shape",
+        "Compress:",
+        "- Drafting instruction that must not survive.",
+        "",
+        "### Opening",
+        "- Rourke fills the kettle before he looks at the body."))
+    assert "Drafting instruction that must not survive." not in out
+    assert "Rourke fills the kettle before he looks at the body." in out
