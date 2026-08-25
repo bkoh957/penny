@@ -110,3 +110,22 @@ def test_outline_fan_contract():
     # a reflow (e.g. a line wrap moving the backtick token) still matches but
     # the sentence itself can't be split apart from the token it constrains.
     assert re.search(r"MUST never emit any\s+`\^BLOCKING:`", t)
+
+
+# --- 2026-08-25: the `[type: …]` band flag was plumbed end to end but only
+# `outline-expander` ever proposed one, so every book that came through
+# /plot-book (book 01, all 35 chapters) priced its reveal and its confrontation
+# at band_default. The cutter is the right author: it sees every chapter at
+# once, and the type is a whole-book judgment about shape. ---
+
+def test_chapter_cutter_proposes_a_chapter_type():
+    t = _text("chapter-cutter.md")
+    # the flag rides the proposed heading itself, not a stray mention
+    assert re.search(r"##\s+Chapter\s+01\s+—\s+<title>\s*\[type:\s*<band>\]", t), t
+    # the valid values come from the series' own profile, never a hardcoded list
+    assert "length-profile.md" in t
+    assert "band_" in t
+    # default is encoded by ABSENCE — `band_for` already falls through
+    assert re.search(r"[Nn]ever\s+(?:write|emit)\s+`?\[type:\s*default\]`?", t), t
+    # the parsed key is hyphenated (`final-confrontation`), not underscored
+    assert "final-confrontation" in t

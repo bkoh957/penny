@@ -215,11 +215,14 @@ state; this command never asks you anything a file already answers.
       — it proposes which beats become which chapter, plus the authored
       fields: title, summary, compress line, per-chapter track rows, and
       (spec `2026-08-12-chapter-setting-and-frames-design.md` §3) each
-      chapter's setting ranges, opening, and closing. **It proposes only and
-      writes nothing.**
-   2. Present the proposal. The showrunner edits boundaries, titles,
-      summaries, compress lines, track rows, setting ranges, openings and
-      closings. Save the **approved** plan — and only the approved plan — to
+      chapter's setting ranges, opening, and closing. It also proposes each
+      chapter's `[type: <band>]` flag where the chapter earns a band other
+      than the default — the word band comes from the series'
+      `config/length-profile.md`, and this is the only stage that sees every
+      chapter at once. **It proposes only and writes nothing.**
+   2. Present the proposal. The showrunner edits boundaries, titles, chapter
+      types, summaries, compress lines, track rows, setting ranges, openings
+      and closings. Save the **approved** plan — and only the approved plan — to
       `input/book-$book/cut-plan.md`. A generated file that wrote itself into
       this location would look approved without being approved.
    3. Run the cut:

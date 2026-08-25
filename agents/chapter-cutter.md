@@ -15,7 +15,8 @@ the genre beat sheet, the genre macro-structure, series/whodunit/book-NN.yaml,
 output/book-NN/mystery-solution.md, the series' setting pack under
 config/setting-pack/ (resolved through the config overlay), the union of
 config/story-craft/ (list it with `penny_paths.py resolve-dir story-craft`,
-matching how agents/story-author.md declares it) }`.
+matching how agents/story-author.md declares it), the series' length profile at
+config/length-profile.md }`.
 
 **You propose. You never write.** Emit the cut plan as your message. The showrunner edits
 it and saves the approved version to `input/book-NN/cut-plan.md`. Only the approved file
@@ -50,7 +51,7 @@ is carried through the cut to the drafter, and you neither read it nor act on it
 ## Output format — exactly this
 
 ```markdown
-## Chapter 01 — <title>
+## Chapter 01 — <title> [type: <band>]
 
 - **Beats:** 1-3
 - **Summary:** <one line; this is what the story-at-a-glance view renders>
@@ -84,6 +85,32 @@ kinds each leave the reader holding, and why a run of the same kind goes dead.
 Vary the closing kinds across the book: propose each chapter's kind on its own
 merits, but look back at what the last few chapters closed on before settling
 on this one.
+
+## Chapter type
+
+The `[type: <band>]` flag on the title is how a chapter asks to be priced. It selects a
+word band from the series' `config/length-profile.md`, and everything downstream obeys it
+— the packet's `## Word Budget`, the prose map's scene targets, the line editor.
+
+**Read the valid values off the profile, never from memory.** The profile declares
+`band_default` plus any `band_<type>` overrides the series wants; the flag names the part
+after `band_`, with underscores written as hyphens — `band_final_confrontation` is
+`[type: final-confrontation]`. A type the profile does not declare is silently ignored by
+`band_for`, so an invented one is worse than none: the chapter looks priced and is not.
+
+**`default` is written by leaving the flag off.** Never write `[type: default]` — absence
+already means the default band, and the flag would be noise on most of the book.
+
+**The type is the chapter's job, not its beat count.** A chapter is a `reveal` because the
+answer lands in it, a `final-confrontation` because the book's last pressure is applied in
+it, a `quick` because it is a turn taken at speed. A dense chapter is not automatically a
+big one; a chapter carrying five obligations may still want to be short and hard.
+
+**Decide them together, in one pass over the whole plan.** This is the only stage that
+sees every chapter at once, which is exactly why the decision lives here: typed one at a
+time, three separate chapters each look big enough to be the reveal, and the book ends up
+with three climaxes priced alike. Name the few chapters that carry the book's weight,
+give the rest no flag, and say in your proposal why each flagged chapter earned its band.
 
 `Beats:` takes indices into `story.md`'s beats in order — ranges (`1-3`), lists
 (`4, 6-7`), or both. **Every beat must land in exactly one chapter**; `story_cut.py`
