@@ -346,7 +346,11 @@ unchanged) and one flat `min_scene_words` floor for any scene in the prose map.
 and the floor (`validate_targets`). Legacy v1 keys (`weight_<class>`, `min_<class>_words`)
 are tolerated and ignored, never a hard failure. A profile the engine cannot parse never
 crashes a command: `lock-mystery` records `skipped: overloaded-chapter — …` on the
-certificate and locks; `map_check.py` names which keys are missing.
+certificate and locks; `map_check.py` names which keys are missing. `readiness_check.py`
+reports the profile's schema rather than its mere presence — `blocked` for one it cannot
+parse, and for one still on v1 (`weight_<class>`/`min_<class>_words`) with no
+`min_scene_words`, whose named `no-scene-floor` detail says `starved-scene` is inert
+series-wide until the floor is added.
 
 **Per chapter:** `/draft-chapter NN MM` → `/review-chapter NN MM` (the gate; also dispatches
 the context-rich `developmental-editor` advisory) → `preflight clear-dev NN MM` →

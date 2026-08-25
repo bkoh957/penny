@@ -3,6 +3,13 @@
 ```yaml
 book_target_words: 65000
 book_chapter_count: 24
+
+band_opening:             [1800, 2400]
+band_default:             [2000, 2500]
+band_quick:               [1500, 2000]
+band_reveal:              [2500, 3200]
+band_final_confrontation: [3000, 4000]
+min_scene_words:           250
 ```
 
 ## Chapter-type word-count ranges

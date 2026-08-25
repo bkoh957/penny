@@ -28,6 +28,7 @@ import yaml
 
 from scripts import penny_paths
 from scripts.fairplay_check import check_fairplay, load_fraction
+from scripts.penny_length import parse_profile, schema_note
 from scripts.penny_meta import load, parse_yaml_blocks
 
 REPO = Path(__file__).resolve().parents[1]
@@ -122,6 +123,37 @@ def _review_panel_routing_check(repo_root) -> dict:
                   detail=f"inspectors on '{inspector}', drafter on '{drafting}'")
 
 
+def _length_profile_check(repo_root) -> dict:
+    """Report the profile's SCHEMA, not merely its presence.
+
+    A bare file check called two broken profiles ready: one the engine cannot
+    parse (no `band_default` — every chapter's band is unknown), and one still
+    on schema v1, whose `weight_*` / `min_<class>_words` keys are tolerated and
+    ignored, leaving `starved-scene` inert for the whole series. Both are
+    series-level facts, and until now the only trace of the second was a note in
+    one chapter's `map_check` output.
+    """
+    rel = "config/length-profile.md"
+    path = penny_paths.config_path("length-profile.md", root=repo_root)
+    if not path.is_file():
+        return _check("length-profile", "file", "missing", path=rel)
+    try:
+        profile = parse_profile(path.read_text(encoding="utf-8"))
+    except ValueError as e:
+        return _check("length-profile", "file", "blocked", path=rel, detail=str(e))
+    note = schema_note(profile)
+    bands = f"{len(profile['bands'])} band(s)"
+    if note is None:
+        return _check("length-profile", "file", "ready", path=rel,
+                      detail=f"{bands}, min_scene_words: {profile['min_scene_words']}")
+    # A profile that never declared a floor is exercising an optional key, not
+    # failing a migration — say the check is inert, but do not fail the series
+    # on it. Dead v1 keys beside an absent floor ARE a failed migration.
+    status = "blocked" if profile["legacy_v1_keys"] else "ready"
+    return _check("length-profile", "file", status, path=rel,
+                  detail=f"{bands}; {note}")
+
+
 def _setting_pack_check(repo_root) -> dict:
     """Report the series-authored setting prose pack without hardcoded place names."""
     rel = "config/setting-pack"
@@ -156,7 +188,9 @@ def engine_checks(repo_root=None) -> list[dict]:
     repo_root = repo_root or penny_paths.series_root()
     out = []
     for name, rel, kind, expected_min in ENGINE_CHECKS:
-        if kind == "dir":
+        if name == "length-profile":
+            out.append(_length_profile_check(repo_root))
+        elif kind == "dir":
             out.append(_dir_check(name, rel, expected_min, repo_root))
         else:
             out.append(_file_check(name, rel, repo_root))

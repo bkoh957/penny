@@ -120,3 +120,58 @@ def test_validate_targets_unparseable_target_is_blocking():
     p = penny_length.parse_profile(V2_PROFILE)
     out = validate_targets(p, (2000, 2500), _scenes(None, (2000, 2400)))
     assert any(b.startswith("unparseable-target") for b in out["blocking"])
+
+
+# --- 2026-08-25: a profile can be half-inert and say nothing about it. With
+# no `min_scene_words`, `validate_targets` can never call a scene starved —
+# and a series still carrying the v1 `weight_*` / `min_<class>_words` keys
+# looks like it HAS floors. The only signal was a per-chapter note in
+# map_check output. These pins give the fact a name a series-level reporter
+# can surface. ---
+
+V1_PROFILE = """
+```yaml
+band_default: [2000, 2500]
+weight_anchor: 8
+weight_support: 3
+weight_connective: 1
+min_connective_words: 100
+min_support_words: 250
+```
+"""
+
+
+def test_parse_profile_reports_the_legacy_keys_it_ignored():
+    p = penny_length.parse_profile(V1_PROFILE)
+    assert p["legacy_v1_keys"] == ["min_connective_words", "min_support_words",
+                                   "weight_anchor", "weight_connective",
+                                   "weight_support"]
+
+
+def test_the_v2_floor_is_never_mistaken_for_a_legacy_min_key():
+    # `min_scene_words` matches the v1 `min_<class>_words` shape and must not
+    # be reported as a key the engine ignores — it is the whole v2 schema.
+    p = penny_length.parse_profile(V2_PROFILE)
+    assert p["legacy_v1_keys"] == []
+
+
+def test_schema_note_names_the_inert_check_and_the_dead_keys():
+    note = penny_length.schema_note(penny_length.parse_profile(V1_PROFILE))
+    assert note.startswith("no-scene-floor:")
+    for phrase in ("min_scene_words", "starved-scene", "schema v1",
+                   "weight_anchor", "min_support_words"):
+        assert phrase in note, phrase
+
+
+def test_schema_note_is_silent_on_a_v2_profile():
+    assert penny_length.schema_note(penny_length.parse_profile(V2_PROFILE)) is None
+
+
+def test_schema_note_on_a_floorless_profile_does_not_cry_schema_v1():
+    # No floor and no legacy keys: starved-scene is still inert, but nothing
+    # here failed to migrate — the note must say the first and not the second.
+    note = penny_length.schema_note(
+        penny_length.parse_profile("```yaml\nband_default: [2000, 2500]\n```"))
+    assert note.startswith("no-scene-floor:")
+    assert "starved-scene" in note
+    assert "schema v1" not in note

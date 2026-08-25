@@ -729,6 +729,14 @@ numbers add up — they must sum inside the chapter's band, and no scene may pri
 and ignored** — a profile written for the old brief compiler keeps working, it just gets no
 opinion from those keys any more.
 
+`scripts/readiness_check.py` reports the profile's **schema**, not just its presence. A
+profile it cannot parse comes back `blocked` naming the missing keys; so does one still
+carrying the v1 keys with no `min_scene_words` — `no-scene-floor`, because until you add
+the floor, `starved-scene` can never fire for any scene in any chapter of the series, while
+the dead `weight_*` lines still read like pricing guidance. A profile that simply never
+declared a floor stays `ready` and says the check is inert: the key is optional, and
+nothing there failed to migrate.
+
 ### The lock, and your override
 
 `preflight.py lock-mystery NN` now validates **fairplay + lexicon + tension** and mints the

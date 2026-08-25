@@ -227,3 +227,67 @@ def test_review_rubrics_union_across_tiers_not_shadowed_by_genre_pack(tmp_path):
 
     check = _by(readiness_check.engine_checks(repo_root=tmp_path), "review-rubrics")
     assert check["status"] == "ready", check
+
+
+# --- the length profile's own schema (2026-08-25) ----------------------------
+# `length-profile` was a bare presence check: a profile the engine cannot parse
+# at all, or one still on schema v1 whose scene floors are silently ignored,
+# both reported `ready`. A half-inert profile is a SERIES-level fact — the
+# starved-scene check is dead for every chapter of every book — and until now
+# its only trace was one note in one chapter's map_check output.
+
+V1_PROFILE = (
+    "```yaml\n"
+    "band_default: [2000, 2500]\n"
+    "weight_anchor: 8\n"
+    "min_support_words: 250\n"
+    "```\n"
+)
+
+
+def test_length_profile_ready_reports_its_bands_and_floor(tmp_path):
+    _engine_ready(tmp_path)
+    check = _by(readiness_check.engine_checks(repo_root=tmp_path), "length-profile")
+    assert check["status"] == "ready", check
+    assert "min_scene_words" in check["detail"]
+
+
+def test_schema_v1_profile_is_blocked_and_names_what_is_inert(tmp_path):
+    _engine_ready(tmp_path)
+    (tmp_path / "config/length-profile.md").write_text(V1_PROFILE, encoding="utf-8")
+    check = _by(readiness_check.engine_checks(repo_root=tmp_path), "length-profile")
+    assert check["status"] == "blocked", check
+    for phrase in ("no-scene-floor", "min_scene_words", "starved-scene",
+                   "schema v1", "weight_anchor"):
+        assert phrase in check["detail"], phrase
+
+
+def test_a_floorless_v2_profile_is_ready_but_says_the_check_cannot_run(tmp_path):
+    # Nothing failed to migrate here — min_scene_words is optional in the
+    # schema — so the verdict must stay READY while the report still says
+    # starved-scene is inert.
+    _engine_ready(tmp_path)
+    (tmp_path / "config/length-profile.md").write_text(
+        "```yaml\nband_default: [2000, 2500]\n```\n", encoding="utf-8")
+    check = _by(readiness_check.engine_checks(repo_root=tmp_path), "length-profile")
+    assert check["status"] == "ready", check
+    assert "starved-scene" in check["detail"]
+    assert "schema v1" not in check["detail"]
+
+
+def test_unparseable_profile_is_blocked_not_ready(tmp_path):
+    # The pre-band legacy profile (a prose table, no band_* keys): every
+    # chapter's word band is unknown, and readiness used to call it ready.
+    _engine_ready(tmp_path)
+    shutil.copy(REPO / "tests/fixtures/length-profile-legacy.md",
+                tmp_path / "config/length-profile.md")
+    check = _by(readiness_check.engine_checks(repo_root=tmp_path), "length-profile")
+    assert check["status"] == "blocked", check
+    assert "band_default" in check["detail"]
+
+
+def test_missing_profile_is_still_missing(tmp_path):
+    _engine_ready(tmp_path)
+    (tmp_path / "config/length-profile.md").unlink()
+    check = _by(readiness_check.engine_checks(repo_root=tmp_path), "length-profile")
+    assert check["status"] == "missing", check

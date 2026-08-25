@@ -22,11 +22,20 @@ into the chapter's band, and no scene may be priced below the series'
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from scripts.penny_meta import load, parse_yaml_blocks
 
 _BAND_PREFIX = "band_"
+
+# The v1 keys the engine stopped reading (spec 2026-07-18 §6): per-class
+# emphasis weights and per-class word floors. `min_scene_words` — the v2 floor —
+# matches the `min_<class>_words` shape exactly, so it is excluded by name; a
+# schema note that listed the live floor among the dead keys would be worse
+# than no note at all.
+_LEGACY_V1_KEY_RE = re.compile(
+    r"^(?:weight_[a-z0-9_]+|min_(?!scene_words$)[a-z0-9_]+_words)$")
 
 SCHEMA_HINT = (
     "a length-profile needs band_default: [min, max] (plus any band_<type> "
@@ -60,11 +69,39 @@ def parse_profile(text: str) -> dict:
         raise ValueError(f"length-profile: no band_default — {SCHEMA_HINT}")
     floor = cfg.get("min_scene_words")
     return {"bands": bands,
-            "min_scene_words": int(str(floor).strip()) if floor is not None else None}
+            "min_scene_words": int(str(floor).strip()) if floor is not None else None,
+            "legacy_v1_keys": sorted(k for k in cfg if _LEGACY_V1_KEY_RE.match(k))}
 
 
 def load_profile(path) -> dict:
     return parse_profile(load(Path(path)))
+
+
+def schema_note(profile: dict) -> "str | None":
+    """Name the series-level fact that `validate_targets` can only whisper.
+
+    Without `min_scene_words` the starved-scene check is inert for every scene
+    in every chapter of the whole series, and today the only trace of that is a
+    note in one chapter's `map_check` output, read at map time and gone. A
+    profile still carrying the v1 `weight_*` / `min_<class>_words` keys is the
+    sharper case: it LOOKS like it declares floors, and a map-maker handed those
+    numbers prices scenes against a ratio nothing checks.
+
+    Returns None for a profile that declares a floor. One predicate name for
+    both floorless cases — the consequence is identical — with the failed
+    migration named only when the dead keys are actually there.
+    """
+    if profile.get("min_scene_words") is not None:
+        return None
+    legacy = profile.get("legacy_v1_keys") or []
+    note = ("no-scene-floor: the length profile declares no min_scene_words, so "
+            "map_check's starved-scene can never fire — no scene in this series "
+            "can be called too short")
+    if legacy:
+        note += (f"; the profile is still on schema v1 ({', '.join(legacy)}), and "
+                 f"those keys are tolerated and IGNORED — the engine stopped "
+                 f"pricing scenes from emphasis weights (spec 2026-07-18 §6)")
+    return note + ". Add `min_scene_words: <words>` — see README.md, 'The length profile'."
 
 
 def band_for(profile: dict, chapter_type: "str | None") -> tuple[int, int]:
