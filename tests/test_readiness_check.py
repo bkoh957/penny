@@ -131,7 +131,6 @@ def test_book_inputs_all_missing(tmp_path):
     report = readiness_check.check_readiness(book="01", repo_root=tmp_path)
     bi = report["book_inputs"]
     assert _by(bi, "mystery-ledger")["status"] == "missing"
-    assert _by(bi, "chapter-briefs")["status"] == "missing"
     assert _by(bi, "mystery-lock")["status"] == "missing"
     assert report["summary"]["verdict"] == "NOT-READY"
 
@@ -164,15 +163,18 @@ def test_lock_present_ready(tmp_path):
     assert _by(report["book_inputs"], "mystery-lock")["status"] == "ready"
 
 
-def test_briefs_dir_present_ready(tmp_path):
+def test_book_ready_without_briefs_dir(tmp_path):
+    """No series/briefs/ anywhere: the retired brief layer must not hold a book back."""
     _engine_ready(tmp_path)
-    briefs = tmp_path / "series/briefs/book-01"
-    briefs.mkdir(parents=True, exist_ok=True)
-    (briefs / "ch-01-brief.md").write_text("# brief\n", encoding="utf-8")
+    _write_ledger(tmp_path)
+    _write_entities(tmp_path)
+    locks = tmp_path / ".penny/locks"
+    locks.mkdir(parents=True, exist_ok=True)
+    (locks / "book-01.mystery.lock").write_text("book: 01\n", encoding="utf-8")
     report = readiness_check.check_readiness(book="01", repo_root=tmp_path)
-    entry = _by(report["book_inputs"], "chapter-briefs")
-    assert entry["status"] == "ready"
-    assert "1" in entry["detail"]
+    assert not (tmp_path / "series/briefs").exists()
+    assert all(c["status"] == "ready" for c in report["book_inputs"])
+    assert report["summary"]["verdict"] == "READY"
 
 
 # --- pipeline progress (informational) ---------------------------------------

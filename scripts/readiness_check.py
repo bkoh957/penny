@@ -254,18 +254,6 @@ def book_input_checks(book, repo_root) -> list[dict]:
             out.append(_fairplay_check(book, led_rel, repo_root))
             out.append(_entities_check(led, repo_root))
 
-    # chapter briefs directory (per-chapter briefs the drafter consumes).
-    briefs_rel = f"series/briefs/book-{book}"
-    briefs = repo_root / briefs_rel
-    if not briefs.is_dir():
-        out.append(_check("chapter-briefs", "dir", "missing", path=briefs_rel))
-    else:
-        n = len(list(briefs.glob("ch-*-brief.md")))
-        detail = f"{n} brief file(s)"
-        out.append(_check("chapter-briefs", "dir",
-                          "ready" if n else "blocked", path=briefs_rel,
-                          detail=detail if n else "directory present but empty"))
-
     lock_rel = f".penny/locks/book-{book}.mystery.lock"
     out.append(_file_check("mystery-lock", lock_rel, repo_root))
     return out
