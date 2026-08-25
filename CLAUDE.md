@@ -49,7 +49,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (350 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (1101 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -99,6 +99,16 @@ pure stdlib — see the dependency split below.
 `config/setting-pack/` and resolves the genre prose pack from `series.yaml` as
 `config/genre-pack/<genre>.md`. Do not reintroduce hardcoded setting or genre filenames in
 engine code.
+
+Its `book_inputs` tier is for what exists **once, per book, before drafting** — the
+whodunit ledger, the fairplay result, the character entities, the lock. Per-chapter
+artefacts produced *during* the pipeline (packets, maps, drafts) belong to
+`book_status.py`, which already counts them per chapter with separate RUN and PASS
+columns, and which the check's own third tier (`pipeline_progress`) mirrors for the
+summary view. Adding one here would make a book report NOT-READY until every chapter was
+mapped, inverting what the tier is for — that is how the retired `series/briefs/book-NN`
+check (deleted 2026-08-25) came to fail every correctly-configured series for a directory
+`/build-briefs` stopped writing in July.
 
 ## The pipeline
 
