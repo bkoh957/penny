@@ -174,7 +174,14 @@ this level (spec §8): fix the story or the cut plan. Authored guardrails are em
 authoring order**, ahead of the derived
 series-guardrail and reveal-chapter lines; a note shaped like a wiring field or a Track
 Movement row is refused rather than emitted, since the emitted block is parsed line by
-line and authored prose must not be able to forge the cut's own output.
+line and authored prose must not be able to forge the cut's own output. The derived
+reveal-chapter line and the Character Knowledge "not yet known" line are **relative to the
+chapter being emitted**, not constants: before the reveal they read as they always did; the
+reveal chapter is told the solution is revealed there (but keeps the "do not resolve
+before" boundary, which is still true in it); after it, both invert — the solution is known
+since chapter NN, and the guardrail says not to write the mystery as still open. Emitted
+unconditionally, as they were until 2026-08-25, both lines were false in every chapter past
+the reveal, and they are the drafter's instructions.
 
 **Where a chapter happens, and how it opens and closes, are cut-level decisions, not beat
 tags** (spec `docs/superpowers/specs/2026-08-12-chapter-setting-and-frames-design.md`) —

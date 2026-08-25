@@ -496,10 +496,26 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
             f"- [{c}] {ledger.get(c, c)}" for c in clues)
             or "- No ledger clue is scheduled for this chapter.") + "\n")
 
+        # Both reveal-relative lines (here and in Guardrails) must know which
+        # side of the reveal this chapter is on. Emitted unconditionally they
+        # are false in every chapter past `reveal_chapter` — and this block is
+        # the drafter's instruction, so an endgame chapter was being told the
+        # solution is still unknown (OF-122). The two lines take different
+        # boundaries deliberately: the solution IS known in the reveal chapter
+        # (that is what the reveal is), while "do not resolve before ch NN" is
+        # still true in ch NN — it says where the reveal belongs, and it
+        # belongs here.
+        if ch["num"] < reveal_chapter:
+            knowledge = (f"\nNot yet known:\n- The solution, until chapter "
+                         f"{reveal_chapter:02d}.\n")
+        elif ch["num"] == reveal_chapter:
+            knowledge = "\nRevealed here:\n- The solution is revealed in this chapter.\n"
+        else:
+            knowledge = (f"\nKnown from here on:\n- The solution, known since "
+                         f"chapter {reveal_chapter:02d}.\n")
         out.append("### Character Knowledge\nOn the page so far:\n"
                    + "\n".join(f"- {s}" for s in strands_so_far) + "\n"
-                   + f"\nNot yet known:\n- The solution, until chapter "
-                     f"{reveal_chapter:02d}.\n")
+                   + knowledge)
 
         # Scoped to THIS chapter's own beats, never to `seen_strands` — that
         # is a running high-water mark for Character Knowledge, and reusing it
@@ -511,10 +527,17 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
                     or (set(d["strands"]) & mine_strands)
                     or (set(d["jobs"]) & mine_jobs)]
 
+        # Past the reveal the prohibition inverts: the danger is no longer an
+        # early resolution but hedged, pre-reveal prose in the endgame.
+        reveal_line = (
+            f"Do not resolve the mystery before chapter {reveal_chapter:02d}."
+            if ch["num"] <= reveal_chapter else
+            f"The mystery resolved in chapter {reveal_chapter:02d}; "
+            "do not write it as still open.")
         out.append("### Guardrails\n"
                    + "".join(f"- {a}\n" for a in authored)
                    + "- " + guardrails.strip()
-                   + f"\n- Do not resolve the mystery before chapter {reveal_chapter:02d}.\n")
+                   + f"\n- {reveal_line}\n")
 
         wiring = []
         # A question this chapter closes is never also "carried" by it — the

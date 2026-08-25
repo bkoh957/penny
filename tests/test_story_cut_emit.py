@@ -472,3 +472,101 @@ def test_setting_beat_numbers_use_rank_not_offset_for_a_noncontiguous_chapter():
                        reveal_chapter=1, guardrails="g", job_titles={},
                        solution={})
     assert "### Setting\n- Beats 2-3 — the harbour road, dusk\n" in out
+
+
+# --- OF-122: the two reveal-relative lines must know which side they are on ---
+# Every pre-existing fixture reveals in its LAST chapter, so there was no
+# "after" to get wrong. Emitted unconditionally, "the solution is not yet
+# known, until chapter NN" and "do not resolve the mystery before chapter NN"
+# are both false in every chapter past the reveal — and they are the drafter's
+# instructions, so an endgame chapter was being told to hedge.
+
+LATE_REVEAL_STORY = """- Maggie chooses this life.
+  @maggie
+
+- The appointment was altered.
+  @maggie
+
+- Tom names Tara.
+  @tom @tara
+
+- Tara confesses at the wheel.
+  @tara
+"""
+
+LATE_REVEAL_PLAN = """## Chapter 01 — Before
+
+- **Beats:** 1
+- **Summary:** A life chosen.
+- **Compress:** Gallery logistics.
+
+## Chapter 02 — Still Before
+
+- **Beats:** 2
+- **Summary:** The appointment.
+- **Compress:** Procedure.
+
+## Chapter 03 — The Reveal
+
+- **Beats:** 3
+- **Summary:** Tom names her.
+- **Compress:** The drive over.
+
+## Chapter 04 — After
+
+- **Beats:** 4
+- **Summary:** The confession.
+- **Compress:** The paperwork.
+"""
+
+
+def _late():
+    return emit_outline(LATE_REVEAL_STORY, LATE_REVEAL_PLAN, {}, {},
+                        reveal_chapter=3, guardrails="Do not name the culprit early.",
+                        job_titles={}, solution={})
+
+
+def _knowledge(out, num):
+    return parse_packet_sections(chapter_block(out, num))["Character Knowledge"]
+
+
+def test_pre_reveal_chapters_still_carry_both_reveal_lines():
+    out = _late()
+    for num in (1, 2):
+        assert "- The solution, until chapter 03." in _knowledge(out, num)
+        assert "- Do not resolve the mystery before chapter 03." in _guardrails(out, num)
+
+
+def test_the_reveal_chapter_keeps_the_guardrail_and_drops_not_yet_known():
+    # The two lines take different boundaries deliberately. "Do not resolve
+    # before chapter 03" is still true IN chapter 03 — it is a statement about
+    # where the reveal belongs, and the reveal belongs here. "The solution is
+    # not yet known, until chapter 03" is plainly false in chapter 03: this is
+    # the chapter that knows it.
+    out = _late()
+    assert "- Do not resolve the mystery before chapter 03." in _guardrails(out, 3)
+    assert "Not yet known" not in _knowledge(out, 3)
+    assert "revealed in this chapter" in _knowledge(out, 3)
+
+
+def test_post_reveal_chapters_carry_neither_false_line():
+    out = _late()
+    assert "Not yet known" not in _knowledge(out, 4)
+    assert "Do not resolve the mystery" not in _guardrails(out, 4)
+
+
+def test_post_reveal_chapters_are_told_the_solution_is_on_the_page():
+    # Deleting the false lines is the minimum; a chapter whose job is to move
+    # from epiphany to verification needs the true counterpart, or the drafter
+    # is left to infer the knowledge state from the beats alone.
+    out = _late()
+    assert "- The solution, known since chapter 03." in _knowledge(out, 4)
+    assert ("- The mystery resolved in chapter 03; do not write it as still open."
+            in _guardrails(out, 4))
+
+
+def test_an_authored_guardrail_still_precedes_the_derived_ones_after_the_reveal():
+    # The derived series guardrail must keep its place after authored notes
+    # even on the post-reveal branch, where the reveal line changed shape.
+    body = _guardrails(_late(), 4)
+    assert body.index("Do not name the culprit early.") < body.index("The mystery resolved")
