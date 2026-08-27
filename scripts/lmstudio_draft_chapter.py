@@ -76,6 +76,16 @@ def _read_config_digest_or_file(digest_rel: str, fallback_rel: str, repo_root: P
     return _read_optional(penny_paths.config_path(fallback_rel, root=repo_root))
 
 
+#: Files under a resolved pack dir that this digest path never concatenates.
+#: `lmstudio-digest.md` is the digest itself. `reservoir.md` is the texture
+#: reservoir (spec 2026-08-27 §4.1): 150–250 catalogue items that sort before
+#: `setting.md` and would consume the whole 2,500-char setting_pack budget,
+#: truncating away the authored stance the pack exists to carry. The reservoir
+#: reaches the drafter through the chapter's own texture allocation, which is
+#: already in the packet.
+_PACK_SKIP = {"lmstudio-digest.md", "reservoir.md"}
+
+
 def _read_config_pack_for_lmstudio(pack_rel: str, repo_root: Path) -> str:
     """Read a short LM Studio digest for a pack, falling back to the full pack files.
 
@@ -92,7 +102,7 @@ def _read_config_pack_for_lmstudio(pack_rel: str, repo_root: Path) -> str:
     pack_dir = penny_paths.config_path(pack_rel, root=repo_root)
     if pack_dir.is_dir():
         for p in sorted(pack_dir.glob("*.md")):
-            if p.name == "lmstudio-digest.md":
+            if p.name in _PACK_SKIP:
                 continue
             parts.append(f"# {p.name}\n{p.read_text(encoding='utf-8')}")
     return "\n\n".join(parts)

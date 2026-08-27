@@ -210,3 +210,21 @@ def test_lmstudio_command_runs_same_preflight_gate():
     text = Path("commands/draft-chapter-lmstudio.md").read_text(encoding="utf-8")
     assert "scripts/preflight.py" in text and "preflight.py\" draft" in text
     assert "lmstudio_draft_chapter.py" in text
+
+
+# --- Task 2: the reservoir never eats the 2,500-char setting-pack budget ---
+
+def test_reservoir_is_excluded_from_the_lmstudio_setting_pack(tmp_path):
+    from scripts import lmstudio_draft_chapter as ld
+
+    (tmp_path / ".penny").mkdir()
+    pack = tmp_path / "config" / "setting-pack"
+    pack.mkdir(parents=True)
+    (pack / "setting.md").write_text("Southern Ocean, not tropical.\n",
+                                     encoding="utf-8")
+    (pack / "reservoir.md").write_text("- 6am: proving-room warmth.\n" * 400,
+                                       encoding="utf-8")
+
+    text = ld._read_config_pack_for_lmstudio("setting-pack", tmp_path)
+    assert "Southern Ocean, not tropical." in text
+    assert "proving-room warmth" not in text
