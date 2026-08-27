@@ -55,3 +55,28 @@ def test_parse_map_missing_target_is_none_not_crash():
 def test_map_path_shape(tmp_path):
     p = map_path("01", "5", tmp_path)
     assert str(p).endswith("input/book-01/maps/ch-05.md")
+
+
+# --- Task 5: the scene-level Texture field (spec 2026-08-27 §4.2) -----------
+
+def test_parse_map_reads_a_scenes_texture_field():
+    m = parse_map(FIXTURE.read_text(encoding="utf-8"))
+    t = m["scenes"][0]["texture_text"]
+    assert "proving-room warmth" in t
+    assert "Shed roof at 25 knots" in t
+
+
+def test_a_scene_with_no_texture_field_is_none():
+    m = parse_map(FIXTURE.read_text(encoding="utf-8"))
+    assert m["scenes"][1]["texture_text"] is None
+
+
+def test_a_texture_field_does_not_swallow_the_clue_that_follows_it():
+    text = ("## Scene 1 — S\nTarget: 400–500 words\nWeight: anchor\n"
+            "Beats covered: 1\n"
+            "Texture:\nBakery at 6am — proving-room warmth.\n"
+            "Clue:\n[c-altered] the appointment, changed.\n")
+    s = parse_map(text)["scenes"][0]
+    assert "proving-room warmth" in s["texture_text"]
+    assert "[c-altered]" not in s["texture_text"]
+    assert "[c-altered]" in s["clue_text"]

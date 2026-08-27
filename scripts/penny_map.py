@@ -30,7 +30,16 @@ BEATS_COVERED_RE = re.compile(r"^Beats covered:\s*([\d,\s]+?)\s*$",
 # before an INLINE field like `Result: The room laughs.`, not only before a
 # bare `Turn:`-style label line.
 CLUE_FIELD_RE = re.compile(
-    r"^Clue:\s*\n?(.*?)(?=^\w[\w '’-]*:\s*$|^\w[\w '’-]*:\s|\Z|^##\s)",
+    r"^Clue:\s*\n?(.*?)(?=^\w[\w ‘’-]*:\s*$|^\w[\w ‘’-]*:\s|\Z|^##\s)",
+    re.MULTILINE | re.DOTALL)
+# Parallel to CLUE_FIELD_RE in authoring and deliberately NOT parallel in
+# enforcement: a scene’s share of the chapter’s texture allocation (spec
+# 2026-08-27 §4.2). `map_check.py` has no finding for it — texture is a
+# resource the chapter MAY spend, never an obligation it must prove it spent,
+# and an `unscheduled-texture` would put images into competition with beats and
+# clues for the genre beat sheet’s obligation budget.
+TEXTURE_FIELD_RE = re.compile(
+    r"^Texture:\s*\n?(.*?)(?=^\w[\w ‘’-]*:\s*$|^\w[\w ‘’-]*:\s|\Z|^##\s)",
     re.MULTILINE | re.DOTALL)
 
 
@@ -58,6 +67,8 @@ def parse_map(text: str) -> dict:
         bm = BEATS_COVERED_RE.search(body)
         cm = CLUE_FIELD_RE.search(body)
         clue = cm.group(1).strip() if cm and cm.group(1).strip() else None
+        xm = TEXTURE_FIELD_RE.search(body)
+        texture = xm.group(1).strip() if xm and xm.group(1).strip() else None
         scenes.append({
             "num": int(m.group(1)),
             "title": (m.group(2) or "").strip(),
@@ -66,5 +77,6 @@ def parse_map(text: str) -> dict:
             "beats_covered": [int(x) for x in bm.group(1).replace(",", " ").split()]
                              if bm else [],
             "clue_text": clue,
+            "texture_text": texture,
         })
     return {"stamp": stamp if isinstance(stamp, str) else None, "scenes": scenes}

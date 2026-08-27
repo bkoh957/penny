@@ -72,3 +72,17 @@ def test_no_profile_is_note_not_crash():
     assert any("length profile" in n for n in out["notes"])
     # coverage checks still ran without a profile
     assert not any(b.startswith("dropped-beat") for b in out["blocking"])
+
+
+# --- Task 5: texture is a resource, not a discharge requirement -------------
+
+def test_map_check_has_no_finding_for_texture():
+    # Spec 2026-08-27 §4.2: there is deliberately no `unscheduled-texture`. A
+    # chapter that spends three of four allocated images is correct, not short,
+    # and an image that competed with beats and clues for the beat sheet's
+    # obligation budget would be exactly the wrong kind of win.
+    text = _map_text()
+    assert "Texture:" in text, "fixture ch-05.md should now carry a Texture field"
+    out = check_map(_packet_text(), text, _profile())
+    assert out["blocking"] == []
+    assert not any("texture" in b.lower() for b in out["blocking"] + out["notes"])
