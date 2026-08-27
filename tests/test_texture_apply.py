@@ -103,6 +103,15 @@ def test_a_chapter_with_no_summary_or_compress_anchor_is_refused():
     assert out == cut
 
 
+def test_a_late_no_anchor_discards_the_splices_earlier_chapters_already_got():
+    cut = ("## Chapter 01 — One\n\n- **Summary:** s\n- **Compress:** c\n\n"
+           "## Chapter 02 — Two\n\n- **Beats:** 3\n- **M:** m\n")
+    out, blocking, _ = ta.apply_texture(cut, {1: ["bakery 6am"], 2: ["x"]})
+    assert any(f.startswith("no-anchor:") and "02" in f for f in blocking)
+    assert out == cut                 # chapter 1's splice discarded too
+    assert "bakery 6am" not in out
+
+
 def test_prose_above_the_first_chapter_heading_is_preserved():
     cut = "# Cut plan — book 01\n\nApproved 2026-08-27.\n\n" + CUT
     out, blocking, _ = ta.apply_texture(cut, ta.parse_texture_plan(PLAN))
