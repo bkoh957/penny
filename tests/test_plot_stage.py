@@ -1364,3 +1364,15 @@ def test_subblock_drop_stops_at_the_next_section():
         "- Rourke fills the kettle before he looks at the body."))
     assert "Drafting instruction that must not survive." not in out
     assert "Rourke fills the kettle before he looks at the body." in out
+
+
+# --- Task 4: texture is drafting instruction, never reader-facing -----------
+
+def test_readers_copy_drops_the_texture_section():
+    text = ("## Chapter 01 — T\n\n### Chapter Summary\nShe locks up.\n\n"
+            "### Texture\n- bakery 6am: proving-room warmth\n\n"
+            "### Required Beats\n- She locks up.\n")
+    out = readers_copy_text(text)
+    assert "proving-room warmth" not in out
+    assert "Texture" not in out
+    assert "She locks up." in out

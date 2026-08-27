@@ -177,6 +177,22 @@ def check_story(story_text: str, cut_plan_text: str,
                     f"not begin with **Because:**/**Opens:**/**Closes:**/"
                     f"**Carries:**/**Hook:** or **<letter>:**")
 
+    # Texture items are emitted the same way, one bullet each — same forgery,
+    # same finding. Reusing `wiring-shaped-directive` rather than minting a
+    # texture-specific name is deliberate: the failure is identical, and the
+    # roster stays at twenty-three.
+    for ch in chapters:
+        for item in ch["texture"]:
+            emitted = f"- {item}"
+            if FIELD_RE.match(emitted) or TRACK_RE.match(emitted):
+                blocking.append(
+                    f"wiring-shaped-directive: ch {ch['num']:02d} Texture reads "
+                    f"'{emitted}', which the outline parser would read as a "
+                    f"wiring field or a Track Movement row rather than as prose "
+                    f"— the cut writes those itself. Reword the item so it does "
+                    f"not begin with **Because:**/**Opens:**/**Closes:**/"
+                    f"**Carries:**/**Hook:** or **<letter>:**")
+
     for n, beat in enumerate(beats, 1):
         for slug in beat["strands"]:
             if not SLUG_RE.match(slug):
@@ -477,6 +493,15 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
         out.append("### Reader-Facing Shape\nPrimary anchor:\n"
                    + (f"- {mine[0]['text']}\n" if mine else "")
                    + "\nCompress:\n- " + ch["compress"] + "\n")
+
+        # The positive half of the Compress line above it (spec 2026-08-27
+        # §4.2): what this chapter MAY spend, allocated once across the whole
+        # book so no image is spent twice. A resource, not an obligation —
+        # nothing downstream checks that it was spent, and map_check has no
+        # `unscheduled-texture` on purpose.
+        if ch["texture"]:
+            out.append("### Texture\n"
+                       + "\n".join(f"- {t}" for t in ch["texture"]) + "\n")
 
         if ch["opening"]:
             out.append("### Opening\n" + ch["opening"] + "\n")

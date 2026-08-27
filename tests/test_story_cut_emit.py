@@ -570,3 +570,57 @@ def test_an_authored_guardrail_still_precedes_the_derived_ones_after_the_reveal(
     # even on the post-reveal branch, where the reveal line changed shape.
     body = _guardrails(_late(), 4)
     assert body.index("Do not name the culprit early.") < body.index("The mystery resolved")
+
+
+# --- Task 4: emit ### Texture (spec 2026-08-27 §4.2) ------------------------
+
+TEXTURE_PLAN = """## Chapter 01 — The Life Maggie Chose
+
+- **Beats:** 1-2
+- **Summary:** A life chosen, and the body that ends it.
+- **Compress:** Gallery logistics.
+- **Texture:**
+  - bakery 6am: proving-room warmth, the scorched tray edge
+  - shed roof at 25 knots (plants the ch 29 return)
+- **M:** The murder enters a world just shown.
+
+## Chapter 02 — Competent Doubt
+
+- **Beats:** 3
+- **Summary:** Tom closes the question.
+- **Compress:** Procedure.
+- **M:** The police are right in a way Maggie resents.
+"""
+
+
+def _emit_textured():
+    return emit_outline(STORY, TEXTURE_PLAN, parse_questions(STORY), LEDGER,
+                        reveal_chapter=2, guardrails="Do not name the culprit early.",
+                        job_titles=JOB_TITLES, solution={})
+
+
+def test_texture_items_are_emitted_as_a_bulleted_section():
+    out = _emit_textured()
+    assert ("### Texture\n"
+            "- bakery 6am: proving-room warmth, the scorched tray edge\n"
+            "- shed roof at 25 knots (plants the ch 29 return)\n") in out
+
+
+def test_texture_sits_between_reader_facing_shape_and_required_beats():
+    out = _emit_textured()
+    assert out.index("### Reader-Facing Shape") < out.index("### Texture")
+    assert out.index("### Texture") < out.index("### Required Beats")
+
+
+def test_texture_is_a_packet_section_the_wiring_parser_can_read_back():
+    sections = parse_packet_sections(chapter_block(_emit_textured(), 1))
+    assert sections["Texture"].startswith("- bakery 6am:")
+
+
+def test_a_chapter_with_no_allocation_gets_no_texture_section():
+    block = chapter_block(_emit_textured(), 2)
+    assert "### Texture" not in block
+
+
+def test_a_plan_with_no_texture_anywhere_emits_exactly_what_it_did_before():
+    assert "### Texture" not in _emit()

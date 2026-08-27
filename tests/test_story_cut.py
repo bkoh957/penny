@@ -610,3 +610,42 @@ def test_adoption_is_all_or_nothing_across_the_whole_plan():
     assert len(found) == 2 and all("ch 02" in b for b in found)
     assert any(b.startswith("beat-without-setting:") and "ch 02" in b
                for b in _blocking(plan))
+
+
+# --- Task 4: a texture item may not forge a wiring line ---------------------
+
+# `GOOD_STORY`, `JOBS` and `CLUES` are this file's existing module-level
+# fixtures (top of the file). GOOD_STORY has exactly three beats, so the plan
+# below claims 1-3 and the only findings in play are the ones under test.
+
+def _plan_with_texture(item):
+    return ("## Chapter 01 — One\n\n- **Beats:** 1-3\n- **Summary:** s\n"
+            f"- **Compress:** c\n- **Texture:**\n  - {item}\n")
+
+
+def test_a_texture_item_shaped_like_a_wiring_field_is_refused():
+    r = check_story(GOOD_STORY, _plan_with_texture("**Closes:** q-bogus"),
+                    JOBS, CLUES)
+    assert any("wiring-shaped-directive" in f and "Texture" in f
+               for f in r["blocking"])
+
+
+def test_a_texture_item_shaped_like_a_track_row_becomes_a_real_track_not_a_forgery_hit():
+    # Not the same shape as the FIELD_RE case above, on purpose. `TRACK_RE`
+    # here and `parse_cut_plan`'s own `_CUT_TRACK_RE` are the same pattern
+    # (differ only in named vs. unnamed groups), so an indented
+    # `- **<letter>:**` line nested under Texture is already intercepted and
+    # filed into `ch["tracks"]` before it ever reaches `ch["texture"]` — see
+    # `test_an_indented_track_row_after_texture_is_still_a_track_not_an_item`
+    # in tests/test_penny_story.py, pinned there since Task 3 (5932920). So
+    # there is nothing for THIS guard to catch: the item was never forged
+    # wiring smuggled in as prose, it became a real, honestly-declared track.
+    r = check_story(GOOD_STORY, _plan_with_texture("**M:** the mystery moves"),
+                    JOBS, CLUES)
+    assert not [f for f in r["blocking"] if f.startswith("wiring-shaped-directive")]
+
+
+def test_an_ordinary_texture_item_is_clean():
+    r = check_story(GOOD_STORY, _plan_with_texture("bakery 6am: yeast, warmth"),
+                    JOBS, CLUES)
+    assert r["blocking"] == []

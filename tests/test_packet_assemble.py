@@ -173,3 +173,22 @@ def test_background_entry_loads_when_named(tmp_path, monkeypatch):
     assert "A potter who does not perform fear." in out
     assert "Slow, and neither will name it first." in out
     assert "Not in this chapter." not in out
+
+
+# --- Task 4: the allocation reaches the packet with no packet_assemble code ---
+
+def test_the_packet_carries_the_chapters_texture_allocation(series_tree):
+    # packet_assemble embeds the chapter block VERBATIM, so this needs no code
+    # of its own — pin it so a future refactor cannot quietly drop it.
+    outline_p = series_tree / "input/book-01/outline.md"
+    head, sep, tail = outline_p.read_text(encoding="utf-8").partition("## Chapter 05")
+    assert sep, "fixture outline has no chapter 05"
+    tail = tail.replace(
+        "### Required Beats",
+        "### Texture\n- bakery 6am: proving-room warmth\n\n### Required Beats", 1)
+    outline_p.write_text(head + sep + tail, encoding="utf-8")
+
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+    assert "### Texture" in text
+    assert "bakery 6am: proving-room warmth" in text
