@@ -299,7 +299,7 @@ waivers** — fix the document or fix the target:
 |---|---|
 | `missing-stance` | no `## Stance`, or its body is empty |
 | `unknown-section` | a `##` that isn't one of the six |
-| `unknown-entry-depth` | a heading deeper than `###` inside a Part |
+| `unknown-entry-depth` | a `####` or deeper under an entry Part (not checked inside `## Stance` / `## Reservoir`) |
 | `duplicate-entry` | two titles slug to the same filename |
 | `malformed-relationship` | a Relationships title with no ` and ` |
 | `unslugged-entry` | a title that produces no usable identifier at all |

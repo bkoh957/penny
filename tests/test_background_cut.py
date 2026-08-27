@@ -477,6 +477,17 @@ def test_a_deep_heading_inside_the_reservoir_is_content_not_a_depth_error():
     assert "#### 6am" in parsed["reservoir"]
 
 
+def test_a_deep_heading_inside_the_stance_is_content_too():
+    # Both verbatim parts share one branch; before the reservoir landed, a
+    # `####` here blocked `unknown-entry-depth`. The exemption is deliberate —
+    # the depth rule exists because entries become filenames, and nothing in a
+    # verbatim part does — so pin both halves, not just the reservoir's.
+    text = "## Stance\n### Weather\n#### 6am\n- Southern Ocean, not tropical.\n"
+    parsed = bc.parse_background(text)
+    assert bc.check_background(parsed)["blocking"] == []
+    assert "#### 6am" in parsed["stance"]
+
+
 def test_a_heading_inside_the_stance_is_now_carried_rather_than_dropped():
     text = "## Stance\n### Weather\n- Southern Ocean, not tropical.\n"
     parsed = bc.parse_background(text)
