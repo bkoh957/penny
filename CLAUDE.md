@@ -146,9 +146,9 @@ check (deleted 2026-08-25) came to fail every correctly-configured series for a 
   already settled some other way.
 - `/allocate-texture NN` — optional, after the cut plan is approved and before
   the lock. Allocates the book's sensory texture across every chapter at once.
-  Run after the lock and the lock must be re-minted (`cut-plan.md` is one of the
-  two files whose edit invalidates it), which is why the plot workshop calls it
-  before `readback`.
+  If it is run after the lock, the lock must be re-minted (`cut-plan.md` is one
+  of the two files whose edit invalidates it), which is why the plot workshop
+  calls it before `readback`.
 
 **The source layer (spec `docs/superpowers/specs/2026-08-03-story-source-layer-design.md`):**
 
