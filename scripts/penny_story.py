@@ -182,13 +182,22 @@ def parse_directives(text: str, heading: str) -> list[dict]:
 
 _CUT_CHAPTER_RE = re.compile(r"^##\s+Chapter\s+(?P<num>\d+)\s*[—-]\s*(?P<title>.+?)\s*$")
 _CUT_FIELD_RE = re.compile(
-    r"^\s*-\s+\*\*(?P<key>Beats|Summary|Compress|Setting|Opening):\*\*\s*(?P<val>.*)$")
+    r"^\s*-\s+\*\*(?P<key>Beats|Summary|Compress|Setting|Texture|Opening):\*\*"
+    r"\s*(?P<val>.*)$")
 _CUT_CLOSING_RE = re.compile(
     r"^\s*-\s+\*\*Closing\s*\((?P<kind>[^)]*)\):\*\*\s*(?P<val>.*)$")
 # A setting sub-item: `  - 22-23 — the pottery studio, late afternoon`. The dash
 # separating range from prose is an em dash; a hyphen would be ambiguous against
 # the range's own `22-23`.
 _CUT_SETTING_ITEM_RE = re.compile(r"^\s+-\s+(?P<spec>[\d,\s-]+?)\s+—\s+(?P<val>.*)$")
+# A texture sub-item: `  - bakery 6am: proving-room warmth`. Deliberately BROAD
+# where the setting item pattern is narrow — an allocated image is free prose
+# with no range to anchor on. That breadth is why the texture branch is matched
+# LAST in the loop below, after the closing/field/track patterns: an indented
+# `- **M:** …` must stay a track row, not become an image.
+_CUT_TEXTURE_ITEM_RE = re.compile(r"^\s+-\s+(?P<val>\S.*?)\s*$")
+#: Which cut-plan fields open a nested block, and the chapter key it fills.
+_NESTED_BY_KEY = {"Setting": "settings", "Texture": "texture"}
 _CUT_TRACK_RE = re.compile(r"^\s*-\s+\*\*(?P<letter>[A-Z]):\*\*\s*(?P<val>.*)$")
 _RANGE_RE = re.compile(r"^(\d+)\s*-\s*(\d+)$")
 
@@ -209,23 +218,26 @@ def parse_cut_plan(text: str) -> list[dict]:
     """The showrunner-approved grouping (spec §5.1).
 
     `settings`, `opening` and `closing` are the cut-level record of where a
-    chapter happens and how it lands (spec 2026-08-12). They default empty, so a
-    plan written before that design parses exactly as it always did — adoption is
-    all-or-nothing and `story_cut.check_story` owns that rule, not this parser.
+    chapter happens and how it lands (spec 2026-08-12). `texture` is the
+    cut-level record of what it may SPEND (spec 2026-08-27 §4.2) — the positive
+    half of the `compress` line, allocated once across the whole book. All four
+    default empty, so a plan written before any of those designs parses exactly
+    as it always did — adoption rules live in `story_cut.check_story`, not here.
     """
-    chapters, current, in_setting = [], None, False
+    chapters, current, nested = [], None, None
     for raw in text.splitlines():
         m = _CUT_CHAPTER_RE.match(raw)
         if m:
             current = {"num": int(m.group("num")), "title": m.group("title"),
                        "beats": [], "summary": "", "compress": "", "tracks": {},
-                       "settings": [], "opening": "", "closing": None}
+                       "settings": [], "opening": "", "closing": None,
+                       "texture": []}
             chapters.append(current)
-            in_setting = False
+            nested = None
             continue
         if current is None:
             continue
-        if in_setting:
+        if nested == "settings":
             sm = _CUT_SETTING_ITEM_RE.match(raw)
             if sm:
                 current["settings"].append(
@@ -234,21 +246,31 @@ def parse_cut_plan(text: str) -> list[dict]:
                 continue
         cm = _CUT_CLOSING_RE.match(raw)
         if cm:
-            in_setting = False
+            nested = None
             current["closing"] = {"kind": cm.group("kind").strip().lower(),
                                   "text": cm.group("val").strip()}
             continue
         fm = _CUT_FIELD_RE.match(raw)
         if fm:
             key, val = fm.group("key"), fm.group("val").strip()
-            in_setting = key == "Setting"
+            nested = _NESTED_BY_KEY.get(key)
             if key == "Beats":
                 current["beats"] = _expand_beats(val)
+            elif key == "Texture":
+                # An inline value is a legal one-item allocation. Dropping it
+                # silently would lose an author's line to a formatting choice.
+                if val:
+                    current["texture"].append(val)
             elif key != "Setting":
                 current[key.lower()] = val
             continue
         tm = _CUT_TRACK_RE.match(raw)
         if tm:
-            in_setting = False
+            nested = None
             current["tracks"][tm.group("letter")] = tm.group("val").strip()
+            continue
+        if nested == "texture":
+            im = _CUT_TEXTURE_ITEM_RE.match(raw)
+            if im:
+                current["texture"].append(im.group("val").strip())
     return chapters

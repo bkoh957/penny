@@ -309,3 +309,78 @@ def test_legacy_plan_without_the_fields_gets_empty_defaults():
 def test_a_track_row_is_never_mistaken_for_a_new_field():
     ch = parse_cut_plan(PLAN)[0]
     assert ch["tracks"] == {"M": "the tin surfaces"}
+
+
+# --- Task 3: the cut plan's Texture allocation (spec 2026-08-27 §4.2) --------
+
+TEXTURE_PLAN = """## Chapter 01 — The Life Maggie Chose
+
+- **Beats:** 1-2
+- **Summary:** A life chosen, and the body that ends it.
+- **Compress:** Gallery logistics.
+- **Texture:**
+  - bakery 6am: proving-room warmth, the scorched tray edge
+  - shed roof at 25 knots (plants the ch 29 return)
+- **Setting:**
+  - 1-2 — the pottery studio, late afternoon
+- **Opening:** The kiln is still warm.
+- **Closing (irony):** She locks a door that was never the way in.
+- **M:** The murder enters a world just shown.
+
+## Chapter 02 — Competent Doubt
+
+- **Beats:** 3
+- **Summary:** Tom closes the question.
+- **Compress:** Procedure.
+- **M:** The police are right in a way Maggie resents.
+"""
+
+
+def test_texture_items_are_parsed_in_authoring_order():
+    chapters = parse_cut_plan(TEXTURE_PLAN)
+    assert chapters[0]["texture"] == [
+        "bakery 6am: proving-room warmth, the scorched tray edge",
+        "shed roof at 25 knots (plants the ch 29 return)",
+    ]
+
+
+def test_a_chapter_with_no_texture_field_defaults_to_empty():
+    chapters = parse_cut_plan(TEXTURE_PLAN)
+    assert chapters[1]["texture"] == []
+
+
+def test_texture_nesting_does_not_swallow_the_fields_that_follow_it():
+    chapters = parse_cut_plan(TEXTURE_PLAN)
+    ch = chapters[0]
+    assert [s["text"] for s in ch["settings"]] == ["the pottery studio, late afternoon"]
+    assert ch["opening"] == "The kiln is still warm."
+    assert ch["closing"]["kind"] == "irony"
+    assert ch["tracks"] == {"M": "The murder enters a world just shown."}
+    assert ch["compress"] == "Gallery logistics."
+
+
+def test_an_indented_track_row_after_texture_is_still_a_track_not_an_item():
+    # The item pattern is broad free prose, so the field patterns must win.
+    plan = """## Chapter 01 — T
+
+- **Summary:** s
+- **Texture:**
+  - one image
+  - **M:** the mystery moves
+"""
+    ch = parse_cut_plan(plan)[0]
+    assert ch["texture"] == ["one image"]
+    assert ch["tracks"] == {"M": "the mystery moves"}
+
+
+def test_an_inline_texture_value_is_kept_as_a_first_item():
+    plan = "## Chapter 01 — T\n\n- **Summary:** s\n- **Texture:** one image\n"
+    assert parse_cut_plan(plan)[0]["texture"] == ["one image"]
+
+
+def test_a_plan_written_before_texture_existed_parses_exactly_as_before():
+    plan = "## Chapter 01 — T\n\n- **Beats:** 1-2\n- **Summary:** s\n- **M:** m\n"
+    ch = parse_cut_plan(plan)[0]
+    assert ch["texture"] == []
+    assert ch["beats"] == [1, 2]
+    assert ch["tracks"] == {"M": "m"}
