@@ -90,3 +90,43 @@ def test_plot_book_points_at_the_allocation_between_the_plan_and_the_cut():
 
 def test_map_chapter_tells_the_map_maker_about_texture():
     assert "Texture:" in MAP_CHAPTER.read_text(encoding="utf-8")
+
+
+CLAUDE_MD = Path("CLAUDE.md")
+README = Path("README.md")
+
+
+def test_claude_md_documents_the_texture_layer():
+    t = CLAUDE_MD.read_text(encoding="utf-8")
+    for phrase in ("config/setting-pack/reservoir.md", "/allocate-texture",
+                   "texture_apply.py", "### Texture",
+                   "resource, not an obligation"):
+        assert phrase in t, phrase
+
+
+def test_claude_md_still_claims_twenty_three_story_cut_findings():
+    # The texture layer adds no finding. If this fails, one was added.
+    assert "twenty-three findings" in CLAUDE_MD.read_text(encoding="utf-8")
+
+
+def test_readme_documents_the_reservoir_and_the_allocation():
+    t = README.read_text(encoding="utf-8")
+    for phrase in ("config/setting-pack/reservoir.md", "/allocate-texture"):
+        assert phrase in t, phrase
+
+
+def test_claude_md_test_count_matches_the_suite():
+    import re
+    import subprocess
+    t = CLAUDE_MD.read_text(encoding="utf-8")
+    claimed = int(re.search(r"full suite \((\d+) tests\)", t).group(1))
+    # `-o addopts=""` neutralizes pytest.ini's own `addopts = -q`: stacking that
+    # with this command's `-q` reaches pytest's double-quiet collect-only mode,
+    # which prints per-file counts instead of a "N tests collected" total —
+    # this command would then never find a total to compare against, no matter
+    # what CLAUDE.md claims.
+    out = subprocess.run(["python3", "-m", "pytest", "--collect-only", "-q",
+                          "-o", "addopts="],
+                         capture_output=True, text=True).stdout
+    actual = int(re.search(r"(\d+) tests? collected", out).group(1))
+    assert claimed == actual, f"CLAUDE.md says {claimed}, suite has {actual}"

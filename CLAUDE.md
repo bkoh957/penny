@@ -49,7 +49,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (1115 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (1176 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -144,6 +144,11 @@ check (deleted 2026-08-25) came to fail every correctly-configured series for a 
   cozy-mystery's interactive planner, standalone (showrunner core → `mystery-planner`
   proposal → approve + lock) — for the puzzle alone, when the dramatic outline is
   already settled some other way.
+- `/allocate-texture NN` — optional, after the cut plan is approved and before
+  the lock. Allocates the book's sensory texture across every chapter at once.
+  Run after the lock and the lock must be re-minted (`cut-plan.md` is one of the
+  two files whose edit invalidates it), which is why the plot workshop calls it
+  before `readback`.
 
 **The source layer (spec `docs/superpowers/specs/2026-08-03-story-source-layer-design.md`):**
 
@@ -208,6 +213,25 @@ the quiet default, so the five findings above (`beat-without-setting`,
 `closings.max_same_kind_run` — catches a run of identical closings across the whole book, a
 property no per-chapter check can see.
 
+**What a chapter may SPEND in sensory texture is a cut-level decision too** (spec
+`docs/superpowers/specs/2026-08-27-texture-allocation-design.md`). `cut-plan.md`
+carries a nested `- **Texture:**` block beside `Compress:` — the positive half of
+a line already written, since every compress line says what a chapter must *not*
+render and nothing said what it *does* — and the cut emits `### Texture` into the
+chapter block, from which `packet_assemble` carries it into the packet with no
+code of its own. `/allocate-texture NN` authors it: the `texture-allocator`
+proposes the whole book at once (so no image is spent twice, which is
+construction rather than accounting), the showrunner approves it to
+`input/book-NN/plot/texture.md`, and `scripts/texture_apply.py` splices it into
+the cut plan idempotently, refusing `unknown-chapter` when a boundary has moved
+since. Texture is a **resource, not an obligation**: `map_check.py` gains no
+finding, there is no `unscheduled-texture`, and a chapter that spends three of
+four allocated images is correct, not short — an obligation would put images into
+competition with beats and clues for the genre beat sheet's
+`obligations.max_per_chapter` budget. It adds no `story_cut.py` finding either:
+a texture item shaped like a wiring field is refused by the existing
+`wiring-shaped-directive`, so the roster stays at twenty-three.
+
 What a beat *is* — as opposed to how it is tagged — lives in the config overlay at
 `config/story-craft/`, read as a **directory** so a genre pack can add to it without
 copying it (spec `2026-08-06-dramatic-beat-authoring-design.md`). A beat is a change
@@ -267,10 +291,19 @@ workshop's `readback` stage runs after the cut, against `outline.md` — never a
 **The background layer** (spec `docs/superpowers/specs/2026-08-13-background-history-source-layer-design.md`):
 `input/series/background-history.md` is one authored, series-level document — town
 history, character histories, relationships, secrets — that `scripts/background_cut.py`
-cuts into a flat `series/continuity/background/` and the derived
-`config/setting-pack/setting.md`. The `## Stance` block is **authored, not compressed**:
-the setting pack is loaded on every chapter and truncated at 2,500 chars on the LM Studio
-path, and a lossy compression step would degrade silently. Eight blocking findings —
+cuts into a flat `series/continuity/background/`, the derived
+`config/setting-pack/setting.md`, and the derived
+`config/setting-pack/reservoir.md`. The `## Stance` and `## Reservoir` blocks are
+**authored, not compressed**, and are the two parts carried into a derived file
+verbatim — including their own `###` group headings, which in a catalogue are
+content rather than entry names. The reservoir (spec
+`2026-08-27-texture-allocation-design.md` §4.1) is the town's concrete sensory
+inventory — what the bakery smells like at 6am versus 3pm, what the wind does to
+the shed roof at three strengths — and it is optional: a source with no
+`## Reservoir` writes no file and reports nothing. It is excluded from
+`lmstudio_draft_chapter`'s pack concatenation on purpose, since it would consume
+the whole 2,500-char setting-pack budget and truncate away the stance.
+Eight blocking findings —
 `missing-stance`, `unknown-section`, `unknown-entry-depth`, `duplicate-entry`,
 `malformed-relationship`, `unslugged-entry`, `unstamped-target`,
 `target-modified-since-cut` — no waivers, plus two advisories, `orphan-derived` and

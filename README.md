@@ -225,7 +225,8 @@ series-wide.
 background-history.md   input/series/background-history.md    authored, evolves forever
     │  deterministic, no LLM — background_cut.py
     ├─────────────────────────► series/continuity/background/*.md   sliced per chapter
-    └─────────────────────────► config/setting-pack/setting.md      loaded every chapter
+    ├─────────────────────────► config/setting-pack/setting.md      loaded every chapter
+    └─────────────────────────► config/setting-pack/reservoir.md    the texture reservoir
 ```
 
 There is **one** of these per series and it is never versioned per book. When book 3 changes
@@ -306,6 +307,13 @@ derived file whose section you removed — it still loads into packets until you
 and `stale-setting-pack` (another `*.md` loitering in `config/setting-pack/`, which the LM
 Studio drafter reads alongside the real one).
 
+`## Reservoir` is optional — a source with none writes no `reservoir.md` and reports
+nothing. Like `## Stance` it is carried into its derived file **verbatim, own `###` group
+headings and all**, because in a catalogue those headings are content, not entry names to
+strip. It is excluded from `draft-chapter-lmstudio`'s pack concatenation on purpose: that
+path already truncates the setting pack at 2,500 characters, and the reservoir would eat
+the whole budget and truncate the stance away.
+
 The last two findings are the same guard from two directions. Every derived file carries
 `cut_output_sha256` of its own body, so **re-cutting is free while nothing has been touched,
 and refuses the moment something has.** An *absent* stamp is a refusal too, not a licence: a
@@ -331,9 +339,10 @@ Three things, each because it already has an owner:
 |---|---|---|
 | `packet_assemble.py` | background entries the chapter names, plus one hop through their links | joins the existing continuity slice — same trigger as `characters/` |
 | `drafter`, `chapter-cutter`, `outline-expander`, `developmental-editor` | `config/setting-pack/setting.md` | direct read, declared in each agent's `Inputs:` |
+| `/allocate-texture`, `texture-allocator` | `config/setting-pack/reservoir.md` | direct read — the allocator's raw material; never invents, never spends an image twice |
 | `story-author` | the stance block, plus entries for the strands in its beat range | a slice, never the whole background |
 | `plot-proposer` | the stance block | — |
-| `draft-chapter-lmstudio` | the setting pack, inlined into every scene prompt | 2,500-char cap |
+| `draft-chapter-lmstudio` | the setting pack, inlined into every scene prompt | 2,500-char cap; reservoir excluded |
 
 **The setting pack is deliberately not embedded in the packet.** The packet carries what
 varies per chapter and stamps `built_from_*` on it; setting is global and constant, so
@@ -946,6 +955,7 @@ consensus axis (≥K-of-M via `beta_consensus_k`).
 | `/plan-book <NN>` | series | delegates by genre |
 | `/plan-mystery <NN>` | book | mints the lock |
 | `/scaffold-book <NN> <outline> [--approve]` | book | mints the lock |
+| `/allocate-texture <NN>` | book | optional; run before the lock — editing `cut-plan.md` invalidates it |
 | `/expand-outline <NN> [MM]` | book | requires sealed solution |
 | `/review-outline <NN> [--focus "…"]` | book | **advisory** |
 | `/diagnose-outline <NN>` | book | **read-only** — never writes `outline.md`, never touches a lock |
