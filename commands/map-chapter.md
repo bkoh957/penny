@@ -47,7 +47,10 @@ consumed.** Run from the series folder, after the book is locked.
    parent). It proposes the complete prose map — scene divisions, `Target:`
    ranges, free-text `Weight:` labels, `Beats covered:` lines for every packet
    Required Beat, and every ledger clue id placed in exactly one scene's `Clue:`
-   field.
+   field. When the packet carries a `### Texture` section, it also distributes
+   that allocation across the scenes in a `Texture:` field — a resource the
+   chapter may spend, never an obligation, so `map_check.py` has no finding for
+   it.
 
 4. **Present the proposed map to the showrunner.** The showrunner edits/approves
    — this is a taste call (scene divisions and per-scene word targets are

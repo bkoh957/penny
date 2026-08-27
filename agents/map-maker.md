@@ -28,9 +28,9 @@ of the answer; you never write the file they act on.
 **Inputs:**
 - One chapter's packet — `input/book-NN/packets/ch-MM.md` — in full: the
   outline block (Chapter Purpose, Starting/Ending State, Reader-Facing Shape,
-  Required Beats, Clues and Plants, Character Knowledge, Guardrails, the wiring
-  footer), the merged `## Ledger Clues`, `## Continuity Extracts`, `## Standing
-  Series Guardrails`, and `## Word Budget`.
+  Required Beats, Clues and Plants, Character Knowledge, Guardrails, `###
+  Texture`, the wiring footer), the merged `## Ledger Clues`, `##
+  Continuity Extracts`, `## Standing Series Guardrails`, and `## Word Budget`.
 - Nothing else. No solution file, no other chapter, no prior map, no draft.
 
 **Outputs:**
@@ -67,6 +67,20 @@ of the answer; you never write the file they act on.
   scene's `Clue:` field, worded so the plant reads as ordinary action, not a
   clue announcing itself — carry forward any authored anti-spotlight guidance
   from the packet's Clues and Plants section verbatim in spirit.
+- **Distribute the chapter's `### Texture` allocation across the scenes, in a
+  `Texture:` field.** The packet's Texture section is what this chapter *may*
+  spend — concrete sensory material allocated to it, once, by a pass that saw
+  every chapter at once so that no image is spent twice. Put each item in the
+  scene where it belongs: a location image goes in the scene set there, a motif
+  return goes in the scene it means something in. Write the field like `Clue:` —
+  the field name on its own line, then the guidance beneath it.
+- **Texture is a resource, not an obligation.** Nothing checks it: `map_check.py`
+  has no `unscheduled-texture` and never will. A chapter that spends three of its
+  four allocated items is correct, not short — so place what the scenes actually
+  want and leave the rest. Never invent sensory material the allocation does not
+  carry; a gap belongs in your proposal as a note, not on the page as a new fact
+  about the town. A chapter with no `### Texture` section was allocated nothing
+  and needs no `Texture:` field anywhere.
 - **Price every scene inside the packet's Word Budget band.** The band line
   (`## Word Budget`) is the chapter's total; your scenes' `Target:` ranges
   must sum to a total that fits inside it — not merely each scene individually

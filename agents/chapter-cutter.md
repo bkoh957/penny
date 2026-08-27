@@ -57,6 +57,7 @@ is carried through the cut to the drafter, and you neither read it nor act on it
 - **Summary:** <one line; this is what the story-at-a-glance view renders>
 - **Compress:** <what this chapter should spend few words on — specific to THIS
   chapter, never a standing phrase>
+- **Texture:** — you do NOT write this field. See below.
 - **Setting:**
   - <beat range> — <place, time[, condition]>
   - <beat range> — <place, time[, condition]>
@@ -136,6 +137,16 @@ drafter.
 Write a different one for every chapter. A standing phrase repeated down the book reads
 to the drafter as a vacuum rather than an instruction — that is a live complaint against
 the current outline, and this is where it gets fixed.
+
+## The texture line you do not write
+
+`cut-plan.md` also carries a `- **Texture:**` block — what each chapter *may*
+spend in concrete sensory material, the positive half of your compress line.
+**It is not yours.** It is authored later by `/allocate-texture`, in one pass
+that reads the town's reservoir and every chapter of your approved plan at once,
+so that no image is spent twice. You see one book's structure; that pass sees
+one book's supply. Propose no Texture lines, and do not treat their absence as
+something missing from your plan.
 
 ## What you never do
 

@@ -260,6 +260,15 @@ state; this command never asks you anything a file already answers.
    boundary — never in `story.md`, which carries no setting or frame data to
    fix.
 
+   **Then allocate texture, before you read back.** With the plan approved and
+   the cut clean, run `/allocate-texture $book` — one whole-book pass deciding
+   what each chapter may spend in concrete sensory material, so no image is
+   spent twice and no chapter is left asking the drafter to improvise the town
+   (spec `2026-08-27-texture-allocation-design.md` §4.2). It edits
+   `cut-plan.md` and re-cuts, which is why it belongs here: before the lock, so
+   nothing has to be re-minted. It is optional — a book with no allocation cuts
+   and locks exactly as before — but it is far cheaper here than after.
+
 9. **Stage readback:** a LOOP, not a single pass — read, findings, work them, re-read,
    then lock. The cut above has already run, so `input/book-$book/outline.md` exists.
 

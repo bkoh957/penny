@@ -18,7 +18,7 @@ Does not write ledgers.
   a `Weight:` (free descriptive text — what the scene IS, not an enum), `Beats
   covered:` (which of the packet's Required Beats this scene discharges), and
   whatever open-vocabulary fields it needs (Desire / Pressure / Action / Turn /
-  Result / Clue / …). Write the scenes in the order given.
+  Result / Clue / Texture / …). Write the scenes in the order given.
 - **The packet** — `input/book-NN/packets/ch-MM.md`, alongside the map. This is your
   context: the chapter's outline block (Chapter Purpose, Starting/Ending State,
   Reader-Facing Shape, Required Beats, Clues and Plants, Character Knowledge,
@@ -26,10 +26,15 @@ Does not write ledgers.
   (this chapter's ledger slice — canon-core + the entries the chapter names + their
   one-hop links, already curated for you), Standing Series Guardrails, and the Word
   Budget the map was priced against. When the outline block carries them, `###
-  Setting` (where and when each of its beats happens), `### Opening`, and
-  `### Closing` are also here — the latter two are **instruction, not
-  context**: the chapter opens and lands exactly as they say, not as
-  something you're free to reinterpret in the room.
+  Setting` (where and when each of its beats happens), `### Opening`,
+  `### Closing`, and `### Texture` are also here — the first two of the latter
+  three are **instruction, not context**: the chapter opens and lands exactly as
+  they say, not as something you're free to reinterpret in the room.
+  `### Texture` is what this chapter **may** spend: concrete sensory material
+  allocated to it once, across the whole book, so that no image is spent twice.
+  It is a resource, not a checklist — nothing verifies it reached the page, and
+  a chapter that spends most of it is correct. Where the map assigns items to
+  scenes in a `Texture:` field, follow the map.
 - **The previous chapter's final ~300 words** — from `.final.md`, else `.draft.md`,
   else omitted with a note — so you open in continuity with what the reader just read.
 - When there is no map (the legacy path): the raw `## Chapter NN` outline section
@@ -47,8 +52,10 @@ Does not write ledgers.
     `series/continuity/canon-core.md` + entries named in the section + one-hop links
     (design §4.2) — the packet's Continuity Extracts don't exist to supply it.
 - `config/voice-pack/voice-pack.md`, the active series' setting pack under
-  `config/setting-pack/`, the active genre prose pack under `config/genre-pack/`, and
-  `config/length-profile.md`.
+  `config/setting-pack/` — including `config/setting-pack/reservoir.md`, this
+  town's concrete sensory inventory, which is where your chapter's `### Texture`
+  allocation was drawn from — the active genre prose pack under
+  `config/genre-pack/`, and `config/length-profile.md`.
 - The sealed `output/book-NN/mystery-solution.md` (the whodunit answer key) and this
   book's `reveal_chapter` from `series/whodunit/book-NN.yaml`.
 
@@ -98,6 +105,12 @@ Does not write ledgers.
 
    In every form, the **Track Movement** rows (map/packet: the packet's outline block;
    legacy: the section itself) tell you which threads (M/P/R/B) must visibly advance.
+
+   **Do not invent facts about the town to fill a thin chapter.** If the texture you
+   need is not in the allocation, the reservoir or the setting pack, write the
+   chapter without it and note the gap — an invented one ("the kiln was tested a
+   fortnight ago by an electrician who charged her properly for it") reads fine and
+   breaks later chapters that depended on the opposite.
 2. Honour the fluency stage from canon-core (Book 1 = OUTSIDER: no local idiom in
    narration).
 3. **Write to the map's targets.** If `input/book-NN/maps/ch-MM.md` exists, its per-scene
