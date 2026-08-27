@@ -640,9 +640,26 @@ def test_a_texture_item_shaped_like_a_track_row_becomes_a_real_track_not_a_forge
     # in tests/test_penny_story.py, pinned there since Task 3 (5932920). So
     # there is nothing for THIS guard to catch: the item was never forged
     # wiring smuggled in as prose, it became a real, honestly-declared track.
+    # See the INLINE-form test right below for the other authoring shape,
+    # where the same forgery IS reachable and IS caught.
     r = check_story(GOOD_STORY, _plan_with_texture("**M:** the mystery moves"),
                     JOBS, CLUES)
     assert not [f for f in r["blocking"] if f.startswith("wiring-shaped-directive")]
+
+
+def test_a_texture_item_shaped_like_a_track_row_via_inline_form_is_refused():
+    # The counterpart to the nested-form test above. `- **Texture:** **M:** …`
+    # on ONE line is a different authoring shape: the whole line matches
+    # `_CUT_FIELD_RE` first (key "Texture"), so the value "**M:** the mystery
+    # moves" is captured whole and lands in `ch["texture"]` unintercepted —
+    # `_CUT_TRACK_RE` never gets a look at it, unlike the nested `  - **M:** …`
+    # form. This is the reachable half of the track-row forgery: without this
+    # test, the TRACK_RE branch of the guard has no positive-hit coverage at
+    # all, and a future refactor could drop it silently.
+    plan = ("## Chapter 01 — One\n\n- **Beats:** 1-3\n- **Summary:** s\n"
+            "- **Compress:** c\n- **Texture:** **M:** the mystery moves\n")
+    r = check_story(GOOD_STORY, plan, JOBS, CLUES)
+    assert any(f.startswith("wiring-shaped-directive") for f in r["blocking"])
 
 
 def test_an_ordinary_texture_item_is_clean():
