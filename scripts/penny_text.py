@@ -38,6 +38,20 @@ def _words(text: str) -> list[str]:
     return re.findall(r"[A-Za-z']+", text)
 
 
+def word_count(text: str) -> int:
+    """Words a reader actually reads. One definition, shared: the length bands, the
+    LM Studio length repair, and the draft's own `drafted_words` stamp must agree
+    on what a word is, or a chapter can be short by one counter and not the other.
+
+    Counts prose lines only — a markdown heading is scaffolding, not chapter words
+    (`assemble_book` supplies the `# Chapter N` heading itself, so a stray `## Scene 2`
+    left in a draft must not inflate its length), and scene-break rules and em dashes
+    are punctuation. Hyphenates and contractions count once. Callers strip
+    frontmatter first if they have any."""
+    prose = "\n".join(l for l in text.splitlines() if _is_prose_line(l))
+    return len(re.findall(r"\b[\w’'-]+\b", prose))
+
+
 def segment_sentences(text: str) -> list[str]:
     """Heuristic, dependency-free sentence splitter. Known failure modes: it is a
     heuristic over messy prose; abbreviations outside _ABBREV, nested quotes, and

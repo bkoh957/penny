@@ -95,7 +95,21 @@ edit and commit with `/finalize-chapter`.
    Write its output to `output/book-$book/chapters/ch-$chapter.draft.md` including
    `drafted_by` and `drafted_on: $draft_date` frontmatter.
 
-7. **Clear/advance the marker** when done:
+7. **Stamp the draft's word count** — measured, never asked for. The drafter reports
+   the shortfall it *feels* (`drafted_short:`); the number itself is counted here, so
+   `drafted_words:` in the frontmatter is a fact rather than the drafting model's
+   estimate of its own output:
+
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/draft_words.py" $1 $2
+   ```
+
+   It rewrites the field in place, so re-running after a redraft is safe. The stamp is
+   the *draft's* count and keeps that name through `.lineedit.md` / `.copyedit.md` /
+   `.final.md`, which carry frontmatter forward — the edits cut flab, so the finished
+   chapter runs a little shorter than the number says.
+
+8. **Clear/advance the marker** when done:
 
    ```bash
    echo "book=$book chapter=$chapter stage=DRAFTED" > .penny/current-stage

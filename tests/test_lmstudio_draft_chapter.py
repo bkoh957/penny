@@ -200,6 +200,12 @@ def test_write_draft_stamps_lmstudio_model(tmp_path):
     assert "drafted_on: 2026-07-11" in text
 
 
+def test_write_draft_stamps_the_measured_word_count(tmp_path):
+    (tmp_path / ".penny").mkdir()
+    out = lm.write_draft("01", "03", "One two three four five.", "gemma-4-local", tmp_path)
+    assert "drafted_words: 5" in out.read_text(encoding="utf-8")
+
+
 def test_lmstudio_command_runs_same_preflight_gate():
     text = Path("commands/draft-chapter-lmstudio.md").read_text(encoding="utf-8")
     assert "scripts/preflight.py" in text and "preflight.py\" draft" in text

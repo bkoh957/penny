@@ -56,7 +56,13 @@ Does not write ledgers.
 - `output/book-NN/chapters/ch-NN.draft.md`, with frontmatter `drafted_by: <model>`
   (used by the Phase 3 cross-model set-membership check), `drafted_on: <YYYY-MM-DD>`
   (the draft date, supplied by `/draft-chapter`), and — only when the chapter lands
-  short — `drafted_short: <one-line reason>` (see instruction 3). Frontmatter only:
+  short — `drafted_short: <one-line reason>` (see instruction 3). One more field
+  appears without you: `/draft-chapter` runs `scripts/draft_words.py` after you and
+  stamps `drafted_words: <n>`, measured from your prose. **Never write that field
+  yourself** — a model counting its own words is estimating, and an estimate sitting
+  in frontmatter is indistinguishable from a measurement. Your `drafted_short:` note
+  stays what it is, a report in scenes; the showrunner reads the true count beside
+  it. Frontmatter only:
   never a note in the prose body, since frontmatter is what `assemble_book.py` strips
   before the manuscript is built and the body is not.
 

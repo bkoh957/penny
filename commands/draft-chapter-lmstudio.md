@@ -72,7 +72,8 @@ outputs small scenes instead of complete chapters through `/draft-chapter`.
    - runs a stitch pass to smooth the chapter;
    - runs up to three expansion passes if the draft is under the length-profile minimum;
    - writes `output/book-$book/chapters/ch-$chapter.draft.md` with frontmatter:
-     `drafted_by: lmstudio/<model-id>` and `drafted_on: YYYY-MM-DD`.
+     `drafted_by: lmstudio/<model-id>`, `drafted_on: YYYY-MM-DD`, and
+     `drafted_words: <n>` (counted, same counter as the length repair above).
 
 3. **Verify completion:** the command output prints the path, `drafted_by`, and word count.
    If the script exits non-zero because the draft remains under minimum, do not proceed to

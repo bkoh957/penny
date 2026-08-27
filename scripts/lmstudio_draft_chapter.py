@@ -31,6 +31,7 @@ except ImportError:  # pragma: no cover - requirements.txt includes PyYAML
 
 from scripts import penny_paths
 from scripts.penny_meta import load, parse_yaml_blocks
+from scripts.penny_text import word_count as _word_count
 
 DEFAULT_BASE_URL = "http://localhost:1234/v1"
 MAX_CONTEXT_CHARS = 80_000
@@ -55,7 +56,7 @@ class LengthRange:
 
 
 def word_count(text: str) -> int:
-    return len(re.findall(r"\b[\w’'-]+\b", text))
+    return _word_count(text)
 
 
 def _read_optional(path: Path) -> str:
@@ -539,7 +540,10 @@ def write_draft(book: str, chapter: str, body: str, model: str, repo_root: Path,
     out_dir = penny_paths.output_path(f"book-{book}/chapters", root=repo_root)
     out_dir.mkdir(parents=True, exist_ok=True)
     out = out_dir / f"ch-{chapter}.draft.md"
-    content = f"---\ndrafted_by: {_frontmatter_model(model)}\ndrafted_on: {draft_date}\n---\n\n{body.strip()}\n"
+    prose = body.strip()
+    content = (f"---\ndrafted_by: {_frontmatter_model(model)}\n"
+               f"drafted_on: {draft_date}\n"
+               f"drafted_words: {word_count(prose)}\n---\n\n{prose}\n")
     out.write_text(content, encoding="utf-8")
     return out
 

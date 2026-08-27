@@ -49,7 +49,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (1101 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (1115 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -362,7 +362,12 @@ parse, and for one still on v1 (`weight_<class>`/`min_<class>_words`) with no
 `min_scene_words`, whose named `no-scene-floor` detail says `starved-scene` is inert
 series-wide until the floor is added.
 
-**Per chapter:** `/draft-chapter NN MM` → `/review-chapter NN MM` (the gate; also dispatches
+**Per chapter:** `/draft-chapter NN MM` (which, after the drafter, runs
+`scripts/draft_words.py` to stamp `drafted_words:` beside `drafted_by`/`drafted_on` —
+**counted, never reported by the drafting model**, since a model's estimate of its own
+length is indistinguishable from a measurement once it sits in frontmatter; the field is
+the *draft's* count and carries that name into `.final.md`, which the edits leave a little
+shorter) → `/review-chapter NN MM` (the gate; also dispatches
 the context-rich `developmental-editor` advisory) → `preflight clear-dev NN MM` →
 `/finalize-chapter NN MM [--commit]` (requires `gate: PASS` **and** a clear-dev cert bound
 to the draft's sha256). For local LM Studio models that output reliable short scenes but
