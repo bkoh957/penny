@@ -406,3 +406,79 @@ def test_setting_pack_consumers_name_the_pack():
         body = (REPO / rel).read_text(encoding="utf-8")
         assert "config/setting-pack/" in body, \
             f"{rel} does not reference config/setting-pack/"
+
+
+# --- Task 1: the reservoir is a second verbatim part (spec 2026-08-27 §4.1) ---
+
+RESERVOIR_SOURCE = SOURCE + """
+## Reservoir
+
+### The bakery
+- 6am: proving-room warmth, yeast, the scorched edge of the second tray.
+- 3pm: cooling racks ticking, flour gone to paste in the sink corner.
+
+### Wind on the shed roof
+- 10 knots: a rattle you stop hearing by the second cup.
+- 25 knots: the ridge capping lifts and drops, a slow handclap.
+"""
+
+
+def test_reservoir_is_carried_verbatim_including_its_group_headings():
+    parsed = bc.parse_background(RESERVOIR_SOURCE)
+    assert "### The bakery" in parsed["reservoir"]
+    assert "### Wind on the shed roof" in parsed["reservoir"]
+    assert "6am: proving-room warmth" in parsed["reservoir"]
+
+
+def test_reservoir_groups_are_not_cut_into_background_entries():
+    parsed = bc.parse_background(RESERVOIR_SOURCE)
+    slugs = {e["slug"] for e in parsed["entries"]}
+    assert "the-bakery" not in slugs
+    assert "wind-on-the-shed-roof" not in slugs
+
+
+def test_reservoir_is_not_an_unknown_section_and_blocks_nothing():
+    result = bc.check_background(bc.parse_background(RESERVOIR_SOURCE))
+    assert result["blocking"] == []
+
+
+def test_reservoir_is_written_to_the_setting_pack_with_a_stamp():
+    parsed = bc.parse_background(RESERVOIR_SOURCE)
+    built = bc.build_entries(parsed, "deadbeef")
+    hit = next(b for b in built if b["rel"] == bc.RESERVOIR_REL)
+    assert bc.RESERVOIR_REL == "config/setting-pack/reservoir.md"
+    meta = penny_meta.parse_canon_meta(hit["text"])
+    assert meta["id"] == "reservoir"
+    assert meta["kind"] == "reservoir"
+    assert meta["built_from_background"] == "deadbeef"
+    assert meta["cut_output_sha256"] == bc.body_sha(parsed["reservoir"])
+
+
+def test_a_source_with_no_reservoir_writes_no_reservoir_file():
+    parsed = bc.parse_background(SOURCE)
+    assert parsed["reservoir"] == ""
+    built = bc.build_entries(parsed, "deadbeef")
+    assert all(b["rel"] != bc.RESERVOIR_REL for b in built)
+    assert bc.check_background(parsed)["blocking"] == []
+
+
+def test_reservoir_md_is_part_of_the_setting_pack_contract():
+    # Otherwise every cut would advise `stale-setting-pack` about the file the
+    # cut itself just wrote.
+    assert bc.stale_setting_pack_notes(["config/setting-pack/reservoir.md"]) == []
+
+
+def test_a_deep_heading_inside_the_reservoir_is_content_not_a_depth_error():
+    # The entry-depth rule exists because entries become filenames. Nothing in
+    # a verbatim part does, so its headings are free-form.
+    text = SOURCE + "\n## Reservoir\n\n### The bakery\n#### 6am\n- yeast.\n"
+    parsed = bc.parse_background(text)
+    assert bc.check_background(parsed)["blocking"] == []
+    assert "#### 6am" in parsed["reservoir"]
+
+
+def test_a_heading_inside_the_stance_is_now_carried_rather_than_dropped():
+    text = "## Stance\n### Weather\n- Southern Ocean, not tropical.\n"
+    parsed = bc.parse_background(text)
+    assert "### Weather" in parsed["stance"]
+    assert "Southern Ocean, not tropical." in parsed["stance"]

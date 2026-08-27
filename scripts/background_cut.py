@@ -17,7 +17,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from scripts import penny_meta, penny_paths  # noqa: E402
 
-PART_HEADINGS = ("Stance", "Town", "Characters", "Relationships", "Secrets")
+PART_HEADINGS = ("Stance", "Reservoir", "Town", "Characters", "Relationships",
+                 "Secrets")
+#: Parts carried into a derived file VERBATIM rather than cut into one entry per
+#: `###` heading. Their headings are content, not entry names: the stance is
+#: authored prose the setting pack loads on every chapter (spec 2026-08-13
+#: §3.1), and the reservoir is a grouped catalogue whose group headings — by
+#: location, weather, season, time of day, craft process, social ritual — are
+#: how it is read (spec 2026-08-27 §4.1). Cutting the reservoir into entries
+#: would turn one catalogue into forty continuity files that nothing links to.
+VERBATIM_PARTS = ("Stance", "Reservoir")
 KIND_BY_PART = {
     "Town": "town",
     "Characters": "character",
@@ -51,7 +60,7 @@ def relationship_slug(title: str) -> "str | None":
 
 def parse_background(text: str) -> dict:
     """Split the source on its heading contract (spec §3)."""
-    stance_lines: list[str] = []
+    verbatim: dict = {name: [] for name in VERBATIM_PARTS}
     entries: list[dict] = []
     unknown_parts: list[str] = []
     deep_headings: list[str] = []
@@ -72,8 +81,8 @@ def parse_background(text: str) -> dict:
         if not m:
             if current is not None:
                 buf.append(line)
-            elif part == "Stance":
-                stance_lines.append(line)
+            elif part in verbatim:
+                verbatim[part].append(line)
             continue
 
         level, title = len(m.group("hashes")), m.group("title")
@@ -83,12 +92,19 @@ def parse_background(text: str) -> dict:
             if title not in PART_HEADINGS:
                 unknown_parts.append(title)
             continue
+        if part in verbatim:
+            # A `###`/`####` inside a verbatim part is a group heading in a
+            # catalogue, not an entry that becomes a file — so it is carried,
+            # and the entry-depth rule (which exists because entries become
+            # filenames) does not apply to it.
+            verbatim[part].append(line)
+            continue
         if level >= 4:
             deep_headings.append(title)
             continue
         # level == 3
         flush()
-        if part is None or part == "Stance":
+        if part is None:
             continue
         kind = KIND_BY_PART[part]
         s = relationship_slug(title) if kind == "relationship" else slug(title)
@@ -96,7 +112,8 @@ def parse_background(text: str) -> dict:
 
     flush()
     return {
-        "stance": "\n".join(stance_lines).strip(),
+        "stance": "\n".join(verbatim["Stance"]).strip(),
+        "reservoir": "\n".join(verbatim["Reservoir"]).strip(),
         "entries": entries,
         "unknown_parts": unknown_parts,
         "deep_headings": deep_headings,
@@ -148,6 +165,7 @@ def check_background(parsed: dict) -> dict:
 BACKGROUND_DIR = "series/continuity/background"
 SETTING_PACK_DIR = "config/setting-pack"
 SETTING_PACK_REL = f"{SETTING_PACK_DIR}/setting.md"
+RESERVOIR_REL = f"{SETTING_PACK_DIR}/reservoir.md"
 
 
 def body_sha(text: str) -> str:
@@ -204,6 +222,18 @@ def build_entries(parsed: dict, source_sha: str) -> list[dict]:
             "cut_output_sha256": body_sha(stance),
         }),
     })
+
+    reservoir = parsed.get("reservoir", "")
+    if reservoir:
+        out.append({
+            "rel": RESERVOIR_REL,
+            "text": stamp(reservoir, {
+                "id": "reservoir",
+                "kind": "reservoir",
+                "built_from_background": source_sha,
+                "cut_output_sha256": body_sha(reservoir),
+            }),
+        })
     return out
 
 
@@ -239,7 +269,8 @@ def orphan_notes(existing_rels: list, produced_rels: list) -> list:
 
 
 SETTING_PACK_CONTRACT_FILES = {
-    "setting.md", "lexicon.md", "ai-tics-detection.md", "lmstudio-digest.md",
+    "setting.md", "reservoir.md", "lexicon.md", "ai-tics-detection.md",
+    "lmstudio-digest.md",
 }
 
 
