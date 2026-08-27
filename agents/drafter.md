@@ -27,9 +27,9 @@ Does not write ledgers.
   one-hop links, already curated for you), Standing Series Guardrails, and the Word
   Budget the map was priced against. When the outline block carries them, `###
   Setting` (where and when each of its beats happens), `### Opening`,
-  `### Closing`, and `### Texture` are also here — the first two of the latter
-  three are **instruction, not context**: the chapter opens and lands exactly as
-  they say, not as something you're free to reinterpret in the room.
+  `### Closing`, and `### Texture` are also here — `### Opening` and
+  `### Closing` are **instruction, not context**: the chapter opens and lands
+  exactly as they say, not as something you're free to reinterpret in the room.
   `### Texture` is what this chapter **may** spend: concrete sensory material
   allocated to it once, across the whole book, so that no image is spent twice.
   It is a resource, not a checklist — nothing verifies it reached the page, and

@@ -57,7 +57,7 @@ is carried through the cut to the drafter, and you neither read it nor act on it
 - **Summary:** <one line; this is what the story-at-a-glance view renders>
 - **Compress:** <what this chapter should spend few words on — specific to THIS
   chapter, never a standing phrase>
-- **Texture:** — you do NOT write this field. See below.
+<!-- no Texture line here — see "The texture line you do not write" below -->
 - **Setting:**
   - <beat range> — <place, time[, condition]>
   - <beat range> — <place, time[, condition]>
