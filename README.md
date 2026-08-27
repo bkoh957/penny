@@ -262,12 +262,16 @@ The town is ordinary to locals, strange to the protagonist.
 - **`## Stance` is required**, and it is the one part you write *compactly*. It becomes the
   setting pack verbatim — loaded on every chapter of every book, and hard-truncated at 2,500
   characters on the LM Studio path. Everything else can run as long as you like.
-- The five Part headings are each optional. An absent one cuts nothing.
+- The other five Part headings are each optional. An absent one cuts nothing.
 - Every `###` under a Part becomes one entry, body copied **verbatim**. The cut never
-  rewrites your prose.
-- Prose sitting directly under a `##`, before the first `###`, is **reference only** — your
+  rewrites your prose. The exceptions are `## Stance` and `## Reservoir`, which are
+  carried whole into their derived files — their own `###` headings included, since in
+  a catalogue those headings are content rather than entry names.
+- In the four entry-style Parts (`Town`, `Characters`, `Relationships`, `Secrets`), prose
+  sitting directly under the `##`, before the first `###`, is **reference only** — your
   connective writing, never cut. This is where a paragraph that isn't about any one person
-  can live.
+  can live. `## Stance` and `## Reservoir` have no such split — their whole body, as above,
+  is the content.
 - Titles slug on the part before the em dash, so `### Maggie — the woman who rebuilt…`
   becomes `maggie.md`. Relationship titles split on ` and `, sort, and join with `--`, so
   `Maggie and Cal` and `Cal and Maggie` both produce `cal--maggie` and collide loudly
