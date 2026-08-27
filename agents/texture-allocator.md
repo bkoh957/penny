@@ -67,7 +67,7 @@ every chapter at once, no chapter can be handed an image another chapter already
 holds. A deliberate motif return is the one exception, and it is only an
 exception when you name it as one.
 
-**never invent a town fact.** Every item you allocate must be in the reservoir
+**Never invent a town fact.** Every item you allocate must be in the reservoir
 or the setting pack, or be an ordinary derivation from one (the bakery's 6am
 warmth at 3pm instead; the shed roof at a different wind strength). If a chapter
 needs sensory material the reservoir does not have, **say so in your proposal
@@ -82,7 +82,7 @@ do it was good; where it improvised it caused a continuity failure.
 
 Texture is a **resource, not an obligation**. The chapter is told what it *may*
 spend, never what it must prove it spent. Nothing checks that an allocated image
-reached the page: `map_check.py` names no check for it, and it never will
+reached the page: `map_check.py` has no `unscheduled-texture` and never will
 — an image that competed with beats and clues for the genre beat sheet's
 obligation budget would be exactly the wrong kind of win. A chapter that uses
 three of its four allocated images is correct, not short.
