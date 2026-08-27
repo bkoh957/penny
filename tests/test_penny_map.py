@@ -80,3 +80,25 @@ def test_a_texture_field_does_not_swallow_the_clue_that_follows_it():
     assert "proving-room warmth" in s["texture_text"]
     assert "[c-altered]" not in s["texture_text"]
     assert "[c-altered]" in s["clue_text"]
+
+
+def test_a_field_label_with_an_apostrophe_terminates_the_clue_body():
+    # Regression: CLUE_FIELD_RE's character class must include the STRAIGHT
+    # apostrophe (U+0027), not just the curly right single quote, so an
+    # ordinary open-vocabulary field label such as "Maggie's turn:" still
+    # terminates the preceding Clue: body instead of being swallowed into it.
+    text = ("## Scene 1 — S\nTarget: 400–500 words\nWeight: anchor\n"
+            "Beats covered: 1\n"
+            "Clue:\n[c-altered] the appointment, changed.\n"
+            "Maggie's turn: she looks away.\n")
+    s = parse_map(text)["scenes"][0]
+    assert "Maggie's turn" not in s["clue_text"]
+
+
+def test_a_field_label_with_an_apostrophe_terminates_the_texture_body():
+    text = ("## Scene 1 — S\nTarget: 400–500 words\nWeight: anchor\n"
+            "Beats covered: 1\n"
+            "Texture:\nBakery at 6am — proving-room warmth.\n"
+            "Maggie's turn: she looks away.\n")
+    s = parse_map(text)["scenes"][0]
+    assert "Maggie's turn" not in s["texture_text"]

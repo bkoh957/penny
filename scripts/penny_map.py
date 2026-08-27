@@ -30,7 +30,7 @@ BEATS_COVERED_RE = re.compile(r"^Beats covered:\s*([\d,\s]+?)\s*$",
 # before an INLINE field like `Result: The room laughs.`, not only before a
 # bare `Turn:`-style label line.
 CLUE_FIELD_RE = re.compile(
-    r"^Clue:\s*\n?(.*?)(?=^\w[\w ‘’-]*:\s*$|^\w[\w ‘’-]*:\s|\Z|^##\s)",
+    r"^Clue:\s*\n?(.*?)(?=^\w[\w '’-]*:\s*$|^\w[\w '’-]*:\s|\Z|^##\s)",
     re.MULTILINE | re.DOTALL)
 # Parallel to CLUE_FIELD_RE in authoring and deliberately NOT parallel in
 # enforcement: a scene’s share of the chapter’s texture allocation (spec
@@ -39,7 +39,7 @@ CLUE_FIELD_RE = re.compile(
 # and an `unscheduled-texture` would put images into competition with beats and
 # clues for the genre beat sheet’s obligation budget.
 TEXTURE_FIELD_RE = re.compile(
-    r"^Texture:\s*\n?(.*?)(?=^\w[\w ‘’-]*:\s*$|^\w[\w ‘’-]*:\s|\Z|^##\s)",
+    r"^Texture:\s*\n?(.*?)(?=^\w[\w '’-]*:\s*$|^\w[\w '’-]*:\s|\Z|^##\s)",
     re.MULTILINE | re.DOTALL)
 
 
