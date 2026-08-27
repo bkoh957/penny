@@ -262,7 +262,7 @@ The town is ordinary to locals, strange to the protagonist.
 - **`## Stance` is required**, and it is the one part you write *compactly*. It becomes the
   setting pack verbatim — loaded on every chapter of every book, and hard-truncated at 2,500
   characters on the LM Studio path. Everything else can run as long as you like.
-- The four Part headings are each optional. An absent one cuts nothing.
+- The five Part headings are each optional. An absent one cuts nothing.
 - Every `###` under a Part becomes one entry, body copied **verbatim**. The cut never
   rewrites your prose.
 - Prose sitting directly under a `##`, before the first `###`, is **reference only** — your
@@ -294,7 +294,7 @@ waivers** — fix the document or fix the target:
 | finding | fires when |
 |---|---|
 | `missing-stance` | no `## Stance`, or its body is empty |
-| `unknown-section` | a `##` that isn't one of the five |
+| `unknown-section` | a `##` that isn't one of the six |
 | `unknown-entry-depth` | a heading deeper than `###` inside a Part |
 | `duplicate-entry` | two titles slug to the same filename |
 | `malformed-relationship` | a Relationships title with no ` and ` |
