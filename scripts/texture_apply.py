@@ -47,20 +47,36 @@ def parse_texture_plan(text: str) -> dict:
     A chapter heading with no items yields an empty list rather than vanishing:
     naming a chapter and allocating it nothing is a different statement from not
     naming it, and `apply_texture` reports the two differently.
+
+    A bullet starts an item; a non-blank line that is neither a bullet nor a
+    chapter heading folds into the item currently open, joined by a single
+    space with its own whitespace collapsed. A blank line (or a new chapter
+    heading) closes it. This is the same fold `scripts/penny_story.py`'s
+    `_fold` runs for beats and directives — agents wrap lines, and a wrapped
+    continuation must not silently vanish.
     """
     out: dict = {}
     current = None
+    open_idx = None
     for raw in text.splitlines():
         m = _CHAPTER_RE.match(raw)
         if m:
             current = int(m.group("num"))
             out.setdefault(current, [])
+            open_idx = None
             continue
         if current is None:
             continue
         im = _ITEM_RE.match(raw)
         if im:
             out[current].append(im.group("val"))
+            open_idx = len(out[current]) - 1
+            continue
+        if not raw.strip():
+            open_idx = None
+            continue
+        if open_idx is not None:
+            out[current][open_idx] = f"{out[current][open_idx]} {raw.strip()}"
     return out
 
 

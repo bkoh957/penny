@@ -117,3 +117,34 @@ def test_prose_above_the_first_chapter_heading_is_preserved():
     out, blocking, _ = ta.apply_texture(cut, ta.parse_texture_plan(PLAN))
     assert blocking == []
     assert out.startswith("# Cut plan — book 01\n\nApproved 2026-08-27.\n")
+
+
+def test_a_wrapped_item_folds_into_one_joined_by_a_single_space():
+    # The agent file's own canonical "shed roof" example — hard-wrapped across
+    # two physical lines, the way an agent actually writes prose. The
+    # continuation must fold into the item rather than vanish.
+    plan = (
+        "## Chapter 01\n"
+        "- bakery 6am: proving-room warmth, the scorched edge of the second tray\n"
+        "- shed roof at 25 knots — the ridge capping lifting and dropping (plants the\n"
+        "  ch 29 return)\n"
+    )
+    assert ta.parse_texture_plan(plan) == {
+        1: [
+            "bakery 6am: proving-room warmth, the scorched edge of the second tray",
+            "shed roof at 25 knots — the ridge capping lifting and dropping "
+            "(plants the ch 29 return)",
+        ],
+    }
+
+
+def test_a_blank_line_between_items_still_separates_them():
+    plan = (
+        "## Chapter 01\n"
+        "- bakery 6am: proving-room warmth\n"
+        "\n"
+        "- shed roof at 25 knots\n"
+    )
+    assert ta.parse_texture_plan(plan) == {
+        1: ["bakery 6am: proving-room warmth", "shed roof at 25 knots"],
+    }

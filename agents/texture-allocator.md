@@ -97,8 +97,7 @@ enough that the choices are this town's.
 
 ## Chapter 01
 - bakery 6am: proving-room warmth, the scorched edge of the second tray
-- shed roof at 25 knots — the ridge capping lifting and dropping (plants the
-  ch 29 return)
+- shed roof at 25 knots — the ridge capping lifting and dropping (plants the ch 29 return)
 
 ## Chapter 02
 - quiet — no sensory spend past the room; pressure lands here
