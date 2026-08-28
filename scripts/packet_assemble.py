@@ -45,29 +45,95 @@ def _heading_line(outline_text: str, num: int) -> str:
     return ""
 
 
-_ATX_HEADING_RE = re.compile(r"^(#{1,6})([ \t]+)(.*)$", re.MULTILINE)
+_ATX_HEADING_RE = re.compile(r"^( {0,3})(#{1,6})([ \t]+)(.*)$", re.MULTILINE)
+_SETEXT_UNDERLINE_RE = re.compile(r"^ {0,3}(=+|-+)[ \t]*$")
+_LIST_ITEM_LINE_RE = re.compile(r"^ {0,3}(?:[-*+]|\d{1,9}[.)])(?:[ \t]|$)")
+_BLOCKQUOTE_LINE_RE = re.compile(r"^ {0,3}>")
+_ATX_LINE_RE = re.compile(r"^ {0,3}#{1,6}(?:[ \t]|$)")
+
+
+def _frontmatter_end(lines: list[str]) -> int:
+    """If `lines` opens with a bare `---` delimiter (0-3 space indent) on its
+    very first line, return the index of the line that closes the block
+    (also a bare `---`); else -1. Deliberately narrow — only trusted when
+    the block opens at line 1 — since a continuity entry otherwise starts
+    with a `<!-- canon-meta -->` comment and `canon-core.md` is plain
+    prose/headings; this exists only to keep a hand-authored YAML
+    frontmatter block from being misread as a setext heading pair (the
+    `key: value` line immediately above the closing `---` looks exactly
+    like setext-heading text otherwise)."""
+    if not lines or lines[0].strip() != "---":
+        return -1
+    for i in range(1, len(lines)):
+        if lines[i].strip() == "---":
+            return i
+    return -1
+
+
+def _convert_setext_headings(text: str, offset: int, max_level: int) -> str:
+    """Rewrite setext headings (a non-blank text line followed by a line of
+    only `=` or only `-`) into demoted ATX form, at the same depth the ATX
+    path would land an equivalent `#`/`##` heading — spec
+    2026-08-27-packet-extract-heading-collision-fix.md follow-up. Deliberately
+    conservative: a `---`/`===` that could be a thematic break, YAML
+    frontmatter delimiter, or that follows a list item / blockquote / ATX
+    heading is never converted — those are real, common shapes in hand-authored
+    canon and getting one wrong corrupts authored text, which is worse than a
+    narrow reopening of the original bug."""
+    lines = text.split("\n")
+    fm_end = _frontmatter_end(lines)
+    out: list[str] = []
+    i = 0
+    n = len(lines)
+    while i < n:
+        if i <= fm_end:
+            out.append(lines[i])
+            i += 1
+            continue
+        line = lines[i]
+        if i + 1 < n and line.strip():
+            m = _SETEXT_UNDERLINE_RE.match(lines[i + 1])
+            if (m and not _LIST_ITEM_LINE_RE.match(line)
+                    and not _BLOCKQUOTE_LINE_RE.match(line)
+                    and not _ATX_LINE_RE.match(line)):
+                level = 1 if m.group(1)[0] == "=" else 2
+                new_level = min(level + offset, max_level)
+                out.append(f"{'#' * new_level} {line.strip()}")
+                i += 2
+                continue
+        out.append(line)
+        i += 1
+    return "\n".join(out)
 
 
 def _demote_headings(text: str, offset: int = 4, max_level: int = 6) -> str:
-    """Rewrite every ATX heading (`^#{1,6} ...`) in embedded continuity
-    source text to sit well below the `### <source>` wrapper the packet puts
-    around it, clamped at level 6 — spec
-    2026-08-27-packet-extract-heading-collision-fix.md §3a. Without this, a
-    source file's own `#`/`##` heading structurally closes the packet's
-    `## Continuity Extracts` section, and every consumer that reads that
-    section by markdown structure silently gets a truncated slice.
+    """Rewrite every heading in embedded continuity source text — ATX
+    (`^#{1,6} ...`, indented up to 3 spaces) and setext (a text line
+    underlined with `===`/`---`) — to sit well below the `### <source>`
+    wrapper the packet puts around it, clamped at level 6 — spec
+    2026-08-27-packet-extract-heading-collision-fix.md §3a plus its
+    follow-up. Without this, a source file's own top-level heading
+    structurally closes the packet's `## Continuity Extracts` section, and
+    every consumer that reads that section by markdown structure silently
+    gets a truncated slice.
 
-    Only a `#` immediately followed by whitespace at the start of a line
-    counts as an ATX heading — `#hashtag` (no space) and a mid-line `#` are
-    left untouched, matching CommonMark's own rule for what makes a line a
-    heading. Shared by both embed call sites (canon-core.md and each
-    continuity entry) so the rule can't drift between them.
+    Only a `#` immediately followed by whitespace, at the start of a line
+    with 0-3 leading spaces, counts as an ATX heading — `#hashtag` (no
+    space), a mid-line `#`, and a 4+-space-indented `#` (an indented code
+    block, not a heading, per CommonMark) are left untouched. The original
+    indent is preserved in the output — an indented heading is demoted in
+    place, not left-stripped. Setext conversion is conservative by design:
+    see `_convert_setext_headings`. Shared by both embed call sites
+    (canon-core.md and each continuity entry) so the rule can't drift
+    between them.
     """
     def _demote(m: re.Match) -> str:
-        hashes, spacing, rest = m.group(1), m.group(2), m.group(3)
+        indent, hashes, spacing, rest = m.group(1), m.group(2), m.group(3), m.group(4)
         new_level = min(len(hashes) + offset, max_level)
-        return f"{'#' * new_level}{spacing}{rest}"
-    return _ATX_HEADING_RE.sub(_demote, text)
+        return f"{indent}{'#' * new_level}{spacing}{rest}"
+    text = _ATX_HEADING_RE.sub(_demote, text)
+    text = _convert_setext_headings(text, offset, max_level)
+    return text
 
 
 _CONTINUITY_SUBDIRS = ("characters", "locations", "threads", "background")
@@ -154,7 +220,8 @@ def _continuity_slice(root, chapter_text: str) -> tuple[str, str]:
         if "canon-core.md" in counts:
             breakdown.append("canon-core.md")
         breakdown += [f"{counts[sub]} {sub}" for sub in sorted(counts) if sub != "canon-core.md"]
-        manifest = f"({total} entries: {', '.join(breakdown)})"
+        noun = "entry" if total == 1 else "entries"
+        manifest = f"({total} {noun}: {', '.join(breakdown)})"
     else:
         manifest = "(0 entries)"
 
