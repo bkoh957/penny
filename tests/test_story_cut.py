@@ -630,28 +630,6 @@ def test_a_texture_item_shaped_like_a_wiring_field_is_refused():
                for f in r["blocking"])
 
 
-def test_a_texture_item_shaped_like_a_track_row_is_refused_in_the_nested_form_too():
-    # This test asserted the OPPOSITE until the final whole-branch review, on
-    # reasoning that looked sound and was not: `TRACK_RE` here and
-    # `parse_cut_plan`'s own `_CUT_TRACK_RE` are the same pattern, so an
-    # indented `- **<letter>:**` nested under Texture is intercepted and filed
-    # into `ch["tracks"]` before it can reach `ch["texture"]` (pinned in
-    # tests/test_penny_story.py since Task 3). The old conclusion was that there
-    # was therefore nothing to catch — "it became a real, honestly-declared
-    # track."
-    #
-    # It is not honest, and the consequence was never traced: the fabricated
-    # track reaches `### Track Movement`, and `tension_check` counts every
-    # non-"none" track toward `obligations.max_per_chapter`. So a texture item
-    # silently became an OBLIGATION — the single thing this layer forbids (spec
-    # 2026-08-27 §4.2). `check_story` now scans the RAW cut-plan text, where the
-    # nesting is still visible, which is the only place this shape can be seen.
-    r = check_story(GOOD_STORY, _plan_with_texture("**M:** the mystery moves"),
-                    JOBS, CLUES)
-    assert any(f.startswith("wiring-shaped-directive") and "obligation cap" in f
-               for f in r["blocking"])
-
-
 def test_a_texture_item_shaped_like_a_track_row_via_inline_form_is_refused():
     # The counterpart to the nested-form test above. `- **Texture:** **M:** …`
     # on ONE line is a different authoring shape: the whole line matches
@@ -667,48 +645,143 @@ def test_a_texture_item_shaped_like_a_track_row_via_inline_form_is_refused():
     assert any(f.startswith("wiring-shaped-directive") for f in r["blocking"])
 
 
-def test_an_ordinary_texture_item_is_clean():
-    r = check_story(GOOD_STORY, _plan_with_texture("bakery 6am: yeast, warmth"),
-                    JOBS, CLUES)
-    assert r["blocking"] == []
-
-
-# --- Final review: the nested authoring form escaped the forgery guard -------
+# --- The nested authoring form escapes parse_cut_plan's own classification --
 #
-# `parse_cut_plan` tests `_CUT_TRACK_RE` BEFORE it reaches its `nested ==
-# "texture"` branch, so a track-shaped item nested under `- **Texture:**` never
-# becomes a texture item at all — it is reclassified into `ch["tracks"]`, where
-# the guard above (which only scans `ch["texture"]`) cannot see it. The
-# fabricated track then flows into `### Track Movement` AND into
-# `tension_check`'s obligation count, so a texture item silently becomes an
-# obligation — the one thing the layer forbids. Caught at the raw-text level
-# because that is the last place the information still exists.
+# `parse_cut_plan` tests `_CUT_TRACK_RE` BEFORE it reaches its nested-block
+# branches, so a track-shaped item nested under `- **Texture:**` (or under
+# `- **Setting:**`) never becomes a nested item at all — it is reclassified into
+# `ch["tracks"]`, where the texture loop above cannot see it. The fabricated
+# track then flows into `### Track Movement` AND into `tension_check`'s
+# obligation count, so an allocated image silently becomes an OBLIGATION — the
+# one thing the layer forbids (spec 2026-08-27 §4.2). Caught at the raw-text
+# level, where the indentation still exists, because that is the last place the
+# information is visible.
+#
+# The rule under test is INDENTATION, not block membership: the guard must not
+# model where a nested block ends, because that is `parse_cut_plan`'s own
+# bookkeeping and a re-derivation of it diverges (it did — see the table below).
 
-def _plan_with_nested_texture(item, tail="- **M:** the mystery moves\n"):
+def _nested_forgery(decl, separator="", row="  - **R:** a phantom romance"):
     return ("## Chapter 01 — One\n\n- **Beats:** 1-3\n- **Summary:** s\n"
-            f"- **Compress:** c\n- **Texture:**\n  - {item}\n" + tail)
+            f"- **Compress:** c\n- **{decl}:**\n" + separator + row + "\n")
 
 
-def test_a_nested_field_shaped_texture_item_is_still_refused():
-    r = check_story(GOOD_STORY, _plan_with_nested_texture("**Closes:** q-bogus"),
-                    JOBS, CLUES)
-    assert any("wiring-shaped-directive" in f for f in r["blocking"])
+def _forgeries(plan):
+    return [f for f in check_story(GOOD_STORY, plan, JOBS, CLUES)["blocking"]
+            if f.startswith("wiring-shaped-directive")]
 
 
-def test_an_ordinary_nested_texture_item_is_clean():
-    r = check_story(GOOD_STORY, _plan_with_nested_texture("bakery 6am: yeast, warmth"),
-                    JOBS, CLUES)
-    assert r["blocking"] == []
+def test_a_nested_track_shaped_item_is_refused_whatever_separates_it():
+    # Every separator here is IGNORED by `parse_cut_plan` — none of them closes
+    # the nested block, so the forged row is reclassified into `ch["tracks"]` in
+    # all five cases. A guard that tracks block membership itself has to agree
+    # with that parser about all five; the previous one agreed about exactly the
+    # first, and the other four reopened the bug with `tracks == {"R": ...}` and
+    # no finding at all. Indentation makes the question moot.
+    for label, separator in (
+            ("no separator", ""),
+            ("blank line", "\n"),
+            ("whitespace-only line", "   \n"),
+            ("html comment", "<!-- a note to the showrunner -->\n"),
+            ("prose line", "Stray prose the parser ignores.\n"),
+    ):
+        plan = _nested_forgery("Texture", separator)
+        hits = _forgeries(plan)
+        assert len(hits) == 1, (label, hits)
+        assert "obligation cap" in hits[0], (label, hits)
+        assert "**R:**" in hits[0], (label, hits)
+        # ...and the proof that this shape is worth refusing: unguarded, the
+        # forged row really does land in the chapter's tracks.
+        ch = story_cut.parse_cut_plan(plan)[0]
+        assert ch["tracks"] == {"R": "a phantom romance"}, (label, ch)
 
 
-def test_a_genuine_track_row_outside_a_texture_block_is_not_refused():
-    # The guard must fire on nesting, never on real wiring. Both track rows here
-    # are unindented and outside the Texture block; one chapter has no Texture
-    # block at all, which must behave exactly as it did before this guard.
+def test_a_nested_track_shaped_item_under_setting_is_refused_too():
+    # The identical vector through the other nested field, unguarded since
+    # Setting shipped (spec 2026-08-12). One rule closes both, and any nested
+    # field added later.
+    hits = _forgeries(_nested_forgery("Setting"))
+    assert len(hits) == 1 and "obligation cap" in hits[0], hits
+
+
+def test_genuine_unindented_track_rows_are_never_refused():
+    # Three shapes the guard must leave alone: a track row in a chapter that has
+    # a Texture block, a track row in a chapter that has none, and a track row
+    # standing IMMEDIATELY after a `- **Texture:**` declaration — inside the
+    # nested block by any block-membership reading, and still genuine wiring
+    # because it sits at column 0, which is where `emit_outline` writes it.
     plan = ("## Chapter 01 — One\n\n- **Beats:** 1-2\n- **Summary:** s\n"
             "- **Compress:** c\n- **Texture:**\n  - bakery 6am: yeast\n"
             "- **M:** the mystery moves\n- **P:** the personal track\n\n"
             "## Chapter 02 — Two\n\n- **Beats:** 3\n- **Summary:** s\n"
-            "- **Compress:** c\n- **M:** she is wrong, competently\n")
+            "- **Compress:** c\n- **Texture:**\n"
+            "- **M:** she is wrong, competently\n")
     r = check_story(GOOD_STORY, plan, JOBS, CLUES)
     assert r["blocking"] == []
+
+
+def test_ordinary_nested_texture_and_setting_items_are_clean():
+    # A plan using both nested blocks as intended — free-prose texture items and
+    # em-dash setting ranges — plus real wiring, produces nothing.
+    plan = ("## Chapter 01 — One\n\n- **Beats:** 1-3\n- **Summary:** s\n"
+            "- **Compress:** c\n"
+            "- **Texture:**\n  - bakery 6am: proving-room warmth\n"
+            "  - shed roof at 25 knots\n"
+            "- **Setting:**\n  - 1-3 — the pottery studio, late afternoon\n"
+            "- **Opening:** The kiln door still warm.\n"
+            "- **Closing (cliffhanger):** The light goes out.\n"
+            "- **M:** the mystery moves\n")
+    r = check_story(GOOD_STORY, plan, JOBS, CLUES)
+    assert r["blocking"] == []
+
+
+def test_an_untitled_chapter_heading_is_read_exactly_as_penny_story_reads_it():
+    # The guard shares `penny_story._CUT_CHAPTER_RE` rather than keeping a
+    # looser local copy, so an untitled `## Chapter 02` is NOT a chapter here
+    # either — it stays inside chapter 01, and the forgery below is reported
+    # against ch 01. A local pattern that made the title optional would report
+    # ch 02 for a heading the parser never opened, which is a second, silent
+    # divergence from the same cause.
+    plan = ("## Chapter 01 — One\n\n- **Beats:** 1-3\n- **Summary:** s\n"
+            "- **Compress:** c\n- **Texture:**\n"
+            "## Chapter 02\n"
+            "  - **R:** a phantom romance\n")
+    assert [c["num"] for c in story_cut.parse_cut_plan(plan)] == [1]
+    hits = _forgeries(plan)
+    assert len(hits) == 1 and "ch 01" in hits[0], hits
+
+
+def test_a_nested_forgery_before_any_chapter_heading_does_not_raise():
+    # This layer's contract is to fail loud with a NAME, never with a traceback.
+    # A cut plan whose preamble happens to contain a nested track-shaped line
+    # belongs to no chapter, so there is no number to report — it must be passed
+    # over, not formatted into a message.
+    plan = ("- **Texture:**\n  - **R:** a phantom romance\n\n"
+            "## Chapter 01 — One\n\n- **Beats:** 1-3\n- **Summary:** s\n"
+            "- **Compress:** c\n")
+    assert _forgeries(plan) == []
+
+
+def test_a_nested_field_shaped_item_is_reported_exactly_once():
+    # A FIELD-shaped nested item (`**Closes:**`) matches neither of
+    # `parse_cut_plan`'s field nor track patterns, so it survives into
+    # `ch["texture"]` and the texture loop refuses it. The indentation rule uses
+    # TRACK_RE only and cannot also fire on it — the two guards partition the
+    # shapes rather than overlapping, so this is one finding, not two.
+    hits = _forgeries(_nested_forgery("Texture", row="  - **Closes:** q-bogus"))
+    assert len(hits) == 1, hits
+    assert "Texture" in hits[0], hits
+
+
+def test_an_indented_track_row_under_no_nested_field_is_refused_as_well():
+    # The rule is about the indentation, not about sitting under a declaration:
+    # `parse_cut_plan` files this row into `ch["tracks"]` exactly as if it had
+    # been written at column 0, so it would reach `### Track Movement` from a
+    # position the cut never writes to. Refusing it is the conservative reading,
+    # and the message has to offer the fix that actually applies here — unindent
+    # it — alongside the reword the nested case needs.
+    plan = ("## Chapter 01 — One\n\n- **Beats:** 1-3\n- **Summary:** s\n"
+            "- **Compress:** c\n  - **M:** the mystery moves\n")
+    assert story_cut.parse_cut_plan(plan)[0]["tracks"] == {"M": "the mystery moves"}
+    hits = _forgeries(plan)
+    assert len(hits) == 1 and "unindent it to column 0" in hits[0], hits

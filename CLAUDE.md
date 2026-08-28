@@ -49,7 +49,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (1180 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (1183 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -229,8 +229,14 @@ finding, there is no `unscheduled-texture`, and a chapter that spends three of
 four allocated images is correct, not short — an obligation would put images into
 competition with beats and clues for the genre beat sheet's
 `obligations.max_per_chapter` budget. It adds no `story_cut.py` finding either:
-a texture item shaped like a wiring field is refused by the existing
-`wiring-shaped-directive`, so the roster stays at twenty-three.
+a texture item shaped like a wiring field (`**Closes:** …`) or like a Track Movement
+row (`**M:** …`) is refused by the existing `wiring-shaped-directive`, in both the
+inline and the nested authoring form, so the roster stays at twenty-three. The
+track-shaped nested form is caught by a rule about **indentation**: `parse_cut_plan`
+reads a `- **<letter>:**` row as a track wherever it sits, so any *indented* one inside
+a chapter block is refused — a genuine track row is written at column 0. That covers
+`Texture`, `Setting`, and any nested field added later, without the guard having to
+re-derive where a nested block ends.
 
 What a beat *is* — as opposed to how it is tagged — lives in the config overlay at
 `config/story-craft/`, read as a **directory** so a genre pack can add to it without

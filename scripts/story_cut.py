@@ -22,8 +22,13 @@ import yaml  # ledger only — nested human-edited data (dependency-split rule)
 from scripts import penny_genre, penny_paths, penny_story, plot_stage
 from scripts.outline_views import parse_jobs
 from scripts.penny_meta import parse_frontmatter, strip_frontmatter
-from scripts.penny_story import (SLUG_RE, parse_cut_plan, parse_directives,
-                                 parse_questions, parse_story)
+# `_CUT_CHAPTER_RE` is private to penny_story and imported anyway, deliberately:
+# the raw-text guard in check_story must agree with that module about where a
+# chapter block begins, and a local re-derivation of its patterns is exactly what
+# produced the divergence this guard replaces. story_cut already drives entirely
+# off penny_story's parse; sharing the pattern is the smaller coupling.
+from scripts.penny_story import (SLUG_RE, _CUT_CHAPTER_RE, parse_cut_plan,
+                                 parse_directives, parse_questions, parse_story)
 from scripts.penny_wiring import FIELD_RE, QID_RE, TRACK_RE
 
 #: (sigil, directive key) for the three tags that schedule something. Beats
@@ -47,15 +52,6 @@ _DIRECTIVE_OPENERS = frozenset({
 })
 
 _OPENER_RE = re.compile(r"^\s*(?P<word>[A-Za-z']+)")
-
-# Raw-text patterns for the nested-texture forgery scan in check_story. Local
-# rather than imported from penny_story because the scan must see the cut plan
-# as TEXT, before that parser has classified anything — which is the whole point
-# of it. The chapter-heading shape is fixed and already written out separately
-# in chapter_refs_check.py, so a local copy is house practice, not drift.
-_CUT_CHAPTER_LINE_RE = re.compile(r"^##\s+Chapter\s+(?P<num>\d+)\b")
-_TEXTURE_DECL_RE = re.compile(r"^\s*-\s+\*\*Texture:\*\*")
-_NESTED_LINE_RE = re.compile(r"^\s+\S")
 
 # The three kinds a chapter may end on (spec 2026-08-12 §3). Engine-level rather
 # than genre-level: these name shapes of ending, not cozy conventions.
@@ -204,43 +200,51 @@ def check_story(story_text: str, cut_plan_text: str,
 
     # The TRACK-shaped nested item never reaches the loop above, and this is the
     # only place it can be caught. `penny_story.parse_cut_plan` tests its
-    # track-row pattern BEFORE its `nested == "texture"` branch, so an item
-    # written `  - **R:** a phantom romance beat` under `- **Texture:**` is not a
-    # texture item at all by the time the dict exists — it has been reclassified
-    # into `ch["tracks"]`, where it is indistinguishable from a genuine track
-    # row. Left alone it reaches `### Track Movement`, and worse, `tension_check`
-    # counts every non-"none" track toward `obligations.max_per_chapter` — so a
-    # texture item silently becomes an OBLIGATION, the one thing this layer
-    # forbids (spec 2026-08-27 §4.2). The scan therefore runs over the raw text,
-    # where the nesting is still visible.
+    # track-row pattern BEFORE its nested-block branches, so an item written
+    # `  - **R:** a phantom romance` under `- **Texture:**` — or under
+    # `- **Setting:**` — is not a nested item at all by the time the dict exists:
+    # it has been reclassified into `ch["tracks"]`, where it is
+    # indistinguishable from a genuine track row. Left alone it reaches
+    # `### Track Movement`, and worse, `tension_check` counts every non-"none"
+    # track toward `obligations.max_per_chapter` — so an allocated image
+    # silently becomes an OBLIGATION, the one thing this layer forbids (spec
+    # 2026-08-27 §4.2). The scan therefore runs over the raw text, where the
+    # indentation is still visible.
+    #
+    # INDENTATION is the whole rule, and the guard deliberately does not model
+    # where a nested block ends. `emit_outline` writes Track Movement rows at
+    # column 0 and every genuine track row in the repo sits at column 0, so an
+    # indented track-shaped line inside a chapter block can never be a row the
+    # cut would have written — whichever field it is nested under, including
+    # fields added later. The previous attempt re-derived `parse_cut_plan`'s
+    # own bookkeeping with a state machine and diverged from it: a blank line, a
+    # whitespace-only line, an HTML comment or a stray prose line between the
+    # declaration and the forged row are all ignored by that parser and all
+    # closed the block for the guard, reopening the bug — and Setting was never
+    # covered at all. Indentation makes the question moot.
     #
     # TRACK_RE only, deliberately: a FIELD-shaped nested item (`**Closes:**`) is
-    # matched by neither of that parser's field or track patterns, so it still
-    # lands in `ch["texture"]` and the loop above already refuses it. Checking
-    # both here would report one line twice. Same finding name as the two loops
-    # above — one failure, one name, and the roster stays at twenty-three.
-    num, in_texture = None, False
+    # matched by neither of that parser's field nor track patterns, so it still
+    # lands in `ch["texture"]` and the loop above already refuses it. The two
+    # guards partition the shapes; checking both here would report one line
+    # twice. Same finding name as the two loops above — one failure, one name,
+    # and the roster stays at twenty-three.
+    num = None
     for raw in cut_plan_text.splitlines():
-        m = _CUT_CHAPTER_LINE_RE.match(raw)
+        m = _CUT_CHAPTER_RE.match(raw)
         if m:
-            num, in_texture = int(m.group("num")), False
+            num = int(m.group("num"))
             continue
-        if _TEXTURE_DECL_RE.match(raw):
-            in_texture = True
-            continue
-        if not in_texture:
-            continue
-        if not _NESTED_LINE_RE.match(raw):
-            in_texture = False
-            continue
-        if TRACK_RE.match(raw) and num is not None:
+        if num is not None and raw[:1].isspace() and TRACK_RE.match(raw):
             blocking.append(
-                f"wiring-shaped-directive: ch {num:02d} Texture reads "
-                f"'{raw.strip()}', which the cut plan's own parser reads as a "
-                f"Track Movement row rather than as a texture item — it would "
-                f"become a track the cut never wrote, and tension_check counts "
-                f"tracks toward this chapter's obligation cap. Reword the item "
-                f"so it does not begin with **<letter>:**")
+                f"wiring-shaped-directive: ch {num:02d} nests "
+                f"'{raw.strip()}' under a cut-plan field, and the plan's own "
+                f"parser reads a **<letter>:** row as a Track Movement row "
+                f"wherever it sits — it would become a track the cut never "
+                f"wrote, and tension_check counts tracks toward this chapter's "
+                f"obligation cap. Reword the item so it does not begin with "
+                f"**<letter>:** — or, if it was meant as a Track Movement row, "
+                f"unindent it to column 0, where the cut writes its own")
 
     for n, beat in enumerate(beats, 1):
         for slug in beat["strands"]:
