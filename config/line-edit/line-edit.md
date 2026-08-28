@@ -3,6 +3,12 @@
 > Scope: sentence-level refinement only. No new content. No story changes.
 > Design §7. Consumed by `agents/line-editor.md`.
 
+## Precedence
+
+This checklist states craft mechanics. Where it appears to conflict with the voice pack,
+style sheet, or setting pack on any matter of voice, register, POV or story fact, **that
+file wins.** This file never states a fact about a character.
+
 ## What to refine
 
 ### Flab cuts
@@ -13,7 +19,7 @@
 ### Verb strengthening
 - Favour specific active verbs over "was/were + past participle" when the passive adds no emphasis.
 - Replace vague motion verbs ("went", "moved", "came") with precise ones where context supplies them.
-- Do NOT strengthen a weak verb if the weakness is deliberate register (e.g., Cora being deliberately understated).
+- Do NOT strengthen a weak verb if the weakness is deliberate register (e.g., a protagonist written as deliberately understated).
 
 ### Rhythm
 - Vary sentence length: long sentences carry weight; short sentences land punches. A run of same-length sentences is flat.
@@ -27,10 +33,10 @@
 ## What to leave alone
 
 - Meaning. If a sentence is ambiguous, preserve the ambiguity.
-- Voice. Cora's register is precise and lightly formal with warmth through observation. Do not warm it up or cool it down.
+- Voice. The protagonist's register is defined by the voice pack. Do not warm it up or cool it down.
 - Clues, red herrings, beats. If something reads as deliberate plant, leave it.
 - Word count: keep the chapter within [chapter_min_words, chapter_max_words] from `config/length-profile.md`.
-- POV discipline: third person limited, past tense, Cora's perspective.
+- POV discipline: hold the POV, tense and anchor specified in the voice pack.
 
 ## Move checklist (pass in order)
 

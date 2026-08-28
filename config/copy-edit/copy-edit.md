@@ -4,6 +4,12 @@
 > Design §7. Consumed by `agents/copy-editor.md`.
 > The copy-editor agent runs in fresh context: text + style sheet only.
 
+## Precedence
+
+This checklist states craft mechanics. Where it appears to conflict with the voice pack,
+style sheet, or setting pack on any matter of voice, register, POV or story fact, **that
+file wins.** This file never states a fact about a character.
+
 ## Governing document
 
 `input/series/style-sheet.md` is the single source of truth for every spelling, hyphenation, and punctuation decision across the 13-book series. Read it in full before touching the text. When the style sheet has no ruling, make a judgement call and **append** it.
@@ -11,7 +17,7 @@
 ## Spelling
 
 - **Australian English** throughout: colour, favour, honour, realise, organise, recognise, -ise not -ize, travelling (double l), programme (unless "computer program").
-- Proper nouns: match the ledger entry exactly. Character names, place names, business names, and Cora's deceased husband's name are never variant-spelled.
+- Proper nouns: match the ledger entry exactly. Character names, place names and business names are never variant-spelled — including names that appear only in backstory or dialogue and never in a scene.
 
 ## Grammar and punctuation
 

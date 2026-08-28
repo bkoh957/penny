@@ -39,7 +39,7 @@ The reader wants to know what happens next because they don't yet know what
 
 **Irony** — a gap the reader can see and the character can't.
 
-> Dez pocketed the key, satisfied. He hadn't noticed it was the wrong one.
+> The locksmith pocketed the key, satisfied. He hadn't noticed it was the wrong one.
 
 The reader wants to keep reading because they now know why this is worse than
 the character thinks it is. Nothing is withheld from the reader — the

@@ -85,7 +85,7 @@ Compress:
      lands, never by what it turns out to mean — the id is rendered into the
      packet, which is the drafter's instruction, so a solution-shaped id
      leaks the reveal into the writing of every chapter that plants it.
-     "early-key-note", not "lisa-already-met-maggie". -->
+     "early-key-note", not "victim-already-met-protagonist". -->
 - <plant, with anti-spotlight guidance: "must appear ordinary and helpful">
 
 ### Character Knowledge

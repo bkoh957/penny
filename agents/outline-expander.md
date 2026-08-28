@@ -16,12 +16,12 @@ does not draft chapter prose and does not write any ledger or certificate.
 
 **Name a clue or question by what it LOOKS like, never by what it means.** Clue ids and
 q-slugs are rendered verbatim into the chapter packet, which is the drafter's
-instruction — so `c02-lisa-already-met-maggie` at plant chapter 2 tells chapter 2's
+instruction — so `c02-victim-already-met-protagonist` at plant chapter 2 tells chapter 2's
 writer the Act II answer, and the scene gets shaped around it even if the word never
 reaches the page. Write `c02-early-key-note`. The true meaning belongs in the clue's
 `description:` and in the reveal's `author_truth`, which carry no label into the packet.
 Same for the questions you open/close/carry in the wiring footer: `q-vase — whose hand
-made this vase?`, never `who made the false Maggie vase?`.
+made this vase?`, never `who made the false potter's vase?`.
 
 **Inputs:**
 - The chapter **stub** already in `input/book-NN/outline.md`: the `## Chapter NN — Title`
@@ -112,7 +112,7 @@ Compress:
 **Instructions:**
 1. Read the stub, the packs, canon-core + ledger slice, the bible, and the sealed
    solution. Honour the protagonist's knowledge-state and the fluency stage from
-   canon-core (Book 1 = OUTSIDER: no local idiom in Maggie's narration; idiom lives in
+   canon-core (Book 1 = OUTSIDER: no local idiom in the protagonist's narration; idiom lives in
    locals' dialogue only).
 2. Write **Chapter Purpose**, **Starting State**, **Ending State**, and **Reader-Facing
    Shape** first — these are the taste calls (what matters, what compresses) that the

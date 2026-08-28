@@ -22,7 +22,7 @@ engine's own craft configs**, and this spec is the remainder of that work.
 > in `scripts/` or the command/agent logic.** When adding behavior, ask whether it belongs
 > to the fixed engine, to a genre, or to one series' own data, and keep them separate.
 
-Twelve sites under `config/` and `agents/` violate it. They name characters — a superseded
+Seventeen sites under `config/` and `agents/` violate it. They name characters — a superseded
 protagonist called **Cora**, superseded characters called **Dez** and **Renna**, and, in one
 place, the *current* series' protagonist **Maggie** — and in six cases state facts about them
 as if they were craft rules binding on whatever book is running.
@@ -30,10 +30,21 @@ as if they were craft rules binding on whatever book is running.
 This is not a style complaint. One of them actively contradicts the active series' Voice
 Pack, and it reaches a prose agent that rewrites the manuscript.
 
-**Amended 2026-08-29 after review.** This spec first said ten sites. Two more were found by
-running §5's proposed lint against the tree — the review's own account of that is in §3's
-Category C and §5. That the manual sweep missed two is not an embarrassment to be quietly
-corrected; it is the argument of §6, and it is left visible here on purpose.
+**Amended 2026-08-29, twice — during review, then during implementation.** This spec first
+said ten sites. It is seventeen. The count moved four times, and each wave was found by a
+different method:
+
+| wave | how it was found | sites | what it added |
+|---|---|---|---|
+| 1 | manual sweep for known stale names (`Cora`, `Dez`) | 10 | the original §3 |
+| 2 | §5's possessive lint, run against the tree | +2 | `Renna`; `Maggie's` — Category C |
+| 3 | grep for live character names in subject position | +2 | `Maggie` in two worked examples |
+| 4 | reading the examples for lowercase slugs | +3 | `c02-lisa-already-met-maggie` ×3 |
+
+That is not four oversights. It is **one rule that was never written down** — and each method
+could only see the form it was shaped for. The renames close seventeen instances; §4e writes
+the rule down, and that is the part that ends the sequence. The moving count is left visible
+because it is the argument of §6.
 
 ## 2. The live harm
 
@@ -69,7 +80,7 @@ into the prompt, telling the agent to disregard every Cora reference and that th
 wins. **That workaround is not in any file.** It has to be remembered on each of the
 remaining 34 chapters of book 01, and on every chapter of every later book.
 
-## 3. The twelve sites
+## 3. The sites
 
 **Category A — story facts stated as craft rules (6).** These assert things about a specific
 protagonist as though universally true:
@@ -111,6 +122,25 @@ It is also the same craft rule as `config/review-rubrics/character-voice.md:23` 
 idiom in Cora's narration"), written twice, for two different series' protagonists, one
 superseded and one live. That the two copies disagree about who the protagonist is, and that
 neither is right in general, is the whole defect in one pair of lines.
+
+**Category D — worked examples naming a live character in other forms (5).** Found during
+implementation, after Categories A–C were closed:
+
+| File | Line | Text |
+|---|---|---|
+| `agents/outline-expander.md` | 24 | `never "who made the false Maggie vase?"` |
+| `agents/mystery-planner.md` | 42 | the same example, near-verbatim |
+| `agents/outline-expander.md` | 19 | `c02-lisa-already-met-maggie` |
+| `agents/mystery-planner.md` | 38 | the same slug |
+| `config/outline-template.md` | 88 | `"lisa-already-met-maggie"` |
+
+`Lisa` is the live series' victim and `Maggie` its protagonist. The last three are lowercase
+and hyphen-joined inside a slug, which is still naming them — the test is form-agnostic.
+
+Two things checked and worth recording: the slug is **not** a real book-01 plot point (no
+match in the whodunit ledger or `mystery-solution.md`), so no live solution was leaking into
+agent context; and `config/outline-template.md` is referenced by no command, agent or script
+at all, which is a separate loose end this spec does not address.
 
 **The lesson for the fix:** "is this name stale?" is not the test. The test is "does an
 engine file name a character at all?" — which is what §5 has to enforce, because a human
@@ -188,6 +218,22 @@ right by coincidence is the property that hides it, and `config/review-rubrics/c
 is the proof of where that ends: the same sentence, kept until the name it contained had been
 wrong for months.
 
+### 4e. The convention — the part that ends the sequence
+
+Four waves of sweeping found four forms of one violation. A fifth form will exist. Write the
+rule where the next author will read it, as a lead section in
+`config/story-craft/writing-beats.md`, above "What a beat is":
+
+> **Examples in engine files never name a character.** Use a role noun — *the potter*, *the
+> carpenter*, *the victim*, *the protagonist* — and generic slugs, not a series character's
+> name. A name in an example is indistinguishable from canon to whoever reads it next, and it
+> dates the moment the series changes.
+
+This is prose, not a gate, and that is the accepted trade: §5 explains why a lint broad enough
+to catch every form was measured and rejected. The lint holds the one form it can hold
+cheaply; the convention covers the rest and is what a human consults before writing the next
+example.
+
 ## 5. The lint — what stops this recurring
 
 Renames fix today. They do not stop the next one, and there has already been a next one
@@ -247,7 +293,7 @@ The three passes:
    nothing derives them from anything.
 
 The 2026-08-13 fix worked precisely because it removed the possibility of drift rather than
-correcting an instance of it. These twelve sites cannot be made derived — they are engine
+correcting an instance of it. These sites cannot be made derived — they are engine
 craft docs and should be — so the equivalent structural guarantee is the lint.
 
 There is also no series-level escape hatch. The only existing series carries `beta-readers`,

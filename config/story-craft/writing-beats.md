@@ -6,6 +6,18 @@ The engine's default craft guidance for `input/book-NN/story.md`
 This file is read through the config overlay as a **directory** — a genre pack
 or a series adds files beside it, and only a file of the same name replaces it.
 
+## Examples never name a character
+
+**Examples in engine files never name a character.** Use a role noun — *the
+potter*, *the carpenter*, *the victim*, *the protagonist* — and generic slugs,
+not a series character's name. A name in an example is indistinguishable from
+canon to whoever reads it next, and it dates the moment the series changes:
+the engine is genre/location-agnostic (`CLAUDE.md:11-14`), and an example is
+still engine content even though nothing in it is executed. This applies
+however the name is spelled — capitalised in prose, lowercased inside a
+hyphenated slug, subject or possessive — the test is whether a character is
+named at all, not the grammar it's named in.
+
 ## What a beat is
 
 **A beat is a change on the page.** Someone wants something, does something,
@@ -29,9 +41,9 @@ Nothing happened. A condition was described.
 **2 — The verb is not an action.** *surfaces, reads as, is seeded, establishes,
 gives, shows.*
 
-> Dez's thread surfaces through practical repair.
+> The carpenter's thread surfaces through practical repair.
 
-Surfacing is something the *book* does, not something Dez does.
+Surfacing is something the *book* does, not something the carpenter does.
 
 **3 — It addresses the writer, not the world.** *Plant, Keep, Save for later,
 Do not reveal, rather than.*
@@ -48,12 +60,12 @@ third tell is grammar rather than judgment.
 
 Ask **what does the reader watch happen?** and write that.
 
-> Renna's premises fear surfaces through print-shop work and customer rhythm
+> The printer's premises fear surfaces through print-shop work and customer rhythm
 > rather than exposition.
 
 becomes
 
-> Renna hides the eviction notice under the till when Odette asks who else
+> The printer hides the eviction notice under the till when Odette asks who else
 > wanted The Tannery.
 
 Same information, now visible.
@@ -76,7 +88,7 @@ re-cut.
 
 ## The beat number
 
-A beat may open with its position: `- [12] Dez throws the cup she meant to
+A beat may open with its position: `- [12] The potter throws the cup she meant to
 keep.` Optional, but all-or-nothing per file — number every beat or none.
 
 The number is **not** an identity. It is the beat's current position, written

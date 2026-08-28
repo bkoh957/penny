@@ -20,7 +20,7 @@ evidence[], reviewed_by }`, `producer: inspector-voice`, `kind: inspector`.
    actually drifted from the Voice Pack baseline enough to harm the read. The script
    reports magnitude; you decide whether it's a violation.
 3. **Fluency-stage discipline.** Narration respects the book's fluency stage (Book 1 =
-   OUTSIDER: no local idiom in Cora's narration; a BELONGING-tagged term in early
+   OUTSIDER: no local idiom in the protagonist's narration; a BELONGING-tagged term in early
    narration is a flag).
 
 Score 1-5 on voice. Mark **blocking** for interchangeable principal voices or drift so

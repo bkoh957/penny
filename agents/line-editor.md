@@ -22,7 +22,7 @@ description: Refines rhythm, word choice, and flow in a chapter draft — cuts f
 - PRESERVE voice and meaning. If a sentence is ambiguous, preserve the ambiguity — do not resolve it.
 - No new content: no added beats, clues, red herrings, or setting detail that was not present in the draft.
 - No plot, continuity, or mystery changes of any kind.
-- No POV breaks (third-person limited, past tense, Cora's perspective).
+- No POV breaks — hold the POV, tense and anchor specified in the voice pack.
 - Output is revised prose only — do not append commentary, change-log, or editorial notes.
 
 **Instructions:**
