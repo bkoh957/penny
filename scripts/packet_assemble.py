@@ -53,13 +53,16 @@ _ATX_LINE_RE = re.compile(r"^ {0,3}#{1,6}(?:[ \t]|$)")
 _HTML_BLOCK_LINE_RE = re.compile(r"^ {0,3}<")
 _INDENTED_CODE_LINE_RE = re.compile(r"^(?: {4,}|\t)")
 # A fence delimiter line (never real setext TEXT — it opens or closes a code
-# block either way) and a line shaped like a table row (has a `|` cell
-# separator). Neither is fence *state* tracking — this recognizes a line's
-# own shape, not whether an earlier line opened a fence still in effect —
-# so the "no fenced-code-block tracking" rule (a `#` demoted INSIDE a fence
-# stays demoted, deliberately) is untouched.
+# block either way) and a line shaped like a GFM table row: it must START
+# with a `|` cell separator, not merely contain one anywhere — ordinary
+# setext-heading text can contain a `|` (a pairing/comparison heading such
+# as "Cal | Maggie") and must still demote. Neither exclusion is fence
+# *state* tracking — this recognizes a line's own shape, not whether an
+# earlier line opened a fence still in effect — so the "no fenced-code-block
+# tracking" rule (a `#` demoted INSIDE a fence stays demoted, deliberately)
+# is untouched.
 _FENCE_LINE_RE = re.compile(r"^ {0,3}(?:`{3,}|~{3,})")
-_TABLE_ROW_LINE_RE = re.compile(r"^ {0,3}\S.*\|")
+_TABLE_ROW_LINE_RE = re.compile(r"^ {0,3}\|")
 
 
 def _frontmatter_end(lines: list[str]) -> int:

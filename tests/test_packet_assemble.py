@@ -399,6 +399,36 @@ def test_demote_headings_table_row_above_thematic_break_untouched():
     assert packet_assemble._demote_headings(src) == src
 
 
+def test_demote_headings_canonical_table_row_above_thematic_break_untouched():
+    # The canonical GFM shape named in the earlier review: a table row
+    # starts with a pipe.
+    src = "| 1 | 2 |\n---\n\nMore text.\n"
+    assert packet_assemble._demote_headings(src) == src
+
+
+def test_demote_headings_indented_table_row_above_thematic_break_untouched():
+    src = "  | 1 | 2 |\n---\n\nMore text.\n"
+    assert packet_assemble._demote_headings(src) == src
+
+
+def test_demote_headings_setext_h2_text_with_pipe_is_demoted():
+    # A pipe appearing inside ordinary setext-heading text (not a table
+    # row — the line doesn't start with `|`) must still demote. A pairing
+    # heading like this is ordinary in hand-authored canon
+    # (background_cut.py builds relationship entries from titles like
+    # "Maggie and Cal").
+    src = "Cal | Maggie\n---\n\nbody\n"
+    out = packet_assemble._demote_headings(src)
+    assert out.startswith("###### Cal | Maggie\n")
+    assert "---" not in out.split("\n\n", 1)[0]
+
+
+def test_demote_headings_setext_h1_text_with_pipe_is_demoted():
+    src = "Before | After\n===\n\nbody\n"
+    out = packet_assemble._demote_headings(src)
+    assert out.startswith("##### Before | After\n")
+
+
 def test_demote_headings_setext_text_line_indent_preserved():
     # The ATX path preserves a 1-3 space indent; the setext path must be
     # consistent with it instead of stripping the indent away.
