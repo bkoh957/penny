@@ -116,7 +116,11 @@ def analyze(text: str, cfg: dict) -> dict:
         density = len(spans) * per_1k
         thr = cfg.get(tic_id, {})
         flag_at = thr.get("flag_at")          # per-1000-word density threshold
-        flagged = flag_at is not None and density >= flag_at
+        # A threshold of 0 (or negative) must never flag on zero actual
+        # matches: with no spans, density is 0.0, and 0.0 >= 0 is True even
+        # though there is nothing to show as evidence. Requiring a positive
+        # count closes that crash vector (spec Fix 1).
+        flagged = flag_at is not None and len(spans) > 0 and density >= flag_at
         tics.append({
             "tic_id": tic_id, "count": len(spans),
             "threshold": flag_at, "density_per_1k": round(density, 2),
@@ -134,31 +138,58 @@ def analyze(text: str, cfg: dict) -> dict:
         return out
 
     def _first_line_for_word(word: str) -> int:
-        """First line containing `word` as a whole word — the same line-by-line
-        search spans_for already uses for pattern evidence, applied to a single
-        counted word instead of a compiled tic pattern. Returns 0 if not found
-        (should not happen for a word a counter built from this same prose)."""
+        """First PROSE line containing `word` as a whole word — filtered with
+        _is_prose_line so a markdown heading can never win this search. The
+        counters this looks up (openers, cw_counts) are themselves built over
+        prose that already excludes headings (segment_sentences filters via
+        _is_prose_line, and content words track that same domain in practice —
+        see spec 2026-08-27-voice-drift-discards-evidence-fix.md Fix 2), so a
+        chapter title such as "# Chapter 01 — The Life She Bought" must not be
+        allowed to answer "where does this word first occur". A content word is
+        not positional, so a line-containing search is the right shape here —
+        only the search domain needed to change. Returns 0 if not found in
+        prose (should not happen for a word a counter built from this same
+        prose)."""
         pat = re.compile(r"\b" + re.escape(word) + r"\b", re.I)
         for ln_no, line in enumerate(lines, 1):
-            if pat.search(line):
+            if _is_prose_line(line) and pat.search(line):
                 return ln_no
         return 0
 
     def _first_line_for_sentence(sentence: str) -> int:
-        """First line containing the sentence's opening words. Sentences come from
-        segment_sentences, which re-joins lines with spaces before splitting — so
-        there is no exact sentence->line map. Matching the opening words against
-        the raw lines is the same approximation spans_for relies on for pattern
-        matches; falling back to just the first word covers a sentence that opens
-        at a line break."""
+        """First PROSE line containing the sentence's opening words. Sentences
+        come from segment_sentences, which re-joins lines with spaces before
+        splitting — so there is no exact sentence->line map. Matching the
+        opening words against the raw lines is the same approximation spans_for
+        relies on for pattern matches; falling back to just the first word
+        covers a sentence that opens at a line break. Filtered with
+        _is_prose_line for the same reason as _first_line_for_word: a heading
+        must never be mistaken for the line a real sentence opens on."""
         head = _words(sentence)[:4]
         if not head:
             return 0
         pat = re.compile(r"\b" + r"\W+".join(re.escape(w) for w in head) + r"\b", re.I)
         for ln_no, line in enumerate(lines, 1):
-            if pat.search(line):
+            if _is_prose_line(line) and pat.search(line):
                 return ln_no
         return _first_line_for_word(head[0])
+
+    def _first_line_for_opener(word: str) -> int:
+        """First line of the first SENTENCE that opens with `word`. Sentence
+        openers are positional — the counter only counts a word when it is the
+        sentence's first word — so this mirrors _first_line_for_sentence rather
+        than doing a line-containing search: a line-containing search would
+        stop at any occurrence of the word on a line, including one that isn't
+        the sentence-initial occurrence the counter actually counted (and,
+        before this fix, would also match inside the chapter's own markdown
+        title). Content words get the line-containing shape instead
+        (_first_line_for_word) because a content word is not positional (spec
+        2026-08-27-voice-drift-discards-evidence-fix.md Fix 2)."""
+        for s in sentences:
+            head = _words(s)
+            if head and head[0].lower() == word.lower():
+                return _first_line_for_sentence(s)
+        return 0
 
     for tic_id, pat in _PATTERNS.items():
         sp = spans_for(pat)
@@ -175,7 +206,9 @@ def analyze(text: str, cfg: dict) -> dict:
     tics.append({
         "tic_id": "metaphor_pool", "count": len(pool_spans),
         "threshold": total_flag, "density_per_1k": round(density, 2),
-        "flagged": total_flag is not None and len(pool_spans) >= total_flag,
+        # Same positive-count guard as add() (spec Fix 1): zero matches must
+        # never flag, even against a threshold of 0.
+        "flagged": total_flag is not None and len(pool_spans) > 0 and len(pool_spans) >= total_flag,
         "evidence_spans": pool_spans[:5],
     })
 
@@ -259,13 +292,15 @@ def analyze(text: str, cfg: dict) -> dict:
              "she", "he", "they", "her", "his", "it", "was", "had", "with", "for"}
     openers = Counter((_words(s)[0].lower() if _words(s) else "") for s in sentences)
     top_opener = max(openers.values(), default=0)
-    opener_items = [(w, c) for w, c in openers.most_common() if w]
+    # Drop singletons: a word that opens exactly one sentence isn't "repeated"
+    # (spec Fix 3). Capped at 5 below, same convention as every other tic.
+    opener_items = [(w, c) for w, c in openers.most_common() if w and c > 1]
 
     content = [w.lower() for w in words if w.lower() not in _STOP and len(w) > 3]
     cw_counts = Counter(content)
     top_cw_count = max(cw_counts.values(), default=0)
     top_cw_density = top_cw_count * per_1k if top_cw_count > 1 else 0.0
-    cw_items = cw_counts.most_common()
+    cw_items = [(w, c) for w, c in cw_counts.most_common() if c > 1]
 
     # COMPAT SHIM — remove once every series' ai-tics-config.yaml has migrated.
     # This used to be one config block:
@@ -284,17 +319,28 @@ def analyze(text: str, cfg: dict) -> dict:
     if rcw_flag is None:
         rcw_flag = cfg.get("lexical_repetition", {}).get("content_word_per_1k_flag_at")
 
-    opener_flagged = ro_flag is not None and top_opener >= ro_flag
+    # A threshold of 0 (or negative) must never flag on zero actual repeats —
+    # same crash vector as the generic add() guard (spec Fix 1).
+    opener_flagged = ro_flag is not None and top_opener > 0 and top_opener >= ro_flag
+    if opener_flagged and not opener_items:
+        # Fix 3's singleton filter can strip the very occurrence that tripped
+        # the flag (e.g. flag_at == 1, so a single occurrence is itself "at
+        # threshold"). Never let a flagged tic end up with empty evidence —
+        # the §4 invariant must hold even at this degenerate config.
+        opener_items = [(w, c) for w, c in openers.most_common() if w][:1]
     opener_spans = [{
         "tic_id": "repeated_openers",
         "span_text": f'sentence opener "{w.capitalize()}" ×{c}',
-        "line": _first_line_for_word(w),
+        "line": _first_line_for_opener(w),
     } for w, c in opener_items[:5]]
     tics.append({"tic_id": "repeated_openers", "count": top_opener,
                  "threshold": ro_flag, "density_per_1k": round(top_opener * per_1k, 2),
                  "flagged": bool(opener_flagged), "evidence_spans": opener_spans[:5]})
 
-    cw_flagged = rcw_flag is not None and top_cw_density >= rcw_flag
+    cw_flagged = rcw_flag is not None and top_cw_count > 0 and top_cw_density >= rcw_flag
+    if cw_flagged and not cw_items:
+        # Same interaction guard as opener_items, above.
+        cw_items = [(w, c) for w, c in cw_counts.most_common()][:1]
     cw_spans = [{
         "tic_id": "repeated_content_words",
         "span_text": f'content word "{w}" ×{c}',

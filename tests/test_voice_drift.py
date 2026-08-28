@@ -247,3 +247,162 @@ def test_unflagged_tic_with_no_evidence_does_not_raise():
     # The invariant applies only to flags (spec §4, last line).
     ok_tics = [{"tic_id": "x", "flagged": False, "evidence_spans": []}]
     assert _flatten_evidence(ok_tics) == []
+
+
+# --- spec 2026-08-27-voice-drift-discards-evidence-fix.md — review fixes -----------
+# Fix 1 (Critical): flag_at == 0 (or negative) must never flag on zero actual
+# matches. The generic add() guard, the metaphor_pool guard, and both split
+# lexical-repetition guards all need `count > 0` alongside the density/threshold
+# comparison, or an empty-evidence flag reaches the §4 invariant and crashes.
+
+def test_threshold_zero_does_not_flag_generic_tic_with_zero_matches():
+    # The exact reproduction from review: a threshold of 0 on a tic with no
+    # matches must not flag, and must not raise once flattened for the verdict.
+    result = analyze("Hello there world today. Another line goes here now.\n",
+                      {"bodily_reaction": {"flag_at": 0}})
+    br = next(t for t in result["tics"] if t["tic_id"] == "bodily_reaction")
+    assert br["count"] == 0
+    assert br["flagged"] is False
+    assert br["evidence_spans"] == []
+    _flatten_evidence(result["tics"])  # must not raise
+
+
+def test_negative_threshold_does_not_flag_generic_tic_with_zero_matches():
+    result = analyze("Hello there world today. Another line goes here now.\n",
+                      {"bodily_reaction": {"flag_at": -1}})
+    br = next(t for t in result["tics"] if t["tic_id"] == "bodily_reaction")
+    assert br["flagged"] is False
+    assert br["evidence_spans"] == []
+    _flatten_evidence(result["tics"])
+
+
+def test_threshold_zero_does_not_flag_metaphor_pool_with_zero_matches():
+    result = analyze("Hello there world today.",
+                      {"metaphor_pool_rule": {"total_flag_at": 0}, "metaphor_pool": ["wave"]})
+    pool = next(t for t in result["tics"] if t["tic_id"] == "metaphor_pool")
+    assert pool["flagged"] is False
+    assert pool["evidence_spans"] == []
+    _flatten_evidence(result["tics"])
+
+
+def test_threshold_zero_does_not_flag_repeated_openers_with_zero_sentences():
+    result = analyze("", {"repeated_openers": {"flag_at": 0}})
+    ro = next(t for t in result["tics"] if t["tic_id"] == "repeated_openers")
+    assert ro["flagged"] is False
+    assert ro["evidence_spans"] == []
+    _flatten_evidence(result["tics"])
+
+
+def test_negative_threshold_does_not_flag_repeated_openers_with_zero_sentences():
+    result = analyze("", {"repeated_openers": {"flag_at": -1}})
+    ro = next(t for t in result["tics"] if t["tic_id"] == "repeated_openers")
+    assert ro["flagged"] is False
+    _flatten_evidence(result["tics"])
+
+
+def test_threshold_zero_does_not_flag_repeated_content_words_with_zero_matches():
+    result = analyze("", {"repeated_content_words": {"flag_at": 0}})
+    rcw = next(t for t in result["tics"] if t["tic_id"] == "repeated_content_words")
+    assert rcw["flagged"] is False
+    assert rcw["evidence_spans"] == []
+    _flatten_evidence(result["tics"])
+
+
+def test_negative_threshold_does_not_flag_repeated_content_words_with_zero_matches():
+    result = analyze("", {"repeated_content_words": {"flag_at": -1}})
+    rcw = next(t for t in result["tics"] if t["tic_id"] == "repeated_content_words")
+    assert rcw["flagged"] is False
+    _flatten_evidence(result["tics"])
+
+
+# --- Fix 2 (Important): evidence line numbers must skip markdown headings ---------
+# The spec's own flagship case: a chapter title containing the top-repeated word
+# must never win the "first occurrence" search over the word's real first
+# sentence-opening/prose line.
+
+TITLE_FIXTURE = "\n".join([
+    "# Chapter 01 — The Life She Bought",
+    "",
+    "Cora walked to the shop early that morning without a coat.",
+    "It was raining hard outside now and everyone hurried past.",
+    "The dog barked twice at noon near the fence line loudly.",
+    "The cat meowed loudly again from the windowsill above the door.",
+    "The bird sang softly at dawn before the sun rose over hills.",
+    "She counted the coins slowly in her palm by the counter.",
+    "She frowned at the total and counted them again twice more.",
+    "She sighed and pocketed the coins before turning to leave now.",
+    "Her life had never felt so complicated as it did this morning.",
+    "The strange life she led was full of secrets and small lies.",
+]) + "\n"
+
+
+def test_opener_evidence_line_skips_markdown_title():
+    cfg = load_config(DEFAULT_CONFIG)
+    result = analyze(TITLE_FIXTURE, cfg)
+    ro = next(t for t in result["tics"] if t["tic_id"] == "repeated_openers")
+    assert ro["flagged"] is True
+    the_evidence = next(s for s in ro["evidence_spans"] if '"The"' in s["span_text"])
+    assert the_evidence["line"] == 5, the_evidence   # first sentence opening "The"
+    assert the_evidence["line"] != 1                 # never the title line
+
+
+def test_content_word_evidence_line_skips_markdown_title():
+    cfg = load_config(DEFAULT_CONFIG)
+    result = analyze(TITLE_FIXTURE, cfg)
+    rcw = next(t for t in result["tics"] if t["tic_id"] == "repeated_content_words")
+    life_evidence = next((s for s in rcw["evidence_spans"] if '"life"' in s["span_text"]), None)
+    assert life_evidence is not None, rcw["evidence_spans"]
+    assert life_evidence["line"] == 11   # first prose occurrence, not the title
+    assert life_evidence["line"] != 1
+
+
+# --- Fix 3 (Minor): drop singletons, but never at the cost of the §4 invariant ----
+
+def test_singleton_opener_not_in_evidence():
+    cfg = load_config(DEFAULT_CONFIG)
+    result = analyze(TITLE_FIXTURE, cfg)
+    ro = next(t for t in result["tics"] if t["tic_id"] == "repeated_openers")
+    for w in ('"Cora"', '"It"', '"Her"'):   # each opens exactly one sentence
+        assert not any(w in s["span_text"] for s in ro["evidence_spans"])
+
+
+def test_singleton_content_word_not_in_evidence():
+    # No repeated word: every distinct content word occurs exactly once, so a
+    # naive most_common()[:5] (pre-fix) fills evidence entirely with count-1
+    # entries — the spec's own "cora" ×1 example.
+    cfg = load_config(DEFAULT_CONFIG)
+    text = ("Cora opened the window slowly. Sunlight touched the curtains again. "
+            "Dust drifted through empty air quietly.")
+    result = analyze(text, cfg)
+    rcw = next(t for t in result["tics"] if t["tic_id"] == "repeated_content_words")
+    assert not any(s["span_text"].endswith("×1") for s in rcw["evidence_spans"])
+    ro = next(t for t in result["tics"] if t["tic_id"] == "repeated_openers")
+    assert not any(s["span_text"].endswith("×1") for s in ro["evidence_spans"])
+
+
+def test_flag_at_one_with_singleton_top_opener_still_has_evidence():
+    # The interaction the review flagged explicitly: Fix 1's positive-count
+    # guard and Fix 3's singleton filter must not combine to leave a flagged
+    # tic with empty evidence_spans. flag_at == 1 makes a single occurrence
+    # itself "at threshold".
+    cfg = {"repeated_openers": {"flag_at": 1}}
+    text = "Cora walked to the shop today near the wall."   # one sentence, opener count 1
+    result = analyze(text, cfg)
+    ro = next(t for t in result["tics"] if t["tic_id"] == "repeated_openers")
+    assert ro["flagged"] is True
+    assert ro["evidence_spans"], "flagged tic must never have empty evidence (§4)"
+    _flatten_evidence(result["tics"])   # must not raise
+
+
+def test_content_word_negative_threshold_singleton_top_word_still_has_evidence():
+    # Same interaction, on the content-word side: top_cw_count == 1 forces
+    # density to 0.0 (existing suppression), which a negative threshold still
+    # clears — flagged True on a singleton, so the fallback must supply
+    # evidence rather than let Fix 3's filter leave it empty.
+    cfg = {"repeated_content_words": {"flag_at": -1}}
+    text = "Cora walked toward the distant harbor slowly today morning."
+    result = analyze(text, cfg)
+    rcw = next(t for t in result["tics"] if t["tic_id"] == "repeated_content_words")
+    assert rcw["flagged"] is True
+    assert rcw["evidence_spans"], "flagged tic must never have empty evidence (§4)"
+    _flatten_evidence(result["tics"])   # must not raise
