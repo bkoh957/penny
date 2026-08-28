@@ -141,3 +141,73 @@ Unflagged tics may legitimately carry no spans; the invariant applies only to fl
 Book 01 ch 01 remains a live reproduction: `output/book-01/chapters/ch-01.draft.md` in the
 Pelican's Crook series, 89 sentences, 16/16 openers. Its `voice-drift.md` verdict is on
 disk and shows the empty-evidence flag as filed.
+
+---
+
+## 7. Follow-up defect, found after the fix shipped
+
+**Recorded 2026-08-29, after `9f912bb` and `65b6cc6` landed.** The evidence fix worked —
+`repeated_openers` and `repeated_content_words` now split correctly and cite their spans.
+Using that new evidence on a real chapter immediately exposed a second defect in the same
+tic.
+
+### `repeated_content_words` measures no content words
+
+`scripts/voice_drift.py:291` filters with a 21-word stoplist:
+
+```python
+_STOP = {"the", "a", "an", "and", "or", "but", "of", "to", "in", "on", "at",
+         "she", "he", "they", "her", "his", "it", "was", "had", "with", "for"}
+content = [w.lower() for w in words if w.lower() not in _STOP and len(w) > 3]
+```
+
+The `len(w) > 3` guard already excludes most of that list — "the", "and", "was", "had" are
+all ≤ 3 or caught anyway — so the stoplist does very little work. What it does not contain
+is the far larger set of function words longer than three characters: **that, been, could,
+would, there, about, this, these, been, from, into, then, when, what, which, their, other,
+after, before, still, never, always.**
+
+**Evidence.** Book 01 chapter 01, line-edited, 1961 words. The tic's five cited spans:
+
+```
+content word "that"  ×27
+content word "been"  ×12
+content word "could" ×10
+content word "down"  ×10
+content word "there" ×10
+```
+
+Not one is a content word. The tic is named `repeated_content_words`, is documented as
+catching over-repeated content words, and in practice reports function-word frequency —
+which in English prose is roughly constant and says nothing about craft.
+
+### Why it matters more than it looks
+
+It produces **false pressure toward bad edits**. On the run above the tic read 25 → 27
+between draft and line-edit, presenting as a regression while the genuine metric
+(`repeated_openers`, 16 → 12) had improved 25%. A showrunner or agent treating the number as
+real would edit prose to suppress "that", which is a change with no craft value and some
+craft cost.
+
+The threshold compounds it: `content_word_per_1k_flag_at: 8` is 0.8%, and "that" alone runs
+near 1.4% in ordinary English. The tic is close to permanently flagged on any chapter,
+which trains everyone to ignore it — and a checker nobody reads is worse than one that does
+not exist, because it still consumes the reader's attention on the way past.
+
+### Fix
+
+1. **Replace the stoplist with a real one.** Any standard English function-word list
+   (~150-250 entries) rather than 21. Keep it in a data file, not inline in the script, so
+   it can be tuned without a code change.
+2. **Raise the threshold once the list is honest.** `8/1k` was calibrated against a metric
+   dominated by function words; it will need recalibrating against actual content words, and
+   the right figure should be derived from a few finished chapters rather than guessed.
+3. **Consider dropping `len(w) > 3`** once the stoplist is doing the work. It currently
+   hides short repeated content words ("clay", "kiln", "hand", "pot") — plausibly the exact
+   repetitions worth flagging in this series.
+
+### Test
+
+A fixture whose text repeats one genuine content word heavily inside otherwise ordinary
+prose asserts that word is cited, **and** that no function word appears in the spans. The
+second assertion is the one that fails today.
