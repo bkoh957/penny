@@ -73,6 +73,36 @@ _PATTERNS = {
 }
 
 
+def _longest_uniform_run(lengths: list[int], tolerance: int = 2) -> tuple[int, int]:
+    """Return (start, end) indices of the longest run of consecutive sentence
+    lengths that stay within `tolerance` words of their neighbor — the near-equal
+    -length stretch that makes low-stdev prose monotonous to read (spec §3c).
+
+    Falls back to the single closest-matched adjacent pair if no run reaches
+    length 2 within tolerance, so a low-stdev chapter (which by definition has
+    some pair of close-length sentences) always yields a non-empty run — the
+    caller uses this to populate evidence_spans, and an empty run would violate
+    the §4 invariant for a legitimately flagged tic."""
+    n = len(lengths)
+    if n == 0:
+        return (0, 0)
+    if n == 1:
+        return (0, 1)
+    best_start, best_end = 0, 1
+    start = 0
+    for i in range(1, n):
+        if abs(lengths[i] - lengths[i - 1]) > tolerance:
+            if i - start > best_end - best_start:
+                best_start, best_end = start, i
+            start = i
+    if n - start > best_end - best_start:
+        best_start, best_end = start, n
+    if best_end - best_start < 2:
+        i = min(range(1, n), key=lambda k: abs(lengths[k] - lengths[k - 1]))
+        best_start, best_end = i - 1, i + 1
+    return best_start, best_end
+
+
 def analyze(text: str, cfg: dict) -> dict:
     prose = strip_frontmatter(text)
     sentences = segment_sentences(text)
@@ -103,6 +133,33 @@ def analyze(text: str, cfg: dict) -> dict:
                 out.append({"tic_id": None, "span_text": m.group(0).strip(), "line": ln_no})
         return out
 
+    def _first_line_for_word(word: str) -> int:
+        """First line containing `word` as a whole word — the same line-by-line
+        search spans_for already uses for pattern evidence, applied to a single
+        counted word instead of a compiled tic pattern. Returns 0 if not found
+        (should not happen for a word a counter built from this same prose)."""
+        pat = re.compile(r"\b" + re.escape(word) + r"\b", re.I)
+        for ln_no, line in enumerate(lines, 1):
+            if pat.search(line):
+                return ln_no
+        return 0
+
+    def _first_line_for_sentence(sentence: str) -> int:
+        """First line containing the sentence's opening words. Sentences come from
+        segment_sentences, which re-joins lines with spaces before splitting — so
+        there is no exact sentence->line map. Matching the opening words against
+        the raw lines is the same approximation spans_for relies on for pattern
+        matches; falling back to just the first word covers a sentence that opens
+        at a line break."""
+        head = _words(sentence)[:4]
+        if not head:
+            return 0
+        pat = re.compile(r"\b" + r"\W+".join(re.escape(w) for w in head) + r"\b", re.I)
+        for ln_no, line in enumerate(lines, 1):
+            if pat.search(line):
+                return ln_no
+        return _first_line_for_word(head[0])
+
     for tic_id, pat in _PATTERNS.items():
         sp = spans_for(pat)
         for s in sp:
@@ -126,11 +183,24 @@ def analyze(text: str, cfg: dict) -> dict:
     lengths = [len(_words(s)) for s in sentences] or [0]
     stdev = statistics.pstdev(lengths) if len(lengths) > 1 else 0.0
     min_stdev = cfg.get("sentence_variance", {}).get("min_stdev", 0.0)
+    sv_flagged = len(lengths) > 1 and stdev < min_stdev
+    sv_spans: list[dict] = []
+    if sv_flagged:
+        # Cite the longest run of near-equal-length sentences — the actual
+        # monotony the low stdev is a proxy for (spec §3c).
+        run_start, run_end = _longest_uniform_run(lengths)
+        run_len = run_end - run_start
+        avg_len = round(sum(lengths[run_start:run_end]) / max(run_len, 1), 1)
+        sv_spans = [{
+            "tic_id": "sentence_variance",
+            "span_text": f"{run_len} consecutive sentences of ~{avg_len} words each",
+            "line": _first_line_for_sentence(sentences[run_start]) if sentences else 0,
+        }]
     tics.append({
         "tic_id": "sentence_variance", "count": len(sentences),
         "threshold": min_stdev, "density_per_1k": round(stdev, 2),
-        "flagged": len(lengths) > 1 and stdev < min_stdev,
-        "evidence_spans": [],
+        "flagged": sv_flagged,
+        "evidence_spans": sv_spans,
     })
 
     # Soft-qualifier cluster rule: flag if any sentence has >= cluster_in_sentence qualifiers.
@@ -149,45 +219,132 @@ def analyze(text: str, cfg: dict) -> dict:
             r"went|ran|came|saw|said|holds?|held|waited?)\b", s, re.I)
 
     frag_clusters = 0
+    frag_spans: list[dict] = []
     run: list[str] = []
+
+    def _flush_frag_run(candidate: list[str]) -> None:
+        nonlocal frag_clusters
+        if len(candidate) >= 3 and sum(_verbless(x) for x in candidate) >= 2:
+            frag_clusters += 1
+            snippet = " / ".join(candidate)
+            if len(snippet) > 100:
+                snippet = snippet[:97] + "..."
+            frag_spans.append({
+                "tic_id": "cinematic_fragments",
+                "span_text": f"fragment cluster: {snippet}",
+                "line": _first_line_for_sentence(candidate[0]),
+            })
+
     for s in sentences:
         if len(_words(s)) < 4:
             run.append(s)
         else:
-            if len(run) >= 3 and sum(_verbless(x) for x in run) >= 2:
-                frag_clusters += 1
+            _flush_frag_run(run)
             run = []
-    if len(run) >= 3 and sum(_verbless(x) for x in run) >= 2:
-        frag_clusters += 1
+    _flush_frag_run(run)
     max_clusters = cfg.get("cinematic_fragments", {}).get("max_clusters_per_chapter", 1)
     tics.append({"tic_id": "cinematic_fragments", "count": frag_clusters,
                  "threshold": max_clusters, "density_per_1k": 0.0,
-                 "flagged": frag_clusters > max_clusters, "evidence_spans": []})
+                 "flagged": frag_clusters > max_clusters,
+                 "evidence_spans": frag_spans[:5]})
 
-    # Lexical repetition: repeated sentence openers + over-repeated content words.
+    # Lexical repetition splits into two independently-thresholded tics
+    # (spec 2026-08-27-voice-drift-discards-evidence-fix.md §3b): repeated
+    # sentence openers, and over-repeated content words. They used to share one
+    # row (`lexical_repetition`) with `count` from the opener measurement and
+    # `density_per_1k` from the content-word measurement, so a reader could not
+    # tell which threshold actually tripped the flag — and neither measurement
+    # carried evidence_spans at all (§1/§3a).
     _STOP = {"the", "a", "an", "and", "or", "but", "of", "to", "in", "on", "at",
              "she", "he", "they", "her", "his", "it", "was", "had", "with", "for"}
     openers = Counter((_words(s)[0].lower() if _words(s) else "") for s in sentences)
     top_opener = max(openers.values(), default=0)
+    opener_items = [(w, c) for w, c in openers.most_common() if w]
+
     content = [w.lower() for w in words if w.lower() not in _STOP and len(w) > 3]
     cw_counts = Counter(content)
     top_cw_count = max(cw_counts.values(), default=0)
     top_cw_density = top_cw_count * per_1k if top_cw_count > 1 else 0.0
-    lr = cfg.get("lexical_repetition", {})
-    opener_flag = lr.get("opener_repeat_flag_at")
-    cw_flag = lr.get("content_word_per_1k_flag_at")
-    lex_flagged = ((opener_flag is not None and top_opener >= opener_flag) or
-                   (cw_flag is not None and top_cw_density >= cw_flag))
-    tics.append({"tic_id": "lexical_repetition", "count": top_opener,
-                 "threshold": opener_flag, "density_per_1k": round(top_cw_density, 2),
-                 "flagged": bool(lex_flagged), "evidence_spans": []})
+    cw_items = cw_counts.most_common()
+
+    # COMPAT SHIM — remove once every series' ai-tics-config.yaml has migrated.
+    # This used to be one config block:
+    #   lexical_repetition: { opener_repeat_flag_at: 3, content_word_per_1k_flag_at: 8 }
+    # New per-tic keys are preferred (`repeated_openers.flag_at`,
+    # `repeated_content_words.flag_at`, matching the `flag_at` convention every
+    # other tic in this file uses). A series config that still carries only the
+    # old block falls back to it, so it keeps flagging BOTH measurements instead
+    # of silently going dark on both — the exact failure class this fix exists to
+    # close (spec §1).
+    ro_flag = cfg.get("repeated_openers", {}).get("flag_at")
+    if ro_flag is None:
+        ro_flag = cfg.get("lexical_repetition", {}).get("opener_repeat_flag_at")
+
+    rcw_flag = cfg.get("repeated_content_words", {}).get("flag_at")
+    if rcw_flag is None:
+        rcw_flag = cfg.get("lexical_repetition", {}).get("content_word_per_1k_flag_at")
+
+    opener_flagged = ro_flag is not None and top_opener >= ro_flag
+    opener_spans = [{
+        "tic_id": "repeated_openers",
+        "span_text": f'sentence opener "{w.capitalize()}" ×{c}',
+        "line": _first_line_for_word(w),
+    } for w, c in opener_items[:5]]
+    tics.append({"tic_id": "repeated_openers", "count": top_opener,
+                 "threshold": ro_flag, "density_per_1k": round(top_opener * per_1k, 2),
+                 "flagged": bool(opener_flagged), "evidence_spans": opener_spans[:5]})
+
+    cw_flagged = rcw_flag is not None and top_cw_density >= rcw_flag
+    cw_spans = [{
+        "tic_id": "repeated_content_words",
+        "span_text": f'content word "{w}" ×{c}',
+        "line": _first_line_for_word(w),
+    } for w, c in cw_items[:5]]
+    tics.append({"tic_id": "repeated_content_words", "count": top_cw_count,
+                 "threshold": rcw_flag, "density_per_1k": round(top_cw_density, 2),
+                 "flagged": bool(cw_flagged), "evidence_spans": cw_spans[:5]})
 
     metrics = {"n_words": n_words, "n_sentences": len(sentences),
                "sentence_stdev": round(stdev, 2)}
     return {"tics": tics, "metrics": metrics, "blocking": []}  # evidence-only: always []
 
 
+class UnevidencedFlagError(AssertionError):
+    """A tic was flagged with no evidence_spans (spec §4 invariant)."""
+
+
+def _assert_evidenced(tics: list[dict]) -> None:
+    """§4 invariant (spec 2026-08-27-voice-drift-discards-evidence-fix.md): a tic
+    with flagged=True and empty evidence_spans is a bug, not a legitimate state.
+    voice_drift is evidence-only — inspector-voice weighs magnitude and decides
+    whether it harms the read — so a flag with nothing to weigh doesn't just fail
+    to help, it actively misdirects the review (see the spec's §2 real-book
+    reproduction, where the sole flagged tic contributed zero of the evidence).
+
+    This is a HARD FAILURE (raise), not merely a test: voice_drift never gates a
+    chapter (`blocking` stays [] unconditionally — see analyze()'s return and
+    every call site below), so raising here cannot block a finalize. It fails the
+    checker itself loudly during review, which is what this engine does
+    everywhere else a deterministic layer finds its own contract broken.
+
+    Unflagged tics may legitimately carry no spans; the invariant applies only to
+    flags."""
+    culprits = [t["tic_id"] for t in tics if t.get("flagged") and not t.get("evidence_spans")]
+    if culprits:
+        raise UnevidencedFlagError(
+            f"voice_drift: flagged tic(s) with no evidence_spans: {culprits} "
+            "— every flag must be weighable, never just a count (spec §4)"
+        )
+
+
 def _flatten_evidence(tics: list[dict]) -> list[dict]:
+    # Choke point: every real path from analyze()'s tic list to a written verdict
+    # (main() -> write_verdict) passes through here, so the §4 guard lives at the
+    # top of it rather than inside analyze() itself — analyze() is also called
+    # directly by callers (including most of this file's own tests) who may want
+    # to inspect an intermediate/partial tic list without tripping the guard;
+    # what must never happen is an unevidenced flag reaching disk.
+    _assert_evidenced(tics)
     out = []
     for t in tics:
         out.extend(t["evidence_spans"])
