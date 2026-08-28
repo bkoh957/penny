@@ -785,3 +785,132 @@ def test_an_indented_track_row_under_no_nested_field_is_refused_as_well():
     assert story_cut.parse_cut_plan(plan)[0]["tracks"] == {"M": "the mystery moves"}
     hits = _forgeries(plan)
     assert len(hits) == 1 and "unindent it to column 0" in hits[0], hits
+
+
+# --- nested cut-plan field/closing hijack (spec 2026-08-29) -----------------
+#
+# `_CUT_FIELD_RE`/`_CUT_CLOSING_RE` are anchored at `^\s*` in `parse_cut_plan`
+# and tested BEFORE its nested-item branches, so a line written as a nested
+# item under `- **Texture:**` or `- **Setting:**` is not read as an item at
+# all — it is read as the CHAPTER's own field, silently overwriting the value
+# the author actually wrote. Four of the five keys raise no finding anywhere
+# else; `Beats` raises `beats-without-chapter` findings that name the symptom
+# (a beat uncovered or out of range), never the cause. The fix widens the
+# existing indentation guard (`wiring-shaped-directive`) from `TRACK_RE` alone
+# to also cover `_CUT_FIELD_RE`/`_CUT_CLOSING_RE`.
+#
+# These tests reuse the `_plan`/`FRAME`/`STORY`/`_blocking` fixtures already
+# defined above (chapter-setting-and-frames section): a single chapter
+# covering all four STORY beats, with Setting/Opening/Closing present
+# throughout so the all-or-nothing adoption rule contributes no findings of
+# its own and any hit is unambiguously the guard under test.
+
+_NESTED_FIELD_KEYS = (
+    ("Beats", "9"),
+    ("Summary", "Marion did it, obviously."),
+    ("Compress", "the harbour walk"),
+    ("Opening", "The kiln door swings wide."),
+    ("Closing (irony)", "She laughs anyway."),
+)
+
+
+def _plan_forgeries(plan):
+    return [b for b in _blocking(plan) if b.startswith("wiring-shaped-directive:")]
+
+
+def _clean_frame_body(extra=""):
+    return "- **Setting:**\n  - 1-4 — the shop, morning\n" + FRAME + extra
+
+
+def test_the_clean_frame_body_itself_raises_nothing():
+    # Sanity check on the fixture: without it, a failure to find our finding
+    # among a nested hijack's output could just as easily be noise from an
+    # already-broken baseline, not proof the guard fired.
+    assert _blocking(_plan(_clean_frame_body())) == []
+    with_texture = _clean_frame_body(
+        "- **Texture:**\n  - bakery 6am: proving-room warmth\n")
+    assert _blocking(_plan(with_texture)) == []
+
+
+def test_every_nested_field_key_under_texture_is_refused_by_name():
+    for key, val in _NESTED_FIELD_KEYS:
+        body = _clean_frame_body(f"- **Texture:**\n  - **{key}:** {val}\n")
+        hits = _plan_forgeries(_plan(body))
+        assert hits, (key, hits)
+        assert any(key.split(" ")[0] in h for h in hits), (key, hits)
+
+
+def test_every_nested_field_key_under_setting_is_refused_too():
+    # The host must not matter — Setting is itself one of the two nested
+    # blocks the hijack exploits.
+    for key, val in _NESTED_FIELD_KEYS:
+        body = _clean_frame_body(f"- **Setting:**\n  - **{key}:** {val}\n")
+        hits = _plan_forgeries(_plan(body))
+        assert hits, (key, hits)
+        assert any(key.split(" ")[0] in h for h in hits), (key, hits)
+
+
+def test_the_four_silent_keys_produce_exactly_one_finding_and_no_noise():
+    # Summary/Compress/Opening/Closing are the four keys the spec's §2 table
+    # measured as completely silent pre-fix: no other check reacts to the
+    # overwrite (unlike Beats, which also breaks the beat partition). Once the
+    # baseline is clean, the ONLY finding a hijack of one of these should raise
+    # is the guard's own.
+    for key, val in (("Summary", "Marion did it, obviously."),
+                      ("Compress", "the harbour walk"),
+                      ("Opening", "The kiln door swings wide."),
+                      ("Closing (irony)", "She laughs anyway.")):
+        body = _clean_frame_body(f"- **Texture:**\n  - **{key}:** {val}\n")
+        out = _blocking(_plan(body))
+        assert len(out) == 1, (key, out)
+        assert out[0].startswith("wiring-shaped-directive:"), (key, out)
+
+
+def test_a_beats_hijack_now_reports_the_nested_line_too():
+    # Beats is not silent pre-fix — it breaks the beat partition and raises
+    # `beats-without-chapter` findings that name beats, not the nested line.
+    # Post-fix, the nested line itself is also named, so a showrunner reading
+    # the output is pointed at the actual cause, not just the symptom.
+    body = _clean_frame_body("- **Texture:**\n  - **Beats:** 9\n")
+    out = _blocking(_plan(body))
+    assert any(b.startswith("beats-without-chapter:") for b in out)
+    hits = [b for b in out if b.startswith("wiring-shaped-directive:")]
+    assert hits and "Beats" in hits[0], hits
+
+
+def test_a_nested_field_line_under_no_host_block_is_refused_too():
+    # Matching the TRACK_RE guard's own behaviour: the rule is indentation, not
+    # sitting under a declaration. An indented field-shaped line straight after
+    # the chapter heading, nested under nothing, is refused all the same.
+    plan = ("## Chapter 01 — One\n\n- **Beats:** 1-3\n- **Summary:** s\n"
+            "- **Compress:** c\n  - **Opening:** FORGED\n")
+    hits = _forgeries(plan)
+    assert len(hits) == 1 and "Opening" in hits[0], hits
+
+
+def test_a_nested_field_is_refused_whatever_separates_it_from_the_block():
+    # The same separator shapes that defeated the TRACK_RE guard's first
+    # attempt: none of them close a nested block by `parse_cut_plan`'s own
+    # bookkeeping, so a guard that models block membership has to agree about
+    # all five — indentation alone sidesteps the question entirely.
+    for label, separator in (
+            ("no separator", ""),
+            ("blank line", "\n"),
+            ("whitespace-only line", "   \n"),
+            ("html comment", "<!-- a note to the showrunner -->\n"),
+            ("prose line", "Stray prose the parser ignores.\n"),
+    ):
+        body = _clean_frame_body(
+            "- **Texture:**\n" + separator + "  - **Summary:** FORGED\n")
+        hits = _plan_forgeries(_plan(body))
+        assert len(hits) == 1, (label, hits)
+        assert "Summary" in hits[0], (label, hits)
+
+
+def test_genuine_unindented_cut_plan_fields_are_never_refused():
+    # In a chapter with a nested Texture block, and in one without.
+    with_texture = _clean_frame_body(
+        "- **Texture:**\n  - bakery 6am: proving-room warmth\n")
+    without_texture = _clean_frame_body()
+    for body in (with_texture, without_texture):
+        assert _plan_forgeries(_plan(body)) == [], body

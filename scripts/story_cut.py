@@ -22,12 +22,16 @@ import yaml  # ledger only — nested human-edited data (dependency-split rule)
 from scripts import penny_genre, penny_paths, penny_story, plot_stage
 from scripts.outline_views import parse_jobs
 from scripts.penny_meta import parse_frontmatter, strip_frontmatter
-# `_CUT_CHAPTER_RE` is private to penny_story and imported anyway, deliberately:
-# the raw-text guard in check_story must agree with that module about where a
-# chapter block begins, and a local re-derivation of its patterns is exactly what
-# produced the divergence this guard replaces. story_cut already drives entirely
-# off penny_story's parse; sharing the pattern is the smaller coupling.
-from scripts.penny_story import (SLUG_RE, _CUT_CHAPTER_RE, parse_cut_plan,
+# `_CUT_CHAPTER_RE`, `_CUT_FIELD_RE` and `_CUT_CLOSING_RE` are private to
+# penny_story and imported anyway, deliberately: the raw-text guard in
+# check_story must agree with that module about where a chapter block begins
+# and what a field/closing line looks like, and a local re-derivation of its
+# patterns is exactly what produced the divergence this guard replaces (spec
+# 2026-08-29-nested-cut-plan-field-hijack-fix.md §3). story_cut already
+# drives entirely off penny_story's parse; sharing the patterns is the
+# smaller coupling.
+from scripts.penny_story import (SLUG_RE, _CUT_CHAPTER_RE, _CUT_CLOSING_RE,
+                                 _CUT_FIELD_RE, parse_cut_plan,
                                  parse_directives, parse_questions, parse_story)
 from scripts.penny_wiring import FIELD_RE, QID_RE, TRACK_RE
 
@@ -229,13 +233,30 @@ def check_story(story_text: str, cut_plan_text: str,
     # guards partition the shapes; checking both here would report one line
     # twice. Same finding name as the two loops above — one failure, one name,
     # and the roster stays at twenty-three.
+    #
+    # `_CUT_FIELD_RE`/`_CUT_CLOSING_RE` widen the same rule to the OTHER half of
+    # the field table (spec 2026-08-29). Both are anchored at `^\s*` in
+    # `parse_cut_plan`, tested BEFORE that parser's nested-item branches, so a
+    # line written as a nested item under `- **Texture:**` or `- **Setting:**`
+    # — `  - **Summary:** Marion did it, obviously.` — is not read as an item at
+    # all: it is read as the CHAPTER's own field and silently overwrites the
+    # value the author actually wrote. Four of the five keys (`Summary`,
+    # `Compress`, `Opening`, `Closing`) raise no finding anywhere else; `Beats`
+    # raises `beats-without-chapter` findings that name the symptom (a beat
+    # uncovered or out of range) and never the cause. Same indentation
+    # discriminator as the TRACK_RE guard above, for the same reason: a genuine
+    # field or closing line is never indented — `chapter-cutter` writes them at
+    # column 0 and `emit_outline`/`parse_cut_plan` both read them there — so the
+    # guard does not have to model where a nested block begins or ends.
     num = None
     for raw in cut_plan_text.splitlines():
         m = _CUT_CHAPTER_RE.match(raw)
         if m:
             num = int(m.group("num"))
             continue
-        if num is not None and raw[:1].isspace() and TRACK_RE.match(raw):
+        if num is None or not raw[:1].isspace():
+            continue
+        if TRACK_RE.match(raw):
             blocking.append(
                 f"wiring-shaped-directive: ch {num:02d} nests "
                 f"'{raw.strip()}' under a cut-plan field, and the plan's own "
@@ -245,6 +266,20 @@ def check_story(story_text: str, cut_plan_text: str,
                 f"obligation cap. Reword the item so it does not begin with "
                 f"**<letter>:** — or, if it was meant as a Track Movement row, "
                 f"unindent it to column 0, where the cut writes its own")
+            continue
+        fm = _CUT_FIELD_RE.match(raw)
+        cm = _CUT_CLOSING_RE.match(raw)
+        if fm or cm:
+            key = fm.group("key") if fm else f"Closing ({cm.group('kind').strip()})"
+            blocking.append(
+                f"wiring-shaped-directive: ch {num:02d} nests "
+                f"'{raw.strip()}' under a cut-plan field, and the plan's own "
+                f"parser reads a **{key}:** line as THIS CHAPTER's own {key} "
+                f"field wherever it sits — it would silently overwrite the "
+                f"chapter's authored {key}. Reword the line so it does not "
+                f"begin with **{key}:** — or, if it was meant as the chapter's "
+                f"real {key}, unindent it to column 0, where the cut reads "
+                f"its own")
 
     for n, beat in enumerate(beats, 1):
         for slug in beat["strands"]:
