@@ -235,7 +235,7 @@ def test_continuity_extracts_manifest_count_matches_emitted_entries(series_tree)
     text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
         encoding="utf-8")
     heading_line = next(l for l in text.splitlines() if l.startswith("## Continuity Extracts"))
-    m = re.search(r"\((\d+) entries", heading_line)
+    m = re.search(r"\((\d+) entr(?:y|ies)", heading_line)
     assert m, f"no manifest count in heading line: {heading_line!r}"
     claimed = int(m.group(1))
     section = _continuity_extracts_section(text)
@@ -358,6 +358,57 @@ def test_demote_headings_setext_underline_after_atx_heading_untouched():
     assert "\n---\n" in out
 
 
+# --- Follow-up 2: two more leaf-block shapes the setext text-line guard
+# missed — an HTML block (canon-meta comment) and an indented code block,
+# both real shapes in this repo's own continuity data
+# (docs/superpowers/specs/2026-08-27-packet-extract-heading-collision-fix.md
+# review follow-up #2) ---
+
+def test_demote_headings_canon_meta_comment_above_thematic_break_untouched():
+    # <!-- canon-meta: ... --> opens every continuity entry the engine
+    # ships. Immediately above a `---` it looks exactly like setext-heading
+    # text unless HTML-block lines are excluded from the guard.
+    src = "<!-- canon-meta: {id: mary} -->\n---\n\nMore text.\n"
+    assert packet_assemble._demote_headings(src) == src
+
+
+def test_demote_headings_fence_closer_above_thematic_break_untouched():
+    # A fence-closing ``` line above a `---` must not become a demoted
+    # heading — that would break the fence and re-render everything after
+    # it as prose.
+    src = "```\ncode inside\n```\n---\n\nMore text.\n"
+    assert packet_assemble._demote_headings(src) == src
+
+
+def test_demote_headings_indented_code_line_above_thematic_break_untouched():
+    # A 4-space indented code line immediately above a `---` is a code
+    # block, not setext-heading text.
+    src = "    an indented code line\n---\n\nMore text.\n"
+    assert packet_assemble._demote_headings(src) == src
+
+
+def test_demote_headings_tab_indented_code_line_above_thematic_break_untouched():
+    src = "\tan indented code line\n---\n\nMore text.\n"
+    assert packet_assemble._demote_headings(src) == src
+
+
+def test_demote_headings_table_row_above_thematic_break_untouched():
+    # A GFM table row above a `---` must not be swallowed into a setext
+    # heading either.
+    src = "| a | b |\n---\n\nMore text.\n"
+    assert packet_assemble._demote_headings(src) == src
+
+
+def test_demote_headings_setext_text_line_indent_preserved():
+    # The ATX path preserves a 1-3 space indent; the setext path must be
+    # consistent with it instead of stripping the indent away.
+    src = "   Canon Core\n===\n\nBody.\n"
+    out = packet_assemble._demote_headings(src)
+    assert out.startswith("   ##### Canon Core\n")
+
+
+
+
 _SETEXT_UNDERLINE_ONLY_RE = re.compile(r"^ {0,3}(=+|-+)[ \t]*$")
 
 
@@ -411,6 +462,47 @@ def test_continuity_extracts_section_survives_setext_headings(series_tree):
     assert "Don't resolve the mystery early." in section
     assert "Mary keeps everything in its place." in section
     assert "Cal notices what others miss." in section
+
+
+def test_continuity_extracts_survives_canon_meta_comment_above_thematic_break(series_tree):
+    # canon-core.md opens with a <!-- canon-meta -->-style comment directly
+    # above a `---` — the single shape guaranteed present in production
+    # data (background_cut.py stamps it on every continuity entry). Before
+    # the HTML-block exclusion, the setext guard would misread the comment
+    # as setext-heading text and rewrite it to "###### <!-- canon-meta ... -->",
+    # deleting the `---` in the process.
+    cont = series_tree / "series/continuity"
+    (cont / "canon-core.md").write_text(
+        "<!-- canon-meta: {id: canon-core} -->\n"
+        "---\n\n"
+        "The Wheelhouse pottery studio. Maggie's Too-Much.\n",
+        encoding="utf-8")
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+
+    heading_line = next(l for l in text.splitlines()
+                         if l.startswith("## Continuity Extracts"))
+    start = text.index(heading_line) + len(heading_line)
+    rest = text[start:]
+    # `_first_real_markdown_boundary` treats *any* non-blank line followed
+    # by a `===`/`---` underline as setext — including an HTML comment,
+    # which a full parser reads as its own complete leaf block (it opens
+    # and closes on one line) so the `---` after it is just a thematic
+    # break, not glued to the comment as setext text. That would make the
+    # helper itself misfire here, so this test instead locates the section
+    # boundary the way the packet's own writer does: the next real,
+    # non-indented `## ` sibling section header it emits.
+    m = re.search(r"(?m)^## ", rest)
+    section = rest[:m.start()] if m else rest
+
+    assert "<!-- canon-meta: {id: canon-core} -->" in section
+    assert "\n---\n" in section
+    assert "The Wheelhouse pottery studio." in section
+    assert "### canon-core.md" in section
+    assert "### characters/mary.md" in section
+    # And no level-1/2 heading (ATX or setext) survives in the section —
+    # the demoted comment/thematic-break pair is at level 6, not level 2.
+    assert not re.search(r"(?m)^#{1,2}(?!#)[ \t]", section)
 
 
 # --- Manifest grammar and coverage ---

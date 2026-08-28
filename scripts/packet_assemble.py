@@ -50,6 +50,16 @@ _SETEXT_UNDERLINE_RE = re.compile(r"^ {0,3}(=+|-+)[ \t]*$")
 _LIST_ITEM_LINE_RE = re.compile(r"^ {0,3}(?:[-*+]|\d{1,9}[.)])(?:[ \t]|$)")
 _BLOCKQUOTE_LINE_RE = re.compile(r"^ {0,3}>")
 _ATX_LINE_RE = re.compile(r"^ {0,3}#{1,6}(?:[ \t]|$)")
+_HTML_BLOCK_LINE_RE = re.compile(r"^ {0,3}<")
+_INDENTED_CODE_LINE_RE = re.compile(r"^(?: {4,}|\t)")
+# A fence delimiter line (never real setext TEXT — it opens or closes a code
+# block either way) and a line shaped like a table row (has a `|` cell
+# separator). Neither is fence *state* tracking — this recognizes a line's
+# own shape, not whether an earlier line opened a fence still in effect —
+# so the "no fenced-code-block tracking" rule (a `#` demoted INSIDE a fence
+# stays demoted, deliberately) is untouched.
+_FENCE_LINE_RE = re.compile(r"^ {0,3}(?:`{3,}|~{3,})")
+_TABLE_ROW_LINE_RE = re.compile(r"^ {0,3}\S.*\|")
 
 
 def _frontmatter_end(lines: list[str]) -> int:
@@ -77,9 +87,13 @@ def _convert_setext_headings(text: str, offset: int, max_level: int) -> str:
     2026-08-27-packet-extract-heading-collision-fix.md follow-up. Deliberately
     conservative: a `---`/`===` that could be a thematic break, YAML
     frontmatter delimiter, or that follows a list item / blockquote / ATX
-    heading is never converted — those are real, common shapes in hand-authored
-    canon and getting one wrong corrupts authored text, which is worse than a
-    narrow reopening of the original bug."""
+    heading / HTML block line / indented code line is never converted —
+    those are real, common shapes in hand-authored canon (an
+    `<!-- canon-meta -->` comment opens every continuity entry the engine
+    ships) and getting one wrong corrupts authored text, which is worse than
+    a narrow reopening of the original bug. The text line's own 1-3 space
+    indent, if any, is preserved in the demoted output, matching the ATX
+    path."""
     lines = text.split("\n")
     fm_end = _frontmatter_end(lines)
     out: list[str] = []
@@ -95,10 +109,15 @@ def _convert_setext_headings(text: str, offset: int, max_level: int) -> str:
             m = _SETEXT_UNDERLINE_RE.match(lines[i + 1])
             if (m and not _LIST_ITEM_LINE_RE.match(line)
                     and not _BLOCKQUOTE_LINE_RE.match(line)
-                    and not _ATX_LINE_RE.match(line)):
+                    and not _ATX_LINE_RE.match(line)
+                    and not _HTML_BLOCK_LINE_RE.match(line)
+                    and not _INDENTED_CODE_LINE_RE.match(line)
+                    and not _FENCE_LINE_RE.match(line)
+                    and not _TABLE_ROW_LINE_RE.match(line)):
                 level = 1 if m.group(1)[0] == "=" else 2
                 new_level = min(level + offset, max_level)
-                out.append(f"{'#' * new_level} {line.strip()}")
+                indent = line[:len(line) - len(line.lstrip(" "))]
+                out.append(f"{indent}{'#' * new_level} {line.strip()}")
                 i += 2
                 continue
         out.append(line)
