@@ -48,6 +48,15 @@ _DIRECTIVE_OPENERS = frozenset({
 
 _OPENER_RE = re.compile(r"^\s*(?P<word>[A-Za-z']+)")
 
+# Raw-text patterns for the nested-texture forgery scan in check_story. Local
+# rather than imported from penny_story because the scan must see the cut plan
+# as TEXT, before that parser has classified anything — which is the whole point
+# of it. The chapter-heading shape is fixed and already written out separately
+# in chapter_refs_check.py, so a local copy is house practice, not drift.
+_CUT_CHAPTER_LINE_RE = re.compile(r"^##\s+Chapter\s+(?P<num>\d+)\b")
+_TEXTURE_DECL_RE = re.compile(r"^\s*-\s+\*\*Texture:\*\*")
+_NESTED_LINE_RE = re.compile(r"^\s+\S")
+
 # The three kinds a chapter may end on (spec 2026-08-12 §3). Engine-level rather
 # than genre-level: these name shapes of ending, not cozy conventions.
 CLOSING_KINDS = ("cliffhanger", "irony", "promise of action")
@@ -192,6 +201,46 @@ def check_story(story_text: str, cut_plan_text: str,
                     f"— the cut writes those itself. Reword the item so it does "
                     f"not begin with **Because:**/**Opens:**/**Closes:**/"
                     f"**Carries:**/**Hook:** or **<letter>:**")
+
+    # The TRACK-shaped nested item never reaches the loop above, and this is the
+    # only place it can be caught. `penny_story.parse_cut_plan` tests its
+    # track-row pattern BEFORE its `nested == "texture"` branch, so an item
+    # written `  - **R:** a phantom romance beat` under `- **Texture:**` is not a
+    # texture item at all by the time the dict exists — it has been reclassified
+    # into `ch["tracks"]`, where it is indistinguishable from a genuine track
+    # row. Left alone it reaches `### Track Movement`, and worse, `tension_check`
+    # counts every non-"none" track toward `obligations.max_per_chapter` — so a
+    # texture item silently becomes an OBLIGATION, the one thing this layer
+    # forbids (spec 2026-08-27 §4.2). The scan therefore runs over the raw text,
+    # where the nesting is still visible.
+    #
+    # TRACK_RE only, deliberately: a FIELD-shaped nested item (`**Closes:**`) is
+    # matched by neither of that parser's field or track patterns, so it still
+    # lands in `ch["texture"]` and the loop above already refuses it. Checking
+    # both here would report one line twice. Same finding name as the two loops
+    # above — one failure, one name, and the roster stays at twenty-three.
+    num, in_texture = None, False
+    for raw in cut_plan_text.splitlines():
+        m = _CUT_CHAPTER_LINE_RE.match(raw)
+        if m:
+            num, in_texture = int(m.group("num")), False
+            continue
+        if _TEXTURE_DECL_RE.match(raw):
+            in_texture = True
+            continue
+        if not in_texture:
+            continue
+        if not _NESTED_LINE_RE.match(raw):
+            in_texture = False
+            continue
+        if TRACK_RE.match(raw) and num is not None:
+            blocking.append(
+                f"wiring-shaped-directive: ch {num:02d} Texture reads "
+                f"'{raw.strip()}', which the cut plan's own parser reads as a "
+                f"Track Movement row rather than as a texture item — it would "
+                f"become a track the cut never wrote, and tension_check counts "
+                f"tracks toward this chapter's obligation cap. Reword the item "
+                f"so it does not begin with **<letter>:**")
 
     for n, beat in enumerate(beats, 1):
         for slug in beat["strands"]:
