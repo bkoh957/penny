@@ -45,6 +45,31 @@ def _heading_line(outline_text: str, num: int) -> str:
     return ""
 
 
+_ATX_HEADING_RE = re.compile(r"^(#{1,6})([ \t]+)(.*)$", re.MULTILINE)
+
+
+def _demote_headings(text: str, offset: int = 4, max_level: int = 6) -> str:
+    """Rewrite every ATX heading (`^#{1,6} ...`) in embedded continuity
+    source text to sit well below the `### <source>` wrapper the packet puts
+    around it, clamped at level 6 — spec
+    2026-08-27-packet-extract-heading-collision-fix.md §3a. Without this, a
+    source file's own `#`/`##` heading structurally closes the packet's
+    `## Continuity Extracts` section, and every consumer that reads that
+    section by markdown structure silently gets a truncated slice.
+
+    Only a `#` immediately followed by whitespace at the start of a line
+    counts as an ATX heading — `#hashtag` (no space) and a mid-line `#` are
+    left untouched, matching CommonMark's own rule for what makes a line a
+    heading. Shared by both embed call sites (canon-core.md and each
+    continuity entry) so the rule can't drift between them.
+    """
+    def _demote(m: re.Match) -> str:
+        hashes, spacing, rest = m.group(1), m.group(2), m.group(3)
+        new_level = min(len(hashes) + offset, max_level)
+        return f"{'#' * new_level}{spacing}{rest}"
+    return _ATX_HEADING_RE.sub(_demote, text)
+
+
 _CONTINUITY_SUBDIRS = ("characters", "locations", "threads", "background")
 
 
@@ -75,12 +100,21 @@ def _word_match(name: str, text: str) -> bool:
     return bool(re.search(rf"\b{re.escape(name)}\b", text, re.IGNORECASE))
 
 
-def _continuity_slice(root, chapter_text: str) -> str:
+def _continuity_slice(root, chapter_text: str) -> tuple[str, str]:
     """canon-core.md (always, first) + entries named in `chapter_text` (word
     boundary, case-insensitive) + one hop through each matched entry's
     canon-meta `links`/`refs`. Nothing else — the packet is the curation
     boundary, so unmatched entries (future chapters, other characters'
-    secrets) stay out."""
+    secrets) stay out.
+
+    Returns `(section_text, manifest)`. Each embedded source's own headings
+    are demoted (`_demote_headings`) before interpolation, so an authored
+    `#`/`##` heading inside canon-core.md or a continuity entry can never
+    structurally close the packet's `## Continuity Extracts` section — see
+    spec 2026-08-27-packet-extract-heading-collision-fix.md. `manifest` is a
+    parenthesised `(N entries: ...)` breakdown derived from what was
+    actually emitted (never a separate directory walk), meant to be appended
+    to the section heading so any reader can check its read was complete."""
     canon_core_path = series_path("continuity/canon-core.md", root)
     entries = _continuity_entries(root)
 
@@ -99,19 +133,35 @@ def _continuity_slice(root, chapter_text: str) -> str:
 
     parts: list[str] = []
     notes: list[str] = []
+    counts: dict[str, int] = {}
     if canon_core_path.is_file():
-        parts.append(f"### canon-core.md\n\n{canon_core_path.read_text(encoding='utf-8').strip()}")
+        body = _demote_headings(canon_core_path.read_text(encoding="utf-8").strip())
+        parts.append(f"### canon-core.md\n\n{body}")
+        counts["canon-core.md"] = 1
     else:
         notes.append("no series/continuity/canon-core.md")
     for key in sorted(matched):
         e = entries[key]
         rel = e["path"].relative_to(series_path("continuity", root))
-        parts.append(f"### {rel.as_posix()}\n\n{e['text'].strip()}")
+        body = _demote_headings(e["text"].strip())
+        parts.append(f"### {rel.as_posix()}\n\n{body}")
+        sub = f"{rel.parts[0]}/"
+        counts[sub] = counts.get(sub, 0) + 1
+
+    total = sum(counts.values())
+    if counts:
+        breakdown = []
+        if "canon-core.md" in counts:
+            breakdown.append("canon-core.md")
+        breakdown += [f"{counts[sub]} {sub}" for sub in sorted(counts) if sub != "canon-core.md"]
+        manifest = f"({total} entries: {', '.join(breakdown)})"
+    else:
+        manifest = "(0 entries)"
 
     if not parts:
         note = "; ".join(notes) if notes else "no continuity entries matched this chapter"
-        return f"- None. — {note}"
-    return "\n\n".join(parts)
+        return f"- None. — {note}", manifest
+    return "\n\n".join(parts), manifest
 
 
 def assemble(book: str, chapter: str, *, repo_root=None) -> Path:
@@ -170,7 +220,7 @@ def assemble(book: str, chapter: str, *, repo_root=None) -> Path:
         clue_lines = ["- None."]
 
     # --- continuity slice ---
-    continuity_section = _continuity_slice(root, full_block)
+    continuity_section, continuity_manifest = _continuity_slice(root, full_block)
 
     # --- standing series guardrails ---
     guardrails_path = config_path("series-guardrails.md", root)
@@ -207,7 +257,7 @@ def assemble(book: str, chapter: str, *, repo_root=None) -> Path:
         "",
         *clue_lines,
         "",
-        "## Continuity Extracts",
+        f"## Continuity Extracts {continuity_manifest}",
         "",
         continuity_section,
         "",

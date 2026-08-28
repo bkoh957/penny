@@ -30,7 +30,9 @@ of the answer; you never write the file they act on.
   outline block (Chapter Purpose, Starting/Ending State, Reader-Facing Shape,
   Required Beats, Clues and Plants, Character Knowledge, Guardrails, `###
   Texture`, the wiring footer), the merged `## Ledger Clues`, `##
-  Continuity Extracts`, `## Standing Series Guardrails`, and `## Word Budget`.
+  Continuity Extracts` (its heading carries a manifest — `(N entries: ...)`
+  — so you can check the `### ` entries you read against it), `## Standing
+  Series Guardrails`, and `## Word Budget`.
 - Nothing else. No solution file, no other chapter, no prior map, no draft.
 
 **Outputs:**

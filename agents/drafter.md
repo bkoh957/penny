@@ -24,9 +24,12 @@ Does not write ledgers.
   Reader-Facing Shape, Required Beats, Clues and Plants, Character Knowledge,
   Guardrails, the wiring footer), the merged Ledger Clues, the Continuity Extracts
   (this chapter's ledger slice — canon-core + the entries the chapter names + their
-  one-hop links, already curated for you), Standing Series Guardrails, and the Word
-  Budget the map was priced against. When the outline block carries them, `###
-  Setting` (where and when each of its beats happens), `### Opening`,
+  one-hop links, already curated for you; the section heading carries a manifest,
+  `## Continuity Extracts (N entries: ...)`, so you can confirm the `### ` entries
+  you read match it before treating the slice as complete), Standing Series
+  Guardrails, and the Word Budget the map was priced against. When the
+  outline block carries them, `### Setting` (where and when each of its
+  beats happens), `### Opening`,
   `### Closing`, and `### Texture` are also here — `### Opening` and
   `### Closing` are **instruction, not context**: the chapter opens and lands
   exactly as they say, not as something you're free to reinterpret in the room.

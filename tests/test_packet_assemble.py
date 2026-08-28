@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 import pytest
@@ -169,10 +170,11 @@ def test_background_entry_loads_when_named(tmp_path, monkeypatch):
         "<!-- canon-meta: {id: pruitt, kind: character, links: []} -->\n\n"
         "Not in this chapter.\n", encoding="utf-8")
 
-    out = packet_assemble._continuity_slice(tmp_path, "Maggie opens the studio.")
+    out, manifest = packet_assemble._continuity_slice(tmp_path, "Maggie opens the studio.")
     assert "A potter who does not perform fear." in out
     assert "Slow, and neither will name it first." in out
     assert "Not in this chapter." not in out
+    assert "(2 entries: 2 background/)" == manifest
 
 
 # --- Task 4: the allocation reaches the packet with no packet_assemble code ---
@@ -192,3 +194,78 @@ def test_the_packet_carries_the_chapters_texture_allocation(series_tree):
         encoding="utf-8")
     assert "### Texture" in text
     assert "bakery 6am: proving-room warmth" in text
+
+
+# --- Packet extract heading collision fix
+# (docs/superpowers/specs/2026-08-27-packet-extract-heading-collision-fix.md) ---
+
+_SIBLING_HEADING_RE = re.compile(r"\n#{1,2}(?!#)[ \t]")
+
+
+def _continuity_extracts_section(text: str) -> str:
+    """Isolate the packet's `## Continuity Extracts ...` section the way a
+    markdown-structure-aware reader would: from its heading line up to (not
+    including) the next sibling heading at level 1 or 2. A `###`+ heading
+    (an embedded source's own, once demoted) does NOT end the section."""
+    heading_line = next(l for l in text.splitlines() if l.startswith("## Continuity Extracts"))
+    start = text.index(heading_line) + len(heading_line)
+    rest = text[start:]
+    m = _SIBLING_HEADING_RE.search(rest)
+    return rest[:m.start()] if m else rest
+
+
+def test_continuity_extracts_section_survives_embedded_headings(series_tree):
+    # §4 regression test: the fixture's canon-core.md carries a level-1
+    # heading ("# Canon Core") and characters/mary.md carries a level-2
+    # heading ("## Mary") — exactly the collision the defect brief describes.
+    # On unfixed code, "# Canon Core" structurally closes the section 19
+    # "lines" in, before mary.md and cal.md are ever reached.
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+    section = _continuity_extracts_section(text)
+    assert "### canon-core.md" in section
+    assert "### characters/mary.md" in section
+    assert "### characters/cal.md" in section
+    assert "Mary keeps everything in its place." in section
+    assert "Cal notices what others miss." in section
+
+
+def test_continuity_extracts_manifest_count_matches_emitted_entries(series_tree):
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+    heading_line = next(l for l in text.splitlines() if l.startswith("## Continuity Extracts"))
+    m = re.search(r"\((\d+) entries", heading_line)
+    assert m, f"no manifest count in heading line: {heading_line!r}"
+    claimed = int(m.group(1))
+    section = _continuity_extracts_section(text)
+    actual = len(re.findall(r"(?m)^### ", section))
+    assert actual == claimed
+    assert claimed > 0
+
+
+def test_demote_headings_matches_spec_examples():
+    src = "# Canon Core\n\nThe Wheelhouse pottery studio.\n\n## Practical canon decisions (book 1)\n\nMore text.\n"
+    out = packet_assemble._demote_headings(src)
+    assert out.startswith("##### Canon Core\n")
+    assert "\n###### Practical canon decisions (book 1)\n" in out
+
+
+def test_demote_headings_clamps_at_level_6():
+    # A level-5 source heading would map past level 6 (5 + 4 = 9); it must
+    # clamp there instead, per the brief's own worked example.
+    assert packet_assemble._demote_headings("##### Deep heading\n") == "###### Deep heading\n"
+    # An already-level-6 heading has nowhere further to go.
+    assert packet_assemble._demote_headings("###### Already deepest\n") == "###### Already deepest\n"
+
+
+def test_demote_headings_ignores_non_heading_hashes():
+    src = "Not a #hashtag heading.\n\nA mid-line # is fine too.\n"
+    assert packet_assemble._demote_headings(src) == src
+
+
+def test_demote_headings_no_headings_is_unchanged():
+    # background/*.md entries carry zero headings in real series data — the
+    # reason the defect was ~4%, not total. That path must pass through
+    # byte-for-byte.
+    src = "A potter who does not perform fear. Plain prose, no markdown structure.\n"
+    assert packet_assemble._demote_headings(src) == src

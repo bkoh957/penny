@@ -28,7 +28,11 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
 4. **Assemble the ledger slice** (design §4.2, same as `draft-chapter`): when
    `input/book-$book/packets/ch-$chapter.md` exists, its `## Continuity Extracts`
    section already carries the assembled slice — canon-core + the entries this
-   chapter names + their one-hop `links` — so read it from there directly. On the
+   chapter names + their one-hop `links` — so read it from there directly. The
+   heading itself carries a manifest, `## Continuity Extracts (N entries: ...)` —
+   read to the section's end (the next `## ` heading; embedded sources' own
+   headings run deeper and don't end it) and check the `### ` entries you saw
+   against the manifest count before trusting the read as complete. On the
    legacy path (no packet), assemble it the old way: always
    `series/continuity/canon-core.md`; then the continuity entries named in the
    chapter's raw outline section and their one-hop `links`. Canon-core-only
