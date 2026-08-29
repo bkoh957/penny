@@ -49,7 +49,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (1263 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (1264 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -191,10 +191,13 @@ series-guardrail and reveal-chapter lines; a note shaped like a wiring field or 
 Movement row is refused rather than emitted, since the emitted block is parsed line by
 line and authored prose must not be able to forge the cut's own output. The same finding
 also catches a cut-plan field or `Closing (<kind>)` line — `Beats`, `Summary`, `Compress`,
-`Opening` included — written as a nested item under `- **Texture:**` or `- **Setting:**`:
+`Setting`, `Texture`, `Opening` included — written **indented anywhere inside a chapter
+block**, whether nested under `- **Texture:**`/`- **Setting:**` or under nothing at all:
 `parse_cut_plan` matches those patterns at any indentation and tests them before its
 nested-item branches, so an indented one is read as the CHAPTER's own field, silently
-overwriting the value the author wrote, rather than as a texture image or setting range
+overwriting the value the author wrote, rather than as a texture image or setting range.
+**The rule is indentation, not block membership** — a guard that modelled where a nested
+block ends was tried first, and a single blank line reopened the bug
 (spec `docs/superpowers/specs/2026-08-29-nested-cut-plan-field-hijack-fix.md`). The derived
 reveal-chapter line and the Character Knowledge "not yet known" line are **relative to the
 chapter being emitted**, not constants: before the reveal they read as they always did; the

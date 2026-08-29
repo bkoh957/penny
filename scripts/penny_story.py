@@ -190,6 +190,10 @@ _CUT_CLOSING_RE = re.compile(
 # separating range from prose is an em dash; a hyphen would be ambiguous against
 # the range's own `22-23`.
 _CUT_SETTING_ITEM_RE = re.compile(r"^\s+-\s+(?P<spec>[\d,\s-]+?)\s+—\s+(?P<val>.*)$")
+# The `spec` charset MUST stay disjoint from `*`: it is what lets
+# `story_cut.check_story`'s indentation guard refuse every indented
+# field- or track-shaped row without false-positiving on a legitimate
+# setting sub-item, which can never match _CUT_FIELD_RE/TRACK_RE.
 # A texture sub-item: `  - bakery 6am: proving-room warmth`. Deliberately BROAD
 # where the setting item pattern is narrow — an allocated image is free prose
 # with no range to anchor on. That breadth is why the texture branch is matched

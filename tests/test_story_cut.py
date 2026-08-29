@@ -856,14 +856,25 @@ def test_the_four_silent_keys_produce_exactly_one_finding_and_no_noise():
     # overwrite (unlike Beats, which also breaks the beat partition). Once the
     # baseline is clean, the ONLY finding a hijack of one of these should raise
     # is the guard's own.
-    for key, val in (("Summary", "Marion did it, obviously."),
-                      ("Compress", "the harbour walk"),
-                      ("Opening", "The kiln door swings wide."),
-                      ("Closing (irony)", "She laughs anyway.")):
+    for key, val in [kv for kv in _NESTED_FIELD_KEYS if kv[0] != "Beats"]:
         body = _clean_frame_body(f"- **Texture:**\n  - **{key}:** {val}\n")
         out = _blocking(_plan(body))
         assert len(out) == 1, (key, out)
         assert out[0].startswith("wiring-shaped-directive:"), (key, out)
+
+
+def test_the_overwrite_the_guard_refuses_is_real_at_parse_level():
+    # The track half pins its forgery at parse level (`ch["tracks"] == ...`)
+    # and names why: it is the proof the shape is worth refusing. Same proof
+    # for the field half. Unguarded, the nested line really does replace the
+    # chapter's authored Summary — silently, since `check_story` is where the
+    # refusal lives and `parse_cut_plan` still overwrites by design (spec's
+    # "detect, don't prevent"). Delete the guard and this is what ships.
+    body = ("- **Summary:** The potter opens the shop.\n"
+            "- **Setting:**\n  - 1-4 — the shop, morning\n" + FRAME
+            + "- **Texture:**\n  - **Summary:** FORGED\n")
+    ch = story_cut.parse_cut_plan(_plan(body))[0]
+    assert ch["summary"] == "FORGED", ch
 
 
 def test_a_beats_hijack_now_reports_the_nested_line_too():

@@ -499,29 +499,29 @@ as it does, so there's no separate weaving pass. The new `cut` stage turns it in
 2. You approve, editing boundaries freely. The approved grouping is written to
    `input/book-NN/cut-plan.md`. Each chapter block looks like this:
 
-   ```markdown
-   ## Chapter 07 — The Tin in the Tide
-   - **Beats:** 22-25
-   - **Summary:** <one line; this is what the story-at-a-glance view renders>
-   - **Compress:** <what this chapter should spend few words on>
-   - **Setting:**
-     - 22-23 — the pottery studio, late afternoon
-     - 24-25 — the harbour road, dusk, rain coming in off the water
-   - **Opening:** The kiln door still warm and the studio empty behind her.
-   - **Closing (promise of action):** She pockets the tin and turns for the harbour.
-   - **M:** <how the mystery track moves here>
-   ```
+```markdown
+## Chapter 07 — The Tin in the Tide
+- **Beats:** 22-25
+- **Summary:** <one line; this is what the story-at-a-glance view renders>
+- **Compress:** <what this chapter should spend few words on>
+- **Setting:**
+  - 22-23 — the pottery studio, late afternoon
+  - 24-25 — the harbour road, dusk, rain coming in off the water
+- **Opening:** The kiln door still warm and the studio empty behind her.
+- **Closing (promise of action):** She pockets the tin and turns for the harbour.
+- **M:** <how the mystery track moves here>
+```
 
-   `Setting` is the one nested field — each sub-item is `<beat range> — place, time[,
-   condition]`, the range using the same syntax as `Beats:` (`22-23`, `24`, `22,24-25`).
-   `Opening` is one line of craft guidance for the chapter's first sentence or image.
-   `Closing` carries its kind in the key — `cliffhanger`, `irony`, or `promise of
-   action` — so it's machine-visible without the sentence having to announce itself. All
-   three are cut-level, not beat-level: chapters don't exist until beats are grouped, and
-   an ending only means something once you know where the chapter stops. Adoption is
-   all-or-nothing per plan — if no chapter carries `Setting`, `Opening`, or `Closing` the
-   plan predates this and none of the five findings below fire; the moment any chapter
-   carries any of them, every chapter must carry all three.
+`Setting` is the one nested field — each sub-item is `<beat range> — place, time[,
+condition]`, the range using the same syntax as `Beats:` (`22-23`, `24`, `22,24-25`).
+`Opening` is one line of craft guidance for the chapter's first sentence or image.
+`Closing` carries its kind in the key — `cliffhanger`, `irony`, or `promise of
+action` — so it's machine-visible without the sentence having to announce itself. All
+three are cut-level, not beat-level: chapters don't exist until beats are grouped, and
+an ending only means something once you know where the chapter stops. Adoption is
+all-or-nothing per plan — if no chapter carries `Setting`, `Opening`, or `Closing` the
+plan predates this and none of the five findings below fire; the moment any chapter
+carries any of them, every chapter must carry all three.
 3. `scripts/story_cut.py NN` — deterministic, no LLM — expands the approved plan into
    packet-format chapter blocks in `input/book-NN/outline.md`, deriving Required Beats,
    Clues and Plants, wiring, Character Knowledge, Guardrails, and Starting/Ending State
@@ -549,7 +549,7 @@ outline — there are no waivers at this level; fix the story or the cut plan:
 | `cut-owned-outline` | `/expand-outline` was pointed at an outline the cut produced |
 | `orphan-direction` | a `## Chapter Direction`/`## Guardrails` line is scoped to an `@strand` or `#job` no beat carries — it would render nowhere and be read by no one |
 | `misplaced-schedule-tag` | a `## Chapter Direction`/`## Guardrails` line carries a `+q`/`-q`/`!clue` tag — those blocks scope with `@strand`/`#job` only, never schedule anything |
-| `wiring-shaped-directive` | anything authored that would be emitted verbatim is shaped like a wiring field (`- **Closes:** …`) or a Track Movement row (`- **M:** …`), forging a line the cut never wrote and firing downstream checks on it. Covers a `## Chapter Direction`/`## Guardrails` line, a cut plan's `Opening`/`Summary`/`Compress` value, a `Texture` item, and — by indentation, since `parse_cut_plan` reads a `- **<letter>:**` row as a track and a `- **Beats/Summary/Compress/Setting/Texture/Opening/Closing(<kind>):**` line as the chapter's OWN field wherever either sits — any *indented* track- or field-shaped row inside a chapter block, whatever field it is nested under, which would otherwise silently overwrite that field's authored value |
+| `wiring-shaped-directive` | anything authored that would be emitted verbatim is shaped like a wiring field (`- **Closes:** …`) or a Track Movement row (`- **M:** …`), forging a line the cut never wrote and firing downstream checks on it. Covers a `## Chapter Direction`/`## Guardrails` line, a cut plan's `Opening`/`Summary`/`Compress` value, a `Texture` item, and — by indentation, since `parse_cut_plan` reads a `- **<letter>:**` row as a track and a `- **Beats/Summary/Compress/Setting/Texture/Opening/Closing(<kind>):**` line as the chapter's OWN field wherever either sits — any *indented* track- or field-shaped row inside a chapter block — nested under another field or under nothing at all, since the rule is indentation, not block membership. A field-shaped row silently overwrites that field's authored value; a track-shaped one adds a track the cut never wrote |
 | `beat-without-setting` | a beat in the chapter is covered by no `Setting` range |
 | `overlapping-setting` | two `Setting` ranges in one chapter claim the same beat, so where it happens is ambiguous |
 | `setting-outside-chapter` | a `Setting` range names a beat this chapter does not hold — the routine case, left behind by a chapter-boundary move |

@@ -258,28 +258,29 @@ def check_story(story_text: str, cut_plan_text: str,
             continue
         if TRACK_RE.match(raw):
             blocking.append(
-                f"wiring-shaped-directive: ch {num:02d} nests "
-                f"'{raw.strip()}' under a cut-plan field, and the plan's own "
-                f"parser reads a **<letter>:** row as a Track Movement row "
-                f"wherever it sits — it would become a track the cut never "
-                f"wrote, and tension_check counts tracks toward this chapter's "
-                f"obligation cap. Reword the item so it does not begin with "
-                f"**<letter>:** — or, if it was meant as a Track Movement row, "
-                f"unindent it to column 0, where the cut writes its own")
+                f"wiring-shaped-directive: ch {num:02d} indents "
+                f"'{raw.strip()}' inside its chapter block, and the plan's "
+                f"own parser reads a **<letter>:** row as a Track Movement "
+                f"row wherever it sits — it would become a track the cut "
+                f"never wrote, and tension_check counts tracks toward this "
+                f"chapter's obligation cap. Reword the item so it does not "
+                f"begin with **<letter>:** — or, if it was meant as a Track "
+                f"Movement row, unindent it to column 0, where the cut "
+                f"writes the chapter's real Track Movement rows")
             continue
         fm = _CUT_FIELD_RE.match(raw)
         cm = _CUT_CLOSING_RE.match(raw)
         if fm or cm:
             key = fm.group("key") if fm else f"Closing ({cm.group('kind').strip()})"
             blocking.append(
-                f"wiring-shaped-directive: ch {num:02d} nests "
-                f"'{raw.strip()}' under a cut-plan field, and the plan's own "
-                f"parser reads a **{key}:** line as THIS CHAPTER's own {key} "
-                f"field wherever it sits — it would silently overwrite the "
-                f"chapter's authored {key}. Reword the line so it does not "
-                f"begin with **{key}:** — or, if it was meant as the chapter's "
-                f"real {key}, unindent it to column 0, where the cut reads "
-                f"its own")
+                f"wiring-shaped-directive: ch {num:02d} indents "
+                f"'{raw.strip()}' inside its chapter block, and the plan's "
+                f"own parser reads a **{key}:** line as THIS CHAPTER's own "
+                f"{key} field wherever it sits — it would silently overwrite "
+                f"the chapter's authored {key}. Reword the line so it does "
+                f"not begin with **{key}:** — or, if it was meant as the "
+                f"chapter's real {key}, unindent it to column 0, where the "
+                f"cut reads the chapter's real fields")
 
     for n, beat in enumerate(beats, 1):
         for slug in beat["strands"]:
