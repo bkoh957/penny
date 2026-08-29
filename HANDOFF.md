@@ -1,153 +1,136 @@
 # Handoff — Penny (fiction-series engine) / main
-Saved: 2026-08-29 00:12 | Type: build (three streams, all shipped, committed and pushed)
+Saved: 2026-08-29 14:23 | Type: build (one feature, five defects, one design — all committed and pushed)
 
-> **Replaces** the previous HANDOFF.md, which described the `drafted_words` feature as
-> "complete, tests green, NOT committed". That work was committed at the start of this
-> session (`ae0cb29`) on the showrunner's instruction and is now pushed; the old file's
-> status line was stale and would have misled the next session.
+> Supersedes this file's earlier save from 2026-08-29 00:12, which covered only the texture
+> layer and the first two defect fixes. Everything there is still true and still shipped;
+> this adds what came after it.
 
 ## What we built
 
-Three streams, in order:
+**41 commits.** One feature, five defects, one design note. All pushed to `origin/main`,
+HEAD `7aa6fe7`, suite **1263 green**, tree clean.
 
-1. **Texture allocation** (spec `2026-08-27-texture-allocation-design.md` §4.1 + §4.2) — the
-   feature. Texture was the only creative concern in the engine with no allocation layer:
-   every chapter got the same standing guardrail and the drafter decided locally, blind to
-   the other 34 chapters. Now it has a schedule, like clues, beats and words already do.
-2. **Packet extract heading collision** (spec `2026-08-27-packet-extract-heading-collision-fix.md`)
-   — a high-severity silent defect, filed by the showrunner mid-session.
-3. **voice_drift discards its evidence** (spec `2026-08-27-voice-drift-discards-evidence-fix.md`)
-   — likewise.
+### 1. Texture allocation — the feature (spec `2026-08-27-texture-allocation-design.md` §4.1+§4.2)
 
-### 1. Texture allocation — how it works now
+Texture was the only creative concern in the engine with no allocation layer: every chapter
+got the same standing guardrail and the drafter decided locally, blind to the other 34
+chapters. Now it has a schedule, like clues, beats and words.
 
-- **The reservoir.** `input/series/background-history.md` gains a `## Reservoir` part —
-  the town's concrete sensory inventory. `background_cut.py` cuts it verbatim to
-  `config/setting-pack/reservoir.md`. It is the *second* verbatim part beside `## Stance`:
-  both carry their own `###` group headings through, because in a catalogue those headings
-  are content, not entry names. Optional — absent, it writes no file and reports nothing.
-  Excluded from `lmstudio_draft_chapter`'s pack concatenation so it cannot eat the
-  2,500-char budget and truncate the stance.
-- **The allocation.** `cut-plan.md` gains a nested `- **Texture:**` block beside
-  `Compress:` — the positive half of a line already written. `story_cut.py` emits it as
-  `### Texture`; `packet_assemble.py` carries it into the packet with no code of its own;
-  the map-maker distributes it into per-scene `Texture:` fields; the drafter renders it.
-- **Authoring.** `/allocate-texture NN` → the `texture-allocator` agent proposes the whole
-  book at once (so no image is spent twice — construction, not accounting) → showrunner
-  approves to `input/book-NN/plot/texture.md` → `scripts/texture_apply.py` splices it into
-  the cut plan idempotently.
-- **Deliberately ungated.** Texture is a *resource, not an obligation*. `map_check.py`
-  gained no finding; there is no `unscheduled-texture` and never will be. An obligation
-  would put images into competition with beats and clues for the beat sheet's
-  `obligations.max_per_chapter` budget.
+- `## Reservoir` in `background-history.md` → `config/setting-pack/reservoir.md`, the second
+  verbatim part beside `## Stance`. Optional; excluded from LM Studio's 2,500-char pack.
+- `- **Texture:**` in `cut-plan.md` → `### Texture` in the outline → the packet (free — the
+  packet embeds the whole block) → per-scene `Texture:` in the map → the drafter.
+- `/allocate-texture NN` + the `texture-allocator` agent + `scripts/texture_apply.py`.
+- **Deliberately ungated.** No `unscheduled-texture`, ever — an obligation would make images
+  compete with beats and clues for the beat sheet's `obligations.max_per_chapter` budget.
 
-### 2 & 3. The two defect fixes
+§4.3 (punch-up) stayed unplanned on purpose; spec §7.3 says it is only answerable once
+chapters have been drafted against an allocation.
 
-- **packet_assemble** now demotes every heading in an embedded continuity source below its
-  `### <source>` wrapper (ATX, indented ATX, and setext), so nothing a source contains can
-  structurally close `## Continuity Extracts`. The section heading carries a manifest —
-  `(37 entries: canon-core.md, 30 background/, 6 characters/)` — so a short read is
-  checkable instead of silent.
-- **voice_drift** splits `lexical_repetition` into `repeated_openers` and
-  `repeated_content_words`, each with its own count and threshold, and both now name the
-  actual words with line numbers. A compat shim reads the old `lexical_repetition:` config
-  block when the new keys are absent. `UnevidencedFlagError` enforces the spec's §4
-  invariant: a flagged tic with empty evidence raises.
+### 2–6. The five defects
+
+| defect | spec | state |
+|---|---|---|
+| packet extract heading collision | `2026-08-27-packet-extract-heading-collision-fix.md` | fixed, reviewed (4 commits) |
+| voice_drift discards its evidence | `2026-08-27-voice-drift-discards-evidence-fix.md` | fixed, reviewed (2 commits) |
+| engine holds one series' story details | `2026-08-29-engine-holds-story-details-fix.md` | fixed (`34b133f`) — **review never run** |
+| nested cut-plan field hijack | `2026-08-29-nested-cut-plan-field-hijack-fix.md` | fixed (`597b014`) — **review never run** |
+| runbook positional off-by-one | `2026-08-29-runbook-render-corrupts-positional-vars-fix.md` | **§4b only** — §4a open |
+
+### 7. The design note
+
+`2026-08-29-curated-artifacts-declare-their-contents-design.md` — the general shape behind
+four of the defects, with the framing corrected. Not approved; one open decision in its §6.
 
 ## Git state
 
-- Branch: `main`, pushed to `origin/main`.
-- Last commit: `1a4b05c` docs: track the voice-drift evidence defect spec
-- Uncommitted: none.
-- Tests: **1235 passing**. `CLAUDE.md`'s count line is self-checked by a test and is exact.
-- Untracked leftovers, not mine: `HANDOFF-of122.md`, `HANDOFF-readiness-briefs.md`
-  (single-item streams from 2026-08-25).
+- Branch `main`, pushed, nothing local. Last commit `7aa6fe7`.
+- Tests: **1263 passing**. `CLAUDE.md`'s count line is self-checked by a test and is exact.
+- Untracked leftovers, not from this session: `HANDOFF-of122.md`,
+  `HANDOFF-readiness-briefs.md` (single-item streams, 2026-08-25).
 
 ## Next actions
 
-1. **Author the reservoir.** This is the real work the spec calls for and it is
-   showrunner-side, in `~/myBooks/series-pelicanscrook/`: add a `## Reservoir` section to
-   `input/series/background-history.md`, then run `background_cut.py`. Spec §7.1 recommends
-   building ~30 items for ONE location and drafting a chapter against them before committing
-   to a taxonomy — do not write 200 items first.
-2. **Then allocate.** `/allocate-texture 01` on a book whose cut plan is settled. On book 01,
-   which is already locked, this costs a re-cut, a lock re-mint and re-mapping any mapped
-   chapters — deliberate, not free. `/plot-book` calls it before the lock so future books
-   pay nothing.
-3. **Migrate the series' `ai-tics-config.yaml`** to the new `repeated_openers` /
-   `repeated_content_words` keys. Not urgent — the compat shim keeps the old block working —
-   but the shim is marked removable once every series has migrated.
-4. **Decide on §4.3, the punch-up pass.** Deliberately unplanned. Spec §7.3: whether it is
-   needed at all is only answerable once chapters have been drafted against an allocation.
-   Don't plan it before then.
+1. **Decide §4a of the runbook spec — the seven runbooks' off-by-one.** This is the only item
+   blocking others (§4c's lint and §4d's convention sit behind it). Two options, both written
+   up in the spec: renumber `$1`→`$0` on verified behaviour, or restart Claude Code and test
+   whether `arguments: [book, chapter]` named binding works for **plugin commands** (it is
+   documented for skills and explicitly unverified for commands). Named arguments are better
+   if they work — immune to the harness changing indexing again — but must be tested, not
+   assumed. **Either fix only takes effect after a restart** (see Watch out for).
+2. **`## Ledger Clues` manifest + heading demotion** — §4a of the new design note. The next
+   site, and the same bug latent: `packet_assemble.py:293` interpolates ledger descriptions
+   raw, and ten of book 01's forty-five clue entries are multi-line block scalars. One
+   authored `## ` from terminating the section, and a truncated clue list is worse than a
+   truncated continuity slice because `inspector-fairplay` grades against the sealed ledger.
+3. **Run the two missing reviews** — `597b014` (field hijack) and `34b133f` (engine story
+   details). Both were dispatched and killed by Opus session limits; nothing was lost.
+4. **`repeated_content_words` measures function words** — §7 of the voice-drift spec, verified
+   not implemented. Its five cited spans on book 01 ch 01 are *that* ×27, *been* ×12,
+   *could* ×10, *down* ×10, *there* ×10. Needs a real stoplist (~200 entries, in a data file)
+   and a recalibrated threshold.
+5. **The `**Beats:** 9` hijack is fixed** (`597b014`) — item 3 covers its review.
 
 ## Decisions made this session
 
 - **The reservoir reaches the drafter through the setting-pack directory read, not the
-  packet.** Four agents already read all of `config/setting-pack/`, so a file cut there
-  needs no plumbing; embedding a global constant in a per-chapter artifact is the failure
-  CLAUDE.md names for the voice and genre packs. This deviates from spec §4.1's "and the
-  packet" — deliberately, with the showrunner's agreement.
-- **`Texture:` is nested sub-bullets, not a single line** like `Compress:`, so the map-maker
-  can distribute items one at a time.
-- **The approved allocation gets its own save point** (`input/book-NN/plot/texture.md`) and a
-  deterministic splice script, rather than 35 hand edits into `cut-plan.md`.
-- **`texture_apply.py` never partially applies.** A blocking finding leaves `cut-plan.md`
-  byte-identical, even when earlier chapters already spliced successfully.
-- **voice_drift's §4 invariant raises rather than warning.** It is evidence-only and never
-  gates a chapter, so a raise cannot block a finalize — it fails the checker loudly during
-  review, as the engine does elsewhere.
-- **The tic split ships with a compat shim**, so an un-updated series does not silently stop
-  flagging — the exact failure class that spec is about.
+  packet.** Four agents already read that whole directory; embedding a global constant in a
+  per-chapter artifact is the failure CLAUDE.md names for the voice and genre packs. A
+  deliberate deviation from spec §4.1's "and the packet".
+- **"the voice pack", never "the series voice pack"** in engine files. That path resolves
+  series → genre → plugin; naming the bottom tier forecloses the middle one. The showrunner's
+  three-level model — engine / genre pack / series folder — drove this.
+- **Detect, don't prevent, for the field hijack.** The parser still overwrites; `check_story`
+  refuses loudly. Anchoring the parser at column 0 would turn an accidentally-indented genuine
+  field line into a silently-swallowed texture item — trading one silent failure for another.
+- **Reuse `wiring-shaped-directive`; roster stays 23.** Showrunner's call.
+- **Manifests before receipts.** The design note recommends *against* building the receipt
+  half until a manifested section is observed to be under-read anyway.
+- **Examples in engine files never name a character** — written into
+  `config/story-craft/writing-beats.md` after the site count moved four times (10→12→14→17),
+  each wave found by a different method. One unwritten rule, not four oversights.
 
 ## User preferences expressed this session
 
-- Commit the finished-but-uncommitted `drafted_words` work before starting new work, rather
-  than stashing it or branching around it.
+- Commit finished-but-uncommitted work before starting new work, rather than stashing.
 - Work on `main`, phase at a time, push at the end.
-- When a review's recommendation and a spec's letter conflict, prefer the reading that keeps
-  a stated guarantee true (see the `unscheduled-texture` naming ruling below).
+- Verify claims empirically rather than reasoning from documentation — this session was
+  confidently wrong for a day about runbook indexing by trusting docs written for skills.
+- Amend a spec when review changes it, and leave the correction visible rather than tidying
+  it away — the moving count is the argument.
 
 ## Key files right now
 
-- `scripts/texture_apply.py` — the splice; idempotent, never partially applies.
-- `scripts/story_cut.py` — `check_story`'s indented-track-row guard is the subtle part; see
-  "Watch out for".
-- `scripts/packet_assemble.py` — `_demote_headings` and its five exclusion regexes.
-- `scripts/voice_drift.py` — the split tics, the compat shim, `_assert_evidenced`.
-- `agents/texture-allocator.md`, `commands/allocate-texture.md` — the authoring surface.
-- `.superpowers/sdd/2026-08-27-texture-allocation/progress.md` — the full ledger: every
-  ruling, every parked minor, every review verdict. Gitignored, so it dies with this
-  machine; read it before redoing any of this.
+- `docs/superpowers/specs/2026-08-29-runbook-render-corrupts-positional-vars-fix.md` — §4a is
+  the live decision; §2b records the render test and how to re-run it.
+- `docs/superpowers/specs/2026-08-29-curated-artifacts-declare-their-contents-design.md` —
+  next build item is its §4a.
+- `scripts/packet_assemble.py:293` — the raw ledger-description interpolation.
+- `scripts/voice_drift.py` — split tics, compat shim, `UnevidencedFlagError`.
+- `scripts/story_cut.py` — `check_story`'s indentation guard; see Watch out for.
+- `.superpowers/sdd/2026-08-27-texture-allocation/progress.md` — the full ledger for the
+  texture build: every ruling, parked minor and review verdict. **Gitignored**, dies with this
+  machine.
 
 ## Watch out for
 
-- **`story_cut.py`'s texture forgery guard is a rule about INDENTATION, not about blocks.**
-  It refuses any indented `TRACK_RE` line inside a chapter block. The first attempt modelled
-  where a nested block ends, re-deriving `penny_story`'s state locally, and got it wrong — a
-  single blank line reopened the bug. Do not reintroduce a state machine there. `story_cut`
-  imports `penny_story._CUT_CHAPTER_RE` deliberately so the two cannot drift.
-- **Naming a load-bearing absence is this codebase's house style.** `agents/` files say
-  "`map_check.py` has no `unscheduled-texture` and never will". Two contract tests asserted
-  the opposite (that the string was absent) and were the defect, not the prose — they were
-  inverted. Don't re-invert them.
-- **`agents/chapter-cutter.md`'s output template carries an HTML comment where the Texture
-  field would be.** That is deliberate: a `- **Texture:** …` placeholder there parses as a
-  real inline texture item if a cutter copies the template verbatim.
-- **A nested item shaped like a cut-plan KEY still hijacks the chapter's own field, silently.**
-  `  - **Beats:** 9` under `- **Texture:**` rewrites the chapter's beat range to `[9]` with
-  zero findings. Same class as the bug fixed above, through the other half of the field
-  table; pre-existing (arrived with `Setting:` in August), out of scope for the texture spec,
-  **surfaced to the showrunner and not fixed.** Beat-range corruption is arguably worse than
-  the phantom track that was fixed — CLAUDE.md itself warns an off-by-one there steals beats
-  with no symptom. Proposed fix: extend the same indentation rule to
-  `_CUT_FIELD_RE`/`_CUT_CLOSING_RE`, reusing `wiring-shaped-directive` (roster stays 23).
-- **`voice_drift`'s `flag_at: 0` hazard is fixed but instructive.** A zero threshold used to
-  flag on zero matches with empty evidence — harmless until the §4 invariant made it a
-  crash, across six tics the spec never mentioned. Flags now require a positive count.
-- **Ten minor findings were triaged and deferred**, all listed in the SDD ledger. None
-  affect correctness; the final whole-branch review judged every one "fine to leave".
-- **`commit ebae29f` was written by the controller, not a subagent** (both dispatches died on
-  rate limits) and its review found it defective — it closed only the one input shape its own
-  test used. `d56729c` replaced it. The lesson held: a fix whose tests only exercise the shape
-  it handles will pass and still be wrong.
+- **Command files are snapshotted at session start.** Editing a `commands/*.md` mid-session
+  has no effect on what renders — proven by adding a probe block to `diagnose-outline.md` and
+  watching it render without it. So any §4a fix needs a restart before it takes effect, and
+  named arguments cannot be tested without one.
+- **Runbook argument substitution is ZERO-INDEXED.** `$0` is the first argument, `$1` the
+  second. Verified by rendering `finalize-chapter` with `AAA BBB CCC`. Do not "correct"
+  `book=$0` back to `$1` — that is the bug, not the fix.
+- **`story_cut.py`'s forgery guard is a rule about INDENTATION, not about blocks.** The first
+  attempt modelled where a nested block ends by re-deriving `penny_story`'s state locally and
+  a single blank line reopened the bug. Do not reintroduce a state machine.
+- **Naming a load-bearing absence is house style.** Engine files say "`map_check.py` has no
+  `unscheduled-texture` and never will". Two contract tests asserted the opposite and were the
+  defect; they were inverted. Don't re-invert them.
+- **`extract_brief.py` diverges from the awk it replaced on an interposed `# ` heading** — it
+  does not stop there, `chapter_block()` matching `##` only. Inherited, no current outline
+  triggers it, pinned by a test and documented in the module docstring. Fixing it would change
+  every packet.
+- **A commit written by the controller rather than a subagent failed its review** (`ebae29f`,
+  superseded by `d56729c`). It closed only the shape its own test used. If a fix's tests
+  exercise one input shape, it will pass and still be wrong.
