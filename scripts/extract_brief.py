@@ -19,6 +19,14 @@ Reuses the engine's existing outline parser rather than forking a third one:
 `penny_wiring.chapter_block` (body) and `penny_wiring.heading_line` (the
 heading line verbatim, including any `[type: ...]` flag) — the same split
 `packet_assemble.assemble` already composes as `full_block`.
+
+Note on heading-level boundaries: the old awk stopped at either ## or # heading
+(`grab && (/^## / || /^# /)`). This module uses `chapter_block()`, which stops
+only at ^## headings, not ^# — a divergence inherited from the reused parser.
+No current outline triggers it (the only ^# in config/outline-template.md and
+all fixtures is the title line before the first chapter). Changing the
+boundary would alter every packet's content; documenting it here ensures the
+next person rediscovering the difference finds the answer already written down.
 """
 from __future__ import annotations
 
@@ -42,7 +50,10 @@ def extract_brief(outline_text: str, chapter) -> str:
     ValueError, named by chapter, when the outline has no such block —
     never returns empty: that silent-empty output is exactly the failure
     this module exists to make loud."""
-    num = int(chapter)
+    try:
+        num = int(chapter)
+    except ValueError:
+        raise ValueError(f"chapter must be a number, got '{chapter}'")
     heading = heading_line(outline_text, num)
     block = chapter_block(outline_text, num)
     if not heading or not block:
@@ -56,6 +67,12 @@ def main(argv=None) -> int:
         print("usage: extract_brief.py <book> <chapter>", file=sys.stderr)
         return 2
     book, chapter = argv
+
+    try:
+        int(book)
+    except ValueError:
+        print(f"extract_brief: book must be a number, got '{book}'", file=sys.stderr)
+        return 2
 
     path = outline_path(book)
     if not path.is_file():

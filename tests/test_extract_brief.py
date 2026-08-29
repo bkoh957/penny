@@ -103,6 +103,30 @@ def test_main_usage_error():
     assert main(["01"]) == 2
 
 
+def test_main_rejects_non_numeric_chapter_loudly(tmp_path, monkeypatch, capsys):
+    """Non-numeric chapter surfaces a named error, not Python's raw ValueError."""
+    _series(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    assert main(["01", "abc"]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "chapter" in captured.err.lower()
+    assert "number" in captured.err.lower() or "numeric" in captured.err.lower()
+    assert "abc" in captured.err
+
+
+def test_main_rejects_non_numeric_book_loudly(tmp_path, monkeypatch, capsys):
+    """Non-numeric book surfaces a named error, not Python's raw ValueError."""
+    (tmp_path / ".penny").mkdir()
+    monkeypatch.chdir(tmp_path)
+    assert main(["abc", "05"]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "book" in captured.err.lower()
+    assert "number" in captured.err.lower() or "numeric" in captured.err.lower()
+    assert "abc" in captured.err
+
+
 # --- self-review: identical to the old awk on a chapter that exists ---
 
 def test_matches_the_awk_it_replaces(tmp_path):
@@ -130,6 +154,44 @@ def test_matches_the_awk_it_replaces(tmp_path):
     awk_lines = [ln for ln in awk_out.splitlines() if ln.strip()]
     brief_lines = [ln for ln in brief.splitlines() if ln.strip()]
     assert brief_lines == awk_lines
+
+
+def test_an_interposed_h1_is_not_a_boundary_unlike_the_awk():
+    """The old awk stopped at either ## or # heading: `grab && (/^## / || /^# /)`.
+    `chapter_block()` stops only at ^##, not at ^# — a divergence inherited from
+    the reused parser. This differs from the awk it replaced. No current outline
+    triggers it (the only ^# in config/outline-template.md and fixtures is the
+    title line before all chapters). Changing chapter_block() to stop at h1 would
+    alter what every chapter packet contains, which is a far bigger decision than
+    this module's scope; the correct action is documenting it here."""
+    outline_with_h1 = """---
+book: 1
+total_chapters: 2
+---
+
+# Book One
+
+## Chapter 01 — First
+
+Body of chapter one.
+
+# Appendix
+
+Appendix content.
+
+## Chapter 02 — Second
+
+Body of chapter two.
+"""
+    brief = extract_brief(outline_with_h1, 1)
+    # The brief includes the appendix content (inherited, not a bug).
+    assert "## Chapter 01 — First" in brief
+    assert "Body of chapter one" in brief
+    assert "# Appendix" in brief
+    assert "Appendix content" in brief
+    # The next chapter still stops the block.
+    assert "## Chapter 02" not in brief
+    assert "Body of chapter two" not in brief
 
 
 # --- the runbook itself ---
