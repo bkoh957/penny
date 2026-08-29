@@ -96,25 +96,35 @@ have run unscoped and nothing would have reported a problem.
 
 ## 2b. The test that settled it
 
-The original evidence was one observed run, and it admitted a second reading: that the
-executing model had mis-transcribed the awk line. It needed settling, and the documentation
-was ambiguous — it describes *skills*, and these are plugin slash commands.
+The original evidence was one observed run of `/finalize-chapter 01 01`, and it could not
+distinguish the indexing: every argument was `01`, so `$0` and `$1` rendering as `01` is
+consistent with both readings. The documentation was no help either — it describes *skills*,
+and these are plugin slash commands.
 
-Settled by rendering an **existing** runbook with distinctive arguments, creating no files
-and executing nothing. `/book-status AAA BBB`. Source line 13:
+Settled by rendering `finalize-chapter` itself with **three distinguishable arguments**,
+`AAA BBB CCC`, creating no files and executing nothing. It is the right runbook for the test
+because it is the only one containing `$0` through `$3`, so one render shows the whole
+mapping:
 
-```
-1. **Parse args:** `book=$1` (e.g. `01`), optional `chapter=$2`.
-```
+| in source | rendered as | binds |
+|---|---|---|
+| `index($0, h)` (awk, :150) | `index(AAA, h)` | **first** argument |
+| `book=$1` (:33) | `book=BBB` | **second** argument |
+| `chapter=$2` (:34) | `chapter=CCC` | **third** argument |
+| `flag=${3:-}` (:35) | `${3:-}` — untouched | fourth; absent |
+| `preflight.py finalize $1 $2` (:24) | `finalize BBB CCC` | second and third |
 
-As rendered into context:
+Zero-indexed, uniformly applied, including inside fenced blocks. An absent placeholder is
+left literal.
 
-```
-1. **Parse args:** `book=BBB` (e.g. `01`), optional `chapter=$2`.
-```
+**What this means for a real invocation.** `/finalize-chapter 01 03` renders `book=03` — the
+chapter — and `chapter=$2` left literal, there being no third argument. The original run that
+exposed this, `/finalize-chapter 01 01`, rendered `book=01`, which is correct **by
+coincidence**: `$1` bound the chapter, and the chapter was also `01`.
 
-`$1` → `BBB`, the **second** argument. `$2` → left literal, there being no third. Zero-indexed,
-uniformly applied, confirmed.
+That coincidence is the single reason the original diagnosis read the substitutions as
+"invisibly correct" and scoped the defect to `$0`. They were not correct; they were
+indistinguishable from correct on that invocation.
 
 ## 2c. Why nothing has visibly broken in months
 
