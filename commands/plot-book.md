@@ -332,7 +332,7 @@ state; this command never asks you anything a file already answers.
 
    **Append every finding to the feedback ledger** so it can be worked one at a time.
    **One item = one change to one chapter** — split a finding that implicates six
-   chapters into six items. A finding like "the Lisa thread is weak" has failed however
+   chapters into six items. A finding like "the money thread is weak" has failed however
    true it is, because the showrunner cannot sit down and fix it.
 
    Write a JSON array of

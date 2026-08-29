@@ -39,7 +39,8 @@ rendered verbatim into the chapter packet, which is the drafter's instruction �
 answer, and the scene gets shaped around it even if the word never reaches the page.
 Write `c02-early-key-note`. The true meaning belongs in the clue's `description:` and in
 the reveal's `author_truth`, which carry no label into the packet. Same for questions:
-`q-vase — whose hand made this vase?`, never "who made the false potter's vase?".
+`q-vase — whose hand made this vase?`, never "who forged this vase?" — which
+leaks the answer in its own presupposition.
 
 **Discipline:** propose only; the showrunner approves and the command validates +
 locks. `culprit`, `victim`, and every `alibi_grid` suspect must be ids that resolve

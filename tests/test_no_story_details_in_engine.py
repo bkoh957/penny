@@ -1,14 +1,14 @@
 """Lint + contract test for
 `docs/superpowers/specs/2026-08-29-engine-holds-story-details-fix.md`.
 
-The defect: twelve sites under `config/` and `agents/` named a specific
+The defect: sites across the engine's shipped files named a specific
 series' characters (a superseded protagonist `Cora`, superseded characters
 `Dez`/`Renna`, and — in one place — the *current* series' protagonist
 `Maggie`) as if they were universal craft facts. One of them
 (`config/line-edit/line-edit.md`'s old "Cora's register is precise and
 lightly formal" line) actively contradicted the live series' Voice Pack on
 every chapter, and was only avoided by an undocumented prompt override (spec
-§2). The spec's own review found two of the twelve sites (both `Maggie's
+§2). The spec's own review found two more sites (both `Maggie's
 narration`) *after* a full manual sweep had already happened — proof that
 "is this name stale?" is the wrong test, because a name that is currently
 correct produces no symptom and reads as fine (spec §3, "The lesson for the
@@ -39,9 +39,11 @@ import re
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-SCAN_DIRS = ("config", "agents")
+SCAN_DIRS = ("config", "agents", "commands", "scripts", "genres")
 
-POSSESSIVE_RE = re.compile(r"\b([A-Z][a-z]+)'s\b")
+# Both apostrophes: ASCII and U+2019. An ASCII-only pattern is defeated
+# silently by one paste from a word processor.
+POSSESSIVE_RE = re.compile(r"\b([A-Z][a-z]+)['’]s\b")
 
 # Closed class: pronouns/demonstratives whose apostrophe-s is grammatically
 # always a contraction (X is / X has), never a possessive, regardless of
@@ -63,12 +65,25 @@ ALLOWED_POSSESSIVES = frozenset({
     # agents/outline-expander.md — the wiring footer's Hook field, e.g.
     # "Hook's grade is the bracketed tag next to it".
     "Hook's",
+    # The engine's own name, not a story noun — commands/, scripts/ and
+    # genres/ all refer to "Penny's" behaviour.
+    "Penny's",
+    # scripts/penny_genre.py — the genre's name, e.g. "Cozy's roster".
+    "Cozy's",
+    # genres/cozy-mystery/ — genre ROLE nouns, which is exactly what the
+    # convention tells authors to use instead of a character name.
+    "Sleuth's",
+    "Victim's",
 })
 
 
 def _iter_scanned_files():
+    # Not just *.md: `CLAUDE.md:11-14`'s rule names `scripts/` and the
+    # command logic, and three of the sites the .md-only sweep missed were
+    # in module docstrings and comments.
     for scan_dir in SCAN_DIRS:
-        yield from sorted((REPO / scan_dir).rglob("*.md"))
+        for suffix in ("*.md", "*.py", "*.yaml", "*.sh"):
+            yield from sorted((REPO / scan_dir).rglob(suffix))
 
 
 def _possessive_hits(path: Path) -> list[tuple[int, str]]:
@@ -103,20 +118,50 @@ def test_no_unallowlisted_possessive_proper_noun_under_config_or_agents():
 
 
 def test_the_superseded_character_names_are_gone():
-    """Cora (superseded protagonist), Dez and Renna (superseded worked-example
-    characters) must not appear anywhere under config/ or agents/ — the twelve
-    sites this spec removes. Deliberately NOT checking for `Maggie`: it is a
-    legitimate word (the live series' protagonist) and a name denylist is
-    exactly the approach the spec's §6 argues against; the possessive lint
-    above is what actually covers the shape of the defect."""
-    banned = ("Cora", "Dez", "Renna")
+    """The named cohort must not appear anywhere under the scanned engine dirs:
+    `Cora` (superseded protagonist), `Dez`/`Renna` (superseded worked-example
+    characters), and `Priya`/`Odette`/`Talia`/`Tannery` — the invented names
+    `HANDOFF-story.md:119-121` chose so the craft docs would not couple to one
+    series' cast. The convention pinned below supersedes that choice: an
+    invented name is indistinguishable from canon to whoever reads it next,
+    so examples name no character at all.
+
+    Deliberately NOT checking for `Maggie`: it is the live series'
+    protagonist, a name denylist is the approach the spec's §6 argues
+    against, and the possessive lint above is what covers the defect's actual
+    shape. This test is a pin on names already removed — by construction it
+    cannot catch the next one."""
+    # Word-boundary, not substring: `if "Dez" in text` false-positives on any
+    # future word containing it.
+    banned = ("Cora", "Dez", "Renna", "Priya", "Odette", "Talia", "Tannery")
+    pattern = re.compile(r"\b(" + "|".join(banned) + r")\b")
     offenders = []
     for path in _iter_scanned_files():
-        text = path.read_text(encoding="utf-8")
-        for name in banned:
-            if name in text:
-                offenders.append(f"{path.relative_to(REPO)}: {name!r}")
-    assert not offenders, f"Story-specific character name(s) found:\n" + "\n".join(offenders)
+        for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            for m in pattern.finditer(line):
+                offenders.append(f"{path.relative_to(REPO)}:{lineno}: {m.group(1)!r}")
+    assert not offenders, "Story-specific character name(s) found:\n" + "\n".join(offenders)
+
+
+CONVENTION_FILE = REPO / "config" / "story-craft" / "writing-beats.md"
+CONVENTION_HEADING = "## Examples never name a character"
+
+
+def test_the_naming_convention_is_stated_where_authors_read_it():
+    """Nothing pinned §4e — the element the spec calls the part that ends the
+    sequence — so it could be deleted with the suite staying green. It states
+    the rule the two lints above only approximate, and it is the reason a
+    future author writing a new craft example does not reach for a cast list.
+
+    Pinned together with a re-run of the possessive lint over that same file,
+    because the review that prompted this found the file declaring the
+    convention in its opening section and breaking it thirty-three lines
+    down."""
+    text = CONVENTION_FILE.read_text(encoding="utf-8")
+    assert CONVENTION_HEADING in text, (
+        f"{CONVENTION_FILE.relative_to(REPO)} no longer states the naming "
+        f"convention ({CONVENTION_HEADING!r})")
+    assert not _possessive_hits(CONVENTION_FILE), _possessive_hits(CONVENTION_FILE)
 
 
 def test_the_precedence_rule_is_in_line_edit_and_copy_edit():

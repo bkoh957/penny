@@ -21,7 +21,8 @@ writer the Act II answer, and the scene gets shaped around it even if the word n
 reaches the page. Write `c02-early-key-note`. The true meaning belongs in the clue's
 `description:` and in the reveal's `author_truth`, which carry no label into the packet.
 Same for the questions you open/close/carry in the wiring footer: `q-vase — whose hand
-made this vase?`, never `who made the false potter's vase?`.
+made this vase?`, never `who forged this vase?` — which leaks the answer in its own
+presupposition.
 
 **Inputs:**
 - The chapter **stub** already in `input/book-NN/outline.md`: the `## Chapter NN — Title`

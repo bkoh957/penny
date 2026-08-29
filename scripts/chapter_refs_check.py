@@ -3,7 +3,7 @@
 
 The problem this exists for: chapter references are POSITIONAL, and a re-cut moves
 every chapter. Book 01 went 29 -> 35 and left seventeen references pointing at the
-wrong chapter — a guardrail citing "Maggie's ch 18 theory" for a theory built in
+wrong chapter — a guardrail citing "the sleuth's ch 18 theory" for a theory built in
 ch 23, a habit ladder cited as "ch 4, ch 8 and ch 12" when the showings are in
 ch 05, 09 and 16. Neither review panel member caught more than a third of them,
 because catching them means resolving each claim against the beats by hand.
@@ -16,7 +16,7 @@ Two rules, in descending confidence:
             while its own plant_chapter / resolves_chapter / pays_off_chapter
             field says a different number. The structured field and the prose
             describe the same event, so a mismatch is one of them being stale.
-            This is the rule that would have caught the Cal and Saffron refs.
+            This is the rule that would have caught book 01's stale character refs.
 
   BLOCKING  clue-plant-mismatch: a clue the whodunit declares `plant_chapter: N`
             whose `!clue-id` sigil in story.md actually falls in chapter M. Fully

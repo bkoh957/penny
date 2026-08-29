@@ -195,7 +195,7 @@ contradictory register instructions needs a precedence rule, not a rename. It is
 only part that keeps working for Category C: when the engine names the current protagonist,
 nothing is stale and nothing contradicts, but "the series file wins, and this file never
 states a fact about a character" still tells the agent to disregard it. Renames fix the
-twelve instances; the precedence rule fixes the shape.
+the named instances; the precedence rule fixes the shape.
 
 ### 4c. Category B — role nouns
 
@@ -264,11 +264,11 @@ craft doc: *Cora's register*, *Cora's perspective*, *Cora's narration*, *Cora's 
 husband's*, *Dez's thread*, *Renna's premises*, *Maggie's narration*. A craft document has
 very little other reason to write a proper noun in the possessive.
 
-It misses four of the twelve — the three `Dez`-as-subject examples
+It misses four of them — the three `Dez`-as-subject examples
 (`writing-beats.md:34,79`, `writing-chapter-frames.md:42`) and `line-edit.md:16`'s
 parenthetical "(e.g., Cora being deliberately understated)". Accept that. §4a and §4c sweep
 those by hand, and a lint that catches eight and stays enabled is worth more than one that
-catches twelve and gets disabled. The allowlist becomes the explicit record of which
+catches a dozen and gets disabled. The allowlist becomes the explicit record of which
 possessives the engine is permitted to write — a short, meaningful list rather than a
 transcription of its vocabulary.
 
@@ -310,3 +310,45 @@ design was then implemented in full (`5837d64` and following) and the appendix w
 actioned, because appendix material in a spec about another subject is not a work item.
 
 Filing it as its own defect spec is the correction to that.
+
+## 7. Amendment, 2026-08-29 — the count moved a fifth time
+
+Post-commit review found the sweep incomplete again, in two ways the previous
+four waves could not have caught:
+
+- **Six sites inside `config/`**, four of them in `config/story-craft/writing-beats.md`
+  — the file whose new §4e section declares "examples in engine files never name a
+  character" and then names `Priya`, `Odette` and `The Tannery` thirty-three lines
+  later. `writing-chapter-frames.md` held two more (`Priya`, `Talia` ×2).
+- **Nine sites in `commands/` and `scripts/`**, which the lint never scanned:
+  `SCAN_DIRS` was `("config", "agents")` and the glob was `*.md`, while
+  `CLAUDE.md:11-14` — the rule this spec cites as its authority — names `scripts/`
+  and the command logic explicitly. Three (`Maggie's`, `Simon's`, `Marion's`) were
+  caught for free the moment the scan widened.
+
+**The resolution is to stop counting.** §6 argued that a moving count is evidence
+of an unwritten rule; five waves is evidence that a manual sweep is the wrong
+instrument entirely. `SCAN_DIRS` is now `("config", "agents", "commands",
+"scripts", "genres")` over `*.md`/`*.py`/`*.yaml`/`*.sh`, and `POSSESSIVE_RE`
+accepts the typographic apostrophe (U+2019), which an ASCII-only pattern let
+through silently.
+
+**A prior decision was reversed, deliberately.** `HANDOFF-story.md:119-121` records
+that `Odette`, `Renna`, `Dez`, `Priya` and `The Tannery` were *invented* names,
+chosen so the craft doc would not couple to the cozy series' cast, and that role-noun
+placeholders were rejected because "a craft doc teaching what a beat is only works
+with concrete before/after prose". §4e's convention reverses that: an invented name
+is indistinguishable from canon to whoever reads it next, so the rule is now that
+examples name no character at all. The showrunner ruled on this directly; the whole
+cohort is renamed to role nouns, not half of it.
+
+**Out of scope, and specced separately:** the engine still asserts single-series
+*style facts* — Australian English (`config/copy-edit/copy-edit.md:19,27,58`),
+"past tense throughout" (`:35`), and cozy-mystery + close-third POV hardcoded in
+`scripts/lmstudio_draft_chapter.py:412-415`, plus "Book 1 = OUTSIDER" restated in
+three places. §3 defined the problem as "does an engine file name a character",
+which by construction cannot see any of these. Two were fixed here because they
+were provably false rather than merely mislocated: the "13-book series" count, and
+the em-dash ruling at `:25`, which flatly contradicted the live series' style sheet
+and reached the copy-editor on every chapter — a second live instance of the §2
+defect, found by review rather than by the fix.

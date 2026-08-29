@@ -238,7 +238,7 @@ def check_story(story_text: str, cut_plan_text: str,
     # the field table (spec 2026-08-29). Both are anchored at `^\s*` in
     # `parse_cut_plan`, tested BEFORE that parser's nested-item branches, so a
     # line written as a nested item under `- **Texture:**` or `- **Setting:**`
-    # — `  - **Summary:** Marion did it, obviously.` — is not read as an item at
+    # — `  - **Summary:** The potter did it, obviously.` — is not read as an item
     # all: it is read as the CHAPTER's own field and silently overwrites the
     # value the author actually wrote. Four of the five keys (`Summary`,
     # `Compress`, `Opening`, `Closing`) raise no finding anywhere else; `Beats`

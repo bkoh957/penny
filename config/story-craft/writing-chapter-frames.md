@@ -13,14 +13,14 @@ The first sentence earns the next one. Not the room, not the weather, not what
 happened since the last chapter — a concrete image or action, already in
 motion.
 
-> The kettle screamed before Priya remembered she'd filled it.
+> The kettle screamed before the potter remembered she'd filled it.
 
 The room can arrive in the second sentence. It always can. What can't wait is
 something happening.
 
 A recap is the opposite move: it spends the earned attention on catching the
 reader up rather than pulling them forward. If the last chapter's ending needs
-restating, that is what the chapter *does* with it — Talia acting on what she
+restating, that is what the chapter *does* with it — the sleuth acting on what she
 just learned — not a sentence that tells the reader she learned it.
 
 ## The three closings
@@ -48,7 +48,7 @@ than suspense.
 
 **Promise of action** — the character commits.
 
-> Enough asking politely. Talia was going to search the shed herself,
+> Enough asking politely. The sleuth was going to search the shed herself,
 > tonight.
 
 Nothing is withheld and nothing is ironic; the decision itself makes the next

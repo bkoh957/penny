@@ -807,7 +807,7 @@ def test_an_indented_track_row_under_no_nested_field_is_refused_as_well():
 
 _NESTED_FIELD_KEYS = (
     ("Beats", "9"),
-    ("Summary", "Marion did it, obviously."),
+    ("Summary", "The potter did it, obviously."),
     ("Compress", "the harbour walk"),
     ("Opening", "The kiln door swings wide."),
     ("Closing (irony)", "She laughs anyway."),

@@ -42,7 +42,7 @@ _INDENTED_CODE_LINE_RE = re.compile(r"^(?: {4,}|\t)")
 # block either way) and a line shaped like a GFM table row: it must START
 # with a `|` cell separator, not merely contain one anywhere — ordinary
 # setext-heading text can contain a `|` (a pairing/comparison heading such
-# as "Cal | Maggie") and must still demote. Neither exclusion is fence
+# as "Sleuth | Victim") and must still demote. Neither exclusion is fence
 # *state* tracking — this recognizes a line's own shape, not whether an
 # earlier line opened a fence still in effect — so the "no fenced-code-block
 # tracking" rule (a `#` demoted INSIDE a fence stays demoted, deliberately)

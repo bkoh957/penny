@@ -61,8 +61,9 @@ def strand(text: str, slug: str) -> list[tuple[int, str]]:
     """(chapter_number, line) for every summary/beat line naming this character,
     in story order — their line through the whole book on one page.
 
-    WHOLE-WORD matching is load-bearing: a substring match puts 'Simone' on
-    Simon's page, which invents a hole rather than finding one.
+    WHOLE-WORD matching is load-bearing: a substring match puts every
+    `harbourmaster` line on the `harbour` page, which invents a hole rather
+    than finding one.
     """
     tokens = name_tokens(slug)
     if not tokens:

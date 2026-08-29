@@ -48,7 +48,7 @@ def slug(title: str) -> str:
 
 
 def relationship_slug(title: str) -> "str | None":
-    """`Maggie and Cal` -> `cal--maggie`. None when there is no ` and `."""
+    """`Potter and Printer` -> `potter--printer`. None when there is no ` and `."""
     parts = _AND_RE.split(title.split(_EM_DASH, 1)[0].strip(), maxsplit=1)
     if len(parts) != 2:
         return None

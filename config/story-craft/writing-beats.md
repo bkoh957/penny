@@ -49,7 +49,7 @@ Surfacing is something the *book* does, not something the carpenter does.
 Do not reveal, rather than.*
 
 > Plant only the visible contradiction: a glimpse, log or half-overheard gossip
-> suggests Priya may have met someone she treated as Odette. Do not reveal the
+> suggests the baker may have met the woman she called a stranger. Do not reveal the
 > witness's certainty here.
 
 That is a guardrail wearing a beat's clothes. `story_cut.py check NN` will name
@@ -65,8 +65,8 @@ Ask **what does the reader watch happen?** and write that.
 
 becomes
 
-> The printer hides the eviction notice under the till when Odette asks who else
-> wanted The Tannery.
+> The printer hides the eviction notice under the till when the baker asks who
+> else wanted the tannery.
 
 Same information, now visible.
 

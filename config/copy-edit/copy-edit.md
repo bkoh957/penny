@@ -12,7 +12,7 @@ file wins.** This file never states a fact about a character.
 
 ## Governing document
 
-`input/series/style-sheet.md` is the single source of truth for every spelling, hyphenation, and punctuation decision across the 13-book series. Read it in full before touching the text. When the style sheet has no ruling, make a judgement call and **append** it.
+`input/series/style-sheet.md` is the single source of truth for every spelling, hyphenation, and punctuation decision across the series. Read it in full before touching the text. When the style sheet has no ruling, make a judgement call and **append** it.
 
 ## Spelling
 
@@ -22,7 +22,7 @@ file wins.** This file never states a fact about a character.
 ## Grammar and punctuation
 
 - Serial (Oxford) comma: use it.
-- Em-dash with no spaces for interruption or parenthetical aside — like this — not an en-dash and not spaced.
+- Em-dash for interruption or parenthetical aside — not an en-dash. Spaced or unspaced **per the style sheet**; the engine has no ruling here.
 - Ellipsis: three-dot (`…` or `...`) with no space before and one space after, unless end of sentence.
 - Dialogue: close quote after punctuation (Australian convention follows British: `"Come in," she said.`).
 - Hyphenation: compound modifiers before a noun are hyphenated ("well-worn path"), but not predicatively ("the path was well worn").

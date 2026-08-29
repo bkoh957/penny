@@ -27,7 +27,7 @@ SLUG_RE = re.compile(rf"^{SLUG}$")
 # cannot match a space.
 #
 # Capture is deliberately LOOSE (\S+) while validation is strict (SLUG_RE, in
-# story_cut.check_story). A tight capture would make "@Dez" fail to
+# story_cut.check_story). A tight capture would make "@Potter" fail to
 # tokenise at all — the strand would vanish from the beat silently, and the
 # author would get a clean run with a missing character. Capturing it and
 # refusing it by name is the loud failure the engine promises.
@@ -37,7 +37,8 @@ QUESTIONS_HEADING_RE = re.compile(r"^##\s+Questions\s*$", re.IGNORECASE)
 _HEADING_RE = re.compile(r"^##\s+")
 _BULLET_RE = re.compile(r"^-\s+(?P<rest>.*)$")
 
-# An OPTIONAL author-facing beat number: `- [12] Dez throws a cup…`. Bracketed
+# An OPTIONAL author-facing beat number: `- [12] The potter throws a cup…`.
+# Bracketed
 # rather than `12.` because a beat may legitimately open with a bare number ("1987
 # was the year of the flood"), and a silent mis-parse here is the worst failure the
 # story layer has: beat indices are what the cut plan's `Beats: 22-25` ranges refer

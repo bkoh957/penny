@@ -68,10 +68,10 @@ _SUBBLOCK_RE = re.compile(r"^\s*([A-Za-z][A-Za-z /&'-]*)\s*:\s*$")
 # is meant to reach them. That was wrong, and it cost real measurements. A Hook
 # line is generated from the author's `## Questions` prose, and that prose names
 # people the reader is not supposed to be thinking about yet. On book 01 eight of
-# them named the culprit, the earliest at chapter 9 while she is still meant to
-# read as furniture: "how much of Marion's helpfulness is also an access system?"
-# The blind fan quoted those lines as the reason they named her — "each chapter's
-# hook line is basically pointing at her by name" — so the suspicion audit built
+# them named the culprit, the earliest at chapter 9 while they are still meant to
+# read as furniture: "how much of the neighbour's helpfulness is also an access
+# system?" The blind fan quoted those lines as the reason they named them — "each
+# chapter's hook line is basically pointing at them by name" — so the audit built
 # on that read measured the hooks rather than the book.
 # A real reader gets no such line. Neither does the reader's copy now.
 # `setting`, `opening` and `closing` are admitted deliberately (spec 2026-08-12
