@@ -141,16 +141,16 @@ echo "book=$book chapter=$chapter stage=FINALIZE" > .penny/current-stage
 the brief is the chapter's section of `input/book-$book/outline.md` (design §4.2, the same
 source `/draft-chapter` and `/review-chapter` use). Extract it to a scratch file under the
 gitignored `.penny/` so the ledger-updater has scope context and `ledger_markers.py` has a
-`--brief` to read:
+`--brief` to read. This extraction is a script rather than an inline command, on purpose:
+runbook code blocks are interpolated before an agent ever executes them, and an inline `$0`
+(or any bare `$`-digit not meaning "argument N") is corrupted by that substitution before it
+runs — `scripts/` is never rendered into an agent's context, so it is the only place this
+logic is safe to write, and the only place it can be tested.
 
 ```bash
 mkdir -p .penny/tmp
 brief=".penny/tmp/book-$book-ch-$chapter-brief.md"
-awk -v h="## Chapter $chapter " '
-  index($0, h) == 1 { grab = 1; print; next }
-  grab && (/^## / || /^# /) { exit }
-  grab { print }
-' input/book-$book/outline.md > "$brief"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/extract_brief.py" "$book" "$chapter" > "$brief"
 ```
 
 **3b. Dispatch `ledger-updater`** (pass `model:` = `ledger_model` from

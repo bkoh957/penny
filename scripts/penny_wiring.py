@@ -58,6 +58,22 @@ def chapter_block(text: str, num: int) -> str:
     return ""
 
 
+CHAPTER_HEADING_LINE_RE = re.compile(r"^##\s+Chapter\s+0*(\d+)\b.*$", re.MULTILINE)
+
+
+def heading_line(text: str, num: int) -> str:
+    """The original `## Chapter NN ...` heading line, verbatim (including any
+    `[type: ...]`/`[long: ...]` flags), sliced straight out of the outline —
+    chapter_block() deliberately excludes it, so a caller that needs the whole
+    block re-attaches it exactly as authored rather than reconstructing it
+    from parsed parts. Shared by packet_assemble.py and extract_brief.py: one
+    definition, not two."""
+    for m in CHAPTER_HEADING_LINE_RE.finditer(text):
+        if int(m.group(1)) == num:
+            return m.group(0)
+    return ""
+
+
 def parse_packet_sections(block: str) -> dict[str, str]:
     """Packet-format `###` sections of one chapter block: heading -> body text.
 

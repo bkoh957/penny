@@ -16,8 +16,8 @@ from scripts.penny_paths import (config_path, input_path, penny_path,
                                  series_path, series_root)
 from scripts.penny_whodunit import (clues_by_chapter, file_sha256,
                                     ledger_identity, load_ledger)
-from scripts.penny_wiring import (chapter_block, parse_packet_sections,
-                                  parse_wired_chapters)
+from scripts.penny_wiring import (chapter_block, heading_line,
+                                  parse_packet_sections, parse_wired_chapters)
 
 
 def _fail(predicate: str):
@@ -29,20 +29,6 @@ def packet_path(book: str, chapter: str, repo_root=None) -> Path:
     return input_path(
         f"book-{str(book).zfill(2)}/packets/ch-{str(chapter).zfill(2)}.md",
         repo_root)
-
-
-_HEADING_LINE_RE = re.compile(r"^##\s+Chapter\s+0*(\d+)\b.*$", re.MULTILINE)
-
-
-def _heading_line(outline_text: str, num: int) -> str:
-    """The original `## Chapter NN ...` heading line, verbatim (including any
-    `[type: ...]`/`[long: ...]` flags), sliced straight out of the outline —
-    chapter_block() deliberately excludes it, and the packet must re-attach
-    it exactly as authored rather than reconstruct it from parsed parts."""
-    for m in _HEADING_LINE_RE.finditer(outline_text):
-        if int(m.group(1)) == num:
-            return m.group(0)
-    return ""
 
 
 _ATX_HEADING_RE = re.compile(r"^( {0,3})(#{1,6})([ \t]+)(.*)$", re.MULTILINE)
@@ -273,7 +259,7 @@ def assemble(book: str, chapter: str, *, repo_root=None) -> Path:
     if not block:
         _fail(f"book {book} outline has no chapter {chapter} block")
 
-    heading = _heading_line(outline_text, chnum) or f"## Chapter {ch2}"
+    heading = heading_line(outline_text, chnum) or f"## Chapter {ch2}"
     full_block = f"{heading}\n{block}"
 
     sections = parse_packet_sections(block)
