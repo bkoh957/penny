@@ -1,6 +1,7 @@
 ---
 description: Assemble finalized chapters into the book manuscript, run the cross-model final read, build the revision-priority report, and pause for showrunner approval.
 argument-hint: <book-number> [--approve]
+arguments: [book, flag]
 ---
 # /assemble-book
 
@@ -15,8 +16,8 @@ for the showrunner. Approve by re-running with `--approve`. Mirrors `ledger_appr
 ### Parse args
 
 ```bash
-book=$1            # e.g. 01
-flag=${2:-}        # optional --approve
+book=$book         # e.g. 01
+flag=$flag         # optional --approve; empty when absent
 ```
 
 ---

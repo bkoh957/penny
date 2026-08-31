@@ -1,6 +1,7 @@
 ---
 description: Draft one chapter through LM Studio using scene-shard orchestration for short-output local models.
 argument-hint: <book-number> <chapter-number> [model-id]
+arguments: [book, chapter, model]
 ---
 # /draft-chapter-lmstudio
 
@@ -35,24 +36,24 @@ outputs small scenes instead of complete chapters through `/draft-chapter`.
    as `/draft-chapter` before any LM Studio call:
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" draft $1 $2
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" draft $book $chapter
    ```
 
    A non-zero exit means the book's mystery is absent, unpopulated, or unlocked — run
-   `/plan-mystery $1` or fix the lock first. Do not proceed on failure.
+   `/plan-mystery $book` or fix the lock first. Do not proceed on failure.
 
 0b. **Outline review notice (advisory, non-blocking).** The script also surfaces the same
     outline-feedback status as `/draft-chapter`. Open or stale feedback never blocks.
 
-1. **Parse args:** `book=$1`, `chapter=$2`, optional `model=$3`.
+1. **Parse args:** `book=$book`, `chapter=$chapter`, optional `model=$model`.
 
 2. **Run the local scene-shard drafter:**
 
    ```bash
-   if [ -n "$3" ]; then
-     python3 "${CLAUDE_PLUGIN_ROOT}/scripts/lmstudio_draft_chapter.py" "$1" "$2" --model "$3"
+   if [ -n "$model" ]; then
+     python3 "${CLAUDE_PLUGIN_ROOT}/scripts/lmstudio_draft_chapter.py" "$book" "$chapter" --model "$model"
    else
-     python3 "${CLAUDE_PLUGIN_ROOT}/scripts/lmstudio_draft_chapter.py" "$1" "$2"
+     python3 "${CLAUDE_PLUGIN_ROOT}/scripts/lmstudio_draft_chapter.py" "$book" "$chapter"
    fi
    ```
 

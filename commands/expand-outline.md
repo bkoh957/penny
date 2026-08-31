@@ -1,3 +1,8 @@
+---
+description: Expand skeletal chapter stubs in a book's outline into packet-format chapter blocks, in place — for outlines the cut never touched.
+argument-hint: <book-number> [chapter-number]
+arguments: [book, chapter]
+---
 # /expand-outline
 
 Expands skeletal chapter stubs in `input/book-NN/outline.md` into packet-format chapter

@@ -1,6 +1,7 @@
 ---
 description: Build one chapter's packet, propose its prose map, and gate the map before drafting (spec 2026-07-18 §7 — replaces /build-briefs).
 argument-hint: <book-number> <chapter-number>
+arguments: [book, chapter]
 ---
 # /map-chapter
 
@@ -15,8 +16,8 @@ consumed.** Run from the series folder, after the book is locked.
 1. **Parse args and write the harness state marker:**
 
    ```bash
-   book=$1
-   chapter=$2
+   book=$book
+   chapter=$chapter
    mkdir -p .penny
    echo "book=$book chapter=$chapter stage=MAP" > .penny/current-stage
    ```

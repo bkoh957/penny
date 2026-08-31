@@ -1,6 +1,7 @@
 ---
 description: Render the three read-only diagnostic views over a book's existing outline, and map its chapters onto the genre's structural jobs.
 argument-hint: <book-number>
+arguments: [book]
 ---
 
 Read-only throughout. Nothing here writes to `input/book-NN/outline.md`, and
@@ -8,7 +9,7 @@ nothing mints or deletes a lock. Safe to run on a locked book.
 
 ## Steps
 
-1. **Parse args:** `book=$1` (e.g. `01`). Resolve the active series root; hard-error
+1. **Parse args:** `book=$book` (e.g. `01`). Resolve the active series root; hard-error
    if cwd is not inside a series.
 
 2. **Render the story at a glance:**

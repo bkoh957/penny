@@ -1,6 +1,7 @@
 ---
 description: The plotting workshop — build a book's dramatic outline in staged, resumable save points; your taste at premise/ending/turning-points, machine work below, blind fan read-back, then the lock.
 argument-hint: <book-number>
+arguments: [book]
 ---
 # /plot-book
 
@@ -10,7 +11,7 @@ state; this command never asks you anything a file already answers.
 
 ## Steps
 
-1. **Parse args:** `book=$1` (e.g. `02`). Resolve the active series root (hard
+1. **Parse args:** `book=$book` (e.g. `02`). Resolve the active series root (hard
    error outside a series). Resolve the genre from `series.yaml` and hard-error
    without it (same rule as /plan-book).
 

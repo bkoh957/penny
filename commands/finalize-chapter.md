@@ -1,6 +1,7 @@
 ---
 description: Post-gate prose pipeline — line-edit → copy-edit → ledger update → promote → commit or pause for review.
 argument-hint: <book-number> <chapter-number> [--commit]
+arguments: [book, chapter, flag]
 ---
 # /finalize-chapter
 
@@ -8,7 +9,7 @@ Runs the post-gate tail for one chapter: line-editor → copy-editor → ledger-
 ledger markers → promote to `.final.md` → commit or pause (per `ledger_approval` in
 `config/run-config.md`). Review via `/review-chapter` must pass before running this
 command. Finalize via `/finalize-chapter`; if `ledger_approval: review`, inspect the
-ledger diff then resume with `/finalize-chapter $1 $2 --commit`.
+ledger diff then resume with `/finalize-chapter $book $chapter --commit`.
 
 ## Steps
 
@@ -21,18 +22,18 @@ a missing clearance, or a clearance whose hash no longer matches the draft (i.e.
 was revised after clearance) all abort finalize:
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" finalize $1 $2
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" finalize $book $chapter
 ```
 
 A non-zero exit aborts immediately — do not proceed. If it reports a missing/stale
-clearance, run `/review-chapter $1 $2`, then `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" clear-dev $1 $2`.
+clearance, run `/review-chapter $book $chapter`, then `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" clear-dev $book $chapter`.
 
 ### Parse args
 
 ```bash
-book=$1       # e.g. 01
-chapter=$2    # e.g. 03
-flag=${3:-}   # optional --commit
+book=$book       # e.g. 01
+chapter=$chapter # e.g. 03
+flag=$flag       # optional --commit; empty when absent
 ```
 
 ---
@@ -85,7 +86,7 @@ showrunner:
 > re-edit the prose non-idempotently and discard your reviewed text. To commit the
 > current working tree, run:
 >
-> `/finalize-chapter $1 $2 --commit`"
+> `/finalize-chapter $book $chapter --commit`"
 
 Stop here.
 
@@ -142,10 +143,13 @@ the brief is the chapter's section of `input/book-$book/outline.md` (design §4.
 source `/draft-chapter` and `/review-chapter` use). Extract it to a scratch file under the
 gitignored `.penny/` so the ledger-updater has scope context and `ledger_markers.py` has a
 `--brief` to read. This extraction is a script rather than an inline command, on purpose:
-runbook code blocks are interpolated before an agent ever executes them, and an inline `$0`
-(or any bare `$`-digit not meaning "argument N") is corrupted by that substitution before it
-runs — `scripts/` is never rendered into an agent's context, so it is the only place this
-logic is safe to write, and the only place it can be tested.
+runbook code blocks are interpolated before an agent ever executes them, and a bare `\$0`
+meaning anything other than "the first argument" — in a text-processing one-liner it means
+the whole current record — is replaced before it runs. That is exactly what happened here:
+`\$0` became the book number, "does this line begin with the chapter heading" became a test
+that is always false, and the brief was written empty, silently, for months. `scripts/` is
+never rendered into an agent's context, so it is the only place this logic is safe to
+write, and the only place it can be tested.
 
 ```bash
 mkdir -p .penny/tmp
@@ -223,7 +227,7 @@ Surface the ledger diff to the showrunner:
 >
 > Review the diff with `git diff` and the ledger-diff file, then commit by running:
 >
-> `/finalize-chapter $1 $2 --commit`"
+> `/finalize-chapter $book $chapter --commit`"
 
 **Do not commit. Stop here.** The showrunner must review and explicitly re-run with
 `--commit`.

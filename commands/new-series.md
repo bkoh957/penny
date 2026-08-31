@@ -1,6 +1,7 @@
 ---
 description: Scaffold a brand-new series' data folder (directory contract only — no story content) so /plan-mystery 01 can run there.
 argument-hint: <name> [myBooks-root]
+arguments: [name, root]
 ---
 # /new-series
 
@@ -15,15 +16,23 @@ inside the new folder, via `/scaffold-book` or `/plan-mystery`.
 
 ## Steps
 
-1. **Parse args:** `name=$1` (kebab-case series slug, e.g. `cozy-pelicans`), optional
-   `root=${2:-$HOME/myBooks}` — the `~/myBooks` root is configurable per-invocation;
-   default is `~/myBooks`.
+1. **Parse args:** `name=$name` (kebab-case series slug, e.g. `cozy-pelicans`), optional
+   `root=$root` — the `~/myBooks` root is configurable per-invocation. An absent
+   named argument renders **empty**, so the default has to be applied in the shell.
+   Note the variable is deliberately NOT called `root`: every `$root` in this file
+   is replaced by the argument before the shell ever runs, so a shell variable
+   sharing a declared argument's name can never be read back.
+
+   ```bash
+   root_arg=$root
+   books_root="${root_arg:-$HOME/myBooks}"
+   ```
 
 2. **Refuse to clobber:** this command creates a series, it never merges into an
    existing one.
 
    ```bash
-   target="$root/$name"
+   target="$books_root/$name"
    if [ -e "$target" ]; then
      echo "new-series: $target already exists — refusing to overwrite" >&2
      exit 1

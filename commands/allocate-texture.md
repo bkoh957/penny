@@ -1,6 +1,7 @@
 ---
 description: Allocate a book's sensory texture across every chapter at once — the positive half of the cut plan's compress line (spec 2026-08-27 §4.2).
 argument-hint: <book-number>
+arguments: [book]
 ---
 # /allocate-texture
 
@@ -23,7 +24,7 @@ act — not a background improvement. Step 6 covers it.
 1. **Parse args and write the harness state marker:**
 
    ```bash
-   book=$1
+   book=$book
    mkdir -p .penny
    echo "book=$book stage=TEXTURE" > .penny/current-stage
    ```

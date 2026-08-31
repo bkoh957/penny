@@ -83,5 +83,8 @@ def test_beta_read_command_fans_out_and_is_non_blocking():
     # non-blocking guarantees (global constraint)
     assert "current-stage" in text and "not" in text
     assert "blocking" in text
-    # input-agnostic: takes a path, not a book number
-    assert "<path>" in text or "$1" in text
+    # input-agnostic: takes a path, not a book number. Named arguments state
+    # this outright — the runbook declares `arguments: [path]` and refers to
+    # `$path`, where it used to carry a positional that said nothing about
+    # what it held (spec 2026-08-29-runbook-render-corrupts-positional-vars).
+    assert "$path" in text

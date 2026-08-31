@@ -1,6 +1,7 @@
 ---
 description: Run the developmental gate on one chapter — dispatch the genre's isolated inspectors + the 2a checkers, then compute PASS/HOLD.
 argument-hint: <book-number> <chapter-number>
+arguments: [book, chapter]
 ---
 # /review-chapter
 
@@ -10,7 +11,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
 
 ## Steps
 
-1. **Parse args:** `book=$1` (e.g. `01`), `chapter=$2` (e.g. `07`).
+1. **Parse args:** `book=$book` (e.g. `01`), `chapter=$chapter` (e.g. `07`).
 
 2. **Re-run cleanup (so the gate reflects ONLY this run):**
 

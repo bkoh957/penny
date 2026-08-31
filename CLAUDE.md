@@ -49,7 +49,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (1276 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (1311 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -581,6 +581,46 @@ for `/assemble-book`. Note `panel_size: 1` (fast mode) means a put-down can neve
 `/plot-book`'s `plot-proposer` and `chapter-cutter` (defaults to `drafting_model`); the
 `outline-fan` prefers any reachable model other than `plot_model`; proceeding on
 `plot_model` when none is reachable is not a degradation and gets no note.
+
+## Runbook arguments
+
+`commands/*.md` are **rendered into an agent's context** before it acts, and that render
+substitutes argument placeholders — uniformly, **including inside fenced code blocks**.
+Runbooks therefore declare their arguments **by name** in frontmatter and refer to them by
+name:
+
+```yaml
+argument-hint: <book-number> <chapter-number> [--commit]
+arguments: [book, chapter, flag]
+```
+
+```bash
+book=$book       # e.g. 01
+chapter=$chapter # e.g. 03
+flag=$flag       # optional; renders EMPTY when the argument is absent
+```
+
+Three rules, each paid for:
+
+- **Never write a bare `$` before a digit.** Positionals are **zero-indexed** — `$0` is the
+  first argument, `$1` the second — which is off by one against the shell convention every
+  runbook was originally written in. `tests/test_runbook_arguments.py` fails the build on
+  one. To write a literal, escape it: `\$0`.
+- **Never reuse a declared argument's name for a shell variable holding anything else.**
+  Every `$name` is replaced before the shell runs, so such a variable can never be read
+  back. `new-series` defaults its optional root through `root_arg`/`books_root` for exactly
+  this reason.
+- **Logic containing a `$` that is not an argument belongs in `scripts/`.** A script is
+  never rendered, so no substitution can reach it — and it can be tested. This is why
+  `finalize-chapter`'s brief extraction is `scripts/extract_brief.py`: its awk `$0` (the
+  whole current record) was substituted with the book number, and the brief came out empty,
+  silently, for months.
+
+The substitution rules live in the harness and can change under us. Re-confirm after a
+Claude Code upgrade by invoking `/argprobe AAA BBB CCC` and reading the render — it creates
+nothing and executes nothing. Note a runbook edit needs a **restart** to take effect;
+command files are cached per session (spec
+`docs/superpowers/specs/2026-08-29-runbook-render-corrupts-positional-vars-fix.md`).
 
 ## Conventions
 

@@ -1,7 +1,8 @@
 # Runbook positional arguments are off by one
 
 Date: 2026-08-29
-Status: defect, fix brief — not a feature proposal
+Status: FIXED 2026-08-31 — as named arguments, not as renumbering. §2b was re-run
+first, as §5 demands, and it settled the open question the other way: see §2d.
 Severity: high — silent, corrupts the instruction before the agent reads it, the source file
 looks correct to anyone auditing it, and it affects every positional argument in seven
 runbooks rather than the single `$0` first reported
@@ -233,6 +234,53 @@ In `CLAUDE.md`, beside the architectural rule: *runbook code blocks are interpol
 an agent sees them. Argument placeholders are zero-indexed — `$0` is the first argument. Never
 write a bare `$` before a digit meaning anything else; escape it `\$` or move the logic into
 `scripts/`.*
+
+## 2d. The re-run that chose the fix
+
+§5's preamble says to re-run §2b before implementing, because this spec was confidently
+wrong for a day. Done on 2026-08-31 with `commands/argprobe.md`, which tests the named and
+positional forms in one render. Invoked as `/argprobe AAA BBB CCC`:
+
+    - named:      book=AAA | chapter=BBB | flag=CCC | extra=
+    - positional: p0=AAA | p1=BBB | p2=CCC | p3=$3
+    - escaped:    esc-pos=$0 | esc-named=$book
+
+Three findings. The first settled §4a's open question; the third was anticipated by nobody
+and inverts the recommendation the spec had hedged on.
+
+1. **Named arguments bind in plugin commands, not only in skills.** This is what §4a said
+   must be confirmed against documentation and was not verified here. It is verified now.
+2. **Positionals are zero-indexed**, confirming §2b. Unchanged.
+3. **An absent named argument renders EMPTY; an absent positional stays LITERAL** — `extra=`
+   against `p3=$3`. So under renumbering, `/assemble-book 01` with no `--approve` renders
+   `flag=$1`, the literal two characters, which is broken shell. Named arguments render
+   `flag=`, which is correct. Renumbering would not merely have left the trap §4a warned
+   about for the next reader; it would have left the optional-flag case **actively wrong**
+   in `assemble-book`, `finalize-chapter` and `book-status`.
+
+A fourth thing, learned the hard way and not a substitution rule at all: **command files are
+cached per session.** Editing a runbook and re-invoking it renders the OLD body with NEW
+arguments substituted. Any runbook change needs a restart, and so does any attempt to probe
+a changed probe.
+
+**What shipped.** All fifteen runbooks carrying a bare positional now declare
+`arguments: [...]` in frontmatter and refer to their arguments by name — the full set, not
+the seven in fenced blocks, because the simpler rule §4c offers for the named case ("fail on
+any bare positional at all") is the one worth keeping. `expand-outline` gained frontmatter
+it never had: it was already written in the named style, so its ten `$book`/`$chapter`
+references were rendering literally and working only because a model inferred them.
+`plan-book` was left alone — it carries no placeholder of either kind.
+
+**One hazard named arguments introduce that positionals did not**, hit during the migration
+and now linted: a declared argument's name may not be reused as a shell variable holding
+anything else, because every `$name` is substituted before the shell runs and such a
+variable can never be read back. `new-series` computed `root="${root_arg:-$HOME/myBooks}"`
+and then used `target="$root/$name"`, which would have built `target="/cozy-pelicans"`
+whenever the optional root was omitted. It defaults through `books_root` now.
+
+§4b had already shipped as `scripts/extract_brief.py`. §4c is
+`tests/test_runbook_arguments.py` (two rules, one per hazard). §4d is CLAUDE.md's "Runbook
+arguments" section, which carries the re-confirmation procedure §5.3 asks for.
 
 ## 5. Test
 

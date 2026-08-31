@@ -1,6 +1,7 @@
 ---
 description: Show where a book is in the pipeline — every step with two statuses, its command, its artefact, and the single next action.
 argument-hint: <book-number> [chapter-number]
+arguments: [book, chapter]
 ---
 
 # /book-status
@@ -10,13 +11,14 @@ is safe to run at any time, on any book, including one mid-draft.
 
 ## Steps
 
-1. **Parse args:** `book=$1` (e.g. `01`), optional `chapter=$2`. Resolve the
+1. **Parse args:** `book=$book` (e.g. `01`), optional `chapter=$chapter`. Resolve the
    active series root; hard-error if cwd is not inside a series.
 
 2. **Render the status:**
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/book_status.py" "$book" ${2:+"$2"}
+   chapter_arg=$chapter
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/book_status.py" "$book" ${chapter_arg:+"$chapter_arg"}
    ```
 
    Exit 2 means a usage problem — no such book, an invalid id, or a book with

@@ -1,6 +1,7 @@
 ---
 description: Per-book mystery design + lock (design §5a). Validate-once-then-freeze.
 argument-hint: <book-number>
+arguments: [book]
 ---
 # /plan-mystery
 
@@ -11,7 +12,7 @@ validation passed (the only writer is `preflight.py lock-mystery`).
 
 ## Steps
 
-1. **Parse args:** `book=$1` (e.g. `01`).
+1. **Parse args:** `book=$book` (e.g. `01`).
 
 2. **Showrunner sets the irreducible core** (interactive): who did it, why, the
    central deception, and any series-arc constraints. This is the irreducibly human

@@ -1,6 +1,7 @@
 ---
 description: Draft one chapter — first step of the full pipeline (review via /review-chapter, finalize via /finalize-chapter).
 argument-hint: <book-number> <chapter-number>
+arguments: [book, chapter]
 ---
 # /draft-chapter
 
@@ -14,22 +15,22 @@ edit and commit with `/finalize-chapter`.
    any chapter is drafted. Hard-fail aborts before context assembly:
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" draft $1 $2
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/preflight.py" draft $book $chapter
    ```
 
    A non-zero exit means the book's mystery is absent, unpopulated, or unlocked —
-   run `/plan-mystery $1` first. Do not proceed on failure.
+   run `/plan-mystery $book` first. Do not proceed on failure.
 
 0b. **Outline review notice (advisory, non-blocking).** Surface any open outline feedback
     or staleness before drafting. This NEVER blocks — always proceed regardless of output:
 
     ```bash
-    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/outline_feedback.py" status $1
+    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/outline_feedback.py" status $book
     ```
 
     An open-item or "stale — re-run /review-outline" notice is a reminder, not a gate.
 
-1. **Parse args:** `book=$1` (e.g. `01`), `chapter=$2` (e.g. `01`).
+1. **Parse args:** `book=$book` (e.g. `01`), `chapter=$chapter` (e.g. `01`).
 
 2. **Write the harness state marker** so the status bar reflects position
    (design §11):
@@ -101,7 +102,7 @@ edit and commit with `/finalize-chapter`.
    estimate of its own output:
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/draft_words.py" $1 $2
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/draft_words.py" $book $chapter
    ```
 
    It rewrites the field in place, so re-running after a redraft is safe. The stamp is

@@ -1,6 +1,7 @@
 ---
 description: Derive a book's structure from a prose outline, review it, then earn the lock (design §5a, outline-first front door).
 argument-hint: <book-number> <outline-path> [--approve]
+arguments: [book, outline]
 ---
 # /scaffold-book
 
@@ -11,7 +12,7 @@ earned by the shipped checker; this command never writes a certificate.
 
 ## Steps
 
-1. **Parse args:** `book=$1` (e.g. `01`), `outline=$2` (e.g.
+1. **Parse args:** `book=$book` (e.g. `01`), `outline=$outline` (e.g.
    `input/book-$book/outline.md`), optional `--approve`.
 
 2. **Structural gate (deterministic):**

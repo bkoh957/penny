@@ -1,6 +1,7 @@
 ---
 description: Book-level beta read — fan the six personas across reachable beta_models on an assembled text, write per-persona converged reaction reports. Non-blocking.
 argument-hint: <path-to-text> [--out <dir>]
+arguments: [path]
 ---
 # /beta-read
 
@@ -11,7 +12,7 @@ writes `.penny/current-stage` and never emits `BLOCKING:` lines.
 
 ## Steps
 
-1. **Parse args:** `path=$1` (the text to read); optional `--out <dir>` (default
+1. **Parse args:** `path=$path` (the text to read); optional `--out <dir>` (default
    `<dir-of-path>/beta-reports/`). Read the text once.
 
 2. **Read run-config** (`config/run-config.md`, via `parse_yaml_blocks`):
