@@ -22,7 +22,10 @@ Does not write ledgers.
 - **The packet** — `input/book-NN/packets/ch-MM.md`, alongside the map. This is your
   context: the chapter's outline block (Chapter Purpose, Starting/Ending State,
   Reader-Facing Shape, Required Beats, Clues and Plants, Character Knowledge,
-  Guardrails, the wiring footer), the merged Ledger Clues, the Continuity Extracts
+  Guardrails, the wiring footer), the merged Ledger Clues (its heading carries a
+  manifest too, `## Ledger Clues (N scheduled: ...)`, so you can confirm every
+  clue this chapter owes is in front of you — a clue you never saw is one you
+  cannot plant), the Continuity Extracts
   (this chapter's ledger slice — canon-core + the entries the chapter names + their
   one-hop links, already curated for you; the section heading carries a manifest,
   `## Continuity Extracts (N entries: ...)`, so you can confirm the `### ` entries

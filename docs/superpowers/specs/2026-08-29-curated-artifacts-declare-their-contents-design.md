@@ -1,7 +1,9 @@
 # Curated artifacts declare their contents
 
 Date: 2026-08-29
-Status: design, not yet approved — one open decision in §6
+Status: §4a shipped 2026-08-31 (showrunner approved that site only). §6's open
+decision — whether consumers echo back what they read — is untouched, and its
+recommendation still stands: do not build receipts yet.
 Severity: n/a — this is preventive, not a defect brief
 
 Filed as a design rather than a defect because nothing here is currently broken. It is the
@@ -74,7 +76,7 @@ already does this:
 
 **Shipped.** `## Continuity Extracts` — `packet_assemble.py`, 2026-08-29.
 
-**4a. `## Ledger Clues` — the one that should be next, and it is the same bug latent.**
+**4a. `## Ledger Clues` — SHIPPED 2026-08-31. It was the same bug, latent.**
 
 `packet_assemble.py:293` interpolates a ledger description raw:
 
@@ -94,6 +96,13 @@ Two changes, both mirroring the fix already shipped one section up:
 
 - Run each description through `packet_assemble._demote_headings` before interpolating.
 - Declare the count: `## Ledger Clues (3 scheduled: c02-…, c05-…, rh-01-…)`.
+
+Both landed as written. Zero scheduled reads `(0 scheduled)`; the adjective needs no
+pluralisation, so the `entry`/`entries` grammar §5.3 asks about does not arise here. A
+third change was made beyond the two bullets: the manifest is documented in all three
+contracts that read a packet — `drafter`, `map-maker`, `review-chapter` — as the
+Continuity Extracts manifest already was. A declaration nobody is asked to compare
+against is decoration, and §3's argument is about the consumer's ability to notice.
 
 **4b. The brief.** `scripts/extract_brief.py` output, consumed by `ledger-updater` and
 `ledger_markers.py --brief`. It is a whole chapter block, so it is not curated by omission

@@ -579,3 +579,143 @@ def test_continuity_slice_manifest_multi_subdir_breakdown_order(tmp_path):
     assert subdir_order == sorted(subdir_order)
     breakdown_subdirs = re.findall(r"\d+ (\w+)/", manifest)
     assert breakdown_subdirs == sorted(set(subdir_order))
+
+
+# --- `## Ledger Clues` manifest + heading demotion -------------------------
+# Spec `2026-08-29-curated-artifacts-declare-their-contents-design.md` §4a.
+# The same bug the Continuity Extracts tests above cover, one section up in the
+# packet, and worse where it lands: a truncated clue list means the chapter
+# plants fewer clues than the ledger scheduled, and `inspector-fairplay` grades
+# that chapter against the sealed ledger. The check and the thing it checks
+# fail together. In the live book ten of forty-five clue entries carry
+# multi-line block-scalar descriptions; none yet starts a line with `## `, so
+# this is latent rather than live — which is exactly when it is cheap to close.
+
+_HEADING_IN_DESCRIPTION_LEDGER = (
+    "book: '01'\n"
+    "reveal_chapter: 22\n"
+    "clue_schedule:\n"
+    "  - { id: mary-domestic-order, plant_chapter: 5, pays_off_chapter: 22, "
+    "necessary: true, description: \"Mary restores cups and plates to their places.\" }\n"
+    "  - id: kiln-log-gap\n"
+    "    plant_chapter: 5\n"
+    "    pays_off_chapter: 22\n"
+    "    necessary: true\n"
+    "    description: |\n"
+    "      The kiln log skips the Tuesday firing.\n"
+    "      ## Why the gap matters\n"
+    "      Nobody initialled it, and Mary initials everything.\n"
+    "red_herrings:\n"
+    "  - { id: rh-saffron-till, plant_chapter: 5, "
+    "misleads_toward: \"Saffron's till is short and she will not say why.\" }\n"
+)
+
+
+def _ledger_clues_section(text: str) -> str:
+    """Isolate the packet's `## Ledger Clues ...` section the way a
+    markdown-structure-aware reader would — the same rule
+    `_continuity_extracts_section` uses: from its heading line up to (not
+    including) the next sibling heading at level 1 or 2."""
+    heading_line = next(l for l in text.splitlines() if l.startswith("## Ledger Clues"))
+    start = text.index(heading_line) + len(heading_line)
+    rest = text[start:]
+    m = _SIBLING_HEADING_RE.search(rest)
+    return rest[:m.start()] if m else rest
+
+
+def _clues_heading(text: str) -> str:
+    return next(l for l in text.splitlines() if l.startswith("## Ledger Clues"))
+
+
+def test_ledger_clues_section_survives_a_heading_in_a_description(series_tree):
+    # The direct analogue of test_continuity_extracts_section_survives_embedded
+    # _headings. On unfixed code `## Why the gap matters` structurally closes
+    # `## Ledger Clues`, and rh-saffron-till — a real scheduled obligation —
+    # falls outside the section every structure-aware reader slices.
+    (series_tree / "series/whodunit/book-01.yaml").write_text(
+        _HEADING_IN_DESCRIPTION_LEDGER, encoding="utf-8")
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+    section = _ledger_clues_section(text)
+    assert "[mary-domestic-order]" in section
+    assert "[kiln-log-gap]" in section
+    assert "[rh-saffron-till]" in section
+    assert "Nobody initialled it" in section
+
+
+def test_ledger_clues_manifest_count_matches_emitted_clues(series_tree):
+    # Spec §5.1: derive both numbers from the artifact, so the test cannot
+    # pass by reading the same variable twice.
+    (series_tree / "series/whodunit/book-01.yaml").write_text(
+        _HEADING_IN_DESCRIPTION_LEDGER, encoding="utf-8")
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+    heading = _clues_heading(text)
+    m = re.search(r"\((\d+) scheduled", heading)
+    assert m, f"no manifest count in heading line: {heading!r}"
+    claimed = int(m.group(1))
+    section = _ledger_clues_section(text)
+    actual = len(re.findall(r"(?m)^- \[", section))
+    assert actual == claimed
+    assert claimed == 3
+
+
+def test_ledger_clues_manifest_names_every_id_it_counts(series_tree):
+    (series_tree / "series/whodunit/book-01.yaml").write_text(
+        _HEADING_IN_DESCRIPTION_LEDGER, encoding="utf-8")
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+    heading = _clues_heading(text)
+    listed = re.search(r"\(\d+ scheduled: ([^)]*)\)", heading)
+    assert listed, f"manifest names no ids: {heading!r}"
+    named = {s.strip() for s in listed.group(1).split(",")}
+    section = _ledger_clues_section(text)
+    emitted = set(re.findall(r"(?m)^- \[([^\]]+)\]", section))
+    assert named == emitted
+
+
+def test_ledger_clues_manifest_singular_one_scheduled(series_tree):
+    # The shared fixture schedules exactly one clue into chapter 05.
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+    assert _clues_heading(text) == "## Ledger Clues (1 scheduled: mary-domestic-order)"
+
+
+def test_ledger_clues_manifest_zero_scheduled(series_tree):
+    # Chapter 06 has no scheduled clue. A section that says "None." must still
+    # declare that nothing was withheld — silence is what a curated artifact
+    # may never do (spec §3).
+    text = packet_assemble.assemble("01", "06", repo_root=series_tree).read_text(
+        encoding="utf-8")
+    assert _clues_heading(text) == "## Ledger Clues (0 scheduled)"
+    assert "- None." in _ledger_clues_section(text)
+
+
+# The manifest is only worth emitting if a consumer is told to check it. When
+# `## Continuity Extracts` gained one it was written into all three contracts
+# that read a packet — drafter, map-maker, review-chapter — and this mirrors
+# that. Beyond spec §4a's two literal bullets, and deliberately: a declaration
+# nobody is asked to compare against is decoration.
+_PACKET_CONSUMERS = (
+    "agents/drafter.md",
+    "agents/map-maker.md",
+    "commands/review-chapter.md",
+)
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.mark.parametrize("rel", _PACKET_CONSUMERS)
+def test_packet_consumers_are_told_to_check_the_ledger_clues_manifest(rel):
+    text = (REPO_ROOT / rel).read_text(encoding="utf-8")
+    # Matched as two facts rather than one literal string: these three files
+    # already phrase the Continuity Extracts manifest two different ways —
+    # attached (`## Continuity Extracts (N entries: ...)`) in drafter and
+    # review-chapter, detached (`its heading carries a manifest — `(N entries:
+    # ...)``) in map-maker. Pinning one phrasing would force a house style the
+    # repo does not have.
+    assert "Ledger Clues" in text and "(N scheduled" in text, (
+        f"{rel} reads the packet's `## Ledger Clues` section but is never told"
+        " its heading declares what was scheduled. It already carries the same"
+        " instruction for `## Continuity Extracts`; without the pair, a"
+        " truncated clue list still reads as a complete one."
+    )

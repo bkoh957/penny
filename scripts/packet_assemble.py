@@ -276,6 +276,7 @@ def assemble(book: str, chapter: str, *, repo_root=None) -> Path:
     ledger_path = series_path(f"whodunit/book-{book2}.yaml", root)
     whodunit_stamp = ledger_identity(ledger_path)
     clue_lines: list[str] = []
+    clue_ids: list[str] = []
     if ledger_path.is_file():
         try:
             data = load_ledger(ledger_path)
@@ -290,7 +291,23 @@ def assemble(book: str, chapter: str, *, repo_root=None) -> Path:
             entry = entry_by_id.get(cid, {})
             desc = (entry.get("description") or entry.get("misleads_toward")
                     or "(no description in ledger)")
+            # Same demotion the continuity embeds get, for the same reason and
+            # a worse consequence: a ledger description is authored YAML, ten
+            # of the live book's forty-five are multi-line block scalars, and
+            # one line beginning `## ` inside one of them structurally closes
+            # `## Ledger Clues` — dropping every later clue out of the section
+            # that `inspector-fairplay` grades the chapter against (spec
+            # 2026-08-29-curated-artifacts-declare-their-contents-design.md
+            # §4a).
+            desc = _demote_headings(str(desc).strip())
             clue_lines.append(f"- [{cid}] plant_chapter {chnum}: {desc}")
+            clue_ids.append(cid)
+    # Declare what was scheduled, so a reader whose slice was truncated can
+    # see that it was. Derived from what is actually emitted below, never from
+    # a second walk of the ledger — a manifest counting a different pass than
+    # the one it labels is worse than none.
+    clues_manifest = (f"({len(clue_ids)} scheduled: {', '.join(clue_ids)})"
+                      if clue_ids else "(0 scheduled)")
     if not clue_lines:
         clue_lines = ["- None."]
 
@@ -328,7 +345,7 @@ def assemble(book: str, chapter: str, *, repo_root=None) -> Path:
         "",
         full_block,
         "",
-        "## Ledger Clues",
+        f"## Ledger Clues {clues_manifest}",
         "",
         *clue_lines,
         "",

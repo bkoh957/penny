@@ -30,6 +30,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    section already carries the assembled slice — canon-core + the entries this
    chapter names + their one-hop `links` — so read it from there directly. The
    heading itself carries a manifest, `## Continuity Extracts (N entries: ...)` —
+   as does `## Ledger Clues (N scheduled: ...)`, and the same rule applies to it —
    read to the section's end (the next `## ` heading; embedded sources' own
    headings run deeper and don't end it) and check the `### ` entries you saw
    against the manifest count before trusting the read as complete. On the

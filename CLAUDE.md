@@ -49,7 +49,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (1268 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (1276 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -369,7 +369,12 @@ container, not compressing its contents downstream. `/map-chapter NN MM` (replac
    block, merges in every ledger clue scheduled for this chapter (rendering each clue's
    `description:` field, falling back to `misleads_toward:`, then a named placeholder if
    neither is set — series authors should add `description:` to
-   `clue_schedule`/`red_herrings` entries so packets read well), appends the continuity
+   `clue_schedule`/`red_herrings` entries so packets read well; each description is
+   heading-demoted before interpolation and the section heading declares what it holds,
+   `## Ledger Clues (N scheduled: ...)`, for the same reason `## Continuity Extracts`
+   does — an authored `## ` inside a block-scalar description would otherwise close the
+   section and drop every later clue out of the slice `inspector-fairplay` grades
+   against), appends the continuity
    extracts (canon-core + entries the block names + their one-hop links), the standing
    `config/series-guardrails.md` block, and the chapter's word band. Refuses **by name**:
    no mystery lock (the packet needs the sealed ledger's obligations), or no `###

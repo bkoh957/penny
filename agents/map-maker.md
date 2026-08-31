@@ -29,7 +29,9 @@ of the answer; you never write the file they act on.
 - One chapter's packet — `input/book-NN/packets/ch-MM.md` — in full: the
   outline block (Chapter Purpose, Starting/Ending State, Reader-Facing Shape,
   Required Beats, Clues and Plants, Character Knowledge, Guardrails, `###
-  Texture`, the wiring footer), the merged `## Ledger Clues`, `##
+  Texture`, the wiring footer), the merged `## Ledger Clues` (its heading
+  carries a manifest too — `(N scheduled: ...)` — check it before deciding
+  every clue has a scene), `##
   Continuity Extracts` (its heading carries a manifest — `(N entries: ...)`
   — so you can check the `### ` entries you read against it), `## Standing
   Series Guardrails`, and `## Word Budget`.
