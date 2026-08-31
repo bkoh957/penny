@@ -31,8 +31,14 @@ Does not write ledgers.
   outline block carries them, `### Setting` (where and when each of its
   beats happens), `### Opening`,
   `### Closing`, and `### Texture` are also here — `### Opening` and
-  `### Closing` are **instruction, not context**: the chapter opens and lands
-  exactly as they say, not as something you're free to reinterpret in the room.
+  `### Closing` name the chapter's **first and last beat, not its first and
+  last sentence.** The chapter must open on what `### Opening` describes and
+  land on what `### Closing` describes; you write the sentences. They are
+  authored at plotting time as outline shorthand, are given in present tense,
+  and may be phrased either as a usable line or as a description of an effect —
+  render either in the series' tense and voice. Do not reproduce them verbatim,
+  and do not treat a concretely-phrased one as more binding than an abstract
+  one.
   `### Texture` is what this chapter **may** spend: concrete sensory material
   allocated to it once, across the whole book, so that no image is spent twice.
   It is a resource, not a checklist — nothing verifies it reached the page, and
