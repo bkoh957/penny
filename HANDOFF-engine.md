@@ -1,5 +1,5 @@
 # Handoff — Penny (fiction-series engine) / engine
-Saved: 2026-08-31 | Type: build (three defects, all shipped)
+Saved: 2026-09-01 | Type: build (three defects, all shipped and pushed)
 
 > **Stream note.** This is the engine stream. `HANDOFF.md` is a *different* session —
 > lobo/LoboFlow/Meowtown, no engine code — and is deliberately not overwritten. The
@@ -14,7 +14,9 @@ differs from what the repository intended, and no gate can see it.** Suite went
 
 ## Git state
 
-- Branch `main`, **not pushed**. Three commits ahead of `53894a4`.
+- Branch `main`, **pushed** — `53894a4..2604b96` to `origin/main` (2026-09-01).
+  Working tree clean of engine changes; nothing outstanding.
+- `2604b96` docs(handoff): the engine stream — three defects closed
 - `e27bb5a` runbooks: arguments are bound by name, not by position
 - `c031444` packet_assemble: Ledger Clues declares what it holds, and survives a heading
 - `13314ce` drafter: Opening and Closing name a beat, not a sentence
@@ -132,4 +134,6 @@ differs from what the repository intended, and no gate can see it.** Suite went
   `2026-08-29-curated-artifacts-declare-their-contents-design` §4a (a curated set silent
   about its own omissions). When something else in this shape turns up, that list is the
   precedent to read first.
-- **Nothing is pushed.** Three commits sit on local `main`.
+- **Everything is pushed** as of 2026-09-01, so the next session starts from a clean
+  `origin/main`. The two caveats above — the restart, and the un-rebuilt book 01 packets
+  — are the only work carried forward that is invisible in the diff.
