@@ -55,6 +55,11 @@ edit and commit with `/finalize-chapter`.
      (`preflight draft` above already refuses a **stale** packet or map — one built from
      an outline, whodunit ledger, or packet that has since changed — before this step
      runs; if it refused, the cure is the same: re-run `/map-chapter $book $chapter`.)
+   - **The packs (how it sounds):** the drafter also reads `config/voice-pack/voice-pack.md`,
+     the setting pack, and the genre prose pack directly (per `agents/drafter.md`) — the
+     packet carries *what* to write, the voice pack carries *how*. These are global files,
+     so they are a direct agent read rather than assembled into the packet, exactly as the
+     LM Studio path loads its voice digest.
    - **Previous chapter's tail:** attach the previous chapter's final ~300 words, so the
      drafter opens in continuity with what the reader just read. Prefer
      `output/book-$book/chapters/ch-<chapter-1>.final.md`; if that doesn't exist yet, fall

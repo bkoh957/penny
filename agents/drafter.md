@@ -63,11 +63,16 @@ Does not write ledgers.
   - On this path only, you also receive the loaded ledger slice directly:
     `series/continuity/canon-core.md` + entries named in the section + one-hop links
     (design §4.2) — the packet's Continuity Extracts don't exist to supply it.
-- `config/voice-pack/voice-pack.md`, the active series' setting pack under
-  `config/setting-pack/` — including `config/setting-pack/reservoir.md`, this
-  town's concrete sensory inventory, which is where your chapter's `### Texture`
-  allocation was drawn from — the active genre prose pack under
-  `config/genre-pack/`, and `config/length-profile.md`.
+- `config/voice-pack/voice-pack.md` — the voice pack: **how** the book sounds
+  (POV, tense, register, sentence architecture, banned patterns). The packet and
+  map carry *what* to write; the voice pack carries *how* to write it. A chapter
+  drafted without it in front of you is a model guessing at "literary" with no
+  calibration — that is exactly the failure it exists to prevent.
+- The active series' setting pack under `config/setting-pack/` — including
+  `config/setting-pack/reservoir.md`, this town's concrete sensory inventory,
+  which is where your chapter's `### Texture` allocation was drawn from — the
+  active genre prose pack under `config/genre-pack/`, and
+  `config/length-profile.md`.
 - The sealed `output/book-NN/mystery-solution.md` (the whodunit answer key) and this
   book's `reveal_chapter` from `series/whodunit/book-NN.yaml`.
 
@@ -86,9 +91,12 @@ Does not write ledgers.
   before the manuscript is built and the body is not.
 
 **Instructions:**
-1. Read the map, the packet, and (when present) the previous chapter's tail. Honour the
-   protagonist's knowledge-state from the packet's Character Knowledge section. Then drive
-   from whichever form this chapter uses:
+1. **Read the voice pack, the setting pack, and the genre prose pack first** — they are
+   *how* you write, and a draft that skips them reads as uncalibrated stunt prose
+   (`inspector-ai-prose` flags it after the fact; nothing else puts voice in front of you
+   before you write). *Then* read the map, the packet, and (when present) the previous
+   chapter's tail — *what* you write. Honour the protagonist's knowledge-state from the
+   packet's Character Knowledge section. Then drive from whichever form this chapter uses:
 
    **Map + packet (the current path):** treat each of the map's `## Scene N` as a distinct
    prose unit, in order. Within each scene, use whichever open-vocabulary fields it
