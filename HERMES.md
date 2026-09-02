@@ -1,6 +1,6 @@
 # HERMES.md
 
-Guidance for Hermes/Booko agents working in this repository.
+Guidance for Hermes/Meow agents working in this repository.
 
 ## Identity and purpose
 
@@ -9,7 +9,7 @@ This repo is `penny`: the canonical Penny engine, packaged as a Claude Code plug
 `commands/`, agents in top-level `agents/`, deterministic checkers in `scripts/`, and
 genre packs in `genres/`.
 
-Penny/Booko is a harness for producing commercial fiction series with deterministic gates
+Penny/Meow is a harness for producing commercial fiction series with deterministic gates
 and independent quality review. Treat the harness as production infrastructure, not a
 scratchpad.
 
@@ -83,7 +83,7 @@ wc -w output/book-01/chapters/ch-MM.draft.md
 
 ## Chapter workflow
 
-The Claude-native slash commands are documented in `commands/`. When operating via Hermes/Booko, follow the same runbooks manually unless the interactive agent supports the slash command directly.
+The Claude-native slash commands are documented in `commands/`. When operating via Hermes/Meow, follow the same runbooks manually unless the interactive agent supports the slash command directly.
 
 Per book:
 
@@ -126,7 +126,7 @@ ch-MM.final.md
 
 ## Drafting discipline
 
-Before asking Booko/Penny to redraft a chapter, provide:
+Before asking Meow/Penny to redraft a chapter, provide:
 
 1. Exact active series root, not the engine root.
 2. Exact target file to overwrite.
