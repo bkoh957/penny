@@ -1,167 +1,75 @@
 # Handoff — Penny (fiction-series engine) / main
-Saved: 2026-08-30 09:00 | Type: session (lobo profile, LoboFlow, Meowtown v2)
+Saved: 2026-09-02 | Type: build (one defect, shipped and pushed)
 
-> This session did not touch engine code. The engine suite (325 tests) is green
-> and unaffected. The work was: creating a new Hermes profile for local-LLM
-> writing, building a PocketFlow-based pipeline that bypasses Hermes overhead,
-> and using it to generate v2 of the Meowtown series premise and book 1 outline.
+> **Stream note.** Single-defect session on the engine. The prior `HANDOFF.md`
+> (lobo/LoboFlow/Meowtown-v2, 2026-08-30) was uncommitted on the working tree;
+> it is now preserved in git at `f4cbbe5` and this file replaces it. Other
+> stream files (`HANDOFF-engine.md`, `HANDOFF-story.md`, `HANDOFF-direction.md`,
+> `HANDOFF-of122.md`, `HANDOFF-readiness-briefs.md`) were not touched.
 
-## What we did
+## What we built
 
-### 1. Created the `lobo` Hermes profile
+An agent found that a chapter drafted through `/draft-chapter` (the cloud/main
+path) came out as uncalibrated "literary" stunt prose, while the LM Studio path
+produced correctly-voiced prose. Their diagnosis: "the main path never loads the
+voice pack."
 
-A dedicated profile for plotting/drafting fiction on a local LLM server (LM Studio).
+That was right about the symptom, wrong about the cause. `agents/drafter.md`
+**already declared** `config/voice-pack/voice-pack.md` as an input — but as
+item 6 of a run-on 7-item Inputs clause, and instruction 1 told the drafter to
+"Read the map, the packet, and the tail" — three things, voice pack not among
+them. A model reads that as: voice is optional. `inspector-ai-prose` only
+catches the result after the fact.
 
-- Profile path: `~/.hermes/profiles/lobo/`
-- Launcher: `lobo` (wrapper at `~/.local/bin/lobo`)
-- Provider: custom (OpenAI-compatible, `http://localhost:1234/v1`)
-- API key: loaded from `~/.hermes/profiles/lobo/.env` via `MODEL_API_KEY`
-- Config: `~/.hermes/profiles/lobo/config.yaml` references `${MODEL_API_KEY}`
-- SOUL.md: written for noir/mystery plotting and drafting — genre editor voice
-- Context length: set to 131072 (Hermes requires minimum 64K)
-- Reasoning: disabled (`model.reasoning: false`) — critical for Qwen 3.6
+The v6 cure the agent found earlier ("my dispatch brief pointed at the voice
+pack manually") was a workaround living in the series' `.penny/` dispatch files
+— it dies the moment someone drafts through the engine's own command.
 
-### 2. Built LoboFlow — PocketFlow pipeline for direct LLM generation
-
-The bottleneck diagnosis: Hermes adds ~20% overhead (system prompt, tool schemas,
-memory, compression), but the real bottleneck is the model at 4.1 tok/s. However,
-Qwen 3.6's reasoning mode was eating 100% of generated tokens — every token went
-to invisible internal reasoning, producing zero content. The fix: inject `` as
-the assistant message content, which tells the model the reasoning block is
-already closed and forces it to generate content directly.
-
-Files:
-- `/Users/beeko/myTools/penny/lobo-flow/lobo_flow.py` — PocketFlow script
-- `/Users/beeko/myTools/penny/lobo-flow/run.sh` — wrapper (handles Python path)
-
-Key design:
-- Calls LM Studio's OpenAI API directly — no Hermes overhead
-- PocketFlow graph: GenerateSectionNode (loop) → WriteFileNode
-- Incremental file writes after each section (survives timeouts)
-- Reasoning bypass: assistant message with `` content
-- Tasks: `premise`, `outline`, `custom`, `test`
-- Background process fix: Python 3.14 (homebrew) is the background default,
-  packages installed via `pip install --user --break-system-packages`
-
-Performance:
-- Via Hermes (lobo chat -q): ~7 min per section, frequent timeouts, 8+ calls
-- Via LoboFlow: ~35s per section, 11 sections in 9.3 min, one run (~5x speedup)
-
-### 3. Created the `cmux` skill
-
-Skill at `~/.hermes/profiles/booko/skills/devops/cmux/SKILL.md`.
-Covers: discovery (tree, list-panes), new-split, send, read-screen, open,
-new-surface, notifications. Replaces raw tmux when cmux is available.
-
-### 4. Meowtown series — v2 premise and outline
-
-Series directory: `/Users/beeko/myBooks/meowtown/` (with `.penny/` marker)
-
-v1 (preserved at `v1/`): Chinatown-defeat cozy with The Constant, Yage-Nip,
-Valeska as scheming Board client. Solid but "too bland" per user feedback.
-
-v2 (current): Built from the user's alternate story idea — Burroughsian
-biological horror, the Great Lie (cats lobotomized everyone in 1973), the
-Lullaby broadcast, Whisker drug, the Alabaster as 1973 original scientist.
-
-Key v2 elements:
-- The Lullaby: mind-control broadcast through water/milk pipes, failing grid
-- Whisker: livestock pineal gland extract, telepathic — hear the broadcast directly
-- The Great Lie: cats didn't evolve, they lobotomized everyone in 1973
-- Cast: Midas, The Alabaster, The Telegrapher (gaining vocabulary), Sloane,
-  Bracken, Finch
-- No Burroughs proper nouns (no Interzone, Benway, Yage, Naked Lunch)
-- Series arc: 7 books, Book 1 = Chinatown defeat, Book 7 = broadcast destruction
-- Book 1 "The Meat-Office": 28 chapters, Dr. Fleisch brings broadcast code,
-  Midas discovers the Lie, Sterling incinerates evidence, Telegrapher says "ME"
+Fix — all in the engine, `32e7854`:
+- **`agents/drafter.md`** — voice pack pulled into its own Inputs bullet with
+  the *what (packet/map) vs. how (voice pack)* framing; instruction 1 now reads
+  the voice/setting/genre packs **first**, then the map/packet/tail.
+- **`commands/draft-chapter.md`** — a note in the context-assembly step (step 3)
+  that the packs are a direct agent read, mirroring the LM Studio digest load,
+  so the parity is visible in the runbook.
+- **`tests/test_drafter_loads_voice_pack.py`** — new contract test: voice pack
+  is named as its own input, instruction 1 reads it before the map, and the
+  command names it too.
+- **`CLAUDE.md`** — full-suite count 1311 → 1314.
 
 ## Git state
 
-- Branch `main`, engine suite 325 tests green, no engine code changed.
-- Untracked new files:
-  - `lobo-flow/lobo_flow.py` — the PocketFlow pipeline
-  - `lobo-flow/run.sh` — wrapper script
-- Meowtown files are in `/Users/beeko/myBooks/meowtown/` (series dir, not the
-  engine repo — not tracked by git).
+- Branch: `main`, pushed through `f4cbbe5`.
+- `32e7854` — the drafter voice-pack fix (4 files).
+- `f4cbbe5` — preserved the prior uncommitted lobo handoff + `HERMES.md` rename
+  + two untracked stream handoffs.
+- Uncommitted changes: none (this file will be the only one after saving).
+- Tests: `1314 passed in ~6s` — full green.
 
 ## Next actions
 
-1. **Review the v2 bible.** `/Users/beeko/myBooks/meowtown/series-bible.md`
-   was generated by LoboFlow in one pass. It needs review for quality,
-   consistency, and whether the 27B without reasoning produces better or worse
-   prose than the iterated v1. The tone contract section is the test case.
+Nothing pending from this defect — it is closed, shipped, pushed, tested.
 
-2. **Run the v2 outline through LoboFlow.** The outline task is defined in
-   lobo_flow.py but hasn't been run yet. Command:
-   `bash /Users/beeko/myTools/penny/lobo-flow/run.sh --task outline --series /Users/beeko/myBooks/meowtown`
-   Note: the outline has 4 sections (logline + 3 acts) with longer max_tokens
-   (800-1200). Estimated ~8 minutes.
-
-3. **LM Studio Qwen settings for creative writing.** User queued a message
-   about optimizing LM Studio settings. Key recommendations were drafted but
-   not delivered: temperature 0.7 for drafting, repetition penalty 1.1,
-   top-p 0.9-0.95, context under 500 tokens per prompt. The reasoning bypass
-   (injecting ``) is the single most important setting.
-
-4. **The `lobo` profile model name.** Currently set to
-   `qwen3.6-27b-fable-fusion-711-mtplx`. If the user switches models in LM
-   Studio, update with `lobo config set model.default "new-model-name"`.
-
-5. **Engine work items from prior handoff are unchanged.** See items 1-6 in
-   the previous HANDOFF.md (argprobe, opening/closing brief, style facts,
-   ledger clues manifest, repeated_content_words stoplist, Setting block
-   silent drop). None were touched this session.
+If picking up general engine work, the live threads are in the other stream
+files, unchanged:
+- `HANDOFF-engine.md` (2026-09-01) — most recent engine build state.
+- `HANDOFF-story.md` — story-layer / book-01 blocking findings.
 
 ## Decisions made this session
 
-- **Lobo profile runs on local LLM only.** User's explicit choice. Do not
-  suggest cloud APIs.
-- **PocketFlow over Hermes for creative generation.** The Hermes agent
-  overhead (system prompt, tools, memory) is unnecessary for creative writing
-  where the model just needs a prompt and returns text. LoboFlow eliminates
-  that overhead.
-- **Reasoning bypass via `</think>` injection.** LM Studio does not pass
-  `chat_template_kwargs.enable_thinking=False` through the API. The only
-  reliable bypass is injecting an assistant message with `` as content.
-  This is a workaround, not a fix — if LM Studio adds proper API support for
-  disabling reasoning, switch to that.
-- **v1 preserved, not deleted.** Meowtown v1 files are at `v1/` in the series
-  directory. User may want to compare or reuse elements.
-- **All Burroughs proper nouns replaced.** Interzone, Benway, Yage, Naked
-  Lunch, Cut-Up — all removed. Original names: the Lullaby, Whisker, the
-  Alabaster, the Spire, the Rusty Collar, the Meat-Office.
-
-## User preferences expressed this session
-
-- **"Too bland" feedback on v1.** The v1 output was competent but lacked edge.
-  The alternate story idea was wilder — Burroughsian biological horror, the
-  Great Lie, parasitic Elite. v2 follows this direction.
-- **User wants to optimize local LLM settings for creative writing.** Queued
-  but not yet delivered. See Next actions 3.
-- **User identified Hermes as the bottleneck.** Correct diagnosis — the
-  agent overhead is unnecessary for pure creative generation. LoboFlow is
-  the response.
-- **User wants lobo to do the work, booko to review.** The division of labor:
-  lobo generates, I (booko) review and iterate. This worked well for v1 with
-  the 12B; the 27B + LoboFlow should be better.
+- **Fixed the agent file, not the runbook.** The other agent proposed adding a
+  line to `commands/draft-chapter.md:49–53`. But the packs are direct agent
+  reads (like the setting and genre packs — CLAUDE.md: "the setting pack stays a
+  direct read by `drafter`"), so the runbook was never the place a load was
+  missing. The real weakness was emphasis in `drafter.md`. The runbook got a
+  one-note cross-reference only, for visibility.
+- **Kept the prior lobo handoff.** It was a full session's handoff, uncommitted
+  — overwriting it would have been unrecoverable. Committed as-found first.
 
 ## Watch out for
 
-- **Background processes use Python 3.14 (homebrew), not 3.9 (system).**
-  Packages must be installed into 3.14: `python3.14 -m pip install --user
-  --break-system-packages openai pocketflow`. The run.sh wrapper handles this
-  but if new packages are needed, install them into the right Python.
-- **Qwen 3.6 reasoning mode is the default and it's catastrophic for creative
-  writing.** Without the `` bypass, 100% of tokens go to reasoning and zero
-  content is produced. This is not configurable via LM Studio's API — only
-  the message injection works.
-- **LoboFlow writes incrementally.** If a run is interrupted, the file
-  contains whatever sections completed. Re-running overwrites from scratch.
-- **The `lobo` profile and LoboFlow are separate systems.** LoboFlow does not
-  use the lobo Hermes profile at all — it calls LM Studio directly. The lobo
-  profile is for interactive use (`lobo chat`); LoboFlow is for batch
-  generation. They share the same .env (API key) and config (model name).
-- **Meowtown is not a Penny engine series yet.** It has a `.penny/` marker
-  but no `config/`, `input/`, or `series/` structure. The premise and outline
-  are plain markdown, not Penny-format outlines. If the user wants to run
-  Penny pipeline commands, the files need to be converted to Penny format.
+- **`test_texture_allocation_docs.py::test_claude_md_test_count_matches_the_suite`**
+  pins the "full suite (N tests)" number in CLAUDE.md against a live
+  `--collect-only`. Any test you add breaks it until you bump that line.
+- **`HERMES.md` now says "Meow", not "Booko"** — that rename came in with the
+  preserved prior-session commit, not this session.
