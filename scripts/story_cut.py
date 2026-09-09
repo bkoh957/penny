@@ -648,10 +648,19 @@ def emit_outline(story_text: str, cut_plan_text: str, questions: dict,
             if ch["num"] <= reveal_chapter else
             f"The mystery resolved in chapter {reveal_chapter:02d}; "
             "do not write it as still open.")
+        # The standing series guardrails are a global, constant file. Pasting
+        # the body here put its own `##` headings at column 0, truncating every
+        # chapter block and orphaning the wiring footer (spec 2026-09-09). The
+        # packet carries the body once, as `## Standing Series Guardrails`.
+        guardrail_ref = (
+            "- Standing series guardrails apply in full — "
+            "`config/series-guardrails.md`, carried into each packet as "
+            "`## Standing Series Guardrails`.\n"
+            if guardrails.strip() else "")
         out.append("### Guardrails\n"
                    + "".join(f"- {a}\n" for a in authored)
-                   + "- " + guardrails.strip()
-                   + f"\n- {reveal_line}\n")
+                   + guardrail_ref
+                   + f"- {reveal_line}\n")
 
         wiring = []
         # A question this chapter closes is never also "carried" by it — the

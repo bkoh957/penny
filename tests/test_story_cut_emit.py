@@ -35,10 +35,20 @@ LEDGER = {"c-altered": "the handover appointment, changed in Maggie's name"}
 JOB_TITLES = {"establish-protected-world": "Establish the Protected World",
               "crime-and-first-contradiction": "Deliver the Crime and Its First Contradiction"}
 
+REALISTIC_GUARDRAILS = (
+    "# Standing Series Guardrails — Pelican's Crook\n\n"
+    "## C — Warmth beats are never scheduled as clues\n\n"
+    "Warmth is oxygen, not obligation.\n\n"
+    "## B — The map states ends, not sentences\n\n"
+    "A map says what a scene achieves.\n\n"
+    "## Standing\n\n"
+    "These apply to every book in the series.\n"
+)
 
-def _emit():
+
+def _emit(guardrails="Do not name the culprit early."):
     return emit_outline(STORY, PLAN, parse_questions(STORY), LEDGER,
-                        reveal_chapter=2, guardrails="Do not name the culprit early.",
+                        reveal_chapter=2, guardrails=guardrails,
                         job_titles=JOB_TITLES, solution={})
 
 
@@ -93,9 +103,43 @@ def test_character_knowledge_names_only_strands_seen_so_far():
 
 
 def test_guardrails_and_purpose_are_derived():
+    # The cut no longer pastes the guardrails file's body — its own `##`
+    # headings would truncate the chapter block (spec 2026-09-09). A
+    # non-empty `guardrails` string now means "the series has guardrails",
+    # and the section carries a reference bullet, not the text itself.
     sections = parse_packet_sections(chapter_block(_emit(), 1))
-    assert "Do not name the culprit early." in sections["Guardrails"]
+    assert "config/series-guardrails.md" in sections["Guardrails"]
     assert "Establish the Protected World" in sections["Chapter Purpose"]
+
+
+def test_guardrail_body_is_not_pasted_into_chapter_blocks():
+    """The cut emits a reference, never the file's body — its own `##`
+    headings would truncate every chapter block (spec 2026-09-09)."""
+    out = _emit(guardrails=REALISTIC_GUARDRAILS)
+
+    assert "Warmth is oxygen, not obligation." not in out
+    assert "A map says what a scene achieves." not in out
+    assert "config/series-guardrails.md" in out
+
+
+def test_no_stray_top_level_heading_in_a_cut_outline():
+    """A cut outline's column-0 `##` headings are exactly its chapters plus
+    `## Solution` — anything else truncates a chapter block."""
+    out = _emit(guardrails=REALISTIC_GUARDRAILS)
+
+    stray = [ln for ln in out.splitlines()
+             if ln.startswith("## ")
+             and not ln.startswith("## Chapter ")
+             and ln.strip() != "## Solution"]
+    assert stray == [], f"stray top-level headings truncate chapter blocks: {stray}"
+
+
+def test_no_guardrail_reference_when_the_series_has_none():
+    """An empty guardrails string emits no reference bullet and no empty one."""
+    out = _emit(guardrails="")
+
+    assert "config/series-guardrails.md" not in out
+    assert "\n- \n" not in out
 
 
 def test_track_movement_rows_come_from_the_cut_plan():
@@ -340,9 +384,9 @@ def test_untagged_guardrail_lands_in_every_chapter():
 
 def test_series_guardrail_and_reveal_line_still_follow_the_authored_ones():
     body = _guardrails(_emit_noted(), 2)
-    assert "Do not name the culprit early." in body
+    assert "config/series-guardrails.md" in body
     assert "Do not resolve the mystery before chapter 02." in body
-    assert body.index("Keep the town warm") < body.index("Do not name the culprit")
+    assert body.index("Keep the town warm") < body.index("config/series-guardrails.md")
 
 
 def test_authored_guardrails_keep_the_order_the_author_wrote_them_in():
@@ -357,7 +401,7 @@ def test_authored_guardrails_keep_the_order_the_author_wrote_them_in():
     assert (body.index("Simon is evasive")
             < body.index("ordinary morning")
             < body.index("Keep the town warm")
-            < body.index("Do not name the culprit"))
+            < body.index("config/series-guardrails.md"))
 
 
 def test_chapter_direction_never_reaches_the_outline():
@@ -366,9 +410,12 @@ def test_chapter_direction_never_reaches_the_outline():
 
 def test_a_story_with_no_directive_blocks_keeps_the_old_guardrails_shape():
     # STORY carries no ## Guardrails block, so the section must be exactly the
-    # two lines it held before this feature — nothing added, nothing reordered.
+    # two derived lines — the series guardrail reference, then the reveal
+    # line — nothing added, nothing reordered.
     assert _guardrails(_emit(), 1).strip().splitlines() == [
-        "- Do not name the culprit early.",
+        "- Standing series guardrails apply in full — "
+        "`config/series-guardrails.md`, carried into each packet as "
+        "`## Standing Series Guardrails`.",
         "- Do not resolve the mystery before chapter 02.",
     ]
 
@@ -569,7 +616,7 @@ def test_an_authored_guardrail_still_precedes_the_derived_ones_after_the_reveal(
     # The derived series guardrail must keep its place after authored notes
     # even on the post-reveal branch, where the reveal line changed shape.
     body = _guardrails(_late(), 4)
-    assert body.index("Do not name the culprit early.") < body.index("The mystery resolved")
+    assert body.index("config/series-guardrails.md") < body.index("The mystery resolved")
 
 
 # --- Task 4: emit ### Texture (spec 2026-08-27 §4.2) ------------------------
