@@ -71,6 +71,25 @@ def test_neither_runbook_dispatches_a_projection_it_should_not():
     assert "--without-continuity" not in _step("commands/review-chapter.md", "4")
 
 
+def test_step_4_routes_the_ledger_clues_to_fairplay_and_not_to_continuity():
+    # `--inspector-slice` emits the continuity section ALONE, so the packet's
+    # `## Ledger Clues` — where fairplay's planting obligations actually live —
+    # has to be routed to it separately. Delete that route and fairplay's
+    # instruction 1 ("From the slice, list this chapter's clue-planting
+    # obligations") has no input, silently: the inspector still runs, still
+    # scores, and simply finds no obligations to check.
+    step = _step("commands/review-chapter.md", "4")
+    assert "## Ledger Clues" in step, "step 4 no longer routes the ledger clues"
+    clues = step[step.index("## Ledger Clues"):]
+    assert "inspector-fairplay" in clues
+    assert "inspector-continuity does not get it" in clues.replace("`", "")
+
+
+def test_only_fairplay_declares_the_ledger_clues_input():
+    assert "ledger_clues" in _read("agents/inspector-fairplay.md")
+    assert "ledger_clues" not in _read("agents/inspector-continuity.md")
+
+
 def test_slice_free_inspectors_do_not_declare_a_ledger_slice():
     for name in ("inspector-structure", "inspector-voice", "inspector-ai-prose"):
         text = _read(f"agents/{name}.md")

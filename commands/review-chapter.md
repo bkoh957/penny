@@ -130,12 +130,15 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    override they inherit the parent — the drafting session, grading its own prose) with
    the chapter text and its rubric (from the table above), plus **only** the extra inputs
    step 4 assigns it: `continuity` and `fairplay` get the `--inspector-slice` ledger,
-   `structure` gets the thread roster from step 6, `voice` gets the lexicon and the step-5
-   evidence files, `ai-prose` gets nothing beyond the page and its rubric. Each writes its
+   `fairplay` alone also gets the packet's `## Ledger Clues` section (the projection
+   doesn't carry it, and it is where fairplay's obligations live), `structure` gets the
+   thread roster from step 6, `voice` gets the lexicon and the step-5 evidence files,
+   `ai-prose` gets nothing beyond the page and its rubric. Each writes its
    verdict into `output/book-$book/chapters/ch-$chapter.reviews/` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py`, to the verdict file named in the
-   table above. `inspector-fairplay` additionally receives
-   `output/book-$book/mystery-solution.md` and the `reveal_chapter` value read from
+   table above. `inspector-fairplay` additionally receives the packet's
+   `## Ledger Clues` section (per step 4),
+   `output/book-$book/mystery-solution.md`, and the `reveal_chapter` value read from
    `series/whodunit/book-$book.yaml`. If the book has no locked ledger, dispatch it
    without `reveal_chapter` — the inspector will record the premature-reveal check as
    not applicable.
