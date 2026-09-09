@@ -818,3 +818,28 @@ def test_projection_never_writes(series_tree):
     packet_assemble.without_continuity(path.read_text(encoding="utf-8"))
 
     assert path.read_bytes() == before
+
+
+def test_projection_via_main_does_not_touch_the_packet(series_tree, monkeypatch, capsys):
+    """The never-regenerate invariant lives in main()'s projection branch, not
+    in the pure function: a projection that called assemble() would rewrite the
+    packet and stale every map carrying its built_from_packet hash."""
+    path = packet_assemble.assemble("01", "05", repo_root=series_tree)
+    # A marker no assembler run would produce. Byte-identity ALONE cannot catch
+    # a regeneration here: assemble() is deterministic, so re-running it over
+    # unchanged fixture sources rewrites the very same bytes and the comparison
+    # below stays green. The marker is what discriminates reading the packet on
+    # disk from rebuilding it.
+    path.write_text(path.read_text(encoding="utf-8") + "\n<!-- showrunner note -->\n",
+                    encoding="utf-8")
+    before = path.read_bytes()
+    monkeypatch.chdir(series_tree)
+
+    rc = packet_assemble.main(["01", "05", "--without-continuity"])
+    out = capsys.readouterr().out
+
+    assert rc == 0
+    assert path.read_bytes() == before          # byte-identical, stamps intact
+    assert "<!-- showrunner note -->" in out    # read from disk, not rebuilt
+    assert "## Continuity Extracts" not in out
+    assert "## Word Budget" in out              # it is the packet, just trimmed
