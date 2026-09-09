@@ -27,6 +27,14 @@ the same rule drives `parse_wired_chapters`). So every chapter block is **trunca
 falls outside its own chapter, into a `## Standing` pseudo-block that
 `parse_wired_chapters` discards because its heading does not match `## Chapter NN`.
 
+**The same file is interpolated raw a second time.** `packet_assemble.py:318-322` reads
+`config/series-guardrails.md` and splices it at line 358 under the packet's own
+`## Standing Series Guardrails` heading. Its `##` headings close that section
+immediately, so the packet's guardrails section is **10 words** and the body leaks out as
+three sibling top-level sections (`## C`, `## B`, `## Standing`). Any consumer reading the
+guardrails by markdown structure gets an empty section. `_demote_headings` is defined in
+that same file (line 117) and applied to continuity extracts — but not here.
+
 This is not an authoring mistake. The affected outline carries `built_from_story`,
 `built_from_cut` and `cut_output_sha256` — the engine wrote it, and will write it again
 for every book cut through the source layer.
@@ -78,6 +86,16 @@ book: 01
 validated: fairplay+lexicon        <- not `fairplay+lexicon+tension`
 ```
 
+**The packet's guardrails section is empty.** Section word counts for
+`input/book-01/packets/ch-01.md`:
+
+```
+   10 words  ## Standing Series Guardrails   <- the whole section
+  184 words  ## C — Warmth beats are never scheduled as clues
+  196 words  ## B — The map states ends, not sentences
+   43 words  ## Standing
+```
+
 **Duplication.** The guardrail body is 423 words (`## C` 184 + `## B` 196 +
 `## Standing` 43). Interpolated into 35 chapter blocks that is **14,805 words**, in an
 outline of 101,655.
@@ -86,12 +104,16 @@ outline of 101,655.
 
 Two changes in the cut, both narrow.
 
-**3a. Demote the interpolated headings.** Before `emit_outline` interpolates the
-guardrail text, demote its embedded ATX (and setext) headings the way
+**3a. Demote the interpolated headings, at both sites.** Before the guardrail text is
+spliced in, demote its embedded ATX (and setext) headings the way
 `packet_assemble._demote_headings` already does for continuity extracts and canon-core.
 An authored `##` inside a carried file must never be able to close the structure it is
-carried into. `packet_assemble.py` is the reference implementation and the shared helper
-should move somewhere both can import rather than being copied.
+carried into. The live call site is `packet_assemble.py:358` (the packet's guardrails section), where
+`_demote_headings` is already defined in the same file at line 117 and simply not applied.
+`story_cut.py:652` needs no demote once §3b lands, because it will no longer carry a
+multi-line file into a chapter block at all — the guarantee there is an **invariant test**
+(§5.4) rather than a second call to the helper. No shared module is required;
+`scripts/penny_text.py` is prose primitives for the voice checkers and is the wrong home.
 
 **3b. Stop interpolating the file per chapter.** The chapter-level `### Guardrails`
 section is for *this chapter's* authored guardrails plus the derived series-guardrail and
@@ -100,9 +122,9 @@ packet already appends them once as `## Standing Series Guardrails`, which is th
 home for exactly the reason the voice and genre packs are not embedded per chapter. Emit
 a reference, not the body.
 
-3a alone makes the outline parse correctly; 3b is what removes the 14,805 words. Do both
-— 3a is the structural guarantee (any future carried file is safe), 3b is the reason the
-carry was wrong in the first place.
+3b is what makes the outline parse correctly and removes the 14,805 words; 3a is what
+makes the packet's own guardrails section non-empty. They fix two different sites of one
+defect and are independently testable — do both, in either order.
 
 ### Rejected
 
@@ -129,8 +151,12 @@ back:
   `validated: fairplay+lexicon` to `fairplay+lexicon+tension`, and expect
   `tension_check` to have findings to report for the first time (see the companion spec).
 
-Downstream, `packet_assemble.py` needs no change: once the chapter block is whole, the
-wiring footer is inside the slice and flows into the packet by itself.
+Downstream, once the chapter block is whole the wiring footer is inside the slice and
+flows into the packet by itself — but `packet_assemble.py` still needs its own §3a fix for
+the guardrails it appends directly. Existing packets are stamped and consumed by stamped
+maps: re-assembling a packet changes its sha256 and invalidates that chapter's map, so
+land this at a chapter boundary and re-run `/map-chapter` for anything mapped but not yet
+drafted.
 
 ## 5. Test
 
@@ -145,6 +171,9 @@ Test-first against `tests/fixtures/`:
 3. **The packet carries the wiring** — assemble a packet from that outline and assert the
    chapter section contains its `Opens:` / `Closes:` lines. This is the regression that
    would have caught the live defect.
+3b. **The packet's guardrails section carries its body** — assemble a packet with a
+   guardrails fixture containing `##` headings and assert `## Standing Series Guardrails`
+   holds the whole body, with no sibling section introduced after it.
 4. **The body is not duplicated per chapter** (3b) — the emitted outline contains the
    guardrail body zero times; a chapter's `### Guardrails` still carries its authored and
    derived lines.
