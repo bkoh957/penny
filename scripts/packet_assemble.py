@@ -290,14 +290,24 @@ def _continuity_slice(root, chapter_text: str) -> tuple[str, str]:
         key for key, e in entries.items()
         if any(_word_match(n, chapter_text) for n in e["names"] if n)
     }
+    named_stems = {entries[k]["path"].stem.lower() for k in matched}
     for key in list(matched):
         meta = entries[key]["meta"]
         linked = list(meta.get("links") or []) + list(meta.get("refs") or [])
         for link in linked:
             lname = str(link).strip().lower()
             for other_key, other in entries.items():
-                if lname in other["names"]:
-                    matched.add(other_key)
+                if lname not in other["names"]:
+                    continue
+                stem = other["path"].stem.lower()
+                # A relationship entry (`a--b`) is reachable only by one hop —
+                # it never appears in prose — so naming one protagonist used to
+                # pull every relationship she is in. It earns its place only
+                # when BOTH ends are in this chapter (spec 2026-09-09 §3b.4).
+                if "--" in stem and not all(
+                        part in named_stems for part in stem.split("--")):
+                    continue
+                matched.add(other_key)
 
     parts: list[str] = []
     notes: list[str] = []

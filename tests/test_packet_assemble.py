@@ -168,7 +168,10 @@ def test_same_stem_in_two_continuity_subdirs_are_both_matched(series_tree):
 
 def test_background_entry_loads_when_named(tmp_path, monkeypatch):
     """A background entry named in the chapter lands in the packet, and its
-    one-hop links pull the relationship entry with it."""
+    one-hop links pull the relationship entry with it. A `a--b` entry now
+    needs BOTH ends named, so the fixture carries `cal.md` and the chapter
+    names Cal as well as Maggie — the shape the live series has. Naming only
+    Maggie (as this test used to) correctly leaves `cal--maggie` out now."""
     bg = tmp_path / "series/continuity/background"
     bg.mkdir(parents=True)
     (bg / "maggie.md").write_text(
@@ -177,15 +180,77 @@ def test_background_entry_loads_when_named(tmp_path, monkeypatch):
     (bg / "cal--maggie.md").write_text(
         "<!-- canon-meta: {id: cal--maggie, kind: relationship, links: [cal, maggie]} -->\n\n"
         "Slow, and neither will name it first.\n", encoding="utf-8")
+    (bg / "cal.md").write_text(
+        "<!-- canon-meta: {id: cal, kind: character, links: []} -->\n\n"
+        "Cal notices what others miss.\n", encoding="utf-8")
     (bg / "pruitt.md").write_text(
         "<!-- canon-meta: {id: pruitt, kind: character, links: []} -->\n\n"
         "Not in this chapter.\n", encoding="utf-8")
 
-    out, manifest = packet_assemble._continuity_slice(tmp_path, "Maggie opens the studio.")
+    out, manifest = packet_assemble._continuity_slice(
+        tmp_path, "Maggie opens the studio; Cal is already there.")
     assert "A potter who does not perform fear." in out
     assert "Slow, and neither will name it first." in out
     assert "Not in this chapter." not in out
-    assert "(2 entries: 2 background/)" == manifest
+    assert "(3 entries: 3 background/)" == manifest
+
+
+def test_relationship_entry_needs_both_ends_named(series_tree):
+    """A `a--b` entry linked from a named `a` does not ride along when `b` is
+    absent from the chapter — 19 of 39 entries in the live series arrived this
+    way (spec 2026-09-09-check-economics §2.3). The fixture's chapter 05 names
+    Mary and Cal but NOT Saffron (verified against
+    tests/fixtures/outlines/packet-format.md)."""
+    bg = series_tree / "series/continuity/background"
+    bg.mkdir(parents=True, exist_ok=True)
+    (bg / "mary--saffron.md").write_text(
+        "<!-- canon-meta: {id: mary--saffron, links: []} -->\n\n"
+        "Mary and Saffron have history.\n", encoding="utf-8")
+    (bg / "mary.md").write_text(
+        "<!-- canon-meta: {id: mary, links: [mary--saffron]} -->\n\n"
+        "Mary background.\n", encoding="utf-8")
+
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+
+    assert "Mary and Saffron have history." not in text
+    assert "### background/mary--saffron.md" not in text
+
+
+def test_relationship_entry_rides_along_when_both_ends_are_named(series_tree):
+    """Chapter 05 names both Mary and Cal, so `mary--cal` earns its place."""
+    bg = series_tree / "series/continuity/background"
+    bg.mkdir(parents=True, exist_ok=True)
+    (bg / "mary--cal.md").write_text(
+        "<!-- canon-meta: {id: mary--cal, links: []} -->\n\n"
+        "Mary and Cal have history.\n", encoding="utf-8")
+    (bg / "mary.md").write_text(
+        "<!-- canon-meta: {id: mary, links: [mary--cal]} -->\n\n"
+        "Mary background.\n", encoding="utf-8")
+
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+
+    assert "Mary and Cal have history." in text
+
+
+def test_non_relationship_one_hop_is_unaffected(series_tree):
+    """The both-ends rule applies only to `--` entries; the fixture's existing
+    one-hop link (characters/mary.md links to cal) must still resolve, which
+    the pre-existing test_assemble_slices_continuity_one_hop also guards."""
+    bg = series_tree / "series/continuity/background"
+    bg.mkdir(parents=True, exist_ok=True)
+    (bg / "the-archive.md").write_text(
+        "<!-- canon-meta: {id: the-archive, links: []} -->\n\n"
+        "Archive detail.\n", encoding="utf-8")
+    (bg / "mary.md").write_text(
+        "<!-- canon-meta: {id: mary, links: [the-archive]} -->\n\n"
+        "Mary background.\n", encoding="utf-8")
+
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+
+    assert "Archive detail." in text
 
 
 # --- Task 4: the allocation reaches the packet with no packet_assemble code ---
