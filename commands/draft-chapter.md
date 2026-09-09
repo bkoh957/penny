@@ -80,7 +80,11 @@ edit and commit with `/finalize-chapter`.
      This full section is the brief passed to the drafter, plus the legacy ledger
      slice: always load `series/continuity/canon-core.md`; then load the continuity
      entries named in the section and their one-hop `links` (the packet does not exist
-     on this path, so nothing else supplies it).
+     on this path, so nothing else supplies it). Load `config/series-guardrails.md`
+     here too, and pass its body to the drafter alongside the section. The section's
+     Guardrails bullet only *points* at that file — it says the standing guardrails
+     are carried into each packet, and on this path there is no packet to carry them.
+     Read directly here, or not at all.
 
 4. **Ensure output paths exist:**
 

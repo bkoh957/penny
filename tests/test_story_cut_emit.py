@@ -408,7 +408,7 @@ def test_chapter_direction_never_reaches_the_outline():
     assert "belong together" not in _emit_noted()
 
 
-def test_a_story_with_no_directive_blocks_keeps_the_old_guardrails_shape():
+def test_a_story_with_no_directive_blocks_keeps_the_derived_guardrails_shape():
     # STORY carries no ## Guardrails block, so the section must be exactly the
     # two derived lines — the series guardrail reference, then the reveal
     # line — nothing added, nothing reordered.

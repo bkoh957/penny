@@ -255,3 +255,97 @@ def test_the_emitted_outline_passes_outline_check_cleanly(tmp_path):
 
     result = check_outline(outline)
     assert result["blocking"] == []
+
+
+# --- FINAL REVIEW, Minor 3 (spec 2026-09-09 §5, test 3): the regression that
+# would have caught the live defect. Every test above stops at the emitted
+# text, and `tests/test_packet_assemble.py` starts from a static fixture
+# outline — so nothing crossed the cut -> packet boundary, which is exactly
+# where a guardrails `##` heading truncated the chapter block and orphaned the
+# wiring footer in a real book. ---
+
+def _cut_series_tree(tmp_path):
+    """A minimal series tree whose outline is REAL cut output, not a fixture."""
+    from scripts.story_cut import stamp_outline
+
+    (tmp_path / ".penny/locks").mkdir(parents=True)
+    (tmp_path / ".penny/locks/book-99.mystery.lock").write_text(
+        "locked\n", encoding="utf-8")
+
+    inp = tmp_path / "input/book-99"
+    inp.mkdir(parents=True)
+    (inp / "outline.md").write_text(
+        stamp_outline(_tagged_outline(), story_sha="a" * 64, cut_sha="b" * 64,
+                      book="99", total_chapters=6),
+        encoding="utf-8")
+
+    wd = tmp_path / "series/whodunit"
+    wd.mkdir(parents=True)
+    (wd / "book-99.yaml").write_text(
+        "book: '99'\n"
+        "reveal_chapter: 5\n"
+        "clue_schedule:\n  - { id: clue-erasure, plant_chapter: 1 }\n"
+        "red_herrings:\n  - { id: rh-cal, plant_chapter: 3 }\n", encoding="utf-8")
+
+    cont = tmp_path / "series/continuity"
+    cont.mkdir(parents=True)
+    (cont / "canon-core.md").write_text(
+        "# Canon Core\n\nThe Wheelhouse pottery studio.\n", encoding="utf-8")
+
+    cfg = tmp_path / "config"
+    cfg.mkdir(parents=True)
+    (cfg / "series-guardrails.md").write_text(REALISTIC_GUARDRAILS, encoding="utf-8")
+    return tmp_path
+
+
+def _packet_chapter_section(packet_text):
+    """Everything the packet carries from the outline block — up to the first
+    section the assembler appends itself."""
+    return packet_text.split("\n## Ledger Clues", 1)[0]
+
+
+def test_a_packet_assembled_from_a_cut_outline_keeps_the_chapter_wiring(tmp_path):
+    """The live defect end to end: guardrails carrying their own `##` headings
+    truncated each chapter block, so the packet the drafter and every wiring
+    check read stopped before `Opens:`/`Closes:`."""
+    from scripts import packet_assemble
+
+    root = _cut_series_tree(tmp_path)
+    packet = packet_assemble.assemble("99", "01", repo_root=root)
+    section = _packet_chapter_section(packet.read_text(encoding="utf-8"))
+
+    assert "## Chapter 01" in section
+    assert "**Opens:**" in section, "the chapter block was truncated before its wiring"
+    assert "### Chapter Structure" in section
+    assert "### Track Movement" in section
+
+
+def test_a_cut_packet_carries_the_closes_line_of_a_closing_chapter(tmp_path):
+    """Chapter 05 is the reveal — it closes two questions. `Closes:` sits in
+    the same orphaned footer, so it needs its own witness."""
+    from scripts import packet_assemble
+
+    root = _cut_series_tree(tmp_path)
+    packet = packet_assemble.assemble("99", "05", repo_root=root)
+    section = _packet_chapter_section(packet.read_text(encoding="utf-8"))
+
+    assert "**Closes:**" in section
+    assert "q-who" in section
+
+
+def test_the_guardrail_body_reaches_the_packet_once_demoted(tmp_path):
+    """The other half of the fix: the outline emits a reference, and the packet
+    is where the body actually lands — with its own headings demoted so they
+    cannot close the packet's section either."""
+    from scripts import packet_assemble
+
+    root = _cut_series_tree(tmp_path)
+    text = packet_assemble.assemble("99", "01", repo_root=root).read_text(
+        encoding="utf-8")
+
+    body = text.split("## Standing Series Guardrails", 1)[1]
+    assert "Warmth is oxygen, not obligation." in body
+    assert "\n## C — Warmth" not in body      # demoted, never at column 0
+    assert "### C — Warmth" in body
+    # ...and the outline block itself carried only the reference.
+    assert "Standing series guardrails apply in full" in _packet_chapter_section(text)

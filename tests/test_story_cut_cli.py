@@ -607,3 +607,44 @@ def test_bare_check_is_not_mistaken_for_a_book_number(tmp_path, monkeypatch, cap
     story — a clean exit 2, never a traceback."""
     _series(tmp_path, monkeypatch)
     assert story_cut.main(["check"]) == 2
+
+
+# --- FINAL REVIEW, Minor 2: the cut read `root/config/series-guardrails.md`
+# directly while `packet_assemble` resolves the same file through the
+# three-tier overlay (series -> genre -> plugin default). A guardrails file
+# supplied by the genre or the plugin tier therefore produced a packet
+# carrying the body and an outline carrying no reference to it at all. ---
+
+def test_guardrails_resolve_through_the_config_overlay(tmp_path, monkeypatch):
+    """A guardrails file reachable only through a lower overlay tier still
+    earns the reference bullet — the cut must resolve it exactly as
+    `packet_assemble` does, not by reaching straight into `<root>/config/`."""
+    root = _series(tmp_path, monkeypatch)
+    # The series tier no longer holds it...
+    (root / "config" / "series-guardrails.md").unlink()
+    # ...but the plugin-default tier does.
+    fake_plugin = tmp_path / "fake-plugin"
+    (fake_plugin / "config").mkdir(parents=True)
+    (fake_plugin / "config" / "series-guardrails.md").write_text(
+        "# Standing Series Guardrails\n\n"
+        "## C — Warmth beats are never scheduled as clues\n\n"
+        "Warmth is oxygen, not obligation.\n", encoding="utf-8")
+    monkeypatch.setattr(story_cut.penny_paths, "plugin_root", lambda: fake_plugin)
+
+    assert story_cut.main(["02"]) == 0
+    text = (root / "input" / "book-02" / "outline.md").read_text(encoding="utf-8")
+    assert "Standing series guardrails apply in full" in text
+
+
+def test_no_guardrails_in_any_tier_emits_no_reference(tmp_path, monkeypatch):
+    """The converse: with the file absent from every tier the bullet must stay
+    away, so the outline never points the drafter at a file that isn't there."""
+    root = _series(tmp_path, monkeypatch)
+    (root / "config" / "series-guardrails.md").unlink()
+    fake_plugin = tmp_path / "fake-plugin"
+    (fake_plugin / "config").mkdir(parents=True)
+    monkeypatch.setattr(story_cut.penny_paths, "plugin_root", lambda: fake_plugin)
+
+    assert story_cut.main(["02"]) == 0
+    text = (root / "input" / "book-02" / "outline.md").read_text(encoding="utf-8")
+    assert "Standing series guardrails apply in full" not in text

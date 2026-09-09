@@ -1184,7 +1184,10 @@ def main(argv=None) -> int:
             print(f)
         return 1
 
-    guard_p = root / "config" / "series-guardrails.md"
+    # Resolved through the three-tier overlay (series -> genre -> plugin
+    # default), exactly as `packet_assemble` resolves the same file — a
+    # reference emitted here must point at a body the packet will carry.
+    guard_p = penny_paths.config_path("series-guardrails.md", root)
     guardrails = guard_p.read_text(encoding="utf-8") if guard_p.is_file() else ""
     reveal = int(ledger_data["reveal_chapter"])
 
