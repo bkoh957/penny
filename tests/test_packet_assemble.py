@@ -762,3 +762,59 @@ def test_packet_consumers_are_told_to_check_the_ledger_clues_manifest(rel):
         " instruction for `## Continuity Extracts`; without the pair, a"
         " truncated clue list still reads as a complete one."
     )
+
+
+def test_without_continuity_drops_the_section_and_keeps_the_rest():
+    packet = (
+        "---\nbuilt_from_outline: abc\n---\n\n"
+        "# Packet — Chapter 05\n\n"
+        "## Chapter 05 — A Title\n\nBlock body.\n\n"
+        "## Ledger Clues (1 scheduled: c-one)\n\nClue body.\n\n"
+        "## Continuity Extracts (2 entries: canon-core.md, 1 characters/)\n\n"
+        "### canon-core.md\n\nCanon body.\n\n"
+        "### characters/mary.md\n\nMary body.\n\n"
+        "## Standing Series Guardrails\n\nGuardrail body.\n\n"
+        "## Word Budget\n\nBand: 2000-3000\n")
+
+    out = packet_assemble.without_continuity(packet)
+
+    assert "## Continuity Extracts" not in out
+    assert "Canon body." not in out
+    assert "Mary body." not in out
+    # Everything else survives, in order.
+    assert "built_from_outline: abc" in out
+    assert "## Chapter 05 — A Title" in out
+    assert "Clue body." in out
+    assert "## Standing Series Guardrails" in out
+    assert "Guardrail body." in out
+    assert "Band: 2000-3000" in out
+    assert out.index("## Ledger Clues") < out.index("## Standing Series Guardrails")
+
+
+def test_without_continuity_is_a_noop_when_there_is_no_such_section():
+    packet = "# Packet — Chapter 05\n\n## Word Budget\n\nBand: 1-2\n"
+    assert packet_assemble.without_continuity(packet) == packet
+
+
+def test_without_continuity_stops_at_the_next_top_level_heading_only():
+    """A demoted `###`+ heading inside the section must not end it early —
+    the whole section goes, not just its first entry."""
+    packet = (
+        "## Continuity Extracts (1 entries: canon-core.md)\n\n"
+        "### canon-core.md\n\n#### A demoted heading\n\nBody.\n\n"
+        "## Word Budget\n\nBand: 1-2\n")
+
+    out = packet_assemble.without_continuity(packet)
+
+    assert "A demoted heading" not in out
+    assert out.startswith("## Word Budget")
+
+
+def test_projection_never_writes(series_tree):
+    """The stamped packet on disk is byte-identical after a projection."""
+    path = packet_assemble.assemble("01", "05", repo_root=series_tree)
+    before = path.read_bytes()
+
+    packet_assemble.without_continuity(path.read_text(encoding="utf-8"))
+
+    assert path.read_bytes() == before

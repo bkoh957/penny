@@ -174,6 +174,29 @@ def _word_match(name: str, text: str) -> bool:
     return bool(re.search(rf"\b{re.escape(name)}\b", text, re.IGNORECASE))
 
 
+_CONTINUITY_HEADING_RE = re.compile(r"^## Continuity Extracts\b.*$", re.MULTILINE)
+_NEXT_TOP_HEADING_RE = re.compile(r"^#{1,2}(?!#)[ \t]", re.MULTILINE)
+
+
+def without_continuity(packet_text: str) -> str:
+    """The packet minus its `## Continuity Extracts` section — a read-only
+    projection for agents that never read the slice (the map-maker prices
+    scenes; the developmental-editor carries its own character-bible slice).
+    Never writes: the stamped packet on disk is the artefact, this is a
+    dispatch-time view of it (spec 2026-09-09-check-economics §6).
+
+    The section ends at the next level-1/2 heading — a demoted `###`+ heading
+    from an embedded source does NOT end it, which is why the whole section is
+    removed rather than only its first entry."""
+    m = _CONTINUITY_HEADING_RE.search(packet_text)
+    if m is None:
+        return packet_text
+    rest = packet_text[m.end():]
+    nxt = _NEXT_TOP_HEADING_RE.search(rest)
+    tail = rest[nxt.start():] if nxt else ""
+    return packet_text[:m.start()] + tail
+
+
 def _continuity_slice(root, chapter_text: str) -> tuple[str, str]:
     """canon-core.md (always, first) + entries named in `chapter_text` (word
     boundary, case-insensitive) + one hop through each matched entry's
@@ -409,13 +432,28 @@ def stale_packets(book: str, repo_root=None) -> set[str]:
 
 
 def main(argv=None) -> int:
-    argv = sys.argv[1:] if argv is None else argv
+    argv = list(sys.argv[1:] if argv is None else argv)
+    projection = None
+    for flag in ("--without-continuity",):
+        if flag in argv:
+            argv.remove(flag)
+            projection = flag
     if len(argv) != 2:
-        print("usage: packet_assemble.py <book> <chapter>", file=sys.stderr)
+        print("usage: packet_assemble.py <book> <chapter> [--without-continuity]",
+              file=sys.stderr)
         return 2
     book, chapter = argv
-    p = assemble(book, chapter)
-    print(p)
+    if projection is None:
+        print(assemble(book, chapter))
+        return 0
+    # Projections read the packet already on disk and print it — they never
+    # assemble, so they cannot move a `built_from_*` stamp.
+    p = packet_path(book, chapter)
+    if not p.is_file():
+        print(f"PREDICATE FAILED: no packet at {p} — run packet_assemble first",
+              file=sys.stderr)
+        return 1
+    print(without_continuity(p.read_text(encoding="utf-8")))
     return 0
 
 
