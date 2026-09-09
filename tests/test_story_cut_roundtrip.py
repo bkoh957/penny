@@ -137,11 +137,37 @@ TAGGED_SOLUTION = {
 }
 
 
-def _tagged_outline():
+REALISTIC_GUARDRAILS = (
+    "# Standing Series Guardrails — Pelican's Crook\n\n"
+    "## C — Warmth beats are never scheduled as clues\n\n"
+    "Warmth is oxygen, not obligation.\n\n"
+    "## B — The map states ends, not sentences\n\n"
+    "A map says what a scene achieves.\n\n"
+    "## Standing\n\n"
+    "These apply to every book in the series.\n"
+)
+
+
+def _tagged_outline(guardrails=REALISTIC_GUARDRAILS):
     from scripts.story_cut import emit_outline as emit
     return emit(TAGGED_STORY, TAGGED_PLAN, TAGGED_QUESTIONS, TAGGED_LEDGER,
-                reveal_chapter=5, guardrails="Stay in Maggie's POV.",
+                reveal_chapter=5, guardrails=guardrails,
                 job_titles={}, solution=TAGGED_SOLUTION)
+
+
+def test_every_chapter_block_keeps_its_wiring_footer():
+    """A `##` heading inside a carried file truncates the chapter block and
+    orphans its Chapter Structure / Track Movement footer (spec 2026-09-09).
+    The fixture's guardrails carry `##` headings, exactly as a real series' do."""
+    from scripts.penny_wiring import parse_wired_chapters, has_wiring
+
+    chapters = parse_wired_chapters(_tagged_outline())
+
+    assert chapters, "no chapters parsed"
+    assert has_wiring(chapters), "the cut outline parsed as unwired"
+    for ch in chapters:
+        assert ch["because"] is not None or ch["opens"], (
+            f"chapter {ch['num']} lost its wiring footer")
 
 
 def test_the_emitted_outline_passes_tension_check_clean(tmp_path):
