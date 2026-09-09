@@ -289,12 +289,15 @@ def test_every_chapter_block_keeps_its_wiring_footer():
     assert chapters, "no chapters parsed"
     assert has_wiring(chapters), "the cut outline parsed as unwired"
     for ch in chapters:
-        block = ch.get("raw") or ch.get("text") or ""
-        assert "Opens:" in block or "Closes:" in block, (
+        assert ch["because"] is not None or ch["opens"], (
             f"chapter {ch['num']} lost its wiring footer")
 ```
 
-`parse_wired_chapters` returns dicts — **open `scripts/penny_wiring.py` and use the real key** holding each chapter's raw text rather than relying on the `.get(...) or` fallback above; replace it with the actual key once confirmed.
+`parse_wired_chapters` chapter dicts have **no `raw` or `text` key** (verified at
+`scripts/penny_wiring.py:167-175`). The wiring lives in the parsed fields — `because`,
+`opens`, `closes`, `hook_q`, `tracks` — which is exactly what `has_wiring` keys on
+(`penny_wiring.py:227-229`: `any(c["because"] is not None or c["opens"] ...)`). Assert on
+those fields, as above. Do not reach for a raw-text key.
 
 - [ ] **Step 2: Run tests to verify the failure is real**
 
