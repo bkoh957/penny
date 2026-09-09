@@ -843,3 +843,81 @@ def test_projection_via_main_does_not_touch_the_packet(series_tree, monkeypatch,
     assert "<!-- showrunner note -->" in out    # read from disk, not rebuilt
     assert "## Continuity Extracts" not in out
     assert "## Word Budget" in out              # it is the packet, just trimmed
+
+
+INSPECTOR_PACKET = (
+    "# Packet — Chapter 05\n\n"
+    "## Continuity Extracts (4 entries: canon-core.md, 2 background/, 1 characters/)\n\n"
+    "### canon-core.md\n\nCanon body.\n\n"
+    "### background/mary.md\n\nMary backstory.\n\n"
+    "### background/mary--cal.md\n\nTheir history.\n\n"
+    "### characters/mary.md\n\nMary ledger facts.\n\n"
+    "## Word Budget\n\nBand: 1-2\n")
+
+
+def test_inspector_slice_drops_background_and_keeps_the_ledger():
+    out = packet_assemble.inspector_slice(INSPECTOR_PACKET)
+
+    assert "Canon body." in out
+    assert "Mary ledger facts." in out
+    assert "Mary backstory." not in out
+    assert "Their history." not in out
+    assert "### background/" not in out
+
+
+def test_inspector_slice_recomputes_the_manifest():
+    """The heading declares its own contents; a projection that drops entries
+    and keeps the old count claims coverage it does not have
+    (spec 2026-08-29-curated-artifacts-declare-their-contents-design.md)."""
+    out = packet_assemble.inspector_slice(INSPECTOR_PACKET)
+
+    assert "(2 entries: canon-core.md, 1 characters/)" in out
+    assert "4 entries" not in out
+    assert "background/" not in out
+
+
+def test_inspector_slice_carries_only_the_section():
+    out = packet_assemble.inspector_slice(INSPECTOR_PACKET)
+    assert "## Word Budget" not in out
+    assert "Band: 1-2" not in out
+
+
+def test_inspector_slice_of_a_packet_without_the_section_is_empty():
+    assert packet_assemble.inspector_slice("# Packet\n\n## Word Budget\n\nB\n") == ""
+
+
+def test_both_projection_flags_is_a_usage_error(series_tree, monkeypatch, capsys):
+    """Two different projections; silently picking one would hide a runbook
+    bug, so the pair is refused by name."""
+    packet_assemble.assemble("01", "05", repo_root=series_tree)
+    monkeypatch.chdir(series_tree)
+
+    rc = packet_assemble.main(
+        ["01", "05", "--without-continuity", "--inspector-slice"])
+    err = capsys.readouterr().err
+
+    assert rc == 2
+    assert "--without-continuity" in err and "--inspector-slice" in err
+
+
+def test_inspector_slice_via_main_does_not_touch_the_packet(series_tree, monkeypatch,
+                                                            capsys):
+    """Same never-regenerate invariant as --without-continuity. Byte-identity
+    alone cannot catch a regeneration — assemble() is deterministic over an
+    unchanged fixture tree — so a marker written into the packet on disk is
+    what discriminates reading it from rebuilding it."""
+    path = packet_assemble.assemble("01", "05", repo_root=series_tree)
+    text = path.read_text(encoding="utf-8").replace(
+        "### canon-core.md", "### canon-core.md\n\n<!-- showrunner note -->", 1)
+    path.write_text(text, encoding="utf-8")
+    before = path.read_bytes()
+    monkeypatch.chdir(series_tree)
+
+    rc = packet_assemble.main(["01", "05", "--inspector-slice"])
+    out = capsys.readouterr().out
+
+    assert rc == 0
+    assert path.read_bytes() == before          # byte-identical, stamps intact
+    assert "<!-- showrunner note -->" in out    # read from disk, not rebuilt
+    assert out.startswith("## Continuity Extracts")
+    assert "## Word Budget" not in out

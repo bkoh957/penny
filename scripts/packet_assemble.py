@@ -197,6 +197,58 @@ def without_continuity(packet_text: str) -> str:
     return packet_text[:m.start()] + tail
 
 
+_EXTRACT_ENTRY_RE = re.compile(r"^### (.+?)$", re.MULTILINE)
+_INSPECTOR_EXCLUDED_SUBDIRS = ("background/",)
+
+
+def inspector_slice(packet_text: str) -> str:
+    """The packet's continuity section with `background/` entries removed — a
+    read-only projection for the two inspectors that grade a chapter against
+    the ledger. `background/` is authored narrative source the DRAFTER needs
+    (backstory, texture, how a character sounds); `characters/`, `locations/`
+    and `threads/` are the ledger — the facts a chapter can contradict. Both
+    real continuity blockers in the live series traced to `characters/`
+    (spec 2026-09-09-check-economics §2.4).
+
+    The manifest is recomputed from what is kept: the heading declares its own
+    contents, so a projection that drops entries and keeps the original count
+    would claim coverage it does not have."""
+    m = _CONTINUITY_HEADING_RE.search(packet_text)
+    if m is None:
+        return ""
+    rest = packet_text[m.end():]
+    nxt = _NEXT_TOP_HEADING_RE.search(rest)
+    body = rest[:nxt.start()] if nxt else rest
+
+    entries = list(_EXTRACT_ENTRY_RE.finditer(body))
+    kept: list[str] = []
+    counts: dict[str, int] = {}
+    for i, em in enumerate(entries):
+        name = em.group(1).strip()
+        if any(name.startswith(x) for x in _INSPECTOR_EXCLUDED_SUBDIRS):
+            continue
+        end = entries[i + 1].start() if i + 1 < len(entries) else len(body)
+        kept.append(body[em.start():end].strip())
+        if "/" in name:
+            sub = name.split("/", 1)[0] + "/"
+            counts[sub] = counts.get(sub, 0) + 1
+        else:
+            counts[name] = counts.get(name, 0) + 1
+
+    total = sum(counts.values())
+    if counts:
+        breakdown = []
+        if "canon-core.md" in counts:
+            breakdown.append("canon-core.md")
+        breakdown += [f"{counts[s]} {s}" for s in sorted(counts) if s != "canon-core.md"]
+        noun = "entry" if total == 1 else "entries"
+        manifest = f"({total} {noun}: {', '.join(breakdown)})"
+    else:
+        manifest = "(0 entries)"
+
+    return f"## Continuity Extracts {manifest}\n\n" + "\n\n".join(kept) + "\n"
+
+
 def _continuity_slice(root, chapter_text: str) -> tuple[str, str]:
     """canon-core.md (always, first) + entries named in `chapter_text` (word
     boundary, case-insensitive) + one hop through each matched entry's
@@ -433,14 +485,22 @@ def stale_packets(book: str, repo_root=None) -> set[str]:
 
 def main(argv=None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
+    projections = {"--without-continuity": without_continuity,
+                   "--inspector-slice": inspector_slice}
     projection = None
-    for flag in ("--without-continuity",):
+    for flag in ("--without-continuity", "--inspector-slice"):
         if flag in argv:
             argv.remove(flag)
+            if projection is not None:
+                # Two different projections of the same packet. Silently
+                # picking one would hide the runbook bug that passed both.
+                print(f"PREDICATE FAILED: {projection} and {flag} are different "
+                      f"projections — pass exactly one", file=sys.stderr)
+                return 2
             projection = flag
     if len(argv) != 2:
-        print("usage: packet_assemble.py <book> <chapter> [--without-continuity]",
-              file=sys.stderr)
+        print("usage: packet_assemble.py <book> <chapter> "
+              "[--without-continuity | --inspector-slice]", file=sys.stderr)
         return 2
     book, chapter = argv
     if projection is None:
@@ -453,7 +513,7 @@ def main(argv=None) -> int:
         print(f"PREDICATE FAILED: no packet at {p} — run packet_assemble first",
               file=sys.stderr)
         return 1
-    print(without_continuity(p.read_text(encoding="utf-8")))
+    print(projections[projection](p.read_text(encoding="utf-8")))
     return 0
 
 
