@@ -19,7 +19,11 @@
 - **Run the full suite every task:** `python3 -m pytest` — baseline **1314 passed**. Report the new count each time.
 - **Fixtures live in `tests/fixtures/`.** New deterministic behaviour is test-first.
 - **Commit per task, on `main`. Do not push** — the operator pushes at phase end.
-- **Do not edit `CLAUDE.md`'s test count.** The operator updates it once at the end.
+- **Update `CLAUDE.md`'s test count in the same commit as any task that adds a test.**
+  `tests/test_texture_allocation_docs.py:118` (`test_claude_md_test_count_matches_the_suite`)
+  re-collects the suite and asserts `CLAUDE.md:52`'s `full suite (N tests)` line equals the
+  real count — so adding a test without bumping that line turns the suite red by
+  construction. The line moves 1314 -> 1315 (Task 1) -> 1318 (Task 2) -> 1319 (Task 3).
 
 **Shared literal — use this exact text wherever a plan step says REALISTIC_GUARDRAILS.** It reproduces the live series' shape (an H1 title, then `##` rule headings):
 
@@ -342,6 +346,5 @@ Do not do these; they are the operator's calls or belong to the companion spec.
 
 - **Do not re-cut or otherwise touch the live series** (`~/myBooks/pelicanscrook-series`). It is a separate repo; its outline is stamped, and re-cutting rewrites `plant_chapter:` in the whodunit ledger and invalidates the mystery lock. The operator sequences that.
 - **Do not push.** Commit only.
-- **Do not update `CLAUDE.md`'s test count** (1314 → final). The operator does that once.
 - **Do not implement anything from `2026-09-09-check-economics-design.md`** — the `--no-continuity` render, the consumer split, the one-hop rule. Separate plan.
 - **Do not add a finding, a waiver handle, or a runbook edit.**
