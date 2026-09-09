@@ -357,8 +357,18 @@ side.
 **Linking, and the one thing to watch.** A relationship entry links to both its people, and
 each person links back to the relationships they're in. That's what makes relationships
 reachable at all — `cal--maggie` never appears in anyone's prose, so it can only arrive by
-one hop from a character. The cost is that naming a protagonist pulls every relationship
-she's in, so **keep relationship entries short** — they're the entries most often loaded.
+one hop from a character. Because a hop is the only way in, a relationship is admitted
+only when **both** of its people are named in the chapter. Name Maggie alone and Cal is
+nowhere on the page, so what the two of them are to each other isn't what this chapter is
+about. One end used to be enough, and it dragged in every relationship that person is in —
+19 of the 39 entries in a real chapter-01 slice, not one of them on the page.
+
+So the thing to watch is the reverse of what it once was. Short entries are still good
+manners, but the live risk now is a relationship you *expected* in a chapter and didn't
+get: check that both of its people are named in that chapter's own text, by either
+spelling the engine matches on — the entry's filename stem, or the `id:` in its
+`canon-meta` header. `calvin-pruitt.md` carrying `id: cal` is named by "Cal", and that
+counts.
 
 ---
 
@@ -1052,9 +1062,14 @@ holds certificates.
   validator checks.
 - **Locks and certificates are out-of-band.** Never represent "validated" or "approved" as a
   field *inside* the data it gates.
-- **Sub-agents are isolated, not ignorant.** Inspectors get one rubric + a ledger slice and
-  never another agent's output; beta readers get only `{text, persona}` because a reader who
-  knows the culprit stops reacting like a reader. Everyone else reads the solution.
+- **Sub-agents are isolated, not ignorant.** Isolation is narrow inputs and no cross-talk,
+  never withheld truth. Each inspector gets one chapter, one rubric, exactly the evidence
+  its own judgment turns on, and never another agent's verdict. Only the two that grade a
+  chapter against series facts — `inspector-continuity` and `inspector-fairplay` — are
+  handed a ledger slice at all; `inspector-structure`, `inspector-voice` and
+  `inspector-ai-prose` judge the prose in front of them and get none. Beta readers get
+  only `{text, persona}` because a reader who knows the culprit stops reacting like a
+  reader. Everyone else reads the solution.
 - **Blindness is enforced by construction, never by instruction.** We never hand a reader the
   whole outline and ask it not to peek. `plot_stage.py readers-copy` *mechanically* removes
   the solution, the wiring, the question ids and the track rows, and truncates before the

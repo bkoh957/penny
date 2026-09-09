@@ -133,7 +133,7 @@ Scores: `character-voice` was **4 in all 12 rounds**. `developmental-edit` was *
 
 ### 3b. Stop transmitting the slice to agents that do not read it
 
-1. **A `--no-continuity` render in `packet_assemble.py`** — the same packet minus
+1. **A `--without-continuity` render in `packet_assemble.py`** — the same packet minus
    `## Continuity Extracts`. Used by `commands/map-chapter.md` for the `map-maker`, and by
    `commands/review-chapter.md` for the `developmental-editor` (which keeps its own
    character-bible slice and chapter brief).
@@ -141,11 +141,23 @@ Scores: `character-voice` was **4 in all 12 rounds**. `developmental-edit` was *
    `inspector-ai-prose`** in `commands/review-chapter.md` step 4, and from their agent
    definitions' declared inputs.
 3. **Split the slice by consumer.** `background/` is drafter fuel — backstory, texture,
-   how a character sounds. `characters/` is the ledger — the facts a chapter can
-   contradict. The drafter gets both; `inspector-continuity` and `inspector-fairplay` get
-   canon-core + `characters/` (4,363 words rather than 13,866). §2.4 is the evidence:
-   both real catches came from `characters/`. Reversible per-inspector if a later catch
-   proves otherwise.
+   how a character sounds. `characters/`, `locations/` and `threads/` are the ledger — the
+   facts a chapter can contradict, and a chapter can contradict a location or a thread as
+   readily as a character. So the split is by subdir and it cuts in one place:
+   `background/` out, the rest in. The drafter gets both halves;
+   `inspector-continuity` and `inspector-fairplay` get canon-core plus the ledger subdirs,
+   through a second read-only render, `--inspector-slice`, which emits that section alone
+   with its manifest recomputed for what survives. §2.3 says where the size was —
+   `background/` is 18,140 words against `characters/`'s 3,398 — and §2.4 is the evidence
+   for the direction: both real catches came from `characters/`. Reversible per-inspector
+   if a later catch proves otherwise.
+
+   One consequence of emitting the continuity section **alone**: the packet's
+   `## Ledger Clues` section no longer travels with it, and that is where
+   `inspector-fairplay`'s clue-planting obligations live. It is therefore routed to
+   `inspector-fairplay` separately, read from the packet on disk — and not to
+   `inspector-continuity`, since a clue schedule is an obligation, not an established fact
+   a chapter can contradict.
 4. **Require both ends named for a one-hop relationship entry.** In
    `_continuity_slice`, a hopped entry whose stem contains `--` survives only when every
    segment names an entry already matched in the chapter. On ch-01 this drops nine

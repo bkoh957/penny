@@ -290,7 +290,11 @@ def _continuity_slice(root, chapter_text: str) -> tuple[str, str]:
         key for key, e in entries.items()
         if any(_word_match(n, chapter_text) for n in e["names"] if n)
     }
-    named_stems = {entries[k]["path"].stem.lower() for k in matched}
+    # Every NAME a matched entry answers to — stem plus its canon-meta `id`,
+    # the same set `_word_match` above ran over. Stems alone would drop a
+    # relationship whose end is spelled by an id no filename carries
+    # (`calvin-pruitt.md` with `id: cal`, named after by `cal--maggie`).
+    named: set[str] = {n for k in matched for n in entries[k]["names"] if n}
     for key in list(matched):
         meta = entries[key]["meta"]
         linked = list(meta.get("links") or []) + list(meta.get("refs") or [])
@@ -305,7 +309,7 @@ def _continuity_slice(root, chapter_text: str) -> tuple[str, str]:
                 # pull every relationship she is in. It earns its place only
                 # when BOTH ends are in this chapter (spec 2026-09-09 §3b.4).
                 if "--" in stem and not all(
-                        part in named_stems for part in stem.split("--")):
+                        part in named for part in stem.split("--")):
                     continue
                 matched.add(other_key)
 

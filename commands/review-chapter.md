@@ -66,11 +66,26 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    slice, and none of their blocking predicates can be decided from it — sending
    it only bought them a way to be distracted.
 
-   On the legacy path (no packet), assemble the slice for those two inspectors
-   the old way: always `series/continuity/canon-core.md`; then the continuity
-   entries named in the chapter's raw outline section and their one-hop `links`.
+   On the legacy path (no packet — book 01 is the book that hits it) there is
+   nothing to project, so assemble the slice for those two inspectors by hand:
+   always `series/continuity/canon-core.md`; then the `characters/`,
+   `locations/` and `threads/` entries named in the chapter's raw outline
+   section, plus their one-hop `links`. **Do not include
+   `series/continuity/background/`** — the same exclusion the projection makes,
+   for the same reason: `background/` is authored narrative backstory for the
+   **drafter**, and the ledger is what a chapter can actually contradict.
    Canon-core-only fallback if there is no packet and no outline section for
    this chapter.
+
+   The other narrowing is deliberately **not** attempted here. The
+   both-ends-named rule for relationship entries (`a--b`, admitted only when
+   both of its people are named in the chapter) is something the assembler
+   applies mechanically; asking an agent to apply it by hand is the fragile
+   version of it. Relationship entries live under `background/`, so the
+   exclusion above already keeps them out of the ordinary case — but a `--`
+   entry filed anywhere else still arrives on one end alone on this path. That
+   gap is stated here rather than left silent; closing it properly means a
+   machine-scoped route for the legacy path, in a spec of its own.
 
 5. **Run the 2a deterministic checkers:**
 
@@ -136,8 +151,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    `ai-prose` gets nothing beyond the page and its rubric. Each writes its
    verdict into `output/book-$book/chapters/ch-$chapter.reviews/` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py`, to the verdict file named in the
-   table above. `inspector-fairplay` additionally receives the packet's
-   `## Ledger Clues` section (per step 4),
+   table above. `inspector-fairplay` additionally receives
    `output/book-$book/mystery-solution.md`, and the `reveal_chapter` value read from
    `series/whodunit/book-$book.yaml`. If the book has no locked ledger, dispatch it
    without `reveal_chapter` — the inspector will record the premature-reveal check as

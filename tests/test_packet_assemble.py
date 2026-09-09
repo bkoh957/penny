@@ -253,6 +253,30 @@ def test_non_relationship_one_hop_is_unaffected(series_tree):
     assert "Archive detail." in text
 
 
+def test_relationship_rides_along_when_an_end_is_named_only_by_canon_meta_id(
+        series_tree):
+    """The both-ends rule reads the entry's `names` (stem + canon-meta `id`),
+    not its file stem. `margaret-hale.md` carries `id: maggie`, so the
+    relationship `faye--maggie` is named after an id no filename spells — and
+    chapter 05 names both Faye and Maggie, so it earns its place."""
+    bg = series_tree / "series/continuity/background"
+    bg.mkdir(parents=True, exist_ok=True)
+    (bg / "margaret-hale.md").write_text(
+        "<!-- canon-meta: {id: maggie, links: []} -->\n\n"
+        "Margaret background.\n", encoding="utf-8")
+    (bg / "faye.md").write_text(
+        "<!-- canon-meta: {id: faye, links: [faye--maggie]} -->\n\n"
+        "Faye background.\n", encoding="utf-8")
+    (bg / "faye--maggie.md").write_text(
+        "<!-- canon-meta: {id: faye--maggie, links: []} -->\n\n"
+        "Faye and Maggie have history.\n", encoding="utf-8")
+
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+
+    assert "Faye and Maggie have history." in text
+
+
 # --- Task 4: the allocation reaches the packet with no packet_assemble code ---
 
 def test_the_packet_carries_the_chapters_texture_allocation(series_tree):
@@ -1037,3 +1061,16 @@ def test_inspector_slice_of_an_all_background_section_has_no_stray_blank_line():
                "### background/mary.md\n\nB.\n")
     assert packet_assemble.inspector_slice(section) == \
         "## Continuity Extracts (0 entries)\n"
+
+
+def test_projection_without_a_packet_fails_by_name(series_tree, monkeypatch, capsys):
+    """`commands/review-chapter.md` routes its legacy dev-editor fallback on
+    this exact exit code and message prefix, so both are contract."""
+    monkeypatch.chdir(series_tree)
+
+    rc = packet_assemble.main(["01", "05", "--without-continuity"])
+    err = capsys.readouterr().err
+
+    assert rc == 1
+    assert err.startswith("PREDICATE FAILED: no packet at ")
+    assert "run packet_assemble first" in err
