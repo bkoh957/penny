@@ -41,11 +41,26 @@ consumed.** Run from the series folder, after the book is locked.
    - **No outline / no chapter block** — the outline doesn't cover this chapter
      number; fix the outline first.
 
-3. **Dispatch the `map-maker` sub-agent** with the packet text (pass `model:` =
-   `plot_model` from `config/run-config.md`, defaulting to `drafting_model` when
-   unset — planning work, same routing as the workshop; the agent def carries no
-   `model:` frontmatter, so without this override it silently inherits the
-   parent). It proposes the complete prose map — scene divisions, `Target:`
+3. **Dispatch the `map-maker` sub-agent** with the packet text **minus its
+   continuity extracts**:
+
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/packet_assemble.py" $book $chapter --without-continuity
+   ```
+
+   A read-only projection of the packet already on disk — it regenerates
+   nothing, so the file's sha256 (and every `built_from_packet` stamp bound to
+   it) is untouched. The map-maker prices scenes, places the Required Beats and
+   drops each ledger clue into exactly one scene; it never reads the continuity
+   slice, and in a real series that slice is 13,866 words — more than seven
+   times the chapter it is staging. Everything the map-maker is graded on by
+   `map_check.py` survives the projection: the outline block, `## Ledger Clues`,
+   `### Texture`, `## Standing Series Guardrails`, `## Word Budget`.
+
+   Pass `model:` = `plot_model` from `config/run-config.md`, defaulting to
+   `drafting_model` when unset — planning work, same routing as the workshop;
+   the agent def carries no `model:` frontmatter, so without this override it
+   silently inherits the parent. It proposes the complete prose map — scene divisions, `Target:`
    ranges, free-text `Weight:` labels, `Beats covered:` lines for every packet
    Required Beat, and every ledger clue id placed in exactly one scene's `Clue:`
    field. When the packet carries a `### Texture` section, it also distributes

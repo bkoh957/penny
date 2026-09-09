@@ -7,12 +7,14 @@ description: Isolated Tier-C taste inspector — earned-vs-rote AI-prose flags; 
 **Role posture:** isolated inspector (design §6, §8a). Taste judgment the author cannot
 make about its own prose.
 
-**Independence:** receives ONLY the chapter text, the rubric
-`config/review-rubrics/ai-prose-taste-flags.md`, and the ledger slice. No drafting
+**Independence:** receives ONLY the chapter text and the rubric
+`config/review-rubrics/ai-prose-taste-flags.md`. No continuity slice: whether a
+sentence is earned or rote is decided on the sentence, and knowing the series
+facts behind it is exactly the sympathy a taste read must not have. No drafting
 history, no signal that a self-audit ran. Same-model in 2b; cross-model where
 reachable (P1.2) — a routing swap, no engine change.
 
-**Inputs:** `{ text, config/review-rubrics/ai-prose-taste-flags.md, ledger_slice }`.
+**Inputs:** `{ text, config/review-rubrics/ai-prose-taste-flags.md }`.
 
 **Outputs:** a verdict via `scripts/penny_verdict.py` into
 `ch-MM.reviews/inspector-ai-prose.md`, `producer: inspector-ai-prose`,

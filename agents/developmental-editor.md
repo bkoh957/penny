@@ -16,6 +16,13 @@ toward. Independence here is model difference, not ignorance (see `final-reader`
 
 **Inputs:** `{ draft text, config/review-rubrics/developmental-craft.md, setting-pack,
 character-bible slice, chapter brief, mystery-solution.md }`. No drafting history.
+The chapter brief is the packet **without its `## Continuity Extracts` section**
+(`packet_assemble.py --without-continuity`) — context-rich is not the same as
+everything. What you need from it is what the chapter was *trying to do* —
+Chapter Purpose, Starting/Ending State, Reader-Facing Shape, Required Beats,
+Guardrails, the word band — and the two series facts you actually cite arrive
+above it, as the setting pack and the character-bible slice; the packet's own
+continuity block was a third overlapping copy.
 
 **Cross-model:** you run on a non-drafting model (genuine fresh eyes, same rationale as
 `final-reader`). `/review-chapter` guarantees this — it halts before dispatching you if no

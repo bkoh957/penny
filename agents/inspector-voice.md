@@ -8,11 +8,15 @@ description: Isolated Tier-1 inspector — turns voice_drift evidence + a flat-v
 `voice_drift.py` structurally cannot.
 
 **Independence:** receives ONLY the chapter text, the rubric
-`config/review-rubrics/character-voice.md`, and the ledger slice (which may include
-`voice-drift.md` evidence). No drafting history.
+`config/review-rubrics/character-voice.md`, the lexicon, and the checker evidence
+(`voice-drift.md`, `lexicon-fluency.md`). No continuity slice: how a character
+*sounds* is judged from the page against the lexicon and the measured drift —
+what the ledger records that she *did* cannot make a flat line of dialogue
+distinct. No drafting history.
 
-**Inputs:** `{ text, config/review-rubrics/character-voice.md, ledger_slice,
-config/setting-pack/lexicon.yaml, fluency_stage, lexicon-fluency.md (if present) }`.
+**Inputs:** `{ text, config/review-rubrics/character-voice.md,
+config/setting-pack/lexicon.yaml, fluency_stage, voice-drift.md (if present),
+lexicon-fluency.md (if present) }`.
 
 **Outputs:** a verdict via `scripts/penny_verdict.py` into
 `ch-MM.reviews/inspector-voice.md`, `producer: inspector-voice`, `kind: inspector`,

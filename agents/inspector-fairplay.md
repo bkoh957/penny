@@ -16,7 +16,12 @@ genre → default overlay — for a cozy series this is
 chapter's clue-planting obligations), the sealed `output/book-NN/mystery-solution.md`,
 and this book's `reveal_chapter`.
 
-**Inputs:** `{ text, review-rubrics/fairplay-planting.md, ledger_slice, mystery-solution.md, reveal_chapter }`.
+**Inputs:** `{ text, review-rubrics/fairplay-planting.md, ledger_slice, mystery-solution.md, reveal_chapter }`
+— the slice arrives **without `background/`**
+(`packet_assemble.py --inspector-slice`): a clue obligation is a ledger fact, and
+`background/` is authored backstory prose for the drafter, which can neither
+schedule a plant nor make one fair. Its heading's manifest is recomputed for what
+you actually received.
 
 **Outputs:** a verdict via `scripts/penny_verdict.py` into
 `ch-MM.reviews/inspector-fairplay.md`, `producer: inspector-fairplay`,

@@ -49,7 +49,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (1343 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (1348 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -335,11 +335,37 @@ continuity slice** (`_CONTINUITY_SUBDIRS`, same name-match + one-hop trigger as
 constant file in the packet would make every packet stale on a one-line edit, which is why
 the voice and genre packs aren't in there either. `story-author` and `plot-proposer` gained
 the stance block as a new input; `story-author` gets a slice scoped to its beat range's
-strands, never the whole background. Relationship entries are reachable only by one hop from
-a character (`cal--maggie` never appears in prose), so naming a protagonist pulls every
-relationship she is in — keep them terse. Note `built_from_background` is stamped but read
-by nothing: unlike `built_from_packet`/`built_from_outline`, no gate catches a derived tree
-that has fallen behind an edited source.
+strands, never the whole background. A relationship entry (`cal--maggie`) never appears in
+prose and is reachable only by a link hop, so it is admitted only when **both** its ends are
+named in the chapter: on one end alone, naming a protagonist pulled in every relationship
+she is in — 19 of 39 entries in a live ch-01 slice, not one of them on the page. Note
+`built_from_background` is stamped but read by nothing: unlike
+`built_from_packet`/`built_from_outline`, no gate catches a derived tree that has fallen
+behind an edited source.
+
+**The assembled slice is then transmitted by consumer, not by default** (spec
+`docs/superpowers/specs/2026-09-09-check-economics-design.md` §3b). It is the packet's
+largest section — 13,866 of 18,216 words in a real chapter — and it used to reach eight of
+a cycle's eleven dispatches, five of which never read it. Two read-only projections over
+the packet **already on disk** now decide who gets what; neither regenerates it, so no
+`built_from_packet` stamp moves and no map goes stale. `packet_assemble.py
+--without-continuity` (the packet minus that section) goes to `map-maker`, which divides
+and prices scenes and places beats and clues the packet already names, and to
+`developmental-editor`, whose own series facts arrive as the setting pack and a
+character-bible slice. `--inspector-slice` (that section alone, `background/` dropped and
+the manifest recomputed for what is **kept** — a heading that declares its contents must
+not keep the original count) goes to `inspector-continuity` and `inspector-fairplay`:
+`characters/`, `locations/` and `threads/` are the facts a chapter can contradict, while
+`background/` is authored backstory written for the drafter, which can neither schedule a
+plant nor make one fair. `inspector-structure`, `inspector-voice` and `inspector-ai-prose`
+get **none** — the tension curve is read from the page and the thread roster, voice from
+the lexicon plus the `voice_drift`/`lexicon_check` evidence, taste from the rubric and the
+sentence, and no blocking predicate any of them owns can be decided from the ledger. The
+`drafter` is deliberately **unchanged** and still gets the whole packet, background
+included: it is the one consumer writing the prose those entries exist to feed. Passing
+both flags is a usage error — each is a view of the packet, and their intersection is not
+one. `tests/test_packet_projection_wiring.py` pins the wiring, because a projection nothing
+dispatches is inert and no other test would notice it being dropped.
 
 **Per book, around the lock — three artifacts, one per chapter (design
 `docs/superpowers/specs/2026-07-18-packet-map-chapter-design.md` §2–§7,

@@ -10,9 +10,12 @@ chooses it. The same posture as `plot-proposer` at the workshop's taste stages
 brief, the posture survives unchanged).
 
 **Independence:** isolated to one chapter. You receive ONLY this chapter's
-packet — its outline block, its merged ledger clues, its continuity extracts,
-the standing series guardrails, and its word budget. No other chapter, no other
-agent's map, no draft. Staging what one chapter's Required Beats need needs
+packet — its outline block, its merged ledger clues, the standing series
+guardrails, and its word budget — and you receive it **without its
+`## Continuity Extracts` section** (`packet_assemble.py --without-continuity`).
+Nothing you produce is decided by the ledger: you divide scenes, price them, and
+place beats and clues, all of which the packet already states. No other chapter,
+no other agent's map, no draft. Staging what one chapter's Required Beats need needs
 none of that; seeing another chapter's map would only tempt you toward parity
 across chapters — the same mistake the redesign exists to keep out of the
 outline.
@@ -31,11 +34,9 @@ of the answer; you never write the file they act on.
   Required Beats, Clues and Plants, Character Knowledge, Guardrails, `###
   Texture`, the wiring footer), the merged `## Ledger Clues` (its heading
   carries a manifest too — `(N scheduled: ...)` — check it before deciding
-  every clue has a scene), `##
-  Continuity Extracts` (its heading carries a manifest — `(N entries: ...)`
-  — so you can check the `### ` entries you read against it), `## Standing
-  Series Guardrails`, and `## Word Budget`.
-- Nothing else. No solution file, no other chapter, no prior map, no draft.
+  every clue has a scene), `## Standing Series Guardrails`, and `## Word Budget`.
+- Nothing else. **No `## Continuity Extracts`** — the projection strips it before
+  you see it. No solution file, no other chapter, no prior map, no draft.
 
 **Outputs:**
 - A proposed prose map in the exact syntax `scripts/penny_map.py` parses:

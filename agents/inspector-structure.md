@@ -7,11 +7,13 @@ description: Isolated Tier-1 inspector — tension curve / sagging middle + thre
 **Role posture:** isolated inspector (design §6, §8).
 
 **Independence:** receives ONLY the chapter text, the rubric
-`config/review-rubrics/structure-tension.md`, the ledger slice, and a **thread
-roster** `[{ thread_id, last_advanced_chapter }]`. No drafting history.
+`config/review-rubrics/structure-tension.md`, and a **thread roster**
+`[{ thread_id, last_advanced_chapter }]`. No continuity slice: the tension curve
+and the chapter-end hook are properties of the page, and thread liveness is
+decided by the roster's `last_advanced_chapter` values — the slice cannot settle
+either, so it was only bulk to read past. No drafting history.
 
-**Inputs:** `{ text, config/review-rubrics/structure-tension.md, ledger_slice,
-thread_roster }`.
+**Inputs:** `{ text, config/review-rubrics/structure-tension.md, thread_roster }`.
 
 **Outputs:** a verdict via `scripts/penny_verdict.py` into
 `ch-MM.reviews/inspector-structure.md`, `producer: inspector-structure`,

@@ -11,7 +11,13 @@ description: Isolated Tier-1 inspector — chapter vs. ledger slice; flags fact 
 drafting history, other verdicts, or the sealed solution.
 
 **Inputs:** `{ text, config/review-rubrics/continuity-drift.md, ledger_slice }` —
-the slice is `canon-core.md` + brief-derived + one-hop links (§4.2).
+the slice is `canon-core.md` + brief-derived + one-hop links (§4.2), **without
+`background/`** (`packet_assemble.py --inspector-slice`). `background/` is
+authored narrative source written for the drafter — backstory, texture, how a
+character sounds; `characters/`, `locations/` and `threads/` are the ledger, the
+established facts a chapter can contradict, and they are the only thing you can
+flag against. Its heading's manifest is recomputed for what you actually
+received, so the count you check against is the count you have.
 
 **Outputs:** a verdict written via `scripts/penny_verdict.py` (`write_verdict`) into
 `output/book-NN/chapters/ch-MM.reviews/inspector-continuity.md`, with

@@ -26,19 +26,44 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    echo "book=$book chapter=$chapter stage=REVIEW" > .penny/current-stage
    ```
 
-4. **Assemble the ledger slice** (design §4.2, same as `draft-chapter`): when
-   `input/book-$book/packets/ch-$chapter.md` exists, its `## Continuity Extracts`
-   section already carries the assembled slice — canon-core + the entries this
-   chapter names + their one-hop `links` — so read it from there directly. The
-   heading itself carries a manifest, `## Continuity Extracts (N entries: ...)` —
-   as does `## Ledger Clues (N scheduled: ...)`, and the same rule applies to it —
-   read to the section's end (the next `## ` heading; embedded sources' own
-   headings run deeper and don't end it) and check the `### ` entries you saw
-   against the manifest count before trusting the read as complete. On the
-   legacy path (no packet), assemble it the old way: always
-   `series/continuity/canon-core.md`; then the continuity entries named in the
-   chapter's raw outline section and their one-hop `links`. Canon-core-only
-   fallback if there is no packet and no outline section for this chapter.
+4. **Assemble the ledger slice — for the two inspectors that grade against it,
+   and no one else** (design §4.2). Two of the five isolated inspectors judge
+   the chapter against series facts; the other three do not, and the slice is
+   the single largest thing this command transmits, so it goes only where it is
+   read:
+
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/packet_assemble.py" $book $chapter --inspector-slice
+   ```
+
+   That prints the packet's `## Continuity Extracts` section alone, with
+   `background/` entries removed — a read-only projection of the packet already
+   on disk, regenerating nothing, so no `built_from_packet` stamp moves.
+   `background/` is authored narrative backstory for the **drafter**;
+   `characters/`, `locations/` and `threads/` are the ledger — the facts a
+   chapter can actually contradict, which is all `inspector-continuity` and
+   `inspector-fairplay` are grading. The heading carries a manifest recomputed
+   for what is kept, `## Continuity Extracts (N entries: ...)` — as does
+   `## Ledger Clues (N scheduled: ...)` in the packet proper, and the same rule
+   applies to it — read to the section's end (the next `## ` heading; embedded
+   sources' own headings run deeper and don't end it) and check the `### `
+   entries you saw against the manifest count before trusting the read as
+   complete.
+
+   **`inspector-structure`, `inspector-voice` and `inspector-ai-prose` receive
+   no continuity slice at all.** Not a narrower one — none. Structure judges the
+   tension curve and the chapter-end hook from the page plus the thread roster
+   built in step 6; voice works from `config/setting-pack/lexicon.yaml` and the
+   `voice_drift` / `lexicon_check` evidence written in step 5; ai-prose judges
+   taste from its rubric and the prose. None of their instructions reference the
+   slice, and none of their blocking predicates can be decided from it — sending
+   it only bought them a way to be distracted.
+
+   On the legacy path (no packet), assemble the slice for those two inspectors
+   the old way: always `series/continuity/canon-core.md`; then the continuity
+   entries named in the chapter's raw outline section and their one-hop `links`.
+   Canon-core-only fallback if there is no packet and no outline section for
+   this chapter.
 
 5. **Run the 2a deterministic checkers:**
 
@@ -96,8 +121,10 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    `inspector-<name>` sub-agent (pass `model:` = `inspector_model` from
    `config/run-config.md`; the agent defs have no `model` frontmatter, so without an
    override they inherit the parent — the drafting session, grading its own prose) with
-   the chapter text, its rubric (from the table above), and the ledger slice (structure
-   also gets the roster). Each writes its
+   the chapter text and its rubric (from the table above), plus **only** the extra inputs
+   step 4 assigns it: `continuity` and `fairplay` get the `--inspector-slice` ledger,
+   `structure` gets the thread roster from step 6, `voice` gets the lexicon and the step-5
+   evidence files, `ai-prose` gets nothing beyond the page and its rubric. Each writes its
    verdict into `output/book-$book/chapters/ch-$chapter.reviews/` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py`, to the verdict file named in the
    table above. `inspector-fairplay` additionally receives
@@ -127,7 +154,21 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    its **context-rich** inputs — the
    chapter draft text, `config/review-rubrics/developmental-craft.md`, the setting pack,
    a character-bible slice, and the chapter's map + packet (or, on the legacy path, the
-   raw outline section), plus `output/book-$book/mystery-solution.md`. Pass
+   raw outline section), plus `output/book-$book/mystery-solution.md`.
+
+   Pass the packet through the projection, not whole:
+
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/packet_assemble.py" $book $chapter --without-continuity
+   ```
+
+   Context-rich is not the same as everything. The developmental editor's own
+   inputs already name the two things it reads about the series — the setting
+   pack and a character-bible slice — and it was being handed the packet's whole
+   continuity block on top of them, a third copy of overlapping material it
+   never cites. What it needs from the packet is what the chapter was *trying to
+   do*: Chapter Purpose, Starting/Ending State, Reader-Facing Shape, Required
+   Beats, Guardrails, the word band. All of that survives the projection. Pass
    `$dev_sha` as the `reviewed_draft_sha256` it must record. It writes
    `output/book-$book/chapters/ch-$chapter.reviews/developmental-edit.md` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py` (`kind: developmental`, no `^BLOCKING:` lines).
