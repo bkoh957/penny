@@ -317,7 +317,12 @@ def assemble(book: str, chapter: str, *, repo_root=None) -> Path:
     # --- standing series guardrails ---
     guardrails_path = config_path("series-guardrails.md", root)
     if guardrails_path.is_file():
-        guardrails_section = guardrails_path.read_text(encoding="utf-8").strip()
+        # The carried file's own headings must not close the packet's
+        # `## Standing Series Guardrails` section — the rule the continuity
+        # extracts already follow (spec 2026-08-27, extended to this site by
+        # spec 2026-09-09).
+        guardrails_section = _demote_headings(
+            guardrails_path.read_text(encoding="utf-8").strip())
     else:
         guardrails_section = "- None — this series has no config/series-guardrails.md."
 

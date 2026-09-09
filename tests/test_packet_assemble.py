@@ -19,6 +19,16 @@ V2_PROFILE = (
     "```\n"
 )
 
+REALISTIC_GUARDRAILS = (
+    "# Standing Series Guardrails — Pelican's Crook\n\n"
+    "## C — Warmth beats are never scheduled as clues\n\n"
+    "Warmth is oxygen, not obligation.\n\n"
+    "## B — The map states ends, not sentences\n\n"
+    "A map says what a scene achieves.\n\n"
+    "## Standing\n\n"
+    "These apply to every book in the series.\n"
+)
+
 
 @pytest.fixture
 def series_tree(tmp_path):
@@ -213,6 +223,39 @@ def _continuity_extracts_section(text: str) -> str:
     rest = text[start:]
     m = _SIBLING_HEADING_RE.search(rest)
     return rest[:m.start()] if m else rest
+
+
+def _guardrails_section(text: str) -> str:
+    """The packet's `## Standing Series Guardrails` section, isolated the way a
+    markdown-structure-aware reader would: heading line to the next level-1/2
+    sibling. A demoted `###`+ heading does NOT end it."""
+    heading_line = next(l for l in text.splitlines()
+                        if l.startswith("## Standing Series Guardrails"))
+    start = text.index(heading_line) + len(heading_line)
+    rest = text[start:]
+    m = _SIBLING_HEADING_RE.search(rest)
+    return rest[:m.start()] if m else rest
+
+
+def test_guardrails_section_survives_embedded_headings(series_tree):
+    """A guardrails file with its own `##` headings must not close the packet's
+    `## Standing Series Guardrails` section (spec 2026-09-09). On unfixed code
+    the section is empty and the body leaks out as sibling `##` sections."""
+    (series_tree / "config").mkdir(parents=True, exist_ok=True)
+    (series_tree / "config/series-guardrails.md").write_text(
+        REALISTIC_GUARDRAILS, encoding="utf-8")
+
+    text = packet_assemble.assemble("01", "05", repo_root=series_tree).read_text(
+        encoding="utf-8")
+    section = _guardrails_section(text)
+
+    assert "Warmth is oxygen, not obligation." in section
+    assert "A map says what a scene achieves." in section
+    assert "These apply to every book in the series." in section
+    # The carried file must introduce no sibling top-level section.
+    assert "\n## C — Warmth beats" not in text
+    assert "\n## B — The map states" not in text
+    assert "\n## Standing\n" not in text
 
 
 def test_continuity_extracts_section_survives_embedded_headings(series_tree):
