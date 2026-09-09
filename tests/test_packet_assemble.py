@@ -921,3 +921,54 @@ def test_inspector_slice_via_main_does_not_touch_the_packet(series_tree, monkeyp
     assert "<!-- showrunner note -->" in out    # read from disk, not rebuilt
     assert out.startswith("## Continuity Extracts")
     assert "## Word Budget" not in out
+
+
+@pytest.mark.parametrize("section,expected", [
+    # Singular: one surviving entry takes the singular noun.
+    ("## Continuity Extracts (3 entries: 2 background/, 1 characters/)\n\n"
+     "### background/mary.md\n\nB.\n\n"
+     "### characters/mary.md\n\nC.\n",
+     "## Continuity Extracts (1 entry: 1 characters/)"),
+    # Nothing survives the filter: the count must fall to zero, not persist.
+    ("## Continuity Extracts (2 entries: 2 background/)\n\n"
+     "### background/mary.md\n\nB.\n\n"
+     "### background/cal.md\n\nB2.\n",
+     "## Continuity Extracts (0 entries)"),
+    # canon-core.md leads; the subdirs follow it in sorted order.
+    ("## Continuity Extracts (5 entries: canon-core.md, 1 background/, "
+     "1 threads/, 2 characters/)\n\n"
+     "### canon-core.md\n\nK.\n\n"
+     "### threads/bake-off.md\n\nT.\n\n"
+     "### background/mary.md\n\nB.\n\n"
+     "### characters/mary.md\n\nC1.\n\n"
+     "### characters/cal.md\n\nC2.\n",
+     "## Continuity Extracts (4 entries: canon-core.md, 2 characters/, 1 threads/)"),
+])
+def test_inspector_slice_manifest_contract(section, expected):
+    """The manifest is one contract with one home (`_manifest`), shared with
+    `_continuity_slice`. Pinned here because the projection rebuilds it for a
+    reduced entry set: if the assembler's format ever moved and the
+    projection's did not, nothing else would fail."""
+    out = packet_assemble.inspector_slice(section)
+    assert out.splitlines()[0] == expected
+
+
+def test_inspector_slice_carries_the_assemblers_reason_when_there_are_no_entries():
+    """A bare `(0 entries)` is truthful about the count but leaves an inspector
+    unable to tell an empty slice from a filtered one — the assembler's own
+    `- None. — <why>` line is the answer, so carry it."""
+    section = ("## Continuity Extracts (0 entries)\n\n"
+               "- None. — no continuity entries matched this chapter\n")
+
+    out = packet_assemble.inspector_slice(section)
+
+    assert "- None. — no continuity entries matched this chapter" in out
+    assert out == ("## Continuity Extracts (0 entries)\n\n"
+                   "- None. — no continuity entries matched this chapter\n")
+
+
+def test_inspector_slice_of_an_all_background_section_has_no_stray_blank_line():
+    section = ("## Continuity Extracts (1 entries: 1 background/)\n\n"
+               "### background/mary.md\n\nB.\n")
+    assert packet_assemble.inspector_slice(section) == \
+        "## Continuity Extracts (0 entries)\n"

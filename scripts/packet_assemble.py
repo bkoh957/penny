@@ -197,6 +197,24 @@ def without_continuity(packet_text: str) -> str:
     return packet_text[:m.start()] + tail
 
 
+def _manifest(counts: dict[str, int]) -> str:
+    """The `(N entries: canon-core.md, 32 background/, 7 characters/)` suffix a
+    continuity section's heading carries to declare its own contents (spec
+    2026-08-29-curated-artifacts-declare-their-contents-design.md). One home,
+    because `_continuity_slice` builds it and `inspector_slice` must rebuild it
+    for a reduced entry set — two copies would let the projection's manifest
+    drift from the assembler's without any test noticing."""
+    total = sum(counts.values())
+    if not counts:
+        return "(0 entries)"
+    breakdown = []
+    if "canon-core.md" in counts:
+        breakdown.append("canon-core.md")
+    breakdown += [f"{counts[s]} {s}" for s in sorted(counts) if s != "canon-core.md"]
+    noun = "entry" if total == 1 else "entries"
+    return f"({total} {noun}: {', '.join(breakdown)})"
+
+
 _EXTRACT_ENTRY_RE = re.compile(r"^### (.+?)$", re.MULTILINE)
 _INSPECTOR_EXCLUDED_SUBDIRS = ("background/",)
 
@@ -235,18 +253,19 @@ def inspector_slice(packet_text: str) -> str:
         else:
             counts[name] = counts.get(name, 0) + 1
 
-    total = sum(counts.values())
-    if counts:
-        breakdown = []
-        if "canon-core.md" in counts:
-            breakdown.append("canon-core.md")
-        breakdown += [f"{counts[s]} {s}" for s in sorted(counts) if s != "canon-core.md"]
-        noun = "entry" if total == 1 else "entries"
-        manifest = f"({total} {noun}: {', '.join(breakdown)})"
-    else:
-        manifest = "(0 entries)"
+    if not kept:
+        # Nothing survived the filter. If the assembler wrote a reason instead
+        # of entries (`- None. — no continuity entries matched this chapter`),
+        # carry it: a bare `(0 entries)` is truthful about the count but leaves
+        # an inspector unable to tell an empty slice from a filtered one.
+        preamble = (body[:entries[0].start()] if entries else body).strip()
+        if preamble:
+            kept = [preamble]
 
-    return f"## Continuity Extracts {manifest}\n\n" + "\n\n".join(kept) + "\n"
+    out = f"## Continuity Extracts {_manifest(counts)}\n"
+    if kept:
+        out += "\n" + "\n\n".join(kept) + "\n"
+    return out
 
 
 def _continuity_slice(root, chapter_text: str) -> tuple[str, str]:
@@ -297,16 +316,7 @@ def _continuity_slice(root, chapter_text: str) -> tuple[str, str]:
         sub = f"{rel.parts[0]}/"
         counts[sub] = counts.get(sub, 0) + 1
 
-    total = sum(counts.values())
-    if counts:
-        breakdown = []
-        if "canon-core.md" in counts:
-            breakdown.append("canon-core.md")
-        breakdown += [f"{counts[sub]} {sub}" for sub in sorted(counts) if sub != "canon-core.md"]
-        noun = "entry" if total == 1 else "entries"
-        manifest = f"({total} {noun}: {', '.join(breakdown)})"
-    else:
-        manifest = "(0 entries)"
+    manifest = _manifest(counts)
 
     if not parts:
         note = "; ".join(notes) if notes else "no continuity entries matched this chapter"
@@ -494,7 +504,7 @@ def main(argv=None) -> int:
             if projection is not None:
                 # Two different projections of the same packet. Silently
                 # picking one would hide the runbook bug that passed both.
-                print(f"PREDICATE FAILED: {projection} and {flag} are different "
+                print(f"usage: {projection} and {flag} are different "
                       f"projections — pass exactly one", file=sys.stderr)
                 return 2
             projection = flag
