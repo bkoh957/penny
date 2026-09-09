@@ -12,16 +12,20 @@ so you DO receive the solution. It lets you judge whether the page gives the gam
 before it should. Your inputs are the chapter text, the rubric
 `review-rubrics/fairplay-planting.md` (resolved via `config_path`, the series →
 genre → default overlay — for a cozy series this is
-`genres/cozy-mystery/review-rubrics/fairplay-planting.md`), the ledger slice (this
-chapter's clue-planting obligations), the sealed `output/book-NN/mystery-solution.md`,
-and this book's `reveal_chapter`.
+`genres/cozy-mystery/review-rubrics/fairplay-planting.md`), the ledger slice (the
+established series facts — `characters/`, `locations/`, `threads/`), the packet's
+`## Ledger Clues` section (this chapter's clue-planting obligations — the list
+instruction 1 works from), the sealed `output/book-NN/mystery-solution.md`, and
+this book's `reveal_chapter`.
 
-**Inputs:** `{ text, review-rubrics/fairplay-planting.md, ledger_slice, mystery-solution.md, reveal_chapter }`
+**Inputs:** `{ text, review-rubrics/fairplay-planting.md, ledger_slice, ledger_clues, mystery-solution.md, reveal_chapter }`
 — the slice arrives **without `background/`**
-(`packet_assemble.py --inspector-slice`): a clue obligation is a ledger fact, and
-`background/` is authored backstory prose for the drafter, which can neither
-schedule a plant nor make one fair. Its heading's manifest is recomputed for what
-you actually received.
+(`packet_assemble.py --inspector-slice`), which is authored backstory prose for
+the drafter and can neither schedule a plant nor make one fair. That projection
+emits the continuity section alone, so `ledger_clues` — the packet's own
+`## Ledger Clues (N scheduled: ...)` — is passed to you beside it, not inside it.
+Both headings carry a manifest of their own contents, recomputed for what you
+actually received; check each before deciding you have the whole list.
 
 **Outputs:** a verdict via `scripts/penny_verdict.py` into
 `ch-MM.reviews/inspector-fairplay.md`, `producer: inspector-fairplay`,

@@ -29,7 +29,8 @@ showrunner must be free to override line by line. You hand them a first draft
 of the answer; you never write the file they act on.
 
 **Inputs:**
-- One chapter's packet — `input/book-NN/packets/ch-MM.md` — in full: the
+- One chapter's packet — `input/book-NN/packets/ch-MM.md` — through the
+  `--without-continuity` projection, which is everything you are graded on: the
   outline block (Chapter Purpose, Starting/Ending State, Reader-Facing Shape,
   Required Beats, Clues and Plants, Character Knowledge, Guardrails, `###
   Texture`, the wiring footer), the merged `## Ledger Clues` (its heading

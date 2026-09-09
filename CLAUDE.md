@@ -49,7 +49,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (1348 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (1350 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -560,9 +560,12 @@ three properties, each with its own justification (spec:
   drafting model. Enforced by `preflight.py assemble` against `drafted_by`. `final-reader`
   sees the whole solution and is the most independent agent in the system.
 - **Isolation = narrow inputs, no cross-talk.** Each inspector gets one chapter, one
-  rubric, one ledger slice, and never another inspector's verdict. Isolation is about
-  *whose reasoning* an inspector can see, never about *what is true* — which is why
-  `inspector-fairplay` holds the solution and is still isolated.
+  rubric, exactly the evidence its own judgment turns on — a ledger slice for the two
+  that grade against series facts, none for the three that don't — and never another
+  inspector's verdict. Isolation is about *whose reasoning* an inspector can see, never
+  about *what is true* — which is why `inspector-fairplay` holds the solution and is
+  still isolated, and why cutting the slice from structure, voice and ai-prose is that
+  same rule applied, not a weakened check.
 - **Reader simulation = the reader stays unknowing, in a clean context.**
   `{ text, persona_file }` only. Not a guardrail: a reader who knows the culprit cannot
   report that she guessed her in chapter four. For the OUTLINE fan read the operative
@@ -587,8 +590,12 @@ agents*.
 
 - `series/continuity/canon-core.md` is **always loaded every chapter** — keep it tiny;
   every line taxes every chapter. Other continuity entries (`characters/`, `locations/`,
-  `threads/`) are loaded as a **ledger slice**: only entries named in the chapter brief
-  plus their one-hop `links` (design §4.2).
+  `threads/`, `background/`) are loaded as a **ledger slice**: only entries named in the
+  chapter brief plus their one-hop `links` (design §4.2) — except a relationship entry
+  (`a--b`), which never appears in prose and so is admitted only when **both** its ends
+  are named. What is assembled is not what is transmitted: `background/` is dropped from
+  the two grading inspectors' `--inspector-slice` view, and three of the five inspectors
+  receive no slice at all (see "Consumption splits", above).
 - Continuity sections carry `<!-- canon-meta: {...} -->` headers (id, refs,
   active_window, last_referenced…) read/written by `penny_meta`. The demotion machinery
   (last_referenced scanning) is partial — see the memory note on phase dependencies.

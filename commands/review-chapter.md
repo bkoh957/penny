@@ -43,12 +43,19 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    `characters/`, `locations/` and `threads/` are the ledger — the facts a
    chapter can actually contradict, which is all `inspector-continuity` and
    `inspector-fairplay` are grading. The heading carries a manifest recomputed
-   for what is kept, `## Continuity Extracts (N entries: ...)` — as does
-   `## Ledger Clues (N scheduled: ...)` in the packet proper, and the same rule
-   applies to it — read to the section's end (the next `## ` heading; embedded
-   sources' own headings run deeper and don't end it) and check the `### `
-   entries you saw against the manifest count before trusting the read as
-   complete.
+   for what is kept, `## Continuity Extracts (N entries: ...)`: read to the
+   section's end (the next `## ` heading; embedded sources' own headings run
+   deeper and don't end it) and check the `### ` entries you saw against the
+   manifest count before trusting the read as complete.
+
+   The projection emits that section **alone**, so `## Ledger Clues` does not
+   travel with it — and that section, not the continuity one, is where
+   `inspector-fairplay`'s clue-planting obligations live. Pass it to
+   `inspector-fairplay` as well, read from
+   `input/book-$book/packets/ch-$chapter.md`; its heading carries the same kind
+   of manifest, `## Ledger Clues (N scheduled: ...)`, and the same counting rule
+   applies to it. `inspector-continuity` does not get it: a clue schedule is an
+   obligation, not an established fact a chapter can contradict.
 
    **`inspector-structure`, `inspector-voice` and `inspector-ai-prose` receive
    no continuity slice at all.** Not a narrower one — none. Structure judges the
@@ -156,11 +163,18 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    a character-bible slice, and the chapter's map + packet (or, on the legacy path, the
    raw outline section), plus `output/book-$book/mystery-solution.md`.
 
-   Pass the packet through the projection, not whole:
+   Pass the packet through the projection, not whole — **when there is a packet**:
 
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/packet_assemble.py" $book $chapter --without-continuity
    ```
+
+   On the legacy path there is nothing to project: with no
+   `input/book-$book/packets/ch-$chapter.md`, that command exits 1 with
+   `PREDICATE FAILED: no packet` — the projection reads the packet on disk and
+   never assembles one. Hand the editor the chapter's raw outline section
+   instead, exactly as before; this is the same scoping step 4 gives the
+   inspectors' slice, and book 01 is the book that hits it.
 
    Context-rich is not the same as everything. The developmental editor's own
    inputs already name the two things it reads about the series — the setting
