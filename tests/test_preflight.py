@@ -826,3 +826,30 @@ def test_lock_omits_the_fingerprint_when_there_is_no_outline(tmp_path):
     body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
     assert "outline_sha256:" not in body
     assert "outline_source:" not in body
+
+
+# --- The shared resolution (spec 2026-09-09 §3a.1) --------------------------
+#
+# lock-mystery's four tension inputs are resolved by tension_check's own
+# resolve_inputs, so `tension_check.py NN` and the lock cannot disagree about
+# which checks ran. These pin the two inputs that had no preflight coverage
+# before the refactor — a silently dropped turning-points path takes
+# off-mark-beat with it, and the certificate would still stamp
+# validated: ...+tension.
+
+def _scaffold_with_turning_points(tmp_path, tp_fixture):
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    shutil.copy(FIXTURE / "series.yaml", tmp_path / "series.yaml")
+    d = tmp_path / "input/book-01/plot"
+    d.mkdir(parents=True, exist_ok=True)
+    shutil.copy(SRC / "tests/fixtures/outlines/wired-clean.md",
+                tmp_path / "input/book-01/outline.md")
+    shutil.copy(SRC / f"tests/fixtures/plot/{tp_fixture}", d / "turning-points.md")
+
+
+def test_lock_reads_the_books_turning_points(tmp_path):
+    _scaffold_with_turning_points(tmp_path, "turning-points-offmark.md")
+    with pytest.raises(SystemExit) as e:
+        preflight.cmd_lock_mystery("01", repo_root=tmp_path)
+    assert "off-mark-beat" in str(e.value)
+    assert not preflight.lock_path("01", tmp_path).is_file()

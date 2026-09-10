@@ -41,13 +41,6 @@ def _parse_waivers(raw) -> dict:
     return out
 
 
-def _first_file(*paths):
-    for p in paths:
-        if p is not None and Path(p).is_file():
-            return p
-    return None
-
-
 def ledger_path(book: str, repo_root) -> Path:
     return penny_paths.series_path(f"whodunit/book-{book}.yaml", root=repo_root)
 
@@ -314,23 +307,20 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
     if errors:
         _fail("lexicon --validate failed; lock NOT written:\n  - " + "\n  - ".join(errors))
     # 3. tension gate (plot-book workshop spec §6): only when the outline has wiring.
-    from scripts import penny_genre
+    from scripts import tension_check as _tension
     from scripts.tension_check import check_tension
     waiver_map = _parse_waivers(waivers)
-    outline = _first_file(repo_root / "input" / f"book-{book}" / "outline.md")
-    # FINAL REVIEW FINDING 5: resolve THROUGH genre.yaml's `beat_sheet:` key
-    # (penny_genre.beat_sheet(), which is itself overlay-resolved and tolerant
-    # of an undeclared genre) rather than a hardcoded "beat-sheet.yaml" — a
-    # future genre pack naming its file differently must not silently lose
-    # the curve/beat checks while still minting a lock that claims full
-    # tension coverage.
-    beat_sheet_path = penny_genre.beat_sheet(root=repo_root)
-    if beat_sheet_path is not None and not beat_sheet_path.is_file():
-        # config_path() always returns SOME path (falling back to the plugin
-        # default location even when nothing exists there) — normalize the
-        # nonexistent case to None so the note below fires correctly instead
-        # of silently passing a dead path through to check_tension.
-        beat_sheet_path = None
+    # ONE resolution, shared with `tension_check.py NN` (spec 2026-09-09 §3a.1).
+    # It was inline here, which meant the showrunner running the checker
+    # directly got a bare path, a None beat sheet, and five of the ten checks
+    # silently not running — a report that could not predict the gate it exists
+    # to predict. resolve_inputs still resolves the beat sheet THROUGH
+    # genre.yaml's `beat_sheet:` key (FINAL REVIEW FINDING 5, never a hardcoded
+    # filename) and still normalizes a nonexistent one to None, so the note
+    # below fires instead of a dead path reaching check_tension.
+    resolved = _tension.resolve_inputs(book, repo_root=repo_root)
+    outline = resolved["outline"]
+    beat_sheet_path = resolved["beat_sheet_path"]
     validated = "fairplay+lexicon"
     waived_lines: list[str] = []
     skipped_lines: list[str] = []
@@ -358,8 +348,10 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
         tres = check_tension(
             outline,
             beat_sheet_path=beat_sheet_path,
-            turning_points_path=_first_file(
-                repo_root / "input" / f"book-{book}" / "plot" / "turning-points.md"),
+            turning_points_path=resolved["turning_points_path"],
+            # `led` rather than resolved["whodunit_path"]: they are the same
+            # file, but this one has already been proven to exist above and is
+            # the ledger the fairplay gate ran against.
             whodunit_path=led)
         findings += tres["blocking"]
         notes += tres["notes"]

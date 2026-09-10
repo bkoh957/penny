@@ -395,3 +395,268 @@ def test_no_closing_anywhere_still_stays_a_silent_skip():
     blocking, notes = [], []
     _closings_check(chapters, blocking, notes, max_run=3)
     assert blocking == [] and notes == []
+
+
+# --- The book-number form: one resolution, shared with the lock -------------
+#
+# `check_tension` takes an outline PATH, while `preflight lock-mystery`
+# resolves FOUR inputs for it. Handed a bare path, `beat_sheet_path` is None
+# and five of the ten checks silently do not run (dead-stretch,
+# starved-thread, off-mark-beat, overloaded-chapter, monotonous-closings), so
+# a showrunner reading the findings BEFORE the lock got half a report with no
+# signal that it was half. One resolver, called by both: two copies would let
+# the report and the gate disagree about what was checked.
+
+PLOT = Path(__file__).resolve().parent / "fixtures" / "plot"
+COZY = Path(__file__).resolve().parent / "fixtures" / "cozy"
+
+
+def _series_with_book_01(tmp_path, *, genre="cozy-mystery", write_outline=True,
+                         outline_fixture="packet-format.md",
+                         turning_points="turning-points-good.md",
+                         reveal_chapter=22):
+    """A minimal series tree: `.penny/` marker, a series.yaml declaring a
+    genre, book 01's outline, its turning points, and its whodunit ledger."""
+    root = tmp_path / "series-tmp"
+    (root / ".penny").mkdir(parents=True)
+    if genre is not None:
+        (root / "series.yaml").write_text(
+            f"series: Tmp Series\ngenre: {genre}\n", encoding="utf-8")
+    plot = root / "input" / "book-01" / "plot"
+    plot.mkdir(parents=True)
+    if write_outline:
+        (root / "input" / "book-01" / "outline.md").write_text(
+            (Path(__file__).resolve().parent / "fixtures" / "outlines"
+             / outline_fixture).read_text(encoding="utf-8"), encoding="utf-8")
+    (plot / "turning-points.md").write_text(
+        (PLOT / turning_points).read_text(encoding="utf-8"), encoding="utf-8")
+    wd = root / "series" / "whodunit"
+    wd.mkdir(parents=True)
+    (wd / "book-01.yaml").write_text(
+        f"book: '01'\nreveal_chapter: {reveal_chapter}\n", encoding="utf-8")
+    return root
+
+
+def test_resolve_inputs_finds_all_four(tmp_path):
+    """The book-number form must resolve what preflight resolves — a missing
+    beat sheet silently disables five of the ten checks (spec §3a.1)."""
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path)
+    got = tension_check.resolve_inputs("01", repo_root=root)
+
+    assert set(got) == {"outline", "beat_sheet_path", "turning_points_path",
+                        "whodunit_path"}
+    assert got["outline"] is not None and got["outline"].name == "outline.md"
+    assert got["turning_points_path"] is not None
+    assert got["whodunit_path"] is not None
+    # The beat sheet resolves through the genre overlay, not a hardcoded name.
+    assert got["beat_sheet_path"] is not None and got["beat_sheet_path"].is_file()
+
+
+def test_resolve_inputs_keys_splat_into_check_tension(tmp_path):
+    """The three non-outline keys are named exactly as check_tension's keyword
+    arguments so a caller can splat them; `outline` is separate because it is
+    positional. If a key is ever renamed, this raises TypeError."""
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path)
+    got = tension_check.resolve_inputs("01", repo_root=root)
+    res = tension_check.check_tension(
+        got["outline"], **{k: v for k, v in got.items() if k != "outline"})
+    assert "blocking" in res and "notes" in res
+
+
+def test_resolve_inputs_normalises_a_missing_beat_sheet_to_none(tmp_path, monkeypatch):
+    """`config_path()` always returns SOME path, even when nothing exists
+    there. An unnormalised miss would be passed to check_tension as a live
+    path and the named 'could not run' note that the lock certificate records
+    as `skipped: <check-id>` would never fire."""
+    from scripts import penny_genre, tension_check
+
+    root = _series_with_book_01(tmp_path)
+    ghost = root / "config" / "no-such-beat-sheet.yaml"
+    monkeypatch.setattr(penny_genre, "beat_sheet", lambda root=None: ghost)
+
+    assert not ghost.exists()
+    assert tension_check.resolve_inputs("01", repo_root=root)["beat_sheet_path"] is None
+
+
+def test_resolve_inputs_beat_sheet_is_none_without_a_declared_genre(tmp_path):
+    """No series.yaml/genre — the beat sheet cannot be resolved at all, and
+    the checks that depend on it must report themselves skipped rather than
+    crash on a dead path."""
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path, genre=None)
+    assert tension_check.resolve_inputs("01", repo_root=root)["beat_sheet_path"] is None
+
+
+def test_resolve_inputs_returns_none_for_a_book_with_no_outline(tmp_path):
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path, write_outline=False)
+    assert tension_check.resolve_inputs("01", repo_root=root)["outline"] is None
+
+
+def test_resolve_inputs_returns_none_for_absent_turning_points_and_ledger(tmp_path):
+    """A path that does not exist resolves to None, never to a non-existent
+    Path — the same normalisation the beat sheet gets."""
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path)
+    (root / "input/book-01/plot/turning-points.md").unlink()
+    (root / "series/whodunit/book-01.yaml").unlink()
+    got = tension_check.resolve_inputs("01", repo_root=root)
+    assert got["turning_points_path"] is None
+    assert got["whodunit_path"] is None
+
+
+def test_resolve_inputs_zero_pads_a_one_digit_book(tmp_path):
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path)
+    got = tension_check.resolve_inputs("1", repo_root=root)
+    assert got["outline"] is not None and "book-01" in str(got["outline"])
+    assert got["whodunit_path"] is not None
+
+
+def test_cli_accepts_a_book_number(tmp_path, monkeypatch, capsys):
+    """`tension_check.py 01` from a series folder must behave as the lock does."""
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path)
+    monkeypatch.chdir(root)
+    rc = tension_check.main(["01"])
+    out = capsys.readouterr().out
+
+    assert rc in (0, 1)                       # 0 clean, 1 findings — never a usage error
+    assert "usage:" not in out
+    # "01" must have been RESOLVED to the book's outline, not read as a path:
+    # a bare path form treats it as a missing file and reports wiring-parse.
+    assert "wiring-parse" not in out
+
+
+def test_cli_book_number_runs_the_beat_sheet_dependent_checks(tmp_path, monkeypatch, capsys):
+    """THE point of the book-number form. The same outline read as a bare path
+    cannot report dead-stretch at all (no beat sheet); read as a book number it
+    does, because the genre's beat sheet is resolved for it."""
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path, outline_fixture="wired-dead-stretch.md")
+
+    monkeypatch.chdir(root)
+    assert tension_check.main(["01"]) == 1
+    with_number = capsys.readouterr().out
+    # The FINDING line, not the "skipped" note — the note names the same five
+    # check ids, so a bare substring match here would pass either way.
+    assert "tension_check: dead-stretch:" in with_number
+
+    tension_check.main([str(root / "input/book-01/outline.md")])
+    with_path = capsys.readouterr().out
+    assert "tension_check: dead-stretch:" not in with_path
+
+
+def test_cli_book_number_passes_the_resolved_turning_points(tmp_path, monkeypatch, capsys):
+    """off-mark-beat needs the turning points AND the beat sheet. The bare path
+    form has neither; the book-number form resolves both."""
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path, outline_fixture="wired-clean.md",
+                                turning_points="turning-points-offmark.md",
+                                reveal_chapter=5)
+    monkeypatch.chdir(root)
+    tension_check.main(["01"])
+    out = capsys.readouterr().out
+    assert "tension_check: off-mark-beat: inciting-death" in out
+
+    tension_check.main([str(root / "input/book-01/outline.md")])
+    assert "off-mark-beat" not in capsys.readouterr().out
+
+
+def test_cli_book_number_passes_the_resolved_whodunit(tmp_path, monkeypatch, capsys):
+    """The reveal beat is checked against the LEDGER's reveal_chapter. With no
+    whodunit resolved, reveal_ch is None and that comparison never happens."""
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path, outline_fixture="wired-clean.md",
+                                turning_points="turning-points-good.md",
+                                reveal_chapter=4)   # the turning point says ch 5
+    monkeypatch.chdir(root)
+    tension_check.main(["01"])
+    out = capsys.readouterr().out
+    assert "whodunit reveal_chapter is 4" in out
+
+    tension_check.main(["01", "--whodunit", str(root / "nope.yaml")])
+    assert "whodunit reveal_chapter" not in capsys.readouterr().out
+
+
+def test_cli_still_accepts_an_outline_path(tmp_path):
+    """The path form is what preflight and existing callers use — unchanged."""
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path)
+    rc = tension_check.main([str(root / "input/book-01/outline.md")])
+    assert rc in (0, 1)
+
+
+def test_cli_book_number_fails_by_name_when_the_outline_is_missing(tmp_path, monkeypatch, capsys):
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path, write_outline=False)
+    monkeypatch.chdir(root)
+    rc = tension_check.main(["01"])
+    assert rc == 2
+    assert "no outline" in capsys.readouterr().err.lower()
+
+
+def test_cli_explicit_flags_beat_the_book_number_form(tmp_path, monkeypatch, capsys):
+    """An explicit --beat-sheet must still win: the book-number resolution is
+    a default, not an override."""
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path, outline_fixture="wired-dead-stretch.md")
+    monkeypatch.chdir(root)
+    # A beat sheet path that does not exist disables the curve checks again.
+    rc = tension_check.main(["01", "--beat-sheet", str(root / "nope.yaml")])
+    out = capsys.readouterr().out
+    assert rc in (0, 1)
+    assert "wiring-parse" not in out                     # the outline still resolved
+    assert "tension_check: dead-stretch:" not in out     # the override disabled it
+
+
+def test_preflight_lock_mystery_resolves_through_resolve_inputs(tmp_path, monkeypatch):
+    """The drift guard. preflight must not keep its own copy of the
+    resolution: a second copy would let the showrunner's report and the lock's
+    gate disagree about which checks ran."""
+    import shutil
+
+    from scripts import preflight, tension_check
+
+    calls = []
+    real = tension_check.resolve_inputs
+
+    def spy(book, repo_root=None):
+        calls.append((book, repo_root))
+        return real(book, repo_root=repo_root)
+
+    monkeypatch.setattr(tension_check, "resolve_inputs", spy)
+
+    fixture = Path(__file__).resolve().parent / "fixtures" / "cozy"
+    (tmp_path / "config/setting-pack").mkdir(parents=True)
+    shutil.copy(fixture / "config/run-config.md", tmp_path / "config/run-config.md")
+    shutil.copy(fixture / "config/setting-pack/lexicon.yaml",
+                tmp_path / "config/setting-pack/lexicon.yaml")
+    (tmp_path / "series/continuity/characters").mkdir(parents=True)
+    shutil.copy(fixture / "series/continuity/canon-core.md",
+                tmp_path / "series/continuity/canon-core.md")
+    for cid in ("margaret", "thomas", "edwin-tilley"):
+        (tmp_path / f"series/continuity/characters/{cid}.md").write_text(
+            "---\nid: x\n---\n", encoding="utf-8")
+    (tmp_path / "series/whodunit").mkdir(parents=True)
+    shutil.copy(Path(preflight.REPO) / "tests/fixtures/ledgers/fair.yaml",
+                tmp_path / "series/whodunit/book-01.yaml")
+    shutil.copy(fixture / "series.yaml", tmp_path / "series.yaml")
+
+    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
+    assert calls and calls[0][0] == "01"

@@ -56,13 +56,23 @@ Checks (ids are the waiver handles):
                      wired or not; an outline with none (the legacy shape) is
                      never checked.
 
+  python3 scripts/tension_check.py NN            # a 1-2 digit book number
   python3 scripts/tension_check.py input/book-NN/outline.md \
       [--beat-sheet P] [--turning-points P] [--whodunit P]
+
+The BOOK-NUMBER form resolves the same four inputs `preflight lock-mystery`
+resolves, through the same `resolve_inputs` below. Handed only a bare outline
+path, `beat_sheet_path` is None and FIVE of the ten checks silently do not run
+(dead-stretch, starved-thread, off-mark-beat, overloaded-chapter,
+monotonous-closings) — so a showrunner reading the findings BEFORE the lock got
+half a report with no signal that it was half. The path form is unchanged and
+is what preflight and existing callers use.
 """
 from __future__ import annotations
 
 import argparse
 import math
+import re
 import sys
 from pathlib import Path
 
@@ -76,6 +86,73 @@ from scripts.story_cut import CLOSING_KINDS
 def _load_yaml(path):
     import yaml  # PyYAML: beat sheet + whodunit are genuinely nested human data
     return yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+
+
+# A 1-2 digit book number, as opposed to an outline path (the other CLI form).
+_BOOK_RE = re.compile(r"^\d{1,2}$")
+
+
+def _first_file(*paths):
+    """First candidate that actually exists, else None.
+
+    Deliberately a local reimplementation of `preflight._first_file` and NOT an
+    import: preflight imports `check_tension` from this module, so importing
+    back would be a cycle.
+    """
+    for p in paths:
+        if p is not None and Path(p).is_file():
+            return p
+    return None
+
+
+def resolve_inputs(book: str, repo_root=None) -> dict:
+    """The four inputs `check_tension` needs, resolved for one book.
+
+    ONE home, called by both `preflight lock-mystery` and this module's CLI: a
+    second copy would let the showrunner's report and the lock's gate disagree
+    about which checks ran, and the report exists precisely to predict the gate.
+
+    The three non-outline keys are named exactly as `check_tension`'s keyword
+    arguments so a caller can splat them; `outline` is separate because it is
+    positional.
+
+    A path that does not exist resolves to None, never to a non-existent Path.
+    That matters most for the beat sheet: `config_path()` always returns SOME
+    path (falling back to the plugin default location even when nothing exists
+    there), so an unnormalised miss would be passed through as real and the
+    named "could not run" note the certificate records as
+    `skipped: <check-id> — <why>` would never fire.
+
+    The beat sheet resolves THROUGH the active genre's `genre.yaml` `beat_sheet:`
+    key (`penny_genre.beat_sheet`), never a hardcoded filename — a genre pack
+    naming its file differently must not silently lose the curve/beat checks.
+    An undeclared genre yields None there, which is not an error: this checker
+    runs over any wired outline, including one with no genre context.
+    """
+    from scripts import penny_genre, penny_paths
+
+    raw = str(book).strip()
+    nn = f"{int(raw):02d}" if raw.isdigit() else raw
+
+    beat_sheet_path = penny_genre.beat_sheet(root=repo_root)
+    if beat_sheet_path is not None and not Path(beat_sheet_path).is_file():
+        beat_sheet_path = None
+
+    def _inp(rel_nn: str, rel_raw: str):
+        # The zero-padded name is the contract; the literal one is a fallback so
+        # a caller that already passed an unpadded number behaves as it did.
+        return _first_file(penny_paths.input_path(rel_nn, root=repo_root),
+                           penny_paths.input_path(rel_raw, root=repo_root))
+
+    return {
+        "outline": _inp(f"book-{nn}/outline.md", f"book-{raw}/outline.md"),
+        "beat_sheet_path": beat_sheet_path,
+        "turning_points_path": _inp(f"book-{nn}/plot/turning-points.md",
+                                    f"book-{raw}/plot/turning-points.md"),
+        "whodunit_path": _first_file(
+            penny_paths.series_path(f"whodunit/book-{nn}.yaml", root=repo_root),
+            penny_paths.series_path(f"whodunit/book-{raw}.yaml", root=repo_root)),
+    }
 
 
 def _graph_checks(chapters: list[dict], blocking: list[str]) -> dict:
@@ -413,14 +490,42 @@ def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=Non
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Penny dramatic-wiring checker.")
-    ap.add_argument("outline")
+    ap.add_argument("outline", metavar="OUTLINE-PATH|NN",
+                    help="an outline path, or a 1-2 digit book number to resolve "
+                         "the same four inputs `preflight lock-mystery` resolves")
     ap.add_argument("--beat-sheet", dest="beat_sheet")
     ap.add_argument("--turning-points", dest="turning_points")
     ap.add_argument("--whodunit", dest="whodunit")
     args = ap.parse_args(argv)
-    result = check_tension(args.outline, beat_sheet_path=args.beat_sheet,
-                           turning_points_path=args.turning_points,
-                           whodunit_path=args.whodunit)
+    outline = args.outline
+    beat_sheet = args.beat_sheet
+    turning_points = args.turning_points
+    whodunit = args.whodunit
+    if _BOOK_RE.match(str(outline).strip()):
+        # The book-number form. Explicit flags still win per-flag: the
+        # resolution is a default, not an override.
+        got = resolve_inputs(outline)
+        if got["outline"] is None:
+            print(f"tension_check: no outline for book {str(outline).strip()} "
+                  f"(expected input/book-{int(str(outline).strip()):02d}/outline.md)",
+                  file=sys.stderr)
+            return 2
+        outline = got["outline"]
+        if beat_sheet is None:
+            beat_sheet = got["beat_sheet_path"]
+        if turning_points is None:
+            turning_points = got["turning_points_path"]
+        if whodunit is None:
+            whodunit = got["whodunit_path"]
+        if beat_sheet is None:
+            # Never silent about half a report: the five beat-sheet-dependent
+            # checks are exactly what the bare path form loses.
+            print("tension_check: note — no beat sheet resolved; dead-stretch, "
+                  "starved-thread, off-mark-beat, overloaded-chapter and "
+                  "monotonous-closings skipped")
+    result = check_tension(outline, beat_sheet_path=beat_sheet,
+                           turning_points_path=turning_points,
+                           whodunit_path=whodunit)
     for line in result.get("notes", []):
         print(f"tension_check: note — {line}")
     if not result["wired"] and not result["blocking"]:
