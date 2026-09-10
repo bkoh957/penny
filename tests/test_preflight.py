@@ -925,3 +925,49 @@ def test_the_report_and_the_gate_name_the_same_skipped_checks(tmp_path, capsys):
     assert tension_check.NO_BEAT_SHEET_NOTE in gate
     for check in tension_check.BEAT_SHEET_DEPENDENT:
         assert check in gate, f"the gate's note no longer names {check}"
+
+
+# --- spec 2026-09-10: the certificate must not claim tension coverage it does
+# not have. The pair below is the whole point of the fix: the first asserts on
+# the CERTIFICATE (the stdout note above it was already green while the cert
+# carried nothing), the second is its converse, so the fix cannot degrade into
+# noting unconditionally. ------------------------------------------------
+
+def test_lock_records_a_skipped_line_for_each_unrunnable_curve_beat_check(tmp_path):
+    """Wired book, no resolvable beat sheet: dead-stretch, starved-thread and
+    off-mark-beat cannot run, so the lock says so by name."""
+    # No series.yaml -> no declared genre -> no beat sheet resolves.
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    _add_wired_outline(tmp_path, SRC / "tests/fixtures/outlines/wired-clean.md")
+    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
+    body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
+    assert "validated: fairplay+lexicon+tension" in body
+    for check in ("dead-stretch", "starved-thread", "off-mark-beat"):
+        assert any(line.startswith(f"skipped: {check} — ")
+                   for line in body.splitlines()), \
+            f"the certificate claims {check} ran:\n{body}"
+
+
+def test_lock_that_runs_every_check_records_no_skipped_line(tmp_path):
+    """The converse. Genre declared (so the beat sheet resolves) and turning
+    points present: every check either ran or is not applicable, and the
+    certificate carries no `skipped:` line at all."""
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    shutil.copy(FIXTURE / "series.yaml", tmp_path / "series.yaml")
+    _add_wired_outline(tmp_path, SRC / "tests/fixtures/outlines/wired-clean.md")
+    # On-mark against genres/cozy-mystery/beat-sheet.yaml over 6 chapters.
+    tp = tmp_path / "input/book-01/plot/turning-points.md"
+    tp.parent.mkdir(parents=True, exist_ok=True)
+    tp.write_text(
+        "---\ntotal_chapters: 6\n---\n\n"
+        "## TP-1 — The body\n- **Beat:** inciting-death\n- **Chapter:** 1\n"
+        "- **Breaks:** the welcome curdles.\n\n"
+        "## TP-2 — The copied key\n- **Beat:** midpoint-reversal\n- **Chapter:** 3\n"
+        "- **Breaks:** the theft was preparation.\n\n"
+        "## TP-3 — The letter\n- **Beat:** dark-night\n- **Chapter:** 5\n"
+        "- **Breaks:** the truth will cost the centre.\n",
+        encoding="utf-8")
+    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
+    body = preflight.lock_path("01", tmp_path).read_text(encoding="utf-8")
+    assert "validated: fairplay+lexicon+tension" in body
+    assert "skipped:" not in body, body

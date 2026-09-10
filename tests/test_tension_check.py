@@ -571,7 +571,10 @@ def test_cli_book_number_passes_the_resolved_turning_points(tmp_path, monkeypatc
     assert "tension_check: off-mark-beat: inciting-death" in out
 
     tension_check.main([str(root / "input/book-01/outline.md")])
-    assert "off-mark-beat" not in capsys.readouterr().out
+    # The FINDING line, not the "could not run" note — the bare path form now
+    # NAMES off-mark-beat as skipped (spec 2026-09-10), so a bare substring
+    # match here would pass whether or not the check actually ran.
+    assert "tension_check: off-mark-beat:" not in capsys.readouterr().out
 
 
 def test_cli_book_number_passes_the_resolved_whodunit(tmp_path, monkeypatch, capsys):
@@ -683,3 +686,61 @@ def test_preflight_lock_mystery_resolves_through_resolve_inputs(tmp_path, monkey
 
     assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
     assert calls and calls[0][0] == "01"
+
+
+# --- spec 2026-09-10: a check that CANNOT RUN says so through the notes
+# channel, so `preflight lock-mystery` can stamp it on the certificate as
+# `skipped: <check-id> — <why>`. `_curve_checks` and `_beat_checks` were the
+# two guards with no note of their own: they simply did not run, and the
+# certificate still read `validated: fairplay+lexicon+tension`. -----------
+
+def _noted(result, check):
+    return [n for n in result["notes"] if n.startswith(f"{check} — ")]
+
+
+def test_wired_without_a_beat_sheet_notes_all_three_curve_beat_checks():
+    """Door one: wired outline, no resolvable beat sheet."""
+    r = check_tension(FIX / "wired-clean.md")
+    assert r["wired"] is True
+    for check in ("dead-stretch", "starved-thread", "off-mark-beat"):
+        assert _noted(r, check), f"{check} vanished with no note: {r['notes']}"
+        assert "beat sheet" in _noted(r, check)[0]
+
+
+def test_wired_with_a_beat_sheet_but_no_turning_points_notes_off_mark_beat_alone():
+    """Door two, nested inside door one's success case."""
+    r = check_tension(FIX / "wired-clean.md", beat_sheet_path=BEATS)
+    assert _noted(r, "off-mark-beat"), r["notes"]
+    assert "turning point" in _noted(r, "off-mark-beat")[0]
+    # The two checks that DID run must not be noted as skipped.
+    assert not _noted(r, "dead-stretch") and not _noted(r, "starved-thread")
+
+
+def test_a_ran_beat_check_leaves_no_note():
+    """The converse at module level: with both inputs present, nothing is noted."""
+    r = check_tension(FIX / "wired-clean.md", beat_sheet_path=BEATS,
+                      turning_points_path=Path("tests/fixtures/plot/turning-points-good.md"))
+    assert r["notes"] == []
+
+
+def test_an_unwired_outline_notes_none_of_them():
+    """Explicitly NOT changed (spec §3). On an unwired outline these three are
+    NOT APPLICABLE rather than unrunnable — they all need wiring — so noting
+    them would turn every legacy outline's correct silence into certificate
+    noise, the same trap `_closings_check` documents for an outline with no
+    Closing section anywhere."""
+    r = check_tension(FIX / "well-formed.md")
+    assert r["wired"] is False
+    for check in ("dead-stretch", "starved-thread", "off-mark-beat"):
+        assert not _noted(r, check), r["notes"]
+
+
+def test_the_notes_name_ids_from_BEAT_SHEET_DEPENDENT_not_a_second_list():
+    """The report and the gate exist to predict each other, which is why
+    BEAT_SHEET_DEPENDENT is one spelling. These notes must be drawn from it."""
+    from scripts import tension_check
+
+    assert set(tension_check.CURVE_BEAT_CHECKS) <= set(tension_check.BEAT_SHEET_DEPENDENT)
+    r = check_tension(FIX / "wired-clean.md")
+    noted = {n.split(" — ", 1)[0] for n in r["notes"]}
+    assert noted == set(tension_check.CURVE_BEAT_CHECKS)

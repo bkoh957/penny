@@ -16,9 +16,11 @@ exactly as before.
 Two result channels, and nothing is ever silent:
   blocking — findings. They stop the lock unless waived, and the waiver's
              reason is recorded in the certificate.
-  notes    — a check that COULD NOT RUN, and why (the genre beat sheet
-             declares no obligations.max_per_chapter, or the whodunit ledger
-             cannot be read). Never a traceback out of a working command,
+  notes    — a check that COULD NOT RUN, and why (no genre beat sheet
+             resolves at all, or one resolves but declares no
+             obligations.max_per_chapter, or no turning points resolve, or
+             the whodunit ledger cannot be read). Never a traceback out of a
+             working command,
              never a silent `return`: preflight prints them and stamps them
              on the lock as `skipped: <check-id> — <why>`, so the certificate
              cannot claim coverage it does not have.
@@ -102,6 +104,19 @@ BEAT_SHEET_DEPENDENT = ("dead-stretch", "starved-thread", "off-mark-beat",
                         "overloaded-chapter", "monotonous-closings")
 NO_BEAT_SHEET_NOTE = ("no beat sheet resolved; curve/beat checks ("
                       + ", ".join(BEAT_SHEET_DEPENDENT) + ") skipped")
+
+# The two of the five that raise their OWN "could not run" note, from inside
+# their own check, whether or not the outline is wired. Noting them again in
+# check_tension's wired branch would double-record them on the certificate.
+_SELF_NOTING = ("overloaded-chapter", "monotonous-closings")
+# ...leaving the three that had no note of their own: `_curve_checks` and
+# `_beat_checks` were simply not called, so the check vanished with no finding,
+# no note and no `skipped:` line while the lock still stamped
+# `validated: fairplay+lexicon+tension` (spec 2026-09-10). DERIVED from
+# BEAT_SHEET_DEPENDENT rather than re-listed: the report and the gate exist to
+# predict each other, and two hand-kept lists of the same ids is the one place
+# a discrepancy is guaranteed to mislead.
+CURVE_BEAT_CHECKS = tuple(c for c in BEAT_SHEET_DEPENDENT if c not in _SELF_NOTING)
 
 
 def _first_file(*paths):
@@ -489,6 +504,13 @@ def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=Non
     if whodunit_path is not None and Path(whodunit_path).is_file():
         rc = _load_yaml(whodunit_path).get("reveal_chapter")
         reveal_ch = int(rc) if isinstance(rc, int) or (isinstance(rc, str) and rc.isdigit()) else None
+    # These three notes belong to the WIRED branch only. On an unwired outline
+    # the curve/beat checks are NOT APPLICABLE rather than unrunnable — they all
+    # read wiring — and `validated:` correctly stays `fairplay+lexicon`, so
+    # noting them there would turn every legacy outline's correct silence into
+    # certificate noise (the trap `_closings_check` documents for an outline
+    # with no Closing section anywhere).
+    notes = list(over["notes"])
     if beat_sheet_path is not None and Path(beat_sheet_path).is_file():
         beat_sheet = _load_yaml(beat_sheet_path)
         metrics["open_counts"] = _curve_checks(chapters, beat_sheet, reveal_ch, blocking)
@@ -496,8 +518,18 @@ def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=Non
             from scripts.penny_wiring import parse_turning_points
             tp = parse_turning_points(Path(turning_points_path).read_text(encoding="utf-8"))
             _beat_checks(tp["points"], beat_sheet, total, reveal_ch, blocking)
+        else:
+            # The nested door: the beat sheet resolved, so the curve checks ran,
+            # but the beat check has no turning points to measure.
+            notes.append(
+                "off-mark-beat — the check could not run: no turning points "
+                "resolved for this book (input/book-NN/plot/turning-points.md)")
+    else:
+        for check in CURVE_BEAT_CHECKS:
+            notes.append(
+                f"{check} — the check could not run: no genre beat sheet resolved")
     blocking += over["blocking"]
-    return {"wired": True, "blocking": blocking, "notes": over["notes"], "metrics": metrics}
+    return {"wired": True, "blocking": blocking, "notes": notes, "metrics": metrics}
 
 
 def main(argv=None) -> int:
