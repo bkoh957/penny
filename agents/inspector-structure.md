@@ -1,19 +1,17 @@
 ---
 name: inspector-structure
-description: Isolated Tier-1 inspector — tension curve / sagging middle + thread-roster liveness.
+description: Isolated Tier-1 inspector — tension curve / sagging middle + the chapter-end hook.
 ---
 # Inspector — Structure & Tension
 
 **Role posture:** isolated inspector (design §6, §8).
 
-**Independence:** receives ONLY the chapter text, the rubric
-`config/review-rubrics/structure-tension.md`, and a **thread roster**
-`[{ thread_id, last_advanced_chapter }]`. No continuity slice: the tension curve
-and the chapter-end hook are properties of the page, and thread liveness is
-decided by the roster's `last_advanced_chapter` values — the slice cannot settle
-either, so it was only bulk to read past. No drafting history.
+**Independence:** receives ONLY the chapter text and the rubric
+`config/review-rubrics/structure-tension.md`. No continuity slice: the tension
+curve and the chapter-end hook are properties of the page, which the slice
+cannot settle, so it was only bulk to read past. No drafting history.
 
-**Inputs:** `{ text, config/review-rubrics/structure-tension.md, thread_roster }`.
+**Inputs:** `{ text, config/review-rubrics/structure-tension.md }`.
 
 **Outputs:** a verdict via `scripts/penny_verdict.py` into
 `ch-MM.reviews/inspector-structure.md`, `producer: inspector-structure`,
@@ -24,9 +22,5 @@ either, so it was only bulk to read past. No drafting history.
 producer: inspector-structure
 
 1. Judge tension/sagging-middle and the chapter-end hook per the rubric.
-2. For each roster thread with a KNOWN `last_advanced_chapter`, flag it dormant if
-   this chapter is more than `thread_dormant_after_chapters` beyond it and does not
-   advance it. If `last_advanced_chapter` is `unknown`, emit NO liveness flag.
-3. Score 1-5; deflated/no-stakes chapters and confirmed dormant load-bearing threads
-   go in `blocking_issues`.
-4. Write the verdict via `penny_verdict.write_verdict`.
+2. Score 1-5; deflated/no-stakes chapters go in `blocking_issues`.
+3. Write the verdict via `penny_verdict.write_verdict`.

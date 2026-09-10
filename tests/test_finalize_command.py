@@ -18,13 +18,6 @@ def test_finalize_refuses_rerun_without_commit_flag():
     assert "refus" in text and "ledger-review" in text
 
 
-def test_review_chapter_roster_uses_real_marker_and_treats_null_silent():
-    text = (ROOT / "commands/review-chapter.md").read_text(encoding="utf-8").lower()
-    assert "last_advanced_chapter" in text
-    assert "unknown" not in text or "null" in text  # no longer the unknown placeholder
-    assert "null" in text                           # null = no liveness flag
-
-
 def test_draft_preamble_refreshed():
     text = (ROOT / "commands/draft-chapter.md").read_text(encoding="utf-8").lower()
     assert "no review bus yet" not in text

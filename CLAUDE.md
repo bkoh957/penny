@@ -49,7 +49,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (1372 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (1373 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -358,9 +358,9 @@ not keep the original count) goes to `inspector-continuity` and `inspector-fairp
 `characters/`, `locations/` and `threads/` are the facts a chapter can contradict, while
 `background/` is authored backstory written for the drafter, which can neither schedule a
 plant nor make one fair. `inspector-structure`, `inspector-voice` and `inspector-ai-prose`
-get **none** — the tension curve is read from the page and the thread roster, voice from
-the lexicon plus the `voice_drift`/`lexicon_check` evidence, taste from the rubric and the
-sentence, and no blocking predicate any of them owns can be decided from the ledger. The
+get **none** — the tension curve and the chapter-end hook are read from the page, voice
+from the lexicon plus the `voice_drift`/`lexicon_check` evidence, taste from the rubric and
+the sentence, and no blocking predicate any of them owns can be decided from the ledger. The
 `drafter` is deliberately **unchanged** and still gets the whole packet, background
 included: it is the one consumer writing the prose those entries exist to feed. Passing
 both flags is a usage error — each is a view of the packet, and their intersection is not

@@ -59,8 +59,8 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
 
    **`inspector-structure`, `inspector-voice` and `inspector-ai-prose` receive
    no continuity slice at all.** Not a narrower one — none. Structure judges the
-   tension curve and the chapter-end hook from the page plus the thread roster
-   built in step 6; voice works from `config/setting-pack/lexicon.yaml` and the
+   tension curve and the chapter-end hook from the page and its rubric;
+   voice works from `config/setting-pack/lexicon.yaml` and the
    `voice_drift` / `lexicon_check` evidence written in step 5; ai-prose judges
    taste from its rubric and the prose. None of their instructions reference the
    slice, and none of their blocking predicates can be decided from it — sending
@@ -112,15 +112,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
      --out output/book-$book/chapters/ch-$chapter.reviews
    ```
 
-6. **Build the thread roster** for `inspector-structure`: from
-   `series/continuity/threads/*.md` + `series/arc-ledger.md`, as
-   `[{ thread_id, last_advanced_chapter }]`. Read each thread file's real frontmatter
-   `last_advanced_chapter` value. A missing or empty value maps to `null`, which
-   `inspector-structure` treats as "no advancement recorded yet" — no dormancy flag is
-   emitted (identical behaviour to the old `unknown` placeholder, but now reading real
-   data written by `/finalize-chapter`).
-
-7. **Resolve the active genre's inspector set:**
+6. **Resolve the active genre's inspector set:**
 
    ```bash
    INSPECTORS="$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/penny_genre.py" inspectors)"
@@ -135,7 +127,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    |---|---|---|---|
    | continuity | inspector-continuity | continuity-drift.md | continuity-drift.md |
    | fairplay | inspector-fairplay | fairplay-planting.md | fairplay-planting.md |
-   | structure | inspector-structure | structure-tension.md | structure-tension.md (also gets the thread roster) |
+   | structure | inspector-structure | structure-tension.md | structure-tension.md |
    | voice | inspector-voice | character-voice.md | character-voice.md |
    | ai-prose | inspector-ai-prose | ai-prose-taste-flags.md | ai-prose-taste-flags.md |
 
@@ -146,10 +138,10 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    the chapter text and its rubric (from the table above), plus **only** the extra inputs
    step 4 assigns it: `continuity` and `fairplay` get the `--inspector-slice` ledger,
    `fairplay` alone also gets the packet's `## Ledger Clues` section (the projection
-   doesn't carry it, and it is where fairplay's obligations live), `structure` gets the
-   thread roster from step 6, `voice` gets the lexicon and the step-5 evidence files,
-   `ai-prose` gets nothing beyond the page and its rubric. Each writes its
-   verdict into `output/book-$book/chapters/ch-$chapter.reviews/` via
+   doesn't carry it, and it is where fairplay's obligations live), `structure` gets
+   nothing beyond the page and its rubric, `voice` gets the lexicon and the step-5
+   evidence files, `ai-prose` gets nothing beyond the page and its rubric. Each
+   writes its verdict into `output/book-$book/chapters/ch-$chapter.reviews/` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py`, to the verdict file named in the
    table above. `inspector-fairplay` additionally receives
    `output/book-$book/mystery-solution.md`, and the `reveal_chapter` value read from
@@ -157,7 +149,7 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    without `reveal_chapter` — the inspector will record the premature-reveal check as
    not applicable.
 
-7b. **Cross-model guard + dispatch the developmental editor (context-rich, advisory).**
+6b. **Cross-model guard + dispatch the developmental editor (context-rich, advisory).**
 
    The developmental read MUST run on a non-drafting model (genuine fresh eyes, design §6).
    Determine a reachable model that is **not** `drafting_model` (per `config/run-config.md`,
@@ -204,13 +196,13 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    `output/book-$book/chapters/ch-$chapter.reviews/developmental-edit.md` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py` (`kind: developmental`, no `^BLOCKING:` lines).
 
-8. **Dispatch-completeness check:** confirm one verdict file (per the static table's
+7. **Dispatch-completeness check:** confirm one verdict file (per the static table's
    `verdict file` column) for each inspector named in `$INSPECTORS`, AND
    `developmental-edit.md`, now exist in the reviews dir. A missing one means a sub-agent
    dispatch silently failed — stop and report it. (This is distinct from `fairplay.md`
    legitimately being absent pre-reveal.)
 
-9. **Compute the gate and advance the marker:**
+8. **Compute the gate and advance the marker:**
 
    ```bash
    gate_out="$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" output/book-$book/chapters/ch-$chapter.reviews)"
@@ -227,11 +219,11 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    prints `GATE: PASS` or `GATE: HOLD (n blocking)`. The marker is set to
    `stage=REVIEWED` on a PASS gate and `stage=GATE-HELD` on a HOLD gate.
 
-10. **Surface the result** to the showrunner: report the gate verdict and, on a
-    HOLD, list the blocking items from
-    `output/book-$book/chapters/ch-$chapter.gate.md`.
+9. **Surface the result** to the showrunner: report the gate verdict and, on a
+   HOLD, list the blocking items from
+   `output/book-$book/chapters/ch-$chapter.gate.md`.
 
-11. **Developmental clearance (showrunner gate before finalize).** The gate summary always
+10. **Developmental clearance (showrunner gate before finalize).** The gate summary always
     prints an advisory **Developmental** section; it never affects PASS/HOLD. Finalize is
     blocked until you clear the developmental read for this exact draft:
 

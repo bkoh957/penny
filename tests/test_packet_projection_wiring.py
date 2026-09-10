@@ -8,7 +8,7 @@ These pin the wiring itself (spec 2026-09-09-check-economics-design.md §3b).
 
 Each runbook assertion is scoped to the STEP that must carry the flag, not to
 the file. A substring-anywhere check passes on any other step's prose — step 4's
-paragraph alone would satisfy a test aimed at step 7b — so the one regression
+paragraph alone would satisfy a test aimed at step 6b — so the one regression
 these exist to catch (a dispatch quietly reverting to the whole packet) would be
 silent, which is the failure mode this plan has already hit twice.
 """
@@ -59,7 +59,7 @@ def test_review_chapter_names_the_three_inspectors_that_get_no_slice():
 
 
 def test_review_chapter_gives_the_developmental_editor_no_continuity():
-    step = _step("commands/review-chapter.md", "7b")
+    step = _step("commands/review-chapter.md", "6b")
     assert "developmental-editor" in step
     assert "--without-continuity" in step
 
@@ -99,3 +99,20 @@ def test_slice_free_inspectors_do_not_declare_a_ledger_slice():
 def test_grading_inspectors_still_receive_a_slice():
     for name in ("inspector-continuity", "inspector-fairplay"):
         assert "ledger_slice" in _read(f"agents/{name}.md")
+
+
+def test_review_chapter_does_not_build_a_thread_roster():
+    """The dormancy flag never had data — nothing creates a thread file and
+    arc-ledger.md is an empty table — so the roster step was removed rather
+    than left declared. The genre's tracks cover the same failure at book
+    scale through tension_check's starved-thread (spec §3a.3)."""
+    text = _read("commands/review-chapter.md")
+    assert "thread roster" not in text.lower()
+    assert "thread_roster" not in text
+
+
+def test_inspector_structure_does_not_declare_a_thread_roster():
+    text = _read("agents/inspector-structure.md")
+    assert "thread_roster" not in text
+    assert "thread roster" not in text.lower()
+    assert "dormant" not in text.lower()

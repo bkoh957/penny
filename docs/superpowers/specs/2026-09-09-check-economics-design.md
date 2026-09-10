@@ -131,6 +131,30 @@ Scores: `character-voice` was **4 in all 12 rounds**. `developmental-edit` was *
    created and populated by `/finalize-chapter`, or the liveness half is switched off
    deliberately and the agent stops claiming it.
 
+   **Settled: the second branch.** The liveness half is switched off and
+   `inspector-structure` stops declaring it. Three reasons, in order of weight. Nothing
+   creates a thread file — `ledger_markers.py` calls `p.read_text()` on a path that must
+   already exist, so it only ever *updates* one — and `series/arc-ledger.md`, the roster's
+   other source, is a table with a header and no rows; so the first branch is not a wiring
+   fix but a new authoring surface. The same failure is already caught, at the scale where
+   it is visible, by a check that works: the genre's four tracks (M, P, R, B) and
+   `tension_check`'s `starved-thread`, reading each chapter's `### Track Movement` rows
+   against the beat sheet's `tracks.max_dark_gap` (`M: 2, P: 4, R: 4, B: 5`) — and 3a.1
+   turns that on. And named per-thread dormancy across a series is Phase-8 work (design
+   §13), so building the roster now would be building the series-scale ledger early to
+   feed a per-chapter check that cannot see the property anyway.
+
+   This removes a **declaration**, not a capability: the check has never once been able to
+   fire, and its own verdicts say so ("Thread-roster liveness could not be evaluated… no
+   thread-roster file was supplied"). `inspector-structure` keeps its first job — the
+   tension curve and the chapter-end hook — and its blocking predicate is unchanged. The
+   roster-building step is deleted from `commands/review-chapter.md` (which renumbers the
+   steps after it), and the clause disappears from the agent definition and from
+   `config/review-rubrics/structure-tension.md`, which now names `starved-thread` as where
+   the property is checked instead. `penny-design-v3.md` and `penny-PRD-v3.md` still
+   describe the liveness half; they are the record of design intent, and this section is
+   the record of the divergence.
+
 ### 3b. Stop transmitting the slice to agents that do not read it
 
 1. **A `--without-continuity` render in `packet_assemble.py`** — the same packet minus
