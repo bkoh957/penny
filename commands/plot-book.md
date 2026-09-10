@@ -367,20 +367,19 @@ state; this command never asks you anything a file already answers.
    beats have neither chapters nor wiring fields:
 
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/tension_check.py" \
-     input/book-$book/outline.md \
-     --beat-sheet "$(python3 "${CLAUDE_PLUGIN_ROOT}/scripts/penny_genre.py" beat-sheet)" \
-     --turning-points input/book-$book/plot/turning-points.md \
-     --whodunit series/whodunit/book-$book.yaml
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/tension_check.py" $book
    ```
 
-   `penny_genre.py beat-sheet` resolves THROUGH the active genre's `genre.yaml`
-   `beat_sheet:` key (overlay-resolved, so a series can still override its genre's
-   numbers) — never a hardcoded filename, so a genre pack naming its file something
-   other than `beat-sheet.yaml` still gets its curve/beat checks run. It prints an
-   empty string when the genre declares no `beat_sheet:` key at all; `tension_check.py`
-   then simply skips the curve/beat checks and runs only the graph checks (causality,
-   open-question ledger, hook chain, chapter coverage).
+   The book-number form resolves all four inputs the way `preflight lock-mystery`
+   resolves them — the beat sheet THROUGH the active genre's `genre.yaml`
+   `beat_sheet:` key (overlay-resolved, so a series can override its genre's
+   numbers), never a hardcoded filename. Hand-assembling the four paths here was
+   the bug: `penny_genre.py beat-sheet` prints an empty string when a genre
+   declares no `beat_sheet:` key, and the empty path dropped dead-stretch,
+   starved-thread, off-mark-beat, overloaded-chapter and monotonous-closings out
+   of the report with no note. This form normalises an unresolvable beat sheet to
+   none and prints a note naming exactly those five — so the proofread cannot
+   claim coverage the lock gate will not have.
 
    Present the audit, the open ledger items, and the tension findings side by side. The
    showrunner either works the open items (editing `story.md` and re-running the

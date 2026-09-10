@@ -19,7 +19,7 @@ config/setting-pack/lexicon.yaml, fluency_stage, voice-drift.md (if present),
 lexicon-fluency.md (if present) }`.
 
 **Outputs:** a verdict via `scripts/penny_verdict.py` into
-`ch-MM.reviews/inspector-voice.md`, `producer: inspector-voice`, `kind: inspector`,
+`ch-MM.reviews/character-voice.md`, `producer: inspector-voice`, `kind: inspector`,
 `score` 1-5, `blocking_issues[]`, `violations[]`, `evidence[]`, `reviewed_by`.
 
 **Instructions:**

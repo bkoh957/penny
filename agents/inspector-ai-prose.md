@@ -17,7 +17,7 @@ reachable (P1.2) — a routing swap, no engine change.
 **Inputs:** `{ text, config/review-rubrics/ai-prose-taste-flags.md }`.
 
 **Outputs:** a verdict via `scripts/penny_verdict.py` into
-`ch-MM.reviews/inspector-ai-prose.md`, `producer: inspector-ai-prose`,
+`ch-MM.reviews/ai-prose-taste-flags.md`, `producer: inspector-ai-prose`,
 `kind: inspector`, `score` 1-5, `blocking_issues[]`, `violations[]`, `evidence[]`,
 `reviewed_by`.
 

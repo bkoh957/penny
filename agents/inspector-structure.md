@@ -14,7 +14,7 @@ cannot settle, so it was only bulk to read past. No drafting history.
 **Inputs:** `{ text, config/review-rubrics/structure-tension.md }`.
 
 **Outputs:** a verdict via `scripts/penny_verdict.py` into
-`ch-MM.reviews/inspector-structure.md`, `producer: inspector-structure`,
+`ch-MM.reviews/structure-tension.md`, `producer: inspector-structure`,
 `kind: inspector`, `score` 1-5, `blocking_issues[]`, `violations[]`, `evidence[]`,
 `reviewed_by`.
 

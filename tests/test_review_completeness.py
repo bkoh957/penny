@@ -13,7 +13,8 @@ from pathlib import Path
 
 from scripts import review_completeness
 
-RUNBOOK = Path("commands/review-chapter.md")
+ROOT = Path(__file__).resolve().parents[1]
+RUNBOOK = ROOT / "commands" / "review-chapter.md"
 
 # Deliberately NOT a second copy of the table: a duplicate declared here would
 # agree with the script by construction and keep agreeing if both drifted. The
@@ -25,7 +26,13 @@ ALL_FILES = tuple(review_completeness.VERDICT_FILES.values()) + (
 
 
 def _runbook_table():
-    """{inspector: verdict file} parsed from the runbook's static table."""
+    """{inspector: verdict file} parsed from the runbook's static table.
+
+    `cells[3]` is the `verdict file` column. Today it is byte-identical to the
+    `rubric` column in all five rows, so a wrong index would read the same
+    strings and this helper would look right while checking nothing — worth
+    re-deriving from the table's header if either column ever moves.
+    """
     rows = {}
     for line in RUNBOOK.read_text(encoding="utf-8").splitlines():
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
@@ -250,3 +257,21 @@ def test_verdict_files_agree_with_the_runbook_table():
     follows the script, and a drift between them means the check looks for a
     file nobody was told to write."""
     assert review_completeness.VERDICT_FILES == _runbook_table()
+
+
+def test_each_inspector_agent_names_the_verdict_file_this_check_expects():
+    """The agent definitions and the check must name one filename each.
+
+    All five said `ch-MM.reviews/inspector-<name>.md` while the runbook's table,
+    this script and the live series used the rubric names. That drift was inert
+    while the agents followed the runbook's dispatch — but an agent that follows
+    its own definition now writes a file nobody looks for, and the completeness
+    check turns a silent mismatch into `missing-inspector-verdict` and a hard
+    stop before the gate.
+    """
+    for name, verdict in review_completeness.VERDICT_FILES.items():
+        text = (ROOT / "agents" / f"inspector-{name}.md").read_text(encoding="utf-8")
+        assert f"ch-MM.reviews/{verdict}" in text, (
+            f"agents/inspector-{name}.md does not write {verdict}")
+        assert f"reviews/inspector-{name}.md" not in text, (
+            f"agents/inspector-{name}.md still names its own verdict file")

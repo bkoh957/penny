@@ -49,7 +49,7 @@ session start for current state.
 ## Commands
 
 ```bash
-python3 -m pytest          # full suite (1388 tests); pytest.ini sets pythonpath=.
+python3 -m pytest          # full suite (1398 tests); pytest.ini sets pythonpath=.
 python3 -m pytest tests/test_review_gate.py            # one test file
 python3 -m pytest tests/test_review_gate.py -k name    # one test
 pip install -r requirements.txt                        # only dep: PyYAML
@@ -528,6 +528,28 @@ sidecar dir `ch-MM.reviews/` and the gate summary `ch-MM.gate.md`.
   `finalize N CH` (chapter must have `gate: PASS` + a fresh clear-dev cert),
   `clear-dev N CH` (showrunner approves developmental report), `approve-book N`
   (precondition gate + mints the `.approved` cert — its last write).
+- **`scripts/tension_check.py NN`** runs those same ten checks as a free REPORT before
+  the lock, and takes a book number rather than four paths: `resolve_inputs` — one
+  spelling, shared with `lock-mystery` — finds the outline, the genre's beat sheet, the
+  turning points and the ledger. Hand-assembling those paths is precisely how a report
+  stops predicting the gate it exists to predict: `penny_genre.py beat-sheet` prints
+  nothing when a genre declares no `beat_sheet:` key, and the empty path silently drops
+  `dead-stretch`, `starved-thread`, `off-mark-beat`, `overloaded-chapter` and
+  `monotonous-closings`. Both halves print the one `NO_BEAT_SHEET_NOTE` constant, so the
+  report and the gate can never name different subsets of the same skip. Read-only —
+  only `preflight` mints a lock.
+- **`scripts/review_completeness.py NN CH`** is the third deterministic gate tool, run
+  immediately before `review_gate.py`: one verdict file per inspector in the ACTIVE
+  GENRE's roster (the runbook table's `verdict file` column — the rubric filenames, which
+  is therefore what each agent definition must name), plus `developmental-edit.md` and the
+  step-5 evidence files `voice-drift.md` and `lexicon-fluency.md`. A dispatch that fails
+  silently writes nothing and errors nowhere, so the panel is smaller than it looks —
+  `voice_drift.py` and `lexicon_check.py` ran in 1 review round of 12 on the live series
+  while `inspector-voice` recorded that it had no evidence and made its blocking call
+  anyway. A nonzero exit stops the run there: a gate computed over an incomplete panel is
+  the soft gate this engine exists to reject. Two absences are legitimate and ride the
+  notes channel rather than blocking — no authored lexicon, and an inspector the engine's
+  table maps no verdict file for.
 - **Verdict files** (`ch-MM.reviews/*.md`) share one envelope — see the docstring of
   `scripts/penny_verdict.py` (`schema: penny-verdict/1`). A **`^BLOCKING:`** line at
   column 0 is *the* blocker convention; it is counted identically by

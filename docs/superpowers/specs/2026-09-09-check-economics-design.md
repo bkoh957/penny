@@ -123,7 +123,7 @@ Scores: `character-voice` was **4 in all 12 rounds**. `developmental-edit` was *
    certificate) rather than bending the outline. Only then let it gate.
 2. **Actually run `voice_drift.py` and `lexicon_check.py` every round.**
    `commands/review-chapter.md` step 5 already specifies both; nothing asserts they ran.
-   Extend the step-8 dispatch-completeness check to cover the 2a checkers, so a silent
+   Extend the step-7 dispatch-completeness check to cover the 2a checkers, so a silent
    skip is a stop rather than an inspector improvising without evidence.
 3. **Settle the thread roster.** `series/continuity/threads/` does not exist, so
    `inspector-structure`'s liveness half is permanently inert and
@@ -242,7 +242,7 @@ every round it ran.
 4. Contract tests on the runbooks, in the shape of `tests/test_drafter_loads_voice_pack.py`:
    `review-chapter` does not name the slice as an input to structure/voice/ai-prose;
    `map-chapter` dispatches `map-maker` with the no-continuity render.
-5. The step-8 completeness assert fails when `voice-drift.md` or `lexicon-fluency.md` is
+5. The step-7 completeness assert fails when `voice-drift.md` or `lexicon-fluency.md` is
    absent from the reviews dir.
 
 ## 6. Blast radius

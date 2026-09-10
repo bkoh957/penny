@@ -28,7 +28,7 @@ Both headings carry a manifest of their own contents, recomputed for what you
 actually received; check each before deciding you have the whole list.
 
 **Outputs:** a verdict via `scripts/penny_verdict.py` into
-`ch-MM.reviews/inspector-fairplay.md`, `producer: inspector-fairplay`,
+`ch-MM.reviews/fairplay-planting.md`, `producer: inspector-fairplay`,
 `kind: inspector`, `score` 1-5, `blocking_issues[]`, `violations[]`, `evidence[]`,
 `reviewed_by`.
 

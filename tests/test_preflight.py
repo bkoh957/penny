@@ -855,12 +855,73 @@ def test_lock_reads_the_books_turning_points(tmp_path):
     assert not preflight.lock_path("01", tmp_path).is_file()
 
 
-def test_lock_spells_the_book_number_one_way(tmp_path):
+def test_lock_spells_the_book_number_one_way(tmp_path, monkeypatch):
     """`lock-mystery 1` and `lock-mystery 01` are the same book. The ledger, the
     outline and the certificate must all agree on the zero-padded spelling —
     tension_check.resolve_inputs already zero-pads, and this is the function
-    whose whole purpose is that the two cannot disagree."""
+    whose whole purpose is that the two cannot disagree. The normalization lives
+    in main()'s dispatch (so every subcommand shares it), which is why this goes
+    through the CLI rather than calling cmd_lock_mystery directly."""
     _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
-    assert preflight.cmd_lock_mystery("1", repo_root=tmp_path) == 0
+    monkeypatch.setattr(preflight.penny_paths, "series_root", lambda *a, **k: tmp_path)
+    assert preflight.main(["lock-mystery", "1"]) == 0
     assert preflight.lock_path("01", tmp_path).is_file()
     assert not (tmp_path / ".penny/locks/book-1.mystery.lock").exists()
+
+
+# --- one spelling of the book number, across every subcommand ----------------
+# `lock-mystery` pads (its ledger, outline and certificate must agree with
+# tension_check.resolve_inputs, which pads). When only IT padded, `lock-mystery 1`
+# minted book-01.mystery.lock and `draft 1 05` then looked for book-1.mystery.lock
+# — a half-working run that failed two steps later, in the wrong place. The
+# padding therefore belongs to the dispatch, not to one subcommand.
+@pytest.mark.parametrize("cmd,argv,nargs", [
+    ("cmd_draft", ["draft", "1", "5"], 2),
+    ("cmd_assemble", ["assemble", "1"], 1),
+    ("cmd_approve_book", ["approve-book", "1"], 1),
+    ("cmd_lock_mystery", ["lock-mystery", "1"], 1),
+    ("cmd_finalize", ["finalize", "1", "5"], 2),
+    ("cmd_clear_dev", ["clear-dev", "1", "5"], 2),
+])
+def test_main_pads_the_book_number_for_every_subcommand(monkeypatch, cmd, argv, nargs):
+    seen = []
+
+    def _spy(*a, **k):
+        seen.append(a)
+        return 0
+
+    monkeypatch.setattr(preflight, cmd, _spy)
+    assert preflight.main(argv) == 0
+    assert seen and seen[0][0] == "01", f"{argv[0]} got book {seen[0][0]!r}, not '01'"
+    assert len(seen[0]) == nargs
+    if nargs == 2:
+        # Only the BOOK number is normalized here: the chapter argument is each
+        # subcommand's own business and is passed through untouched.
+        assert seen[0][1] == "5"
+
+
+def test_lock_mystery_and_the_other_gates_agree_on_the_lock_path():
+    """The regression itself: the cert one subcommand writes is the cert the
+    next one reads, whatever spelling the showrunner typed."""
+    assert preflight.lock_path("1".zfill(2), Path("/tmp")) == \
+        preflight.lock_path("01", Path("/tmp"))
+
+
+def test_the_report_and_the_gate_name_the_same_skipped_checks(tmp_path, capsys):
+    """The pre-lock report and the lock itself must name ONE skipped set.
+
+    `tension_check.py NN` exists to predict the gate. When the two halves
+    printed different subsets of the same skip — three checks here, five there —
+    the one pair whose whole purpose is agreement was the one place a showrunner
+    could read a discrepancy. Both now print `tension_check.NO_BEAT_SHEET_NOTE`.
+    """
+    from scripts import tension_check
+
+    # No series.yaml -> no declared genre -> no beat sheet resolves.
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    _add_wired_outline(tmp_path, SRC / "tests/fixtures/outlines/wired-clean.md")
+    assert preflight.cmd_lock_mystery("01", repo_root=tmp_path) == 0
+    gate = capsys.readouterr().out
+    assert tension_check.NO_BEAT_SHEET_NOTE in gate
+    for check in tension_check.BEAT_SHEET_DEPENDENT:
+        assert check in gate, f"the gate's note no longer names {check}"

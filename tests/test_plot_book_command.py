@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 CMD = Path("commands/plot-book.md")
@@ -121,3 +122,41 @@ def test_the_header_resolves_the_craft_document_rather_than_naming_a_bare_path()
     block = _story_header_block(CMD.read_text(encoding="utf-8"))
     assert "resolve-dir story-craft" in block
     assert "config/story-craft/writing-beats.md" not in block
+
+
+# A runbook step opens at column 0 as `4.` or `10.` — same shape as
+# tests/test_packet_projection_wiring.py's `_step`, and for the same reason: an
+# assertion scoped to the whole file passes on any other step's prose.
+_STEP_RE = re.compile(r"^(\d+[a-z]?)\. ", re.MULTILINE)
+
+
+def _step(label: str) -> str:
+    text = CMD.read_text(encoding="utf-8")
+    starts = [(m.group(1), m.start()) for m in _STEP_RE.finditer(text)]
+    labels = [s for s, _ in starts]
+    assert label in labels, f"plot-book.md has no step {label} — steps are {labels}"
+    i = labels.index(label)
+    end = starts[i + 1][1] if i + 1 < len(starts) else len(text)
+    return text[starts[i][1]:end]
+
+
+def test_readback_calls_tension_check_by_book_number():
+    """The engine's only tension_check caller must use the book-number form.
+
+    The four-flag path form hand-assembles the inputs, and
+    `penny_genre.py beat-sheet` prints an empty string when a genre declares no
+    `beat_sheet:` key — the shell then passes `--beat-sheet ""`, which
+    check_tension guards away with `.is_file()`, so dead-stretch,
+    starved-thread, off-mark-beat, overloaded-chapter and monotonous-closings
+    all vanish with no note. `_first_file` normalisation and that note live
+    inside tension_check's book-number branch, so only this form gets them.
+    """
+    step = _step("9")
+    assert "tension_check.py" in step
+    assert re.search(r'tension_check\.py"\s+\$book\b', step), (
+        "step 9 no longer invokes tension_check.py with the book number")
+    assert "--beat-sheet" not in step, (
+        "step 9 hand-assembles the beat sheet again — that path form silently "
+        "drops the five beat-sheet-dependent checks")
+    for flag in ("--turning-points", "--whodunit"):
+        assert flag not in step, f"step 9 hand-assembles {flag} again"

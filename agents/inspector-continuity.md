@@ -20,7 +20,7 @@ flag against. Its heading's manifest is recomputed for what you actually
 received, so the count you check against is the count you have.
 
 **Outputs:** a verdict written via `scripts/penny_verdict.py` (`write_verdict`) into
-`output/book-NN/chapters/ch-MM.reviews/inspector-continuity.md`, with
+`output/book-NN/chapters/ch-MM.reviews/continuity-drift.md`, with
 `producer: inspector-continuity`, `kind: inspector`, a `score` 1-5,
 `blocking_issues[]` (each becomes a `BLOCKING:` line), `violations[]`, `evidence[]`,
 and `reviewed_by`.

@@ -287,15 +287,9 @@ def cmd_approve_book(book: str, *, repo_root=None) -> int:
 def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None,
                      note_skipped=None) -> int:
     repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
-    # ONE spelling of the book number, for every path this function resolves.
-    # tension_check.resolve_inputs zero-pads (as book_status, packet_assemble,
-    # penny_map and draft_words all do), so without this `lock-mystery 1` would
-    # read book-1.yaml while the tension resolution read book-01.yaml — inside
-    # the function whose whole point is that the two cannot disagree. Padding
-    # here also keeps the ledger, the outline and the CERTIFICATE on one
-    # spelling: normalizing the ledger alone would mint book-1.mystery.lock for
-    # a book everything downstream calls 01.
-    book = str(book).zfill(2)
+    # NOTE: the book number arrives already zero-padded from main() (see the
+    # dispatch), which is what keeps this function's ledger, outline and
+    # CERTIFICATE on the one spelling tension_check.resolve_inputs resolves.
     run_config = run_config or penny_paths.config_path("run-config.md", root=repo_root)
     led = ledger_path(book, repo_root)
     if not led.is_file():
@@ -369,9 +363,10 @@ def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None
             if beat_sheet_path is None:
                 # The `validated:` stamp must not claim more than actually
                 # ran (FINDING 5): say so visibly when curve/beat checks were
-                # skipped for lack of a resolvable beat sheet.
-                print("lock-mystery: note — no beat sheet resolved; curve/beat "
-                      "checks (dead-stretch, starved-thread, off-mark-beat) skipped")
+                # skipped for lack of a resolvable beat sheet — in
+                # tension_check's own spelling, so the report a showrunner ran
+                # before the lock and the gate itself name the same five.
+                print(f"lock-mystery: note — {_tension.NO_BEAT_SHEET_NOTE}")
     for n in notes:
         # A check that COULD NOT RUN is never silent, and never a crash: it is
         # named here and recorded on the certificate below, so the lock cannot
@@ -454,6 +449,14 @@ def main(argv=None) -> int:
     p_clear.add_argument("book")
     p_clear.add_argument("chapter")
     args = ap.parse_args(argv)
+    # ONE spelling of the book number, for every subcommand. resolve_inputs
+    # zero-pads (as book_status, packet_assemble, penny_map and draft_words all
+    # do), so an unpadded `lock-mystery 1` used to mint book-01.mystery.lock
+    # while `draft 1 05` went looking for book-1.mystery.lock — half-working,
+    # and failing two steps away from the typo that caused it. Every subcommand
+    # takes the book number in this position; the chapter argument is left
+    # alone, since each subcommand normalizes its own.
+    args.book = str(args.book).zfill(2)
     if args.cmd == "draft":
         return cmd_draft(args.book, args.chapter)
     if args.cmd == "assemble":

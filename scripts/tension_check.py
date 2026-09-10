@@ -91,6 +91,18 @@ def _load_yaml(path):
 # A 1-2 digit book number, as opposed to an outline path (the other CLI form).
 _BOOK_RE = re.compile(r"^\d{1,2}$")
 
+# The five checks a missing beat sheet takes out of the report, in ONE spelling.
+# `preflight lock-mystery` imports this rather than keeping its own sentence:
+# the report and the gate exist to predict each other, so a pair that named
+# different subsets of the same skip would be the one place a discrepancy is
+# guaranteed to mislead. (The last two also raise their own "could not run" note
+# through the notes channel, which preflight records on the certificate; this
+# line is what a showrunner reads on stdout.)
+BEAT_SHEET_DEPENDENT = ("dead-stretch", "starved-thread", "off-mark-beat",
+                        "overloaded-chapter", "monotonous-closings")
+NO_BEAT_SHEET_NOTE = ("no beat sheet resolved; curve/beat checks ("
+                      + ", ".join(BEAT_SHEET_DEPENDENT) + ") skipped")
+
 
 def _first_file(*paths):
     """First candidate that actually exists, else None.
@@ -526,9 +538,7 @@ def main(argv=None) -> int:
         if beat_sheet is None:
             # Never silent about half a report: the five beat-sheet-dependent
             # checks are exactly what the bare path form loses.
-            print("tension_check: note — no beat sheet resolved; dead-stretch, "
-                  "starved-thread, off-mark-beat, overloaded-chapter and "
-                  "monotonous-closings skipped")
+            print(f"tension_check: note — {NO_BEAT_SHEET_NOTE}")
     result = check_tension(outline, beat_sheet_path=beat_sheet,
                            turning_points_path=turning_points,
                            whodunit_path=whodunit)
