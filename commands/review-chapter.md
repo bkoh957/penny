@@ -196,11 +196,32 @@ to the showrunner; re-drafting is a manual re-run (no auto-revise in this phase)
    `output/book-$book/chapters/ch-$chapter.reviews/developmental-edit.md` via
    `${CLAUDE_PLUGIN_ROOT}/scripts/penny_verdict.py` (`kind: developmental`, no `^BLOCKING:` lines).
 
-7. **Dispatch-completeness check:** confirm one verdict file (per the static table's
-   `verdict file` column) for each inspector named in `$INSPECTORS`, AND
-   `developmental-edit.md`, now exist in the reviews dir. A missing one means a sub-agent
-   dispatch silently failed — stop and report it. (This is distinct from `fairplay.md`
-   legitimately being absent pre-reveal.)
+7. **Dispatch-completeness check (deterministic — do not eyeball it):**
+
+   ```bash
+   python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_completeness.py" $book $chapter
+   ```
+
+   It confirms that one verdict file exists for each inspector in the active genre's
+   roster (the static table's `verdict file` column), plus `developmental-edit.md`
+   and the step-5 evidence files. A missing one means a sub-agent dispatch or a
+   checker run **silently failed**: nothing errors, the file simply is not there, and
+   the panel that follows is smaller than it looks. That is exactly how
+   `voice_drift.py` and `lexicon_check.py` came to run in 1 review round of 12 on the
+   live series while `inspector-voice` recorded *"No voice_drift.py evidence was
+   supplied for this round"* and made its blocking call blind.
+
+   **A non-zero exit stops the run here, before the gate is computed** — a gate over
+   an incomplete panel is the soft gate this engine rejects. Re-dispatch what is
+   named, then re-run this step. Its named lines are report findings only: they are
+   not waivable and they gate nothing but this step.
+
+   Two absences are legitimate and the script reports neither as a failure: a series
+   with no authored `config/setting-pack/lexicon.yaml` (the engine ships none, and
+   `lexicon_check.py` exits rather than writing — the inert check is named in a
+   `note:` line), and any inspector outside `$INSPECTORS`. `fairplay.md` — written by
+   `fairplay_check.py`, and legitimately absent pre-reveal — is a different file from
+   `inspector-fairplay`'s `fairplay-planting.md`, which is expected in every chapter.
 
 8. **Compute the gate and advance the marker:**
 
