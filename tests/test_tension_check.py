@@ -735,12 +735,74 @@ def test_an_unwired_outline_notes_none_of_them():
         assert not _noted(r, check), r["notes"]
 
 
-def test_the_notes_name_ids_from_BEAT_SHEET_DEPENDENT_not_a_second_list():
-    """The report and the gate exist to predict each other, which is why
-    BEAT_SHEET_DEPENDENT is one spelling. These notes must be drawn from it."""
+def test_no_beat_sheet_notes_each_dependent_check_exactly_once(tmp_path):
+    """The drift guard, pinned to something OUTSIDE the constants.
+
+    An earlier version of this test asserted the notes named exactly
+    `CURVE_BEAT_CHECKS` — but that set is derived from `_SELF_NOTING`, so both
+    sides of the comparison moved together and a stale `_SELF_NOTING` was
+    invisible to it. The observable property is the PARTITION itself: with no
+    beat sheet resolvable, every beat-sheet-dependent check must be noted
+    exactly ONCE — once by its own check (`overloaded-chapter`,
+    `monotonous-closings`) or once by the wired branch. A check missing from
+    `_SELF_NOTING` that self-notes is then a DUPLICATE `skipped:` line, and one
+    wrongly listed there vanishes from the certificate entirely. Both fail here.
+
+    The outline needs Required Beats and a Closing for the two self-noting
+    checks to be applicable at all, which no committed wired fixture carries —
+    hence the splice.
+    """
+    from collections import Counter
+
     from scripts import tension_check
 
-    assert set(tension_check.CURVE_BEAT_CHECKS) <= set(tension_check.BEAT_SHEET_DEPENDENT)
-    r = check_tension(FIX / "wired-clean.md")
-    noted = {n.split(" — ", 1)[0] for n in r["notes"]}
-    assert noted == set(tension_check.CURVE_BEAT_CHECKS)
+    src = (FIX / "wired-clean.md").read_text(encoding="utf-8")
+    spliced = src.replace(
+        "\n## Chapter 02 — The Cake Tin",
+        "\n### Required Beats\n- Maggie finds the kitchen door open.\n"
+        "\n### Closing\ncliffhanger — the light upstairs is on.\n"
+        "\n## Chapter 02 — The Cake Tin", 1)
+    assert spliced != src                     # the splice landed
+    outline = tmp_path / "outline.md"
+    outline.write_text(spliced, encoding="utf-8")
+
+    r = check_tension(outline)                # no beat sheet resolvable
+    counted = Counter(n.split(" — ", 1)[0] for n in r["notes"])
+    assert counted == Counter(tension_check.BEAT_SHEET_DEPENDENT), r["notes"]
+
+
+# --- fix round 1: the third door, one level inside door 1's success case.
+# A beat sheet that RESOLVES but declares no tracks.max_dark_gap leaves
+# `_curve_checks`'s track loop nothing to iterate — starved-thread produced no
+# finding and no note while the certificate stamped `validated: …+tension`.
+# Latent while cozy-mystery declares all four tracks; a new genre pack is
+# exactly what trips it. -------------------------------------------------
+
+def test_a_beat_sheet_with_no_max_dark_gap_notes_starved_thread(tmp_path):
+    sheet = tmp_path / "beat-sheet.yaml"
+    sheet.write_text("questions:\n  min_open_before_reveal: 1\n", encoding="utf-8")
+    r = check_tension(FIX / "wired-dead-stretch.md", beat_sheet_path=sheet)
+    assert _noted(r, "starved-thread"), r["notes"]
+    assert "tracks.max_dark_gap" in _noted(r, "starved-thread")[0]
+    # ...and ONLY starved-thread: dead-stretch defaults its own threshold and
+    # genuinely ran, which the finding below proves.
+    assert not _noted(r, "dead-stretch")
+    assert "dead-stretch" in _predicates(r)
+
+
+def test_a_beat_sheet_declaring_max_dark_gap_notes_nothing(tmp_path):
+    """The converse — the note must not fire on a sheet that does declare it."""
+    r = check_tension(FIX / "wired-clean.md", beat_sheet_path=BEATS,
+                      turning_points_path=Path("tests/fixtures/plot/turning-points-good.md"))
+    assert not _noted(r, "starved-thread"), r["notes"]
+
+
+def test_the_door_two_note_names_no_path(tmp_path):
+    """`--turning-points` may be passed explicitly, so naming the resolved
+    default the caller never used would send them looking in the wrong place.
+    Door 1 names no file either."""
+    r = check_tension(FIX / "wired-clean.md", beat_sheet_path=BEATS,
+                      turning_points_path=tmp_path / "nope.md")
+    note = _noted(r, "off-mark-beat")[0]
+    assert "turning points" in note
+    assert "input/book-" not in note and ".md" not in note

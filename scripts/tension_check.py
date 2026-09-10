@@ -16,14 +16,14 @@ exactly as before.
 Two result channels, and nothing is ever silent:
   blocking — findings. They stop the lock unless waived, and the waiver's
              reason is recorded in the certificate.
-  notes    — a check that COULD NOT RUN, and why (no genre beat sheet
-             resolves at all, or one resolves but declares no
-             obligations.max_per_chapter, or no turning points resolve, or
-             the whodunit ledger cannot be read). Never a traceback out of a
-             working command,
-             never a silent `return`: preflight prints them and stamps them
-             on the lock as `skipped: <check-id> — <why>`, so the certificate
-             cannot claim coverage it does not have.
+  notes    — a check that COULD NOT RUN, and why (no genre beat sheet resolves
+             at all; one resolves but declares no obligations.max_per_chapter,
+             no tracks.max_dark_gap or no closings.max_same_kind_run; no
+             turning points resolve; the whodunit ledger cannot be read).
+             Never a traceback out of a working command, never a silent
+             `return`: preflight prints them and stamps them on the lock as
+             `skipped: <check-id> — <why>`, so the certificate cannot claim
+             coverage it does not have.
 
 Checks (ids are the waiver handles):
   orphan-chapter    a chapter's Because is missing, names a nonexistent
@@ -237,7 +237,19 @@ def _graph_checks(chapters: list[dict], blocking: list[str]) -> dict:
     return {"open_ch": open_ch, "closed_ch": closed_ch, "carried": carried}
 
 
-def _curve_checks(chapters, beat_sheet, reveal_ch, blocking):
+def _curve_checks(chapters, beat_sheet, reveal_ch, blocking, notes):
+    """dead-stretch + starved-thread, against a beat sheet that DID resolve.
+
+    The thresholds are genre numbers and the two checks treat a missing one
+    differently, on purpose. `min_open_before_reveal` has a defensible default
+    (1) and is applied below, so dead-stretch genuinely runs whatever the sheet
+    says. `tracks.max_dark_gap` has none — the tracks it names ARE the roster
+    being checked — so a sheet declaring none leaves the loop nothing to
+    iterate, and starved-thread would otherwise pass silently while the
+    certificate stamped `validated: …+tension`. That is the same over-claim one
+    level in, so it is a named note, exactly as `_closings_check` does for its
+    own absent threshold.
+    """
     min_open = int((beat_sheet.get("questions") or {}).get("min_open_before_reveal", 1))
     open_now: set[str] = set()
     counts: dict[int, int] = {}
@@ -251,7 +263,12 @@ def _curve_checks(chapters, beat_sheet, reveal_ch, blocking):
             blocking.append(
                 f"dead-stretch: ch {n:02d} ends with {counts[n]} open question(s) "
                 f"(< {min_open}) before the reveal (ch {last:02d})")
-    for track, limit in sorted(((beat_sheet.get("tracks") or {}).get("max_dark_gap") or {}).items()):
+    gaps = (beat_sheet.get("tracks") or {}).get("max_dark_gap") or {}
+    if not gaps:
+        notes.append(
+            "starved-thread — the check could not run: the genre's beat sheet "
+            "declares no tracks.max_dark_gap")
+    for track, limit in sorted(gaps.items()):
         run, run_start = 0, None
         for c in chapters:
             val = c["tracks"].get(track)
@@ -513,7 +530,8 @@ def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=Non
     notes = list(over["notes"])
     if beat_sheet_path is not None and Path(beat_sheet_path).is_file():
         beat_sheet = _load_yaml(beat_sheet_path)
-        metrics["open_counts"] = _curve_checks(chapters, beat_sheet, reveal_ch, blocking)
+        metrics["open_counts"] = _curve_checks(chapters, beat_sheet, reveal_ch,
+                                               blocking, notes)
         if turning_points_path is not None and Path(turning_points_path).is_file():
             from scripts.penny_wiring import parse_turning_points
             tp = parse_turning_points(Path(turning_points_path).read_text(encoding="utf-8"))
@@ -521,9 +539,13 @@ def check_tension(outline_path, *, beat_sheet_path=None, turning_points_path=Non
         else:
             # The nested door: the beat sheet resolved, so the curve checks ran,
             # but the beat check has no turning points to measure.
+            # Names no path, as door 1 names no file: the turning points may
+            # have been passed explicitly, and reporting a resolved default the
+            # caller never used would send them looking in the wrong place. The
+            # book is identified by the certificate's own `book:` line above.
             notes.append(
                 "off-mark-beat — the check could not run: no turning points "
-                "resolved for this book (input/book-NN/plot/turning-points.md)")
+                "resolved for this book")
     else:
         for check in CURVE_BEAT_CHECKS:
             notes.append(
