@@ -34,4 +34,5 @@ Score 1-5 on structure. Mark **blocking** for a genuinely deflated/no-stakes cha
 
 - Book-scale track starvation is `tension_check.py`'s `starved-thread`, not you.
 - Cross-BOOK thread fatigue is the Phase-8 cross-book reviewer, not you (single book).
-- Recording what advanced is the ledger-updater's job (Phase 4); you only flag.
+- Recording what advanced is the ledger-updater's job (Phase 4). You flag nothing
+  thread-shaped at all — see the note above.

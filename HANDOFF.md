@@ -106,7 +106,7 @@ chapters.
 - `docs/superpowers/specs/2026-09-09-check-economics-design.md` — §3a is the next work.
 - `scripts/packet_assemble.py` — `without_continuity`, `inspector_slice`, `_manifest`,
   `_continuity_slice`'s both-ends rule, and `main()`'s projection branch.
-- `commands/review-chapter.md` — steps 4, 5, 7, 7b carry the routing; step 5 is where
+- `commands/review-chapter.md` — steps 4, 5, 6, 6b carry the routing; step 5 is where
   §3a.2 lands.
 - `scripts/tension_check.py` — ten findings, all currently unexercised on the live series.
 - `tests/test_packet_projection_wiring.py` — pins the wiring; a projection nothing
