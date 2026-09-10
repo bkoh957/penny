@@ -517,6 +517,12 @@ def main(argv=None) -> int:
             turning_points = got["turning_points_path"]
         if whodunit is None:
             whodunit = got["whodunit_path"]
+        # Through _first_file, not merely `is None`: check_tension guards every
+        # beat-sheet use with .is_file(), so an EXPLICIT --beat-sheet naming a
+        # file that does not exist skips the identical five checks. Reported the
+        # same way, or the note has a hole exactly the shape of the bug it
+        # exists to close.
+        beat_sheet = _first_file(beat_sheet)
         if beat_sheet is None:
             # Never silent about half a report: the five beat-sheet-dependent
             # checks are exactly what the bare path form loses.

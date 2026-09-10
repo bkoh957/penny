@@ -591,6 +591,29 @@ def test_cli_book_number_passes_the_resolved_whodunit(tmp_path, monkeypatch, cap
     assert "whodunit reveal_chapter" not in capsys.readouterr().out
 
 
+def test_cli_names_the_skipped_checks_for_an_UNUSABLE_explicit_beat_sheet(
+        tmp_path, monkeypatch, capsys):
+    """The same hole through the other door. `check_tension` guards every beat
+    sheet use with `.is_file()`, so an explicit --beat-sheet pointing at a file
+    that does not exist skips the identical five checks as no beat sheet at
+    all — and must be reported the identical way, or the module's promise that
+    it never hands back half a report silently is false."""
+    from scripts import tension_check
+
+    root = _series_with_book_01(tmp_path, outline_fixture="wired-dead-stretch.md")
+    ghost = root / "no-such-beat-sheet.yaml"
+    assert not ghost.exists()
+    monkeypatch.chdir(root)
+    tension_check.main(["01", "--beat-sheet", str(ghost)])
+    out = capsys.readouterr().out
+
+    assert "no beat sheet resolved" in out
+    for check in ("dead-stretch", "starved-thread", "off-mark-beat",
+                  "overloaded-chapter", "monotonous-closings"):
+        assert check in out                             # the note names all five
+    assert "tension_check: dead-stretch:" not in out    # ...and none of them ran
+
+
 def test_cli_still_accepts_an_outline_path(tmp_path):
     """The path form is what preflight and existing callers use — unchanged."""
     from scripts import tension_check

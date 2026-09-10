@@ -287,6 +287,15 @@ def cmd_approve_book(book: str, *, repo_root=None) -> int:
 def cmd_lock_mystery(book: str, *, repo_root=None, run_config=None, waivers=None,
                      note_skipped=None) -> int:
     repo_root = Path(repo_root) if repo_root is not None else penny_paths.series_root()
+    # ONE spelling of the book number, for every path this function resolves.
+    # tension_check.resolve_inputs zero-pads (as book_status, packet_assemble,
+    # penny_map and draft_words all do), so without this `lock-mystery 1` would
+    # read book-1.yaml while the tension resolution read book-01.yaml — inside
+    # the function whose whole point is that the two cannot disagree. Padding
+    # here also keeps the ledger, the outline and the CERTIFICATE on one
+    # spelling: normalizing the ledger alone would mint book-1.mystery.lock for
+    # a book everything downstream calls 01.
+    book = str(book).zfill(2)
     run_config = run_config or penny_paths.config_path("run-config.md", root=repo_root)
     led = ledger_path(book, repo_root)
     if not led.is_file():

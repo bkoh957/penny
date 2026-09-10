@@ -853,3 +853,14 @@ def test_lock_reads_the_books_turning_points(tmp_path):
         preflight.cmd_lock_mystery("01", repo_root=tmp_path)
     assert "off-mark-beat" in str(e.value)
     assert not preflight.lock_path("01", tmp_path).is_file()
+
+
+def test_lock_spells_the_book_number_one_way(tmp_path):
+    """`lock-mystery 1` and `lock-mystery 01` are the same book. The ledger, the
+    outline and the certificate must all agree on the zero-padded spelling —
+    tension_check.resolve_inputs already zero-pads, and this is the function
+    whose whole purpose is that the two cannot disagree."""
+    _scaffold_lockable(tmp_path, ledger_fixture=FAIR, valid_lexicon=True)
+    assert preflight.cmd_lock_mystery("1", repo_root=tmp_path) == 0
+    assert preflight.lock_path("01", tmp_path).is_file()
+    assert not (tmp_path / ".penny/locks/book-1.mystery.lock").exists()
