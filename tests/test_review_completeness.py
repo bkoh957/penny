@@ -8,21 +8,33 @@ times. These tests pin the deterministic replacement: named lines, a nonzero
 exit, and the two absences that are legitimate (no authored lexicon; an
 inspector outside the active genre's roster).
 """
-import pytest
+import re
+from pathlib import Path
 
 from scripts import review_completeness
 
-ROSTER_FILES = {
-    "continuity": "continuity-drift.md",
-    "fairplay": "fairplay-planting.md",
-    "structure": "structure-tension.md",
-    "voice": "character-voice.md",
-    "ai-prose": "ai-prose-taste-flags.md",
-}
+RUNBOOK = Path("commands/review-chapter.md")
 
-ALL_FILES = tuple(ROSTER_FILES.values()) + (
+# Deliberately NOT a second copy of the table: a duplicate declared here would
+# agree with the script by construction and keep agreeing if both drifted. The
+# expected set is read from the script, and the script's table is pinned against
+# the runbook's — the one place outside it that names these files.
+ALL_FILES = tuple(review_completeness.VERDICT_FILES.values()) + (
     "developmental-edit.md", "voice-drift.md", "lexicon-fluency.md",
 )
+
+
+def _runbook_table():
+    """{inspector: verdict file} parsed from the runbook's static table."""
+    rows = {}
+    for line in RUNBOOK.read_text(encoding="utf-8").splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) != 4 or cells[0] in ("inspector", "---") or set(cells[0]) == {"-"}:
+            continue
+        if not re.fullmatch(r"[a-z-]+", cells[0]):
+            continue
+        rows[cells[0]] = cells[3]
+    return rows
 
 
 def _series_with_reviews(tmp_path, *, present, lexicon=True, book="01", chapter="05"):
@@ -116,6 +128,27 @@ def test_missing_lexicon_verdict_with_an_authored_lexicon_is_a_finding(tmp_path)
     assert not any("lexicon" in n.lower() for n in detail["notes"])
 
 
+def test_both_evidence_checkers_skipped_is_the_live_failure(tmp_path):
+    """The scenario itself: every agent verdict present, BOTH free checkers
+    skipped, gate computed anyway — eleven times of twelve on the live series.
+    Covered as a union by the two single-removal tests above; it happened as a
+    pair, so it is pinned as a pair."""
+    root = _series_with_reviews(tmp_path, present="all")
+    (_reviews(root) / "voice-drift.md").unlink()
+    (_reviews(root) / "lexicon-fluency.md").unlink()
+
+    rc, lines = review_completeness.check("01", "05", repo_root=root)
+    detail = review_completeness.check_detail("01", "05", repo_root=root)
+
+    assert rc == 1
+    assert len(detail["findings"]) == 2, detail
+    assert any("missing-voice-drift" in f for f in detail["findings"])
+    assert any("missing-lexicon-fluency" in f for f in detail["findings"])
+    # ...and nothing else is blamed: the agent panel was complete.
+    assert not any("missing-inspector-verdict" in f for f in detail["findings"])
+    assert not any("missing-developmental-read" in f for f in detail["findings"])
+
+
 def test_missing_inspector_verdict_names_the_inspector_and_the_file(tmp_path):
     root = _series_with_reviews(tmp_path, present="all")
     (_reviews(root) / "character-voice.md").unlink()
@@ -168,7 +201,7 @@ def test_missing_reviews_dir_reports_every_expected_file(tmp_path):
 
     assert rc == 1
     joined = "\n".join(lines)
-    for verdict in ROSTER_FILES.values():
+    for verdict in review_completeness.VERDICT_FILES.values():
         assert verdict in joined
 
 
@@ -204,6 +237,16 @@ def test_runbook_calls_the_script_and_keeps_the_reasoning():
     assert text.index("review_completeness.py") < text.index("review_gate.py")
 
 
-@pytest.mark.parametrize("name,verdict", sorted(ROSTER_FILES.items()))
-def test_static_table_matches_the_script(name, verdict):
-    assert review_completeness.VERDICT_FILES[name] == verdict
+def test_runbook_table_is_parseable_at_all():
+    """The pin below is only worth anything if the parse found the table — a
+    renamed column or a reformatted row would otherwise silently compare {} to
+    {} and pass."""
+    assert len(_runbook_table()) == 5, _runbook_table()
+
+
+def test_verdict_files_agree_with_the_runbook_table():
+    """The script's inspector -> verdict-file table and the runbook's are the
+    same table written twice; the dispatch follows the runbook, the check
+    follows the script, and a drift between them means the check looks for a
+    file nobody was told to write."""
+    assert review_completeness.VERDICT_FILES == _runbook_table()
